@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/model-policy.schema.json",
+  "title": "RuWritingStyles model routing policy",
+  "type": "object",
+  "required": [
+    "version",
+    "schema",
+    "default_provider",
+    "default_development_mode",
+    "providers",
+    "policy_notes"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "string" },
+    "schema": { "type": "string" },
+    "description": { "type": "string" },
+    "default_provider": {
+      "type": "string",
+      "enum": ["openai", "google", "anthropic"]
+    },
+    "default_development_mode": {
+      "type": "object",
+      "required": ["model", "reasoning", "speed", "use_for"],
+      "additionalProperties": false,
+      "properties": {
+        "model": { "type": "string" },
+        "reasoning": { "type": "string" },
+        "speed": { "type": "string" },
+        "use_for": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "providers": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "policy_notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
