@@ -395,7 +395,7 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 3. Заменить ручную validation logic в `rws validate-run` полноценной JSON Schema validation.
 4. Расширить scoring rules: запрет hallucinated facts, минимальная сохранность смысла, сравнение diff magnitude.
 5. Улучшить HTML summary: добавить side-by-side diff, фильтры по стилям и severity, компактный режим для длинных документов.
-6. Проверить и расширить retry/backoff на provider-specific rate-limit headers.
+6. Протестировать provider-specific retry/backoff на реальных API keys и добавить telemetry по числу повторов.
 
 ## Определение готовности MVP
 

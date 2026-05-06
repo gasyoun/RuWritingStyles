@@ -161,7 +161,7 @@ Provider environment variables:
 - `google`: `GEMINI_API_KEY` or `GOOGLE_API_KEY`, optional `RWS_GOOGLE_MODEL`.
 - `anthropic`: `ANTHROPIC_API_KEY`, optional `RWS_ANTHROPIC_MODEL`, optional `RWS_ANTHROPIC_MAX_TOKENS`.
 
-Transient provider failures are retried with exponential backoff. Configure this with `RWS_PROVIDER_MAX_ATTEMPTS` and `RWS_PROVIDER_RETRY_SECONDS`.
+Transient provider failures are retried with exponential backoff. Configure this with `RWS_PROVIDER_MAX_ATTEMPTS` and `RWS_PROVIDER_RETRY_SECONDS`. When a provider returns rate-limit headers, the retry layer prefers `Retry-After`, then known OpenAI `x-ratelimit-reset-*` and Anthropic `anthropic-ratelimit-*-reset` headers for exhausted limits.
 
 Each `run` refreshes:
 
