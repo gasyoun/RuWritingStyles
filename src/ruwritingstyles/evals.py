@@ -34,6 +34,9 @@ class EvalCase:
     purpose: str
     default_styles: tuple[str, ...]
     expected_risks: tuple[str, ...]
+    required_finding_types: tuple[str, ...]
+    min_required_matches: int
+    allowed_verification_statuses: tuple[str, ...]
 
 
 @dataclass(frozen=True)
@@ -137,7 +140,32 @@ def _case(repo_root: Path, data: dict[str, Any]) -> EvalCase:
         purpose=str(data.get("purpose") or ""),
         default_styles=tuple(str(item) for item in data.get("default_styles", []) if item),
         expected_risks=tuple(str(item) for item in data.get("expected_risks", []) if item),
+        required_finding_types=_required_finding_types(data),
+        min_required_matches=_min_required_matches(data),
+        allowed_verification_statuses=_allowed_verification_statuses(data),
     )
+
+
+def _required_finding_types(data: dict[str, Any]) -> tuple[str, ...]:
+    scoring = data.get("scoring") if isinstance(data.get("scoring"), dict) else {}
+    values = scoring.get("required_finding_types") if isinstance(scoring.get("required_finding_types"), list) else []
+    if not values:
+        values = data.get("expected_risks") if isinstance(data.get("expected_risks"), list) else []
+    return tuple(str(item) for item in values if item)
+
+
+def _min_required_matches(data: dict[str, Any]) -> int:
+    scoring = data.get("scoring") if isinstance(data.get("scoring"), dict) else {}
+    value = scoring.get("min_required_matches")
+    return value if isinstance(value, int) and value >= 0 else 1
+
+
+def _allowed_verification_statuses(data: dict[str, Any]) -> tuple[str, ...]:
+    scoring = data.get("scoring") if isinstance(data.get("scoring"), dict) else {}
+    values = scoring.get("allowed_verification_statuses")
+    if not isinstance(values, list) or not values:
+        values = ["passed", "needs_human_review"]
+    return tuple(str(item) for item in values if item)
 
 
 def _write_eval_result(
@@ -151,6 +179,12 @@ def _write_eval_result(
     finding_types = _finding_types(run_dir)
     matched = sorted(set(case.expected_risks).intersection(finding_types))
     verification = _load_json(run_dir / "verification.json")
+    verification_status = str(verification.get("status") or "missing")
+    required_matches = sorted(set(case.required_finding_types).intersection(finding_types))
+    passed = (
+        len(required_matches) >= case.min_required_matches
+        and verification_status in set(case.allowed_verification_statuses)
+    )
     result = {
         "case_id": case.case_id,
         "run_id": run_dir.name,
@@ -163,7 +197,15 @@ def _write_eval_result(
         "finding_count": _finding_count(run_dir),
         "finding_types": sorted(finding_types),
         "matched_expected_risks": matched,
-        "verification_status": verification.get("status") or "missing",
+        "verification_status": verification_status,
+        "scoring": {
+            "passed": passed,
+            "required_finding_types": list(case.required_finding_types),
+            "matched_required_finding_types": required_matches,
+            "required_match_count": len(required_matches),
+            "min_required_matches": case.min_required_matches,
+            "allowed_verification_statuses": list(case.allowed_verification_statuses),
+        },
     }
     path = run_dir / "eval-result.json"
     path.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
