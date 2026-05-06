@@ -43,6 +43,20 @@ This loads:
 
 It prints the MVP styles and the default development model policy.
 
+## List styles
+
+```bash
+rws list-styles
+```
+
+To show only the first MVP styles:
+
+```bash
+rws list-styles --mvp
+```
+
+MVP styles are marked with `*`.
+
 ## Prepare a document
 
 ```bash

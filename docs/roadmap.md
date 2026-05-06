@@ -372,15 +372,14 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 
 ## Ближайшие задачи
 
-1. Расширить паспорта на все стили из `ClaudeStyles/`.
-2. Заменить временный `tools/validate_project.py` полноценной YAML/JSON Schema validation.
-3. Реализовать `rws review` для одного стиля.
-4. Реализовать JSON Schema validation для style findings.
-5. Реализовать `rws review` для нескольких стилей.
-6. Добавить `rws council`.
-7. Добавить `rws revise`.
-8. Добавить `rws verify`.
-9. Подготовить демонстрационный документ и пример запуска.
+1. Заменить временный `tools/validate_project.py` полноценной YAML/JSON Schema validation.
+2. Реализовать `rws review` для одного стиля.
+3. Реализовать JSON Schema validation для style findings.
+4. Реализовать `rws review` для нескольких стилей.
+5. Добавить `rws council`.
+6. Добавить `rws revise`.
+7. Добавить `rws verify`.
+8. Подготовить демонстрационный документ и пример запуска.
 
 ## Определение готовности MVP
 
