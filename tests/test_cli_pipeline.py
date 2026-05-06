@@ -14,6 +14,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from ruwritingstyles.cli import main
+from ruwritingstyles.providers import _extract_anthropic_text, _extract_gemini_text
 from ruwritingstyles.segment import normalize_document, segment_markdown
 
 
@@ -36,6 +37,30 @@ Second paragraph.
         segments = segment_markdown(text)
         self.assertEqual([segment.segment_type for segment in segments], ["heading", "paragraph", "code", "heading", "paragraph"])
         self.assertEqual([segment.span_id for segment in segments], ["h001", "p002", "c003", "h004", "p005"])
+
+
+class ProviderParsingTests(unittest.TestCase):
+    def test_provider_text_extractors(self) -> None:
+        gemini = {
+            "candidates": [
+                {
+                    "content": {
+                        "parts": [
+                            {"text": '{"ok": '},
+                            {"text": "true}"},
+                        ]
+                    }
+                }
+            ]
+        }
+        anthropic = {
+            "content": [
+                {"type": "text", "text": '{"ok": '},
+                {"type": "text", "text": "true}"},
+            ]
+        }
+        self.assertEqual(_extract_gemini_text(gemini), '{"ok": true}')
+        self.assertEqual(_extract_anthropic_text(anthropic), '{"ok": true}')
 
 
 class CliPipelineTests(unittest.TestCase):

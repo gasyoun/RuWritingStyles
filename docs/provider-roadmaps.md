@@ -67,7 +67,7 @@
 
 Порядок внедрения Gemini-ветки:
 
-1. Добавить `google` provider adapter.
+1. Добавить `google` provider adapter. Стартовый HTTP-адаптер уже подключен к CLI как `--provider google`.
 2. Поддержать `gemini-3.1-pro-preview` и `gemini-3.1-pro-preview-customtools`.
 3. Прогнать один и тот же eval-набор на OpenAI и Gemini.
 4. Сравнить JSON-валидность, полноту замечаний, сохранность `span_id`.
@@ -105,7 +105,7 @@
 
 Порядок внедрения Claude-ветки:
 
-1. Добавить `anthropic` provider adapter.
+1. Добавить `anthropic` provider adapter. Стартовый HTTP-адаптер уже подключен к CLI как `--provider anthropic`.
 2. Поддержать `claude-sonnet-4-6` как balanced backend.
 3. Прогнать style review и council eval на трех MVP-стилях.
 4. Использовать Claude как cross-provider verifier для документов, сгенерированных OpenAI или Gemini.
