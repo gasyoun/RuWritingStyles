@@ -371,15 +371,16 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 ## Ближайшие задачи
 
 1. Расширить паспорта на все стили из `ClaudeStyles/`.
-2. Написать минимальный CLI для `.md`-документов.
-3. Реализовать загрузку `styles/manifest.yml` и `model_policy.yml`.
-4. Реализовать `rws review` для одного стиля.
-5. Реализовать JSON Schema validation для style findings.
-6. Реализовать `rws review` для нескольких стилей.
-7. Добавить `rws council`.
-8. Добавить `rws revise`.
-9. Добавить `rws verify`.
-10. Подготовить демонстрационный документ и пример запуска.
+2. Заменить временный `tools/validate_project.py` полноценной YAML/JSON Schema validation.
+3. Написать минимальный CLI для `.md`-документов.
+4. Реализовать загрузку `styles/manifest.yml` и `model_policy.yml`.
+5. Реализовать `rws review` для одного стиля.
+6. Реализовать JSON Schema validation для style findings.
+7. Реализовать `rws review` для нескольких стилей.
+8. Добавить `rws council`.
+9. Добавить `rws revise`.
+10. Добавить `rws verify`.
+11. Подготовить демонстрационный документ и пример запуска.
 
 ## Определение готовности MVP
 
