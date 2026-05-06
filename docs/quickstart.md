@@ -33,6 +33,7 @@ runs/demo-pseudo-etymology/
   original.md
   normalized.md
   segments.json
+  report.md
   reviews/
   council.json
   revision.json

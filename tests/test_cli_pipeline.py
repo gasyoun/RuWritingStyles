@@ -112,6 +112,11 @@ class CliPipelineTests(unittest.TestCase):
         verification = json.loads((self.executed_run_dir / "verification.json").read_text(encoding="utf-8"))
         self.assertEqual(verification["status"], "needs_human_review")
 
+        report = (self.executed_run_dir / "report.md").read_text(encoding="utf-8")
+        self.assertIn("## Findings", report)
+        self.assertIn("Mock provider placeholder finding", report)
+        self.assertEqual(main(["report", str(self.executed_run_dir)]), 0)
+
         self.assertEqual(main(["validate-run", str(self.executed_run_dir)]), 0)
 
     def test_demo_document_runs_with_mock_provider(self) -> None:

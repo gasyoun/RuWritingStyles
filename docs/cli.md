@@ -1,6 +1,6 @@
 # CLI
 
-RuWritingStyles CLI starts with a deliberately small command set. The first implementation layer prepares reproducible run artifacts for later style reviewers; it does not call LLM providers yet.
+RuWritingStyles CLI starts with a deliberately small command set. It prepares reproducible run artifacts, creates prompts for style agents, can execute them through a provider, and keeps a Markdown report for each run.
 
 ## Install for local development
 
@@ -69,7 +69,7 @@ For deterministic smoke tests:
 rws prepare README.md --run-id cli-smoke-readme
 ```
 
-The command supports `.md` and `.txt` inputs in the first implementation layer. It creates:
+The command currently supports `.md` and `.txt` inputs. It creates:
 
 ```text
 runs/<run-id>/
@@ -116,6 +116,14 @@ rws run README.md --execute --provider openai --model gpt-5.5
 
 OpenAI execution uses the Responses API with Structured Outputs. It is opt-in so local tests never require secrets or network access.
 
+Each `run` refreshes:
+
+```text
+runs/<run-id>/report.md
+```
+
+The report summarizes segment counts, style review status, findings, council decisions, revision status, and verifier warnings.
+
 ## Segment format
 
 `segments.json` contains stable `span_id` values:
@@ -134,7 +142,7 @@ These IDs are the future anchor points for style findings, council replies, synt
 
 ## Create a review bundle
 
-The first `review` implementation is offline. It creates a prompt bundle for one style agent but does not call an LLM provider yet.
+The `review` command creates a prompt bundle for one style agent. With `--execute`, it also calls the selected provider and writes completed findings.
 
 ```bash
 rws review runs/cli-smoke-readme --style zalizniak-zametki
@@ -174,9 +182,7 @@ The prompt includes:
 - the normalized document;
 - the required JSON output shape for future style findings.
 
-The `.review.json` file starts with `status: prompt_ready` and an empty `findings` array. A later provider adapter will replace this with completed findings.
-
-When `--execute` is used, `.review.json` is updated to `status: completed` and receives a `summary` and `findings`.
+The `.review.json` file starts with `status: prompt_ready` and an empty `findings` array. When `--execute` is used, it is updated to `status: completed` with a `summary` and `findings`.
 
 ## Create a council bundle
 
@@ -200,7 +206,7 @@ runs/cli-smoke-readme/
   council.json
 ```
 
-The council prompt includes all `reviews/*.review.json` files and `segments.json`. The first implementation layer creates `status: prompt_ready`; a later provider adapter will fill `replies` and `decisions`.
+The council prompt includes all `reviews/*.review.json` files and `segments.json`. Without `--execute`, it creates `status: prompt_ready`; with `--execute`, it fills `replies` and `decisions`.
 
 ## Create a revision bundle
 
@@ -224,7 +230,7 @@ runs/cli-smoke-readme/
   revision.json
 ```
 
-The revision prompt includes `normalized.md` and `council.json`. The first implementation layer creates `status: prompt_ready`; a later provider adapter will produce the revised Markdown and applied-change list.
+The revision prompt includes `normalized.md` and `council.json`. Without `--execute`, it creates `status: prompt_ready`; with `--execute`, it produces `revised.md` and updates the applied-change list.
 
 When `--execute` is used, `revised.md` is written and `revision.json` is updated.
 
@@ -250,9 +256,17 @@ runs/cli-smoke-readme/
   verification.json
 ```
 
-The verification prompt includes the original document, normalized document, revision artifact, and revised document if one has already been produced. The first implementation layer creates `status: prompt_ready`; a later provider adapter will fill `passed` and `warnings`.
+The verification prompt includes the original document, normalized document, revision artifact, and revised document if one has already been produced. Without `--execute`, it creates `status: prompt_ready`; with `--execute`, it fills `passed` and `warnings`.
 
 When `--execute` is used, `verification.json` is updated with a verifier status, passed checks, and warnings.
+
+## Render a run report
+
+```bash
+rws report runs/cli-smoke-readme
+```
+
+This refreshes `runs/cli-smoke-readme/report.md` from the JSON artifacts already present in the run directory. It is useful after manual edits or after executing only part of the pipeline.
 
 ## Validate a run
 
@@ -284,7 +298,7 @@ python tools/validate_project.py
 python -m unittest discover -s tests
 ```
 
-The current tests cover Markdown segmentation and the full offline pipeline:
+The current tests cover Markdown segmentation, the full offline pipeline, mock provider execution, run reports, and the demo input document:
 
 ```text
 rws run README.md --run-id unittest-readme

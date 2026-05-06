@@ -8,6 +8,7 @@ import re
 from pathlib import Path
 
 from .config import Manifest, ModelPolicy
+from .report import write_run_report
 from .segment import Segment
 
 
@@ -48,17 +49,7 @@ def create_prepare_run(
         + "\n",
         encoding="utf-8",
     )
-    (run_dir / "report.md").write_text(
-        _report(
-            run_id=actual_run_id,
-            input_path=input_path,
-            repo_root=repo_root,
-            segments=segments,
-            manifest=manifest,
-            model_policy=model_policy,
-        ),
-        encoding="utf-8",
-    )
+    write_run_report(run_dir)
     return run_dir
 
 
@@ -67,47 +58,3 @@ def _repo_relative(repo_root: Path, path: Path) -> str:
         return path.resolve().relative_to(repo_root.resolve()).as_posix()
     except ValueError:
         return str(path)
-
-
-def _report(
-    *,
-    run_id: str,
-    input_path: Path,
-    repo_root: Path,
-    segments: list[Segment],
-    manifest: Manifest,
-    model_policy: ModelPolicy,
-) -> str:
-    counts: dict[str, int] = {}
-    for segment in segments:
-        counts[segment.segment_type] = counts.get(segment.segment_type, 0) + 1
-
-    count_lines = "\n".join(f"- {key}: {value}" for key, value in sorted(counts.items()))
-    style_lines = "\n".join(f"- `{style_id}`" for style_id in manifest.mvp_style_ids)
-
-    return f"""# Run {run_id}
-
-## Input
-
-- Source: `{_repo_relative(repo_root, input_path)}`
-- Segment count: {len(segments)}
-
-## Segment Types
-
-{count_lines or "- none: 0"}
-
-## MVP Styles
-
-{style_lines or "- none"}
-
-## Default Model Policy
-
-- Provider: `{model_policy.default_provider}`
-- Model: `{model_policy.default_model}`
-- Reasoning: `{model_policy.default_reasoning}`
-- Speed: `{model_policy.default_speed}`
-
-## Next Step
-
-Use `segments.json` as the stable input for style reviewers. The first implementation layer only prepares run artifacts; review, council, synthesis, and verification will be added in later steps.
-"""
