@@ -40,12 +40,15 @@ Second paragraph.
 class CliPipelineTests(unittest.TestCase):
     run_dir = ROOT / "runs" / "unittest-readme"
     executed_run_dir = ROOT / "runs" / "unittest-readme-executed"
+    demo_run_dir = ROOT / "runs" / "unittest-demo"
 
     def tearDown(self) -> None:
         if self.run_dir.exists():
             shutil.rmtree(self.run_dir)
         if self.executed_run_dir.exists():
             shutil.rmtree(self.executed_run_dir)
+        if self.demo_run_dir.exists():
+            shutil.rmtree(self.demo_run_dir)
 
     def test_full_offline_run_creates_expected_artifacts(self) -> None:
         if self.run_dir.exists():
@@ -110,6 +113,25 @@ class CliPipelineTests(unittest.TestCase):
         self.assertEqual(verification["status"], "needs_human_review")
 
         self.assertEqual(main(["validate-run", str(self.executed_run_dir)]), 0)
+
+    def test_demo_document_runs_with_mock_provider(self) -> None:
+        if self.demo_run_dir.exists():
+            shutil.rmtree(self.demo_run_dir)
+
+        exit_code = main(
+            [
+                "run",
+                "examples/input/pseudo-etymology.md",
+                "--run-id",
+                "unittest-demo",
+                "--execute",
+                "--provider",
+                "mock",
+            ]
+        )
+        self.assertEqual(exit_code, 0)
+        self.assertTrue((self.demo_run_dir / "revised.md").exists())
+        self.assertEqual(main(["validate-run", str(self.demo_run_dir)]), 0)
 
 
 if __name__ == "__main__":
