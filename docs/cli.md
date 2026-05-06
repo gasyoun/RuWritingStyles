@@ -105,6 +105,18 @@ The first `review` implementation is offline. It creates a prompt bundle for one
 rws review runs/cli-smoke-readme --style zalizniak-zametki
 ```
 
+For several styles:
+
+```bash
+rws review runs/cli-smoke-readme --styles zalizniak-ocherk,zalizniak-zametki
+```
+
+For the first MVP council set:
+
+```bash
+rws review runs/cli-smoke-readme --mvp
+```
+
 The command creates:
 
 ```text

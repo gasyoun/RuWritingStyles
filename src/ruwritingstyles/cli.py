@@ -52,7 +52,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Create an offline review bundle for one style and a prepared run directory.",
     )
     review.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
-    review.add_argument("--style", required=True, help="Style id from `rws list-styles`.")
+    review_styles = review.add_mutually_exclusive_group(required=True)
+    review_styles.add_argument("--style", help="One style id from `rws list-styles`.")
+    review_styles.add_argument("--styles", help="Comma-separated style ids from `rws list-styles`.")
+    review_styles.add_argument(
+        "--mvp",
+        action="store_true",
+        help="Create review bundles for the MVP styles from styles/manifest.yml.",
+    )
     review.set_defaults(func=cmd_review)
 
     return parser
@@ -126,14 +133,26 @@ def cmd_review(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     manifest = load_manifest(repo_root)
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
-    bundle = create_review_bundle(
-        repo_root=repo_root,
-        run_dir=run_dir,
-        style_id=args.style,
-        manifest=manifest,
-    )
-    print(f"created {bundle.review_json.relative_to(repo_root)}")
-    print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
+
+    if args.mvp:
+        style_ids = list(manifest.mvp_style_ids)
+    elif args.styles:
+        style_ids = [style_id.strip() for style_id in args.styles.split(",") if style_id.strip()]
+    else:
+        style_ids = [args.style]
+
+    if not style_ids:
+        raise ValueError("no style ids selected")
+
+    for style_id in style_ids:
+        bundle = create_review_bundle(
+            repo_root=repo_root,
+            run_dir=run_dir,
+            style_id=style_id,
+            manifest=manifest,
+        )
+        print(f"created {bundle.review_json.relative_to(repo_root)}")
+        print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
     return 0
 
 
