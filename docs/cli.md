@@ -279,6 +279,8 @@ The validator currently checks:
 ## Run tests
 
 ```bash
+python -m compileall -q src tools tests
+python tools/validate_project.py
 python -m unittest discover -s tests
 ```
 
