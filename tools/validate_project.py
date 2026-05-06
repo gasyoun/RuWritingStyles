@@ -17,9 +17,11 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 REQUIRED_FILES = [
+    "pyproject.toml",
     "README.md",
     "docs/roadmap.md",
     "docs/agent-protocol.md",
+    "docs/cli.md",
     "docs/style-contract.md",
     "docs/provider-roadmaps.md",
     "model_policy.yml",
@@ -27,6 +29,11 @@ REQUIRED_FILES = [
     "schemas/style.schema.json",
     "schemas/finding.schema.json",
     "schemas/model-policy.schema.json",
+    "src/ruwritingstyles/__init__.py",
+    "src/ruwritingstyles/cli.py",
+    "src/ruwritingstyles/config.py",
+    "src/ruwritingstyles/runs.py",
+    "src/ruwritingstyles/segment.py",
 ]
 
 
@@ -100,11 +107,24 @@ def check_model_policy() -> None:
     ok("model policy contains required providers and model ids")
 
 
+def check_pyproject() -> None:
+    pyproject = read_text(ROOT / "pyproject.toml")
+    for expected in [
+        'name = "ruwritingstyles"',
+        'rws = "ruwritingstyles.cli:main"',
+        'where = ["src"]',
+    ]:
+        if expected not in pyproject:
+            fail(f"pyproject.toml missing {expected}")
+    ok("pyproject exposes rws CLI")
+
+
 def main() -> int:
     check_required_files()
     check_json_schemas()
     check_style_paths()
     check_model_policy()
+    check_pyproject()
     ok("repository validation passed")
     return 0
 

@@ -145,6 +145,8 @@ limits:
 
 Почему это важно: агенты должны спорить не о тексте вообще, а о конкретном абзаце, заголовке, примере или тезисе.
 
+Текущее состояние: добавлен первый CLI-слой `rws prepare`, который поддерживает `.md` и `.txt`, создает `runs/<run-id>/original.md`, `normalized.md`, `segments.json` и `report.md`. Подробности описаны в [`cli.md`](cli.md).
+
 ## Этап 3. Одиночная проверка стилем
 
 Цель: один стиль проверяет документ и выдает структурированные замечания, а не свободный пересказ.
@@ -372,15 +374,13 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 
 1. Расширить паспорта на все стили из `ClaudeStyles/`.
 2. Заменить временный `tools/validate_project.py` полноценной YAML/JSON Schema validation.
-3. Написать минимальный CLI для `.md`-документов.
-4. Реализовать загрузку `styles/manifest.yml` и `model_policy.yml`.
-5. Реализовать `rws review` для одного стиля.
-6. Реализовать JSON Schema validation для style findings.
-7. Реализовать `rws review` для нескольких стилей.
-8. Добавить `rws council`.
-9. Добавить `rws revise`.
-10. Добавить `rws verify`.
-11. Подготовить демонстрационный документ и пример запуска.
+3. Реализовать `rws review` для одного стиля.
+4. Реализовать JSON Schema validation для style findings.
+5. Реализовать `rws review` для нескольких стилей.
+6. Добавить `rws council`.
+7. Добавить `rws revise`.
+8. Добавить `rws verify`.
+9. Подготовить демонстрационный документ и пример запуска.
 
 ## Определение готовности MVP
 
