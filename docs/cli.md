@@ -116,6 +116,19 @@ rws run README.md --execute --provider openai --model gpt-5.5
 
 OpenAI execution uses the Responses API with Structured Outputs. It is opt-in so local tests never require secrets or network access.
 
+Other opt-in provider adapters use the same run artifacts:
+
+```bash
+rws run README.md --execute --provider google --model gemini-3.1-pro-preview
+rws run README.md --execute --provider anthropic --model claude-sonnet-4-6
+```
+
+Provider environment variables:
+
+- `openai`: `OPENAI_API_KEY`, optional `RWS_OPENAI_MODEL`, optional `RWS_OPENAI_REASONING`.
+- `google`: `GEMINI_API_KEY` or `GOOGLE_API_KEY`, optional `RWS_GOOGLE_MODEL`.
+- `anthropic`: `ANTHROPIC_API_KEY`, optional `RWS_ANTHROPIC_MODEL`, optional `RWS_ANTHROPIC_MAX_TOKENS`.
+
 Each `run` refreshes:
 
 ```text

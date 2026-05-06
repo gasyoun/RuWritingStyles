@@ -60,6 +60,8 @@ set OPENAI_API_KEY=...
 rws run examples/input/pseudo-etymology.md --execute --provider openai --model gpt-5.5
 ```
 
+The CLI also accepts `--provider google` and `--provider anthropic` when the relevant API key is configured.
+
 In PowerShell:
 
 ```powershell

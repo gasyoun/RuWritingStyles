@@ -158,7 +158,7 @@ def _add_execute_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--provider",
         default="mock",
-        choices=["mock", "openai"],
+        choices=["mock", "openai", "google", "anthropic"],
         help="Provider used with --execute. Defaults to deterministic mock.",
     )
     parser.add_argument(

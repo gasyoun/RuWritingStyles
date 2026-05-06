@@ -153,7 +153,7 @@ limits:
 
 Для проверки артефактов добавлен `rws validate-run runs/<run-id>`. Он проверяет наличие файлов, JSON-структуру и привязку findings к существующим `span_id`.
 
-Добавлен provider layer: `--execute --provider mock` заполняет артефакты детерминированно для тестов, а `--execute --provider openai` готовит opt-in OpenAI Responses API execution при наличии `OPENAI_API_KEY`.
+Добавлен provider layer: `--execute --provider mock` заполняет артефакты детерминированно для тестов. Opt-in provider adapters также подготовлены для OpenAI (`OPENAI_API_KEY`), Google Gemini (`GEMINI_API_KEY` или `GOOGLE_API_KEY`) и Anthropic Claude (`ANTHROPIC_API_KEY`).
 
 ## Этап 3. Одиночная проверка стилем
 
@@ -185,7 +185,7 @@ rws review article.md --style zalizniak-zametki
 
 Критерий готовности: один и тот же запуск можно повторить и получить сопоставимый JSON-отчет.
 
-Текущее состояние: добавлен offline-режим `rws review runs/<run-id> --style <style-id>`, `--styles a,b` и `--mvp`. Он создает prompt bundle для одного или нескольких style agents и стартовые `.review.json` со статусом `prompt_ready`. Следующий шаг - подключить provider adapter, который будет заполнять `findings`.
+Текущее состояние: добавлен режим `rws review runs/<run-id> --style <style-id>`, `--styles a,b` и `--mvp`. Без `--execute` он создает prompt bundle и стартовые `.review.json` со статусом `prompt_ready`; с `--execute` выбранный provider заполняет `summary` и `findings`.
 
 ## Этап 4. Параллельная проверка несколькими стилями
 
@@ -389,11 +389,11 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 ## Ближайшие задачи
 
 1. Заменить временный `tools/validate_project.py` полноценной YAML/JSON Schema validation.
-2. Проверить OpenAI provider adapter на реальном `OPENAI_API_KEY` и малом демонстрационном документе.
+2. Проверить OpenAI, Google и Anthropic provider adapters на реальных API keys и малом демонстрационном документе.
 3. Заменить ручную validation logic в `rws validate-run` полноценной JSON Schema validation.
-4. Добавить Gemini provider adapter.
-5. Добавить Claude provider adapter.
-6. Подготовить демонстрационный документ и пример запуска.
+4. Добавить diff-артефакт между `normalized.md` и `revised.md`.
+5. Добавить retry/backoff и явное логирование provider errors.
+6. Подготовить минимальный eval-набор для сравнения моделей и провайдеров.
 
 ## Определение готовности MVP
 
