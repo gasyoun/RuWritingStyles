@@ -46,6 +46,7 @@ REQUIRED_FILES = [
     "src/ruwritingstyles/diff.py",
     "src/ruwritingstyles/execution.py",
     "src/ruwritingstyles/export.py",
+    "src/ruwritingstyles/findings.py",
     "src/ruwritingstyles/provider_log.py",
     "src/ruwritingstyles/providers.py",
     "src/ruwritingstyles/report.py",

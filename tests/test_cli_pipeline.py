@@ -15,6 +15,7 @@ if str(SRC) not in sys.path:
 
 from ruwritingstyles.cli import main
 from ruwritingstyles.config import load_model_routes
+from ruwritingstyles.findings import load_finding_summaries, render_finding_summaries
 from ruwritingstyles.providers import _extract_anthropic_text, _extract_gemini_text, _is_retryable_status
 from ruwritingstyles.segment import normalize_document, segment_markdown
 
@@ -148,6 +149,10 @@ class CliPipelineTests(unittest.TestCase):
         provider_log_entry = json.loads(provider_log_lines[0])
         self.assertEqual(provider_log_entry["provider"], "mock")
         self.assertEqual(provider_log_entry["status"], "completed")
+        summaries = load_finding_summaries(self.executed_run_dir, span_id="p002")
+        self.assertEqual(len(summaries), 3)
+        self.assertIn("Mock provider placeholder finding", render_finding_summaries(summaries))
+        self.assertEqual(main(["findings", str(self.executed_run_dir), "--span", "p002"]), 0)
 
         revision = json.loads((self.executed_run_dir / "revision.json").read_text(encoding="utf-8"))
         self.assertEqual(revision["status"], "completed")

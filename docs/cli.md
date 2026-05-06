@@ -294,6 +294,15 @@ The verification prompt includes the original document, normalized document, rev
 
 When `--execute` is used, `verification.json` is updated with a verifier status, passed checks, and warnings.
 
+## Inspect findings
+
+```bash
+rws findings runs/cli-smoke-readme
+rws findings runs/cli-smoke-readme --span p002
+```
+
+This prints completed style findings grouped by `span_id`, with the segment excerpt, severity, style id, finding, suggestion, and confidence.
+
 ## Render a run report
 
 ```bash

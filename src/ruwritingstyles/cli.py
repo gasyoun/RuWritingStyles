@@ -16,6 +16,7 @@ from .execution import (
     execute_verification_artifact,
 )
 from .export import export_run_bundle
+from .findings import load_finding_summaries, render_finding_summaries
 from .providers import provider_from_name
 from .report import write_run_report
 from .review import create_review_bundle
@@ -132,6 +133,14 @@ def build_parser() -> argparse.ArgumentParser:
     verify.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
     _add_execute_args(verify)
     verify.set_defaults(func=cmd_verify)
+
+    findings = subparsers.add_parser(
+        "findings",
+        help="Show completed style findings grouped by span_id.",
+    )
+    findings.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    findings.add_argument("--span", help="Optional span_id filter, for example p002.")
+    findings.set_defaults(func=cmd_findings)
 
     diff = subparsers.add_parser(
         "diff",
@@ -448,6 +457,13 @@ def cmd_verify(args: argparse.Namespace) -> int:
         print(f"completed {bundle.verification_json.relative_to(repo_root)}")
     report_path = write_run_report(run_dir)
     print(f"updated {report_path.relative_to(repo_root)}")
+    return 0
+
+
+def cmd_findings(args: argparse.Namespace) -> int:
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    summaries = load_finding_summaries(run_dir, span_id=args.span)
+    print(render_finding_summaries(summaries))
     return 0
 
 
