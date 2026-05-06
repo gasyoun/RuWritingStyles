@@ -1,0 +1,134 @@
+version: "0.1"
+schema: "schemas/model-policy.schema.json"
+description: "Default model routing policy for RuWritingStyles agentic review workflows."
+
+default_provider: openai
+default_development_mode:
+  model: gpt-5.5
+  reasoning: xhigh
+  speed: standard
+  use_for:
+    - architecture
+    - protocols
+    - schemas
+    - first implementation PRs
+
+providers:
+  openai:
+    docs:
+      - https://developers.openai.com/api/docs/models
+      - https://developers.openai.com/api/docs/guides/latest-model
+      - https://developers.openai.com/api/docs/guides/agents
+    models:
+      flagship:
+        id: gpt-5.5
+        status: current
+        context_window: 1M
+        max_output: 128K
+      efficient:
+        id: gpt-5.4-mini
+        status: current
+        context_window: 400K
+        max_output: 128K
+    task_routes:
+      architecture:
+        model: gpt-5.5
+        reasoning: xhigh
+      implementation:
+        model: gpt-5.5
+        reasoning: high
+      style_review:
+        model: gpt-5.5
+        reasoning: medium
+      council:
+        model: gpt-5.5
+        reasoning: high
+      synthesis:
+        model: gpt-5.5
+        reasoning: high
+      verification:
+        model: gpt-5.5
+        reasoning: xhigh
+      routing:
+        model: gpt-5.4-mini
+        reasoning: low
+      smoke_tests:
+        model: gpt-5.4-mini
+        reasoning: low
+
+  google:
+    docs:
+      - https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview
+      - https://deepmind.google/models/model-cards/gemini-3-1-pro/
+    models:
+      flagship:
+        id: gemini-3.1-pro-preview
+        status: preview
+        context_window: 1048576
+        max_output: 65536
+      custom_tools:
+        id: gemini-3.1-pro-preview-customtools
+        status: preview
+        note: "Use for agentic workflows with bash and custom tools when provider evals justify it."
+    task_routes:
+      architecture:
+        model: gemini-3.1-pro-preview
+        thinking: high
+      implementation:
+        model: gemini-3.1-pro-preview-customtools
+        thinking: high
+      style_review:
+        model: gemini-3.1-pro-preview
+        thinking: medium
+      council:
+        model: gemini-3.1-pro-preview
+        thinking: high
+      synthesis:
+        model: gemini-3.1-pro-preview
+        thinking: high
+      verification:
+        model: gemini-3.1-pro-preview
+        thinking: high
+
+  anthropic:
+    docs:
+      - https://platform.claude.com/docs/en/about-claude/models/overview
+      - https://www.anthropic.com/claude/sonnet
+    models:
+      balanced:
+        id: claude-sonnet-4-6
+        status: current
+        context_window: 1M
+        max_output: 64K
+        thinking:
+          extended: true
+          adaptive: true
+      high_end_reference:
+        id: claude-opus-4-7
+        status: current
+        note: "Use as an optional comparison baseline for the hardest tasks; Sonnet 4.6 remains the requested roadmap target."
+    task_routes:
+      architecture:
+        model: claude-sonnet-4-6
+        thinking: adaptive
+      implementation:
+        model: claude-sonnet-4-6
+        thinking: extended
+      style_review:
+        model: claude-sonnet-4-6
+        thinking: adaptive
+      council:
+        model: claude-sonnet-4-6
+        thinking: extended
+      synthesis:
+        model: claude-sonnet-4-6
+        thinking: extended
+      verification:
+        model: claude-sonnet-4-6
+        thinking: extended
+
+policy_notes:
+  - "Start the MVP with one strong default model to avoid confusing model variance with architecture bugs."
+  - "Keep provider adapters interchangeable; do not bake one vendor's parameter names into the style protocol."
+  - "Use deterministic code for validation, grouping, and deduplication whenever possible."
+  - "Re-check provider documentation before production deployment because preview model IDs can change."

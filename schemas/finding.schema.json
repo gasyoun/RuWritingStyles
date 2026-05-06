@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/finding.schema.json",
+  "title": "RuWritingStyles style finding",
+  "type": "object",
+  "required": [
+    "id",
+    "style_id",
+    "span_id",
+    "severity",
+    "type",
+    "finding",
+    "suggestion",
+    "confidence"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^finding-[0-9]{3,}$"
+    },
+    "style_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "span_id": {
+      "type": "string",
+      "pattern": "^[a-z]+[0-9]{3,}$"
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["blocker", "major", "minor", "note"]
+    },
+    "type": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "finding": {
+      "type": "string",
+      "minLength": 1
+    },
+    "suggestion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    }
+  }
+}

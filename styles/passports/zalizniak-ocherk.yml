@@ -1,0 +1,39 @@
+id: zalizniak-ocherk
+name: Зализняк-очерк
+source_prompt: ClaudeStyles/zalizniak-ocherk-style.md
+role: systematic_grammar_reviewer
+language: ru
+
+best_for:
+  - грамматические определения
+  - классификации
+  - правила и исключения
+  - учебные и справочные объяснения
+
+checks:
+  - unclear_definition
+  - weak_classification
+  - missing_example
+  - overstrong_conclusion
+  - argument_order_problem
+
+limits:
+  - не предназначен для теплого культурного очерка
+  - не должен превращать спорный источниковедческий вопрос в сухую грамматическую схему
+  - не заменяет проверку рукописей, датировок и библиографии
+
+review_mode:
+  rewrite_allowed: false
+  requires_span_ids: true
+  output_format: findings_json
+
+council:
+  can_reply_to:
+    - clarity
+    - definition
+    - classification
+    - argument_structure
+  should_defer:
+    - manuscript_reading_without_source
+    - factual_bibliography
+    - cultural_context_without_linguistic_claim
