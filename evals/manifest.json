@@ -15,7 +15,19 @@
         "unsupported_etymology",
         "external_similarity_as_evidence",
         "missing_historical_forms"
-      ]
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "unsupported_etymology",
+          "external_similarity_as_evidence",
+          "missing_historical_forms"
+        ],
+        "min_required_matches": 1,
+        "allowed_verification_statuses": [
+          "passed",
+          "needs_human_review"
+        ]
+      }
     }
   ]
 }

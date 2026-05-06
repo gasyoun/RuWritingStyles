@@ -86,6 +86,8 @@ This executes the case through the current pipeline and writes `eval-result.json
 rws eval-run --case pseudo-etymology --provider openai --model gpt-5.5
 ```
 
+`eval-result.json` includes finding types, matched expected risks, verification status, and a minimal pass/fail scoring block from `evals/manifest.json`.
+
 ## Prepare a document
 
 ```bash

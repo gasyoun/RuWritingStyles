@@ -84,6 +84,8 @@ class EvalManifestTests(unittest.TestCase):
         self.assertEqual(cases[0].case_id, "pseudo-etymology")
         self.assertTrue(cases[0].input_path.exists())
         self.assertIn("zalizniak-zametki", cases[0].default_styles)
+        self.assertEqual(cases[0].min_required_matches, 1)
+        self.assertIn("unsupported_etymology", cases[0].required_finding_types)
         self.assertEqual(main(["eval-list"]), 0)
 
 
@@ -233,6 +235,8 @@ class CliPipelineTests(unittest.TestCase):
         self.assertEqual(result["case_id"], "pseudo-etymology")
         self.assertEqual(result["provider"], "mock")
         self.assertEqual(result["finding_count"], 3)
+        self.assertFalse(result["scoring"]["passed"])
+        self.assertEqual(result["scoring"]["required_match_count"], 0)
         self.assertTrue((self.eval_run_dir / "provider.log.jsonl").exists())
         self.assertEqual(main(["validate-run", str(self.eval_run_dir)]), 0)
 

@@ -174,6 +174,15 @@ def check_eval_manifest() -> None:
                 fail(f"eval case missing {key}")
         if not (ROOT / str(item["input"])).exists():
             fail(f"eval case {item['id']} references missing input {item['input']}")
+        scoring = item.get("scoring")
+        if not isinstance(scoring, dict):
+            fail(f"eval case {item['id']} missing scoring object")
+        if not isinstance(scoring.get("required_finding_types"), list):
+            fail(f"eval case {item['id']} scoring.required_finding_types must be a list")
+        if not isinstance(scoring.get("min_required_matches"), int):
+            fail(f"eval case {item['id']} scoring.min_required_matches must be an integer")
+        if not isinstance(scoring.get("allowed_verification_statuses"), list):
+            fail(f"eval case {item['id']} scoring.allowed_verification_statuses must be a list")
     ok("eval manifest cases resolve")
 
 

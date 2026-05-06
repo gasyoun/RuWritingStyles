@@ -108,6 +108,7 @@ def _eval_section(eval_result: dict[str, Any]) -> str:
         ("finding_count", str(eval_result.get("finding_count") or 0)),
         ("verification_status", str(eval_result.get("verification_status") or "")),
         ("matched_expected_risks", ", ".join(eval_result.get("matched_expected_risks") or [])),
+        ("scoring_passed", str((eval_result.get("scoring") or {}).get("passed", ""))),
     ]
     return "## Eval Result\n\n" + _table(("Field", "Value"), rows)
 
