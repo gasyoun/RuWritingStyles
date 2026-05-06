@@ -47,6 +47,12 @@ runs/demo-pseudo-etymology/
 rws validate-run runs/demo-pseudo-etymology
 ```
 
+To package the result:
+
+```bash
+rws export runs/demo-pseudo-etymology
+```
+
 The mock provider is deterministic and only proves that the pipeline works. Use a real provider for substantive findings:
 
 ```bash

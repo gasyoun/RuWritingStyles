@@ -14,6 +14,7 @@ from .execution import (
     execute_revision_artifact,
     execute_verification_artifact,
 )
+from .export import export_run_bundle
 from .providers import provider_from_name
 from .report import write_run_report
 from .review import create_review_bundle
@@ -125,6 +126,18 @@ def build_parser() -> argparse.ArgumentParser:
     )
     report.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
     report.set_defaults(func=cmd_report)
+
+    export = subparsers.add_parser(
+        "export",
+        help="Create a portable ZIP bundle from a run directory.",
+    )
+    export.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    export.add_argument(
+        "--output",
+        type=Path,
+        help="Optional output ZIP path. Defaults to runs/<run-id>/<run-id>-bundle.zip.",
+    )
+    export.set_defaults(func=cmd_export)
 
     validate_run = subparsers.add_parser(
         "validate-run",
@@ -404,6 +417,17 @@ def cmd_report(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_export(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    output_path = None
+    if args.output:
+        output_path = args.output if args.output.is_absolute() else (Path.cwd() / args.output)
+    bundle_path = export_run_bundle(run_dir, output_path)
+    print(f"created {_display_path(repo_root, bundle_path)}")
+    return 0
+
+
 def cmd_validate_run(args: argparse.Namespace) -> int:
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
     result = validate_run_dir(run_dir)
@@ -413,6 +437,13 @@ def cmd_validate_run(args: argparse.Namespace) -> int:
     for message in result.messages:
         print(f"FAIL {message}", file=sys.stderr)
     return 1
+
+
+def _display_path(repo_root: Path, path: Path) -> Path | str:
+    try:
+        return path.resolve().relative_to(repo_root.resolve())
+    except ValueError:
+        return str(path)
 
 
 def main(argv: list[str] | None = None) -> int:

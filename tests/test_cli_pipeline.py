@@ -5,6 +5,7 @@ from pathlib import Path
 import shutil
 import sys
 import unittest
+from zipfile import ZipFile
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -116,6 +117,14 @@ class CliPipelineTests(unittest.TestCase):
         self.assertIn("## Findings", report)
         self.assertIn("Mock provider placeholder finding", report)
         self.assertEqual(main(["report", str(self.executed_run_dir)]), 0)
+        self.assertEqual(main(["export", str(self.executed_run_dir)]), 0)
+        bundle_path = self.executed_run_dir / "unittest-readme-executed-bundle.zip"
+        self.assertTrue(bundle_path.exists())
+        with ZipFile(bundle_path) as archive:
+            names = set(archive.namelist())
+        self.assertIn("unittest-readme-executed/report.md", names)
+        self.assertIn("unittest-readme-executed/revised.md", names)
+        self.assertIn("unittest-readme-executed/bundle-manifest.json", names)
 
         self.assertEqual(main(["validate-run", str(self.executed_run_dir)]), 0)
 
