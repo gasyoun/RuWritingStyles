@@ -6,7 +6,7 @@ import argparse
 from pathlib import Path
 import sys
 
-from .config import load_manifest, load_model_policy, load_passport_summaries, repo_root_from
+from .config import load_manifest, load_model_policy, load_model_routes, load_passport_summaries, repo_root_from
 from .council import create_council_bundle
 from .diff import write_revision_diff
 from .execution import (
@@ -69,6 +69,18 @@ def build_parser() -> argparse.ArgumentParser:
         help="Show the loaded style manifest and default model policy summary.",
     )
     show_config.set_defaults(func=cmd_show_config)
+
+    model_routes = subparsers.add_parser(
+        "model-routes",
+        help="Show task-to-model routes from model_policy.yml.",
+    )
+    model_routes.add_argument(
+        "--provider",
+        choices=["openai", "google", "anthropic"],
+        help="Filter routes to one provider.",
+    )
+    model_routes.add_argument("--task", help="Filter routes to one task, for example style_review.")
+    model_routes.set_defaults(func=cmd_model_routes)
 
     list_styles = subparsers.add_parser(
         "list-styles",
@@ -299,6 +311,24 @@ def cmd_show_config(_: argparse.Namespace) -> int:
     print(f"- model: {model_policy.default_model}")
     print(f"- reasoning: {model_policy.default_reasoning}")
     print(f"- speed: {model_policy.default_speed}")
+    return 0
+
+
+def cmd_model_routes(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    routes = load_model_routes(repo_root)
+    if args.provider:
+        routes = tuple(route for route in routes if route.provider == args.provider)
+    if args.task:
+        routes = tuple(route for route in routes if route.task == args.task)
+    if not routes:
+        print("no model routes matched")
+        return 1
+
+    for route in routes:
+        print(f"{route.provider}.{route.task}")
+        print(f"  model: {route.model}")
+        print(f"  {route.mode_name}: {route.mode_value}")
     return 0
 
 
