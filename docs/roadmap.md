@@ -244,6 +244,8 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 - делать текст понятнее;
 - помечать места, где нужен человек.
 
+Текущее состояние: добавлен offline-режим `rws revise runs/<run-id>`, который собирает `normalized.md` и `council.json` в `revision.prompt.md` и стартовый `revision.json` со статусом `prompt_ready`.
+
 ## Этап 7. Проверяющий
 
 Цель: финальная версия сверяется с исходником и замечаниями.
@@ -380,7 +382,7 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 2. Подключить provider adapter для заполнения findings в `rws review`.
 3. Реализовать JSON Schema validation для style findings.
 4. Подключить provider adapter для заполнения `council.json`.
-5. Добавить `rws revise`.
+5. Подключить provider adapter для заполнения `revision.json` и `revised.md`.
 6. Добавить `rws verify`.
 7. Подготовить демонстрационный документ и пример запуска.
 

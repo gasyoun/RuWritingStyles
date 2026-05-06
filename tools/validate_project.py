@@ -31,11 +31,13 @@ REQUIRED_FILES = [
     "schemas/council.schema.json",
     "schemas/model-policy.schema.json",
     "schemas/review.schema.json",
+    "schemas/revision.schema.json",
     "src/ruwritingstyles/__init__.py",
     "src/ruwritingstyles/cli.py",
     "src/ruwritingstyles/config.py",
     "src/ruwritingstyles/council.py",
     "src/ruwritingstyles/review.py",
+    "src/ruwritingstyles/revision.py",
     "src/ruwritingstyles/runs.py",
     "src/ruwritingstyles/segment.py",
 ]
