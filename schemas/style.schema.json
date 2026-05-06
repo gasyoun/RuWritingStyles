@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/style.schema.json",
+  "title": "RuWritingStyles style passport",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "source_prompt",
+    "role",
+    "language",
+    "best_for",
+    "checks",
+    "limits",
+    "review_mode",
+    "council"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_prompt": {
+      "type": "string",
+      "pattern": "^ClaudeStyles/.+\\.md$"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "systematic_grammar_reviewer",
+        "polemical_linguistic_reviewer",
+        "source_critical_reviewer",
+        "clarity_reviewer",
+        "commentary_reviewer",
+        "cultural_context_reviewer"
+      ]
+    },
+    "language": {
+      "type": "string",
+      "enum": ["ru"]
+    },
+    "best_for": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9_]+$"
+      }
+    },
+    "limits": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "review_mode": {
+      "type": "object",
+      "required": ["rewrite_allowed", "requires_span_ids", "output_format"],
+      "additionalProperties": false,
+      "properties": {
+        "rewrite_allowed": { "type": "boolean" },
+        "requires_span_ids": { "type": "boolean" },
+        "output_format": {
+          "type": "string",
+          "enum": ["findings_json"]
+        }
+      }
+    },
+    "council": {
+      "type": "object",
+      "required": ["can_reply_to", "should_defer"],
+      "additionalProperties": false,
+      "properties": {
+        "can_reply_to": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          }
+        },
+        "should_defer": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          }
+        }
+      }
+    }
+  }
+}

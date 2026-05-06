@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/revision.schema.json",
+  "title": "RuWritingStyles revision artifact",
+  "type": "object",
+  "required": [
+    "run_id",
+    "status",
+    "prompt_path",
+    "source_document",
+    "council_file",
+    "revised_document_path",
+    "applied_changes",
+    "unresolved"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": ["prompt_ready", "completed"]
+    },
+    "prompt_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_document": {
+      "type": "string",
+      "minLength": 1
+    },
+    "council_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revised_document_path": {
+      "type": ["string", "null"]
+    },
+    "applied_changes": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "unresolved": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}
