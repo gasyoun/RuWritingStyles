@@ -12,6 +12,7 @@ from .review import create_review_bundle
 from .revision import create_revision_bundle
 from .runs import create_prepare_run
 from .segment import normalize_document, read_document, segment_markdown
+from .verification import create_verification_bundle
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -77,6 +78,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     revise.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
     revise.set_defaults(func=cmd_revise)
+
+    verify = subparsers.add_parser(
+        "verify",
+        help="Create an offline verification bundle from a revision artifact.",
+    )
+    verify.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    verify.set_defaults(func=cmd_verify)
 
     return parser
 
@@ -186,6 +194,15 @@ def cmd_revise(args: argparse.Namespace) -> int:
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
     bundle = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
     print(f"created {bundle.revision_json.relative_to(repo_root)}")
+    print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
+    return 0
+
+
+def cmd_verify(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    bundle = create_verification_bundle(repo_root=repo_root, run_dir=run_dir)
+    print(f"created {bundle.verification_json.relative_to(repo_root)}")
     print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
     return 0
 

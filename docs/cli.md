@@ -171,6 +171,24 @@ runs/cli-smoke-readme/
 
 The revision prompt includes `normalized.md` and `council.json`. The first implementation layer creates `status: prompt_ready`; a later provider adapter will produce the revised Markdown and applied-change list.
 
+## Create a verification bundle
+
+After a revision artifact exists:
+
+```bash
+rws verify runs/cli-smoke-readme
+```
+
+The command creates:
+
+```text
+runs/cli-smoke-readme/
+  verification.prompt.md
+  verification.json
+```
+
+The verification prompt includes the original document, normalized document, revision artifact, and revised document if one has already been produced. The first implementation layer creates `status: prompt_ready`; a later provider adapter will fill `passed` and `warnings`.
+
 ## Validate the repository
 
 ```bash

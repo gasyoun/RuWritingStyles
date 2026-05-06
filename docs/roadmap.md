@@ -277,6 +277,8 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 }
 ```
 
+Текущее состояние: добавлен offline-режим `rws verify runs/<run-id>`, который собирает исходник, нормализованный документ и `revision.json` в `verification.prompt.md` и стартовый `verification.json` со статусом `prompt_ready`.
+
 ## Этап 8. Интерфейс
 
 После CLI можно добавить простой веб-интерфейс:
@@ -383,7 +385,7 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 3. Реализовать JSON Schema validation для style findings.
 4. Подключить provider adapter для заполнения `council.json`.
 5. Подключить provider adapter для заполнения `revision.json` и `revised.md`.
-6. Добавить `rws verify`.
+6. Подключить provider adapter для заполнения `verification.json`.
 7. Подготовить демонстрационный документ и пример запуска.
 
 ## Определение готовности MVP
