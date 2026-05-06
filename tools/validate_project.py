@@ -45,6 +45,7 @@ REQUIRED_FILES = [
     "src/ruwritingstyles/council.py",
     "src/ruwritingstyles/execution.py",
     "src/ruwritingstyles/providers.py",
+    "src/ruwritingstyles/report.py",
     "src/ruwritingstyles/review.py",
     "src/ruwritingstyles/revision.py",
     "src/ruwritingstyles/runs.py",

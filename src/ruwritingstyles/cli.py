@@ -15,6 +15,7 @@ from .execution import (
     execute_verification_artifact,
 )
 from .providers import provider_from_name
+from .report import write_run_report
 from .review import create_review_bundle
 from .revision import create_revision_bundle
 from .runs import create_prepare_run
@@ -117,6 +118,13 @@ def build_parser() -> argparse.ArgumentParser:
     verify.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
     _add_execute_args(verify)
     verify.set_defaults(func=cmd_verify)
+
+    report = subparsers.add_parser(
+        "report",
+        help="Render or refresh the Markdown report for a run directory.",
+    )
+    report.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    report.set_defaults(func=cmd_report)
 
     validate_run = subparsers.add_parser(
         "validate-run",
@@ -246,6 +254,8 @@ def cmd_run(args: argparse.Namespace) -> int:
             model=args.model,
         )
         print(f"completed {verification.verification_json.relative_to(repo_root)}")
+    report_path = write_run_report(run_dir)
+    print(f"updated {report_path.relative_to(repo_root)}")
     return 0
 
 
@@ -309,6 +319,8 @@ def cmd_review(args: argparse.Namespace) -> int:
                 model=args.model,
             )
             print(f"completed {bundle.review_json.relative_to(repo_root)}")
+    report_path = write_run_report(run_dir)
+    print(f"updated {report_path.relative_to(repo_root)}")
     return 0
 
 
@@ -341,6 +353,8 @@ def cmd_council(args: argparse.Namespace) -> int:
             model=args.model,
         )
         print(f"completed {bundle.council_json.relative_to(repo_root)}")
+    report_path = write_run_report(run_dir)
+    print(f"updated {report_path.relative_to(repo_root)}")
     return 0
 
 
@@ -358,6 +372,8 @@ def cmd_revise(args: argparse.Namespace) -> int:
             model=args.model,
         )
         print(f"completed {bundle.revision_json.relative_to(repo_root)}")
+    report_path = write_run_report(run_dir)
+    print(f"updated {report_path.relative_to(repo_root)}")
     return 0
 
 
@@ -375,6 +391,16 @@ def cmd_verify(args: argparse.Namespace) -> int:
             model=args.model,
         )
         print(f"completed {bundle.verification_json.relative_to(repo_root)}")
+    report_path = write_run_report(run_dir)
+    print(f"updated {report_path.relative_to(repo_root)}")
+    return 0
+
+
+def cmd_report(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    report_path = write_run_report(run_dir)
+    print(f"updated {report_path.relative_to(repo_root)}")
     return 0
 
 
