@@ -1,0 +1,21 @@
+{
+  "version": "0.1",
+  "description": "Minimal RuWritingStyles evaluation set for comparing providers and model routes.",
+  "cases": [
+    {
+      "id": "pseudo-etymology",
+      "input": "examples/input/pseudo-etymology.md",
+      "purpose": "Check whether style reviewers flag an unsupported etymological hypothesis and preserve cautious wording.",
+      "default_styles": [
+        "zalizniak-ocherk",
+        "zalizniak-zametki",
+        "tronsky-readings"
+      ],
+      "expected_risks": [
+        "unsupported_etymology",
+        "external_similarity_as_evidence",
+        "missing_historical_forms"
+      ]
+    }
+  ]
+}

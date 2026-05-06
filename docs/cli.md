@@ -66,6 +66,14 @@ rws list-styles --mvp
 
 MVP styles are marked with `*`.
 
+## List Eval Cases
+
+```bash
+rws eval-list
+```
+
+This reads `evals/manifest.json` and prints the current comparison cases, their input documents, default styles, and expected risks.
+
 ## Prepare a document
 
 ```bash

@@ -15,6 +15,7 @@ if str(SRC) not in sys.path:
 
 from ruwritingstyles.cli import main
 from ruwritingstyles.config import load_model_routes
+from ruwritingstyles.evals import load_eval_cases
 from ruwritingstyles.findings import load_finding_summaries, render_finding_summaries
 from ruwritingstyles.providers import _extract_anthropic_text, _extract_gemini_text, _is_retryable_status
 from ruwritingstyles.segment import normalize_document, segment_markdown
@@ -75,6 +76,15 @@ class ModelPolicyTests(unittest.TestCase):
         self.assertEqual(route.mode_name, "reasoning")
         self.assertEqual(route.mode_value, "medium")
         self.assertEqual(main(["model-routes", "--provider", "openai", "--task", "style_review"]), 0)
+
+
+class EvalManifestTests(unittest.TestCase):
+    def test_eval_manifest_loads_demo_case(self) -> None:
+        cases = load_eval_cases(ROOT)
+        self.assertEqual(cases[0].case_id, "pseudo-etymology")
+        self.assertTrue(cases[0].input_path.exists())
+        self.assertIn("zalizniak-zametki", cases[0].default_styles)
+        self.assertEqual(main(["eval-list"]), 0)
 
 
 class CliPipelineTests(unittest.TestCase):
