@@ -32,6 +32,7 @@ REQUIRED_FILES = [
     "schemas/model-policy.schema.json",
     "schemas/review.schema.json",
     "schemas/revision.schema.json",
+    "schemas/verification.schema.json",
     "src/ruwritingstyles/__init__.py",
     "src/ruwritingstyles/cli.py",
     "src/ruwritingstyles/config.py",
@@ -40,6 +41,7 @@ REQUIRED_FILES = [
     "src/ruwritingstyles/revision.py",
     "src/ruwritingstyles/runs.py",
     "src/ruwritingstyles/segment.py",
+    "src/ruwritingstyles/verification.py",
 ]
 
 
