@@ -24,6 +24,7 @@ from ruwritingstyles.providers import (
     _is_retryable_status,
     _retry_delay_from_headers,
 )
+from ruwritingstyles.schema_validation import validate_json_schema
 from ruwritingstyles.segment import normalize_document, segment_markdown
 
 
@@ -110,6 +111,30 @@ class ModelPolicyTests(unittest.TestCase):
         self.assertEqual(route.mode_name, "reasoning")
         self.assertEqual(route.mode_value, "medium")
         self.assertEqual(main(["model-routes", "--provider", "openai", "--task", "style_review"]), 0)
+
+
+class SchemaValidationTests(unittest.TestCase):
+    def test_schema_validator_reports_required_and_nested_errors(self) -> None:
+        schema = {
+            "type": "object",
+            "required": ["name", "items"],
+            "additionalProperties": False,
+            "properties": {
+                "name": {"type": "string", "minLength": 1},
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "required": ["score"],
+                        "properties": {"score": {"type": "number", "minimum": 0, "maximum": 1}},
+                    },
+                },
+            },
+        }
+        messages = validate_json_schema({"name": "", "items": [{"score": 2}], "extra": True}, schema)
+        self.assertIn("$.extra: additional property is not allowed", messages)
+        self.assertIn("$.name: length must be at least 1", messages)
+        self.assertIn("$.items[0].score: must be <= 1", messages)
 
 
 class EvalManifestTests(unittest.TestCase):

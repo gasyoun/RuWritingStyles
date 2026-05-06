@@ -390,9 +390,9 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 
 ## Ближайшие задачи
 
-1. Заменить временный `tools/validate_project.py` полноценной YAML/JSON Schema validation.
+1. Расширить `tools/validate_project.py` до полноценной YAML/JSON Schema validation для `model_policy.yml`, manifest и паспортов стилей.
 2. Проверить OpenAI, Google и Anthropic provider adapters на реальных API keys и малом демонстрационном документе.
-3. Заменить ручную validation logic в `rws validate-run` полноценной JSON Schema validation.
+3. Расширить встроенный JSON Schema subset validator в `rws validate-run` или заменить его зависимостью `jsonschema` после стабилизации форматов.
 4. Расширить scoring rules: запрет hallucinated facts, минимальная сохранность смысла, сравнение diff magnitude.
 5. Улучшить HTML summary: добавить side-by-side diff, фильтры по стилям и severity, компактный режим для длинных документов.
 6. Протестировать provider-specific retry/backoff на реальных API keys и добавить telemetry по числу повторов.

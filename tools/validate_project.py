@@ -56,6 +56,7 @@ REQUIRED_FILES = [
     "src/ruwritingstyles/review.py",
     "src/ruwritingstyles/revision.py",
     "src/ruwritingstyles/runs.py",
+    "src/ruwritingstyles/schema_validation.py",
     "src/ruwritingstyles/segment.py",
     "src/ruwritingstyles/validation.py",
     "src/ruwritingstyles/verification.py",
