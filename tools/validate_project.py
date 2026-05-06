@@ -25,6 +25,7 @@ REQUIRED_FILES = [
     "docs/style-contract.md",
     "docs/provider-roadmaps.md",
     "docs/quickstart.md",
+    "evals/manifest.json",
     "model_policy.yml",
     "examples/input/pseudo-etymology.md",
     "styles/manifest.yml",
@@ -44,6 +45,7 @@ REQUIRED_FILES = [
     "src/ruwritingstyles/config.py",
     "src/ruwritingstyles/council.py",
     "src/ruwritingstyles/diff.py",
+    "src/ruwritingstyles/evals.py",
     "src/ruwritingstyles/execution.py",
     "src/ruwritingstyles/export.py",
     "src/ruwritingstyles/findings.py",
@@ -159,12 +161,29 @@ def check_pyproject() -> None:
     ok("pyproject exposes rws CLI")
 
 
+def check_eval_manifest() -> None:
+    manifest = json.loads(read_text(ROOT / "evals" / "manifest.json"))
+    cases = manifest.get("cases")
+    if not isinstance(cases, list) or not cases:
+        fail("evals/manifest.json must contain at least one case")
+    for item in cases:
+        if not isinstance(item, dict):
+            fail("eval case must be an object")
+        for key in ["id", "input", "purpose", "default_styles", "expected_risks"]:
+            if key not in item:
+                fail(f"eval case missing {key}")
+        if not (ROOT / str(item["input"])).exists():
+            fail(f"eval case {item['id']} references missing input {item['input']}")
+    ok("eval manifest cases resolve")
+
+
 def main() -> int:
     check_required_files()
     check_json_schemas()
     check_style_paths()
     check_model_policy()
     check_pyproject()
+    check_eval_manifest()
     ok("repository validation passed")
     return 0
 

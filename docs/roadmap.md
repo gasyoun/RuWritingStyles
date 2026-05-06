@@ -391,7 +391,7 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 1. Заменить временный `tools/validate_project.py` полноценной YAML/JSON Schema validation.
 2. Проверить OpenAI, Google и Anthropic provider adapters на реальных API keys и малом демонстрационном документе.
 3. Заменить ручную validation logic в `rws validate-run` полноценной JSON Schema validation.
-4. Подготовить минимальный eval-набор для сравнения моделей и провайдеров.
+4. Добавить eval runner, который прогоняет `evals/manifest.json` на выбранном provider и сохраняет сравнимые метрики.
 5. Добавить HTML summary для просмотра находок по `span_id`.
 6. Проверить и расширить retry/backoff на provider-specific rate-limit headers.
 

@@ -9,6 +9,7 @@ import sys
 from .config import load_manifest, load_model_policy, load_model_routes, load_passport_summaries, repo_root_from
 from .council import create_council_bundle
 from .diff import write_revision_diff
+from .evals import load_eval_cases
 from .execution import (
     execute_council_artifact,
     execute_review_artifact,
@@ -93,6 +94,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Show only the MVP styles used by the first review prototype.",
     )
     list_styles.set_defaults(func=cmd_list_styles)
+
+    eval_list = subparsers.add_parser(
+        "eval-list",
+        help="List evaluation cases from evals/manifest.json.",
+    )
+    eval_list.set_defaults(func=cmd_eval_list)
 
     review = subparsers.add_parser(
         "review",
@@ -355,6 +362,17 @@ def cmd_list_styles(args: argparse.Namespace) -> int:
         print(f"  role: {summary.role}")
         print(f"  prompt: {summary.source_prompt.relative_to(repo_root)}")
         print(f"  passport: {summary.passport_path.relative_to(repo_root)}")
+    return 0
+
+
+def cmd_eval_list(_: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    for case in load_eval_cases(repo_root):
+        print(case.case_id)
+        print(f"  input: {case.input_path.relative_to(repo_root)}")
+        print(f"  purpose: {case.purpose}")
+        print(f"  styles: {', '.join(case.default_styles)}")
+        print(f"  risks: {', '.join(case.expected_risks)}")
     return 0
 
 
