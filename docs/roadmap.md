@@ -300,6 +300,8 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 
 Интерфейс не должен появляться раньше воспроизводимого CLI, иначе проект быстро станет красивой оболочкой без надежного ядра.
 
+Текущее состояние: до полноценного веб-интерфейса добавлен переносимый `summary.html`. Его можно создать командой `rws html-report runs/<run-id>` или получить автоматически через `rws run`, `rws report` и `rws export`. Он показывает метрики запуска, находки по `span_id`, решения совета, статус редакции, verifier warnings, eval scoring и provider log.
+
 ## Приоритеты стилей для первого MVP
 
 Для первого агентного прототипа достаточно трех стилей:
@@ -392,7 +394,7 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 2. Проверить OpenAI, Google и Anthropic provider adapters на реальных API keys и малом демонстрационном документе.
 3. Заменить ручную validation logic в `rws validate-run` полноценной JSON Schema validation.
 4. Расширить scoring rules: запрет hallucinated facts, минимальная сохранность смысла, сравнение diff magnitude.
-5. Добавить HTML summary для просмотра находок по `span_id`.
+5. Улучшить HTML summary: добавить side-by-side diff, фильтры по стилям и severity, компактный режим для длинных документов.
 6. Проверить и расширить retry/backoff на provider-specific rate-limit headers.
 
 ## Определение готовности MVP
