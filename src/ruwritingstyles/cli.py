@@ -8,6 +8,7 @@ import sys
 
 from .config import load_manifest, load_model_policy, load_passport_summaries, repo_root_from
 from .council import create_council_bundle
+from .diff import write_revision_diff
 from .execution import (
     execute_council_artifact,
     execute_review_artifact,
@@ -119,6 +120,13 @@ def build_parser() -> argparse.ArgumentParser:
     verify.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
     _add_execute_args(verify)
     verify.set_defaults(func=cmd_verify)
+
+    diff = subparsers.add_parser(
+        "diff",
+        help="Write a unified diff between normalized.md and revised.md for a run.",
+    )
+    diff.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    diff.set_defaults(func=cmd_diff)
 
     report = subparsers.add_parser(
         "report",
@@ -257,6 +265,8 @@ def cmd_run(args: argparse.Namespace) -> int:
             model=args.model,
         )
         print(f"completed {revision.revision_json.relative_to(repo_root)}")
+        diff_path = write_revision_diff(run_dir)
+        print(f"updated {diff_path.relative_to(repo_root)}")
     verification = create_verification_bundle(repo_root=repo_root, run_dir=run_dir)
     print(f"created {verification.verification_json.relative_to(repo_root)}")
     if args.execute:
@@ -385,6 +395,8 @@ def cmd_revise(args: argparse.Namespace) -> int:
             model=args.model,
         )
         print(f"completed {bundle.revision_json.relative_to(repo_root)}")
+        diff_path = write_revision_diff(run_dir)
+        print(f"updated {diff_path.relative_to(repo_root)}")
     report_path = write_run_report(run_dir)
     print(f"updated {report_path.relative_to(repo_root)}")
     return 0
@@ -414,6 +426,14 @@ def cmd_report(args: argparse.Namespace) -> int:
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
     report_path = write_run_report(run_dir)
     print(f"updated {report_path.relative_to(repo_root)}")
+    return 0
+
+
+def cmd_diff(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    diff_path = write_revision_diff(run_dir)
+    print(f"updated {diff_path.relative_to(repo_root)}")
     return 0
 
 

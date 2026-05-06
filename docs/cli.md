@@ -136,6 +136,7 @@ runs/<run-id>/report.md
 ```
 
 The report summarizes segment counts, style review status, findings, council decisions, revision status, and verifier warnings.
+When `--execute` produces `revised.md`, `run` also writes `revision.diff`.
 
 To package the completed run:
 
@@ -289,13 +290,21 @@ rws report runs/cli-smoke-readme
 
 This refreshes `runs/cli-smoke-readme/report.md` from the JSON artifacts already present in the run directory. It is useful after manual edits or after executing only part of the pipeline.
 
+## Create a revision diff
+
+```bash
+rws diff runs/cli-smoke-readme
+```
+
+This writes `runs/cli-smoke-readme/revision.diff` as a unified diff from `normalized.md` to `revised.md`.
+
 ## Export a run bundle
 
 ```bash
 rws export runs/cli-smoke-readme
 ```
 
-The bundle includes `report.md`, source and normalized documents, JSON artifacts, prompts, `revised.md` when present, and `bundle-manifest.json`.
+The bundle includes `report.md`, source and normalized documents, JSON artifacts, prompts, `revised.md` and `revision.diff` when present, and `bundle-manifest.json`.
 
 Use `--output` to choose a different ZIP path:
 

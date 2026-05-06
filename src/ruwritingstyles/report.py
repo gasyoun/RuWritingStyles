@@ -35,7 +35,7 @@ def render_run_report(run_dir: Path) -> str:
         _review_section(reviews),
         _findings_section(reviews),
         _council_section(council),
-        _revision_section(revision),
+        _revision_section(run_dir, revision),
         _verification_section(verification),
     ]
     return "\n\n".join(section for section in sections if section.strip()) + "\n"
@@ -134,7 +134,7 @@ def _council_section(council: dict[str, Any]) -> str:
     return f"## Council\n\nStatus: `{_status(council)}`\n\n" + _table(("Finding", "Decision", "Reason"), rows)
 
 
-def _revision_section(revision: dict[str, Any]) -> str:
+def _revision_section(run_dir: Path, revision: dict[str, Any]) -> str:
     if not revision:
         return "## Revision\n\nNo revision artifact yet."
 
@@ -143,6 +143,7 @@ def _revision_section(revision: dict[str, Any]) -> str:
         "",
         f"- Status: `{_status(revision)}`",
         f"- Revised document: `{revision.get('revised_document_path') or 'not written'}`",
+        f"- Diff: `{_diff_path(run_dir, revision)}`",
         f"- Applied changes: {len(_list(revision.get('applied_changes')))}",
         f"- Unresolved items: {len(_list(revision.get('unresolved')))}",
     ]
@@ -177,6 +178,13 @@ def _load_json(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {}
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _diff_path(run_dir: Path, revision: dict[str, Any]) -> str:
+    revised = revision.get("revised_document_path")
+    if isinstance(revised, str) and revised and (run_dir / "revision.diff").exists():
+        return "revision.diff"
+    return "not written"
 
 
 def _run_id(run_dir: Path, *docs: dict[str, Any]) -> str:
