@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 
 from .config import load_manifest, load_model_policy, load_passport_summaries, repo_root_from
+from .council import create_council_bundle
 from .review import create_review_bundle
 from .runs import create_prepare_run
 from .segment import normalize_document, read_document, segment_markdown
@@ -61,6 +62,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Create review bundles for the MVP styles from styles/manifest.yml.",
     )
     review.set_defaults(func=cmd_review)
+
+    council = subparsers.add_parser(
+        "council",
+        help="Create an offline council bundle from prepared style reviews.",
+    )
+    council.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    council.set_defaults(func=cmd_council)
 
     return parser
 
@@ -153,6 +161,15 @@ def cmd_review(args: argparse.Namespace) -> int:
         )
         print(f"created {bundle.review_json.relative_to(repo_root)}")
         print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
+    return 0
+
+
+def cmd_council(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    bundle = create_council_bundle(repo_root=repo_root, run_dir=run_dir)
+    print(f"created {bundle.council_json.relative_to(repo_root)}")
+    print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
     return 0
 
 
