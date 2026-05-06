@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 
 from .config import load_manifest, load_model_policy, load_passport_summaries, repo_root_from
+from .review import create_review_bundle
 from .runs import create_prepare_run
 from .segment import normalize_document, read_document, segment_markdown
 
@@ -45,6 +46,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Show only the MVP styles used by the first review prototype.",
     )
     list_styles.set_defaults(func=cmd_list_styles)
+
+    review = subparsers.add_parser(
+        "review",
+        help="Create an offline review bundle for one style and a prepared run directory.",
+    )
+    review.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    review.add_argument("--style", required=True, help="Style id from `rws list-styles`.")
+    review.set_defaults(func=cmd_review)
 
     return parser
 
@@ -110,6 +119,21 @@ def cmd_list_styles(args: argparse.Namespace) -> int:
         print(f"  role: {summary.role}")
         print(f"  prompt: {summary.source_prompt.relative_to(repo_root)}")
         print(f"  passport: {summary.passport_path.relative_to(repo_root)}")
+    return 0
+
+
+def cmd_review(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    manifest = load_manifest(repo_root)
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    bundle = create_review_bundle(
+        repo_root=repo_root,
+        run_dir=run_dir,
+        style_id=args.style,
+        manifest=manifest,
+    )
+    print(f"created {bundle.review_json.relative_to(repo_root)}")
+    print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
     return 0
 
 
