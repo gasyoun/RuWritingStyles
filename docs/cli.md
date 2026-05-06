@@ -102,6 +102,20 @@ rws run README.md --styles zalizniak-ocherk,zalizniak-zametki
 
 The command creates the same `runs/<run-id>/` directory as `prepare`, then adds review, council, revision, and verification artifacts.
 
+To execute all generated prompts with the deterministic mock provider:
+
+```bash
+rws run README.md --run-id cli-smoke-readme --execute --provider mock
+```
+
+To execute with OpenAI, set `OPENAI_API_KEY` and choose `openai`:
+
+```bash
+rws run README.md --execute --provider openai --model gpt-5.5
+```
+
+OpenAI execution uses the Responses API with Structured Outputs. It is opt-in so local tests never require secrets or network access.
+
 ## Segment format
 
 `segments.json` contains stable `span_id` values:
@@ -124,6 +138,12 @@ The first `review` implementation is offline. It creates a prompt bundle for one
 
 ```bash
 rws review runs/cli-smoke-readme --style zalizniak-zametki
+```
+
+To execute the generated review prompt immediately:
+
+```bash
+rws review runs/cli-smoke-readme --style zalizniak-zametki --execute --provider mock
 ```
 
 For several styles:
@@ -156,12 +176,20 @@ The prompt includes:
 
 The `.review.json` file starts with `status: prompt_ready` and an empty `findings` array. A later provider adapter will replace this with completed findings.
 
+When `--execute` is used, `.review.json` is updated to `status: completed` and receives a `summary` and `findings`.
+
 ## Create a council bundle
 
 After review bundles exist:
 
 ```bash
 rws council runs/cli-smoke-readme
+```
+
+To execute the council prompt:
+
+```bash
+rws council runs/cli-smoke-readme --execute --provider mock
 ```
 
 The command creates:
@@ -182,6 +210,12 @@ After a council artifact exists:
 rws revise runs/cli-smoke-readme
 ```
 
+To execute the revision prompt:
+
+```bash
+rws revise runs/cli-smoke-readme --execute --provider mock
+```
+
 The command creates:
 
 ```text
@@ -192,12 +226,20 @@ runs/cli-smoke-readme/
 
 The revision prompt includes `normalized.md` and `council.json`. The first implementation layer creates `status: prompt_ready`; a later provider adapter will produce the revised Markdown and applied-change list.
 
+When `--execute` is used, `revised.md` is written and `revision.json` is updated.
+
 ## Create a verification bundle
 
 After a revision artifact exists:
 
 ```bash
 rws verify runs/cli-smoke-readme
+```
+
+To execute the verification prompt:
+
+```bash
+rws verify runs/cli-smoke-readme --execute --provider mock
 ```
 
 The command creates:
@@ -209,6 +251,8 @@ runs/cli-smoke-readme/
 ```
 
 The verification prompt includes the original document, normalized document, revision artifact, and revised document if one has already been produced. The first implementation layer creates `status: prompt_ready`; a later provider adapter will fill `passed` and `warnings`.
+
+When `--execute` is used, `verification.json` is updated with a verifier status, passed checks, and warnings.
 
 ## Validate a run
 

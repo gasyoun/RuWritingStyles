@@ -39,10 +39,13 @@ Second paragraph.
 
 class CliPipelineTests(unittest.TestCase):
     run_dir = ROOT / "runs" / "unittest-readme"
+    executed_run_dir = ROOT / "runs" / "unittest-readme-executed"
 
     def tearDown(self) -> None:
         if self.run_dir.exists():
             shutil.rmtree(self.run_dir)
+        if self.executed_run_dir.exists():
+            shutil.rmtree(self.executed_run_dir)
 
     def test_full_offline_run_creates_expected_artifacts(self) -> None:
         if self.run_dir.exists():
@@ -69,6 +72,44 @@ class CliPipelineTests(unittest.TestCase):
         self.assertEqual(verification["status"], "prompt_ready")
 
         self.assertEqual(main(["validate-run", str(self.run_dir)]), 0)
+
+    def test_full_mock_executed_run_updates_artifacts(self) -> None:
+        if self.executed_run_dir.exists():
+            shutil.rmtree(self.executed_run_dir)
+
+        exit_code = main(
+            [
+                "run",
+                "README.md",
+                "--run-id",
+                "unittest-readme-executed",
+                "--execute",
+                "--provider",
+                "mock",
+            ]
+        )
+        self.assertEqual(exit_code, 0)
+
+        reviews = sorted((self.executed_run_dir / "reviews").glob("*.review.json"))
+        self.assertEqual(len(reviews), 3)
+        for path in reviews:
+            review = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(review["status"], "completed")
+            self.assertEqual(len(review["findings"]), 1)
+            self.assertEqual(review["findings"][0]["span_id"], "p002")
+
+        council = json.loads((self.executed_run_dir / "council.json").read_text(encoding="utf-8"))
+        self.assertEqual(council["status"], "completed")
+        self.assertEqual(len(council["decisions"]), 3)
+
+        revision = json.loads((self.executed_run_dir / "revision.json").read_text(encoding="utf-8"))
+        self.assertEqual(revision["status"], "completed")
+        self.assertTrue((self.executed_run_dir / "revised.md").exists())
+
+        verification = json.loads((self.executed_run_dir / "verification.json").read_text(encoding="utf-8"))
+        self.assertEqual(verification["status"], "needs_human_review")
+
+        self.assertEqual(main(["validate-run", str(self.executed_run_dir)]), 0)
 
 
 if __name__ == "__main__":

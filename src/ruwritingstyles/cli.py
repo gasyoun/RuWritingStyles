@@ -8,6 +8,13 @@ import sys
 
 from .config import load_manifest, load_model_policy, load_passport_summaries, repo_root_from
 from .council import create_council_bundle
+from .execution import (
+    execute_council_artifact,
+    execute_review_artifact,
+    execute_revision_artifact,
+    execute_verification_artifact,
+)
+from .providers import provider_from_name
 from .review import create_review_bundle
 from .revision import create_revision_bundle
 from .runs import create_prepare_run
@@ -51,6 +58,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Use the MVP styles from styles/manifest.yml. This is the default.",
     )
+    _add_execute_args(run)
     run.set_defaults(func=cmd_run)
 
     show_config = subparsers.add_parser(
@@ -83,6 +91,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Create review bundles for the MVP styles from styles/manifest.yml.",
     )
+    _add_execute_args(review)
     review.set_defaults(func=cmd_review)
 
     council = subparsers.add_parser(
@@ -90,6 +99,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Create an offline council bundle from prepared style reviews.",
     )
     council.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    _add_execute_args(council)
     council.set_defaults(func=cmd_council)
 
     revise = subparsers.add_parser(
@@ -97,6 +107,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Create an offline revision bundle from a council artifact.",
     )
     revise.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    _add_execute_args(revise)
     revise.set_defaults(func=cmd_revise)
 
     verify = subparsers.add_parser(
@@ -104,6 +115,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Create an offline verification bundle from a revision artifact.",
     )
     verify.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    _add_execute_args(verify)
     verify.set_defaults(func=cmd_verify)
 
     validate_run = subparsers.add_parser(
@@ -114,6 +126,24 @@ def build_parser() -> argparse.ArgumentParser:
     validate_run.set_defaults(func=cmd_validate_run)
 
     return parser
+
+
+def _add_execute_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--execute",
+        action="store_true",
+        help="Execute generated prompts with a provider and update artifacts.",
+    )
+    parser.add_argument(
+        "--provider",
+        default="mock",
+        choices=["mock", "openai"],
+        help="Provider used with --execute. Defaults to deterministic mock.",
+    )
+    parser.add_argument(
+        "--model",
+        help="Optional provider-specific model override.",
+    )
 
 
 def cmd_prepare(args: argparse.Namespace) -> int:
@@ -177,13 +207,45 @@ def cmd_run(args: argparse.Namespace) -> int:
             manifest=manifest,
         )
         print(f"created {bundle.review_json.relative_to(repo_root)}")
+        if args.execute:
+            execute_review_artifact(
+                repo_root=repo_root,
+                review_path=bundle.review_json,
+                provider=provider_from_name(args.provider),
+                model=args.model,
+            )
+            print(f"completed {bundle.review_json.relative_to(repo_root)}")
 
     council = create_council_bundle(repo_root=repo_root, run_dir=run_dir)
     print(f"created {council.council_json.relative_to(repo_root)}")
+    if args.execute:
+        execute_council_artifact(
+            repo_root=repo_root,
+            council_path=council.council_json,
+            provider=provider_from_name(args.provider),
+            model=args.model,
+        )
+        print(f"completed {council.council_json.relative_to(repo_root)}")
     revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
     print(f"created {revision.revision_json.relative_to(repo_root)}")
+    if args.execute:
+        execute_revision_artifact(
+            repo_root=repo_root,
+            revision_path=revision.revision_json,
+            provider=provider_from_name(args.provider),
+            model=args.model,
+        )
+        print(f"completed {revision.revision_json.relative_to(repo_root)}")
     verification = create_verification_bundle(repo_root=repo_root, run_dir=run_dir)
     print(f"created {verification.verification_json.relative_to(repo_root)}")
+    if args.execute:
+        execute_verification_artifact(
+            repo_root=repo_root,
+            verification_path=verification.verification_json,
+            provider=provider_from_name(args.provider),
+            model=args.model,
+        )
+        print(f"completed {verification.verification_json.relative_to(repo_root)}")
     return 0
 
 
@@ -239,6 +301,14 @@ def cmd_review(args: argparse.Namespace) -> int:
         )
         print(f"created {bundle.review_json.relative_to(repo_root)}")
         print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
+        if args.execute:
+            execute_review_artifact(
+                repo_root=repo_root,
+                review_path=bundle.review_json,
+                provider=provider_from_name(args.provider),
+                model=args.model,
+            )
+            print(f"completed {bundle.review_json.relative_to(repo_root)}")
     return 0
 
 
@@ -263,6 +333,14 @@ def cmd_council(args: argparse.Namespace) -> int:
     bundle = create_council_bundle(repo_root=repo_root, run_dir=run_dir)
     print(f"created {bundle.council_json.relative_to(repo_root)}")
     print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
+    if args.execute:
+        execute_council_artifact(
+            repo_root=repo_root,
+            council_path=bundle.council_json,
+            provider=provider_from_name(args.provider),
+            model=args.model,
+        )
+        print(f"completed {bundle.council_json.relative_to(repo_root)}")
     return 0
 
 
@@ -272,6 +350,14 @@ def cmd_revise(args: argparse.Namespace) -> int:
     bundle = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
     print(f"created {bundle.revision_json.relative_to(repo_root)}")
     print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
+    if args.execute:
+        execute_revision_artifact(
+            repo_root=repo_root,
+            revision_path=bundle.revision_json,
+            provider=provider_from_name(args.provider),
+            model=args.model,
+        )
+        print(f"completed {bundle.revision_json.relative_to(repo_root)}")
     return 0
 
 
@@ -281,6 +367,14 @@ def cmd_verify(args: argparse.Namespace) -> int:
     bundle = create_verification_bundle(repo_root=repo_root, run_dir=run_dir)
     print(f"created {bundle.verification_json.relative_to(repo_root)}")
     print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
+    if args.execute:
+        execute_verification_artifact(
+            repo_root=repo_root,
+            verification_path=bundle.verification_json,
+            provider=provider_from_name(args.provider),
+            model=args.model,
+        )
+        print(f"completed {bundle.verification_json.relative_to(repo_root)}")
     return 0
 
 

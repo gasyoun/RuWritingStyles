@@ -153,6 +153,8 @@ limits:
 
 Для проверки артефактов добавлен `rws validate-run runs/<run-id>`. Он проверяет наличие файлов, JSON-структуру и привязку findings к существующим `span_id`.
 
+Добавлен provider layer: `--execute --provider mock` заполняет артефакты детерминированно для тестов, а `--execute --provider openai` готовит opt-in OpenAI Responses API execution при наличии `OPENAI_API_KEY`.
+
 ## Этап 3. Одиночная проверка стилем
 
 Цель: один стиль проверяет документ и выдает структурированные замечания, а не свободный пересказ.
@@ -387,12 +389,11 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 ## Ближайшие задачи
 
 1. Заменить временный `tools/validate_project.py` полноценной YAML/JSON Schema validation.
-2. Подключить provider adapter для заполнения findings в `rws review`.
+2. Проверить OpenAI provider adapter на реальном `OPENAI_API_KEY` и малом демонстрационном документе.
 3. Заменить ручную validation logic в `rws validate-run` полноценной JSON Schema validation.
-4. Подключить provider adapter для заполнения `council.json`.
-5. Подключить provider adapter для заполнения `revision.json` и `revised.md`.
-6. Подключить provider adapter для заполнения `verification.json`.
-7. Подготовить демонстрационный документ и пример запуска.
+4. Добавить Gemini provider adapter.
+5. Добавить Claude provider adapter.
+6. Подготовить демонстрационный документ и пример запуска.
 
 ## Определение готовности MVP
 

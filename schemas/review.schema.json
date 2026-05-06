@@ -38,6 +38,9 @@
       "type": "integer",
       "minimum": 0
     },
+    "summary": {
+      "type": "string"
+    },
     "findings": {
       "type": "array",
       "items": {
