@@ -151,6 +151,8 @@ limits:
 
 Текущий smoke test для этого слоя находится в `tests/test_cli_pipeline.py` и запускается стандартным `python -m unittest discover -s tests`.
 
+Для проверки артефактов добавлен `rws validate-run runs/<run-id>`. Он проверяет наличие файлов, JSON-структуру и привязку findings к существующим `span_id`.
+
 ## Этап 3. Одиночная проверка стилем
 
 Цель: один стиль проверяет документ и выдает структурированные замечания, а не свободный пересказ.
@@ -386,7 +388,7 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 
 1. Заменить временный `tools/validate_project.py` полноценной YAML/JSON Schema validation.
 2. Подключить provider adapter для заполнения findings в `rws review`.
-3. Реализовать JSON Schema validation для style findings.
+3. Заменить ручную validation logic в `rws validate-run` полноценной JSON Schema validation.
 4. Подключить provider adapter для заполнения `council.json`.
 5. Подключить provider adapter для заполнения `revision.json` и `revised.md`.
 6. Подключить provider adapter для заполнения `verification.json`.

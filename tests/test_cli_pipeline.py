@@ -68,6 +68,8 @@ class CliPipelineTests(unittest.TestCase):
         verification = json.loads((self.run_dir / "verification.json").read_text(encoding="utf-8"))
         self.assertEqual(verification["status"], "prompt_ready")
 
+        self.assertEqual(main(["validate-run", str(self.run_dir)]), 0)
+
 
 if __name__ == "__main__":
     unittest.main()
