@@ -12,6 +12,7 @@ from .review import create_review_bundle
 from .revision import create_revision_bundle
 from .runs import create_prepare_run
 from .segment import normalize_document, read_document, segment_markdown
+from .validation import validate_run_dir
 from .verification import create_verification_bundle
 
 
@@ -104,6 +105,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     verify.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
     verify.set_defaults(func=cmd_verify)
+
+    validate_run = subparsers.add_parser(
+        "validate-run",
+        help="Validate run artifacts and completed style findings.",
+    )
+    validate_run.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    validate_run.set_defaults(func=cmd_validate_run)
 
     return parser
 
@@ -274,6 +282,17 @@ def cmd_verify(args: argparse.Namespace) -> int:
     print(f"created {bundle.verification_json.relative_to(repo_root)}")
     print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
     return 0
+
+
+def cmd_validate_run(args: argparse.Namespace) -> int:
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    result = validate_run_dir(run_dir)
+    if result.ok:
+        print("OK run artifacts valid")
+        return 0
+    for message in result.messages:
+        print(f"FAIL {message}", file=sys.stderr)
+    return 1
 
 
 def main(argv: list[str] | None = None) -> int:

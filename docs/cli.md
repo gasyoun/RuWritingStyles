@@ -210,6 +210,14 @@ runs/cli-smoke-readme/
 
 The verification prompt includes the original document, normalized document, revision artifact, and revised document if one has already been produced. The first implementation layer creates `status: prompt_ready`; a later provider adapter will fill `passed` and `warnings`.
 
+## Validate a run
+
+```bash
+rws validate-run runs/cli-smoke-readme
+```
+
+The command checks that run artifacts exist, parse as JSON where needed, and that any completed style findings point to known `span_id` values.
+
 ## Validate the repository
 
 ```bash

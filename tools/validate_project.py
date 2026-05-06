@@ -41,6 +41,7 @@ REQUIRED_FILES = [
     "src/ruwritingstyles/revision.py",
     "src/ruwritingstyles/runs.py",
     "src/ruwritingstyles/segment.py",
+    "src/ruwritingstyles/validation.py",
     "src/ruwritingstyles/verification.py",
     "tests/test_cli_pipeline.py",
 ]
