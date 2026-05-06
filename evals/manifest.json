@@ -26,7 +26,9 @@
         "allowed_verification_statuses": [
           "passed",
           "needs_human_review"
-        ]
+        ],
+        "max_changed_line_ratio": 0.75,
+        "max_char_delta_ratio": 0.5
       }
     }
   ]

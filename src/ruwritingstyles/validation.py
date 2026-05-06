@@ -165,6 +165,18 @@ def _validate_eval_result(path: Path, messages: list[str]) -> None:
     for key in ["case_id", "run_id", "provider", "model", "finding_count", "verification_status"]:
         if key not in data:
             messages.append(f"eval-result.json missing {key}")
+    diff_metrics = data.get("diff_metrics")
+    if not isinstance(diff_metrics, dict):
+        messages.append("eval-result.json missing diff_metrics")
+    else:
+        for key in ["changed_line_ratio", "char_delta_ratio", "word_delta_ratio"]:
+            if not isinstance(diff_metrics.get(key), (int, float)):
+                messages.append(f"eval-result.json diff_metrics missing numeric {key}")
+    scoring = data.get("scoring")
+    if not isinstance(scoring, dict):
+        messages.append("eval-result.json missing scoring")
+    elif "diff_within_limits" not in scoring:
+        messages.append("eval-result.json scoring missing diff_within_limits")
 
 
 def _validate_with_schema(

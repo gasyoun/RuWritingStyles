@@ -145,6 +145,8 @@ class EvalManifestTests(unittest.TestCase):
         self.assertIn("zalizniak-zametki", cases[0].default_styles)
         self.assertEqual(cases[0].min_required_matches, 1)
         self.assertIn("unsupported_etymology", cases[0].required_finding_types)
+        self.assertEqual(cases[0].max_changed_line_ratio, 0.75)
+        self.assertEqual(cases[0].max_char_delta_ratio, 0.5)
         self.assertEqual(main(["eval-list"]), 0)
 
 
@@ -304,6 +306,9 @@ class CliPipelineTests(unittest.TestCase):
         self.assertEqual(result["finding_count"], 3)
         self.assertFalse(result["scoring"]["passed"])
         self.assertEqual(result["scoring"]["required_match_count"], 0)
+        self.assertTrue(result["scoring"]["diff_within_limits"])
+        self.assertEqual(result["diff_metrics"]["changed_line_ratio"], 0)
+        self.assertEqual(result["diff_metrics"]["char_delta_ratio"], 0)
         self.assertTrue((self.eval_run_dir / "provider.log.jsonl").exists())
         self.assertEqual(main(["validate-run", str(self.eval_run_dir)]), 0)
 

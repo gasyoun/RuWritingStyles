@@ -185,6 +185,9 @@ def check_eval_manifest() -> None:
             fail(f"eval case {item['id']} scoring.min_required_matches must be an integer")
         if not isinstance(scoring.get("allowed_verification_statuses"), list):
             fail(f"eval case {item['id']} scoring.allowed_verification_statuses must be a list")
+        for key in ["max_changed_line_ratio", "max_char_delta_ratio"]:
+            if not isinstance(scoring.get(key), (int, float)):
+                fail(f"eval case {item['id']} scoring.{key} must be a number")
     ok("eval manifest cases resolve")
 
 
