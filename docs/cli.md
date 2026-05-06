@@ -138,6 +138,8 @@ Provider environment variables:
 - `google`: `GEMINI_API_KEY` or `GOOGLE_API_KEY`, optional `RWS_GOOGLE_MODEL`.
 - `anthropic`: `ANTHROPIC_API_KEY`, optional `RWS_ANTHROPIC_MODEL`, optional `RWS_ANTHROPIC_MAX_TOKENS`.
 
+Transient provider failures are retried with exponential backoff. Configure this with `RWS_PROVIDER_MAX_ATTEMPTS` and `RWS_PROVIDER_RETRY_SECONDS`.
+
 Each `run` refreshes:
 
 ```text
@@ -146,6 +148,7 @@ runs/<run-id>/report.md
 
 The report summarizes segment counts, style review status, findings, council decisions, revision status, and verifier warnings.
 When `--execute` produces `revised.md`, `run` also writes `revision.diff`.
+Provider executions are appended to `provider.log.jsonl` without API keys or request bodies.
 
 To package the completed run:
 
@@ -313,7 +316,7 @@ This writes `runs/cli-smoke-readme/revision.diff` as a unified diff from `normal
 rws export runs/cli-smoke-readme
 ```
 
-The bundle includes `report.md`, source and normalized documents, JSON artifacts, prompts, `revised.md` and `revision.diff` when present, and `bundle-manifest.json`.
+The bundle includes `report.md`, `provider.log.jsonl`, source and normalized documents, JSON artifacts, prompts, `revised.md` and `revision.diff` when present, and `bundle-manifest.json`.
 
 Use `--output` to choose a different ZIP path:
 

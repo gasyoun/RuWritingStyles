@@ -15,7 +15,7 @@ if str(SRC) not in sys.path:
 
 from ruwritingstyles.cli import main
 from ruwritingstyles.config import load_model_routes
-from ruwritingstyles.providers import _extract_anthropic_text, _extract_gemini_text
+from ruwritingstyles.providers import _extract_anthropic_text, _extract_gemini_text, _is_retryable_status
 from ruwritingstyles.segment import normalize_document, segment_markdown
 
 
@@ -62,6 +62,8 @@ class ProviderParsingTests(unittest.TestCase):
         }
         self.assertEqual(_extract_gemini_text(gemini), '{"ok": true}')
         self.assertEqual(_extract_anthropic_text(anthropic), '{"ok": true}')
+        self.assertTrue(_is_retryable_status(429))
+        self.assertFalse(_is_retryable_status(400))
 
 
 class ModelPolicyTests(unittest.TestCase):
@@ -141,6 +143,11 @@ class CliPipelineTests(unittest.TestCase):
         council = json.loads((self.executed_run_dir / "council.json").read_text(encoding="utf-8"))
         self.assertEqual(council["status"], "completed")
         self.assertEqual(len(council["decisions"]), 3)
+        provider_log_lines = (self.executed_run_dir / "provider.log.jsonl").read_text(encoding="utf-8").splitlines()
+        self.assertEqual(len(provider_log_lines), 6)
+        provider_log_entry = json.loads(provider_log_lines[0])
+        self.assertEqual(provider_log_entry["provider"], "mock")
+        self.assertEqual(provider_log_entry["status"], "completed")
 
         revision = json.loads((self.executed_run_dir / "revision.json").read_text(encoding="utf-8"))
         self.assertEqual(revision["status"], "completed")
@@ -154,6 +161,7 @@ class CliPipelineTests(unittest.TestCase):
         report = (self.executed_run_dir / "report.md").read_text(encoding="utf-8")
         self.assertIn("## Findings", report)
         self.assertIn("Mock provider placeholder finding", report)
+        self.assertIn("## Provider Log", report)
         self.assertEqual(main(["report", str(self.executed_run_dir)]), 0)
         self.assertEqual(main(["export", str(self.executed_run_dir)]), 0)
         bundle_path = self.executed_run_dir / "unittest-readme-executed-bundle.zip"
@@ -161,6 +169,7 @@ class CliPipelineTests(unittest.TestCase):
         with ZipFile(bundle_path) as archive:
             names = set(archive.namelist())
         self.assertIn("unittest-readme-executed/report.md", names)
+        self.assertIn("unittest-readme-executed/provider.log.jsonl", names)
         self.assertIn("unittest-readme-executed/revised.md", names)
         self.assertIn("unittest-readme-executed/revision.diff", names)
         self.assertIn("unittest-readme-executed/bundle-manifest.json", names)

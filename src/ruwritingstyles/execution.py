@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from time import perf_counter
 from typing import Any
 
+from .provider_log import append_provider_log
 from .providers import BaseProvider, ProviderRequest, load_schema
 
 
@@ -13,8 +15,12 @@ def execute_review_artifact(*, repo_root: Path, review_path: Path, provider: Bas
     review = _load_json(review_path)
     prompt_path = repo_root / str(review["prompt_path"])
     segments = _load_json(review_path.parents[1] / "segments.json")
-    output = provider.generate_json(
-        ProviderRequest(
+    output = _generate_with_log(
+        repo_root=repo_root,
+        run_dir=review_path.parents[1],
+        artifact_path=review_path,
+        provider=provider,
+        provider_request=ProviderRequest(
             task="review",
             prompt=prompt_path.read_text(encoding="utf-8"),
             schema=load_schema(repo_root, "schemas/review-output.schema.json"),
@@ -24,7 +30,7 @@ def execute_review_artifact(*, repo_root: Path, review_path: Path, provider: Bas
                 "first_paragraph_span_id": _first_paragraph_span_id(segments),
             },
             model=model,
-        )
+        ),
     )
     review["status"] = "completed"
     review["summary"] = output.get("summary", "")
@@ -41,8 +47,12 @@ def execute_council_artifact(*, repo_root: Path, council_path: Path, provider: B
         for finding in review.get("findings", []):
             if isinstance(finding, dict) and finding.get("id"):
                 finding_ids.append(str(finding["id"]))
-    output = provider.generate_json(
-        ProviderRequest(
+    output = _generate_with_log(
+        repo_root=repo_root,
+        run_dir=council_path.parent,
+        artifact_path=council_path,
+        provider=provider,
+        provider_request=ProviderRequest(
             task="council",
             prompt=prompt_path.read_text(encoding="utf-8"),
             schema=load_schema(repo_root, "schemas/council-output.schema.json"),
@@ -51,7 +61,7 @@ def execute_council_artifact(*, repo_root: Path, council_path: Path, provider: B
                 "finding_ids": finding_ids,
             },
             model=model,
-        )
+        ),
     )
     council["status"] = "completed"
     council["replies"] = output.get("replies", [])
@@ -64,8 +74,12 @@ def execute_revision_artifact(*, repo_root: Path, revision_path: Path, provider:
     prompt_path = repo_root / str(revision["prompt_path"])
     source_path = repo_root / str(revision["source_document"])
     normalized_text = source_path.read_text(encoding="utf-8")
-    output = provider.generate_json(
-        ProviderRequest(
+    output = _generate_with_log(
+        repo_root=repo_root,
+        run_dir=revision_path.parent,
+        artifact_path=revision_path,
+        provider=provider,
+        provider_request=ProviderRequest(
             task="revision",
             prompt=prompt_path.read_text(encoding="utf-8"),
             schema=load_schema(repo_root, "schemas/revision-output.schema.json"),
@@ -74,7 +88,7 @@ def execute_revision_artifact(*, repo_root: Path, revision_path: Path, provider:
                 "normalized_text": normalized_text,
             },
             model=model,
-        )
+        ),
     )
     revised_path = revision_path.parent / "revised.md"
     revised_path.write_text(str(output.get("revised_document", normalized_text)), encoding="utf-8")
@@ -88,8 +102,12 @@ def execute_revision_artifact(*, repo_root: Path, revision_path: Path, provider:
 def execute_verification_artifact(*, repo_root: Path, verification_path: Path, provider: BaseProvider, model: str | None = None) -> None:
     verification = _load_json(verification_path)
     prompt_path = repo_root / str(verification["prompt_path"])
-    output = provider.generate_json(
-        ProviderRequest(
+    output = _generate_with_log(
+        repo_root=repo_root,
+        run_dir=verification_path.parent,
+        artifact_path=verification_path,
+        provider=provider,
+        provider_request=ProviderRequest(
             task="verification",
             prompt=prompt_path.read_text(encoding="utf-8"),
             schema=load_schema(repo_root, "schemas/verification-output.schema.json"),
@@ -97,7 +115,7 @@ def execute_verification_artifact(*, repo_root: Path, verification_path: Path, p
                 "run_id": verification["run_id"],
             },
             model=model,
-        )
+        ),
     )
     verification["status"] = output.get("status", "needs_human_review")
     verification["passed"] = output.get("passed", [])
@@ -111,6 +129,47 @@ def _load_json(path: Path) -> dict[str, Any]:
 
 def _write_json(path: Path, data: dict[str, Any]) -> None:
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def _generate_with_log(
+    *,
+    repo_root: Path,
+    run_dir: Path,
+    artifact_path: Path,
+    provider: BaseProvider,
+    provider_request: ProviderRequest,
+) -> dict[str, Any]:
+    start = perf_counter()
+    model = provider.effective_model(provider_request)
+    try:
+        output = provider.generate_json(provider_request)
+    except Exception as exc:
+        append_provider_log(
+            run_dir=run_dir,
+            task=provider_request.task,
+            provider=provider.name,
+            model=model,
+            artifact_path=_repo_relative(repo_root, artifact_path),
+            status="error",
+            duration_ms=_elapsed_ms(start),
+            error=str(exc),
+        )
+        raise
+
+    append_provider_log(
+        run_dir=run_dir,
+        task=provider_request.task,
+        provider=provider.name,
+        model=model,
+        artifact_path=_repo_relative(repo_root, artifact_path),
+        status="completed",
+        duration_ms=_elapsed_ms(start),
+    )
+    return output
+
+
+def _elapsed_ms(start: float) -> int:
+    return max(0, round((perf_counter() - start) * 1000))
 
 
 def _first_paragraph_span_id(segments_doc: dict[str, Any]) -> str:

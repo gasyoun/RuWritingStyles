@@ -41,6 +41,7 @@ def validate_run_dir(run_dir: Path) -> ValidationResult:
         data = _load_json(run_dir / artifact, messages)
         if isinstance(data, dict):
             _validate_common_status(data, messages, artifact)
+    _validate_provider_log(run_dir / "provider.log.jsonl", messages)
 
     return ValidationResult(ok=not messages, messages=tuple(messages))
 
@@ -117,3 +118,29 @@ def _validate_common_status(data: dict[str, Any], messages: list[str], artifact:
         messages.append(f"{artifact} missing status")
     if "run_id" not in data:
         messages.append(f"{artifact} missing run_id")
+
+
+def _validate_provider_log(path: Path, messages: list[str]) -> None:
+    if not path.exists():
+        return
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError as exc:
+        messages.append(f"could not read provider.log.jsonl: {exc}")
+        return
+    for index, line in enumerate(lines, start=1):
+        if not line.strip():
+            continue
+        try:
+            entry = json.loads(line)
+        except json.JSONDecodeError as exc:
+            messages.append(f"provider.log.jsonl line {index} invalid JSON: {exc}")
+            continue
+        if not isinstance(entry, dict):
+            messages.append(f"provider.log.jsonl line {index} must be an object")
+            continue
+        for key in ["timestamp", "task", "provider", "model", "artifact", "status", "duration_ms"]:
+            if key not in entry:
+                messages.append(f"provider.log.jsonl line {index} missing {key}")
+        if entry.get("status") not in {"completed", "error"}:
+            messages.append(f"provider.log.jsonl line {index} has invalid status {entry.get('status')!r}")
