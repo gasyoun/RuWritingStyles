@@ -366,6 +366,7 @@
 - [`docs/cli.md`](docs/cli.md) описывает первый CLI-слой: загрузку конфигурации, подготовку документа и `segments.json`.
 - [`model_policy.yml`](model_policy.yml) задает стартовую маршрутизацию моделей по задачам.
 - [`styles/manifest.yml`](styles/manifest.yml) и [`styles/passports/`](styles/passports/) начинают машинно-читаемый слой стилей.
+- [`.github/workflows/ci.yml`](.github/workflows/ci.yml) запускает базовые проверки проекта на GitHub Actions.
 
 ## Быстрая формула
 
