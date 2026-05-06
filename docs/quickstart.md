@@ -38,6 +38,7 @@ runs/demo-pseudo-etymology/
   council.json
   revision.json
   revised.md
+  revision.diff
   verification.json
 ```
 

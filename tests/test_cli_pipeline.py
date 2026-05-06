@@ -134,6 +134,8 @@ class CliPipelineTests(unittest.TestCase):
         revision = json.loads((self.executed_run_dir / "revision.json").read_text(encoding="utf-8"))
         self.assertEqual(revision["status"], "completed")
         self.assertTrue((self.executed_run_dir / "revised.md").exists())
+        self.assertTrue((self.executed_run_dir / "revision.diff").exists())
+        self.assertEqual(main(["diff", str(self.executed_run_dir)]), 0)
 
         verification = json.loads((self.executed_run_dir / "verification.json").read_text(encoding="utf-8"))
         self.assertEqual(verification["status"], "needs_human_review")
@@ -149,6 +151,7 @@ class CliPipelineTests(unittest.TestCase):
             names = set(archive.namelist())
         self.assertIn("unittest-readme-executed/report.md", names)
         self.assertIn("unittest-readme-executed/revised.md", names)
+        self.assertIn("unittest-readme-executed/revision.diff", names)
         self.assertIn("unittest-readme-executed/bundle-manifest.json", names)
 
         self.assertEqual(main(["validate-run", str(self.executed_run_dir)]), 0)
