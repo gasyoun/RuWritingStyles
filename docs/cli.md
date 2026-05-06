@@ -223,3 +223,15 @@ The validator currently checks:
 - style manifest and passport paths resolve;
 - `model_policy.yml` contains the required providers and model IDs;
 - `pyproject.toml` exposes the `rws` CLI.
+
+## Run tests
+
+```bash
+python -m unittest discover -s tests
+```
+
+The current tests cover Markdown segmentation and the full offline pipeline:
+
+```text
+rws run README.md --run-id unittest-readme
+```
