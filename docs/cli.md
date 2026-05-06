@@ -97,6 +97,32 @@ runs/<run-id>/
 
 These IDs are the future anchor points for style findings, council replies, synthesis changes, and verifier warnings.
 
+## Create a review bundle
+
+The first `review` implementation is offline. It creates a prompt bundle for one style agent but does not call an LLM provider yet.
+
+```bash
+rws review runs/cli-smoke-readme --style zalizniak-zametki
+```
+
+The command creates:
+
+```text
+runs/cli-smoke-readme/reviews/
+  zalizniak-zametki.prompt.md
+  zalizniak-zametki.review.json
+```
+
+The prompt includes:
+
+- the style passport;
+- the full style instruction from `ClaudeStyles/`;
+- `segments.json`;
+- the normalized document;
+- the required JSON output shape for future style findings.
+
+The `.review.json` file starts with `status: prompt_ready` and an empty `findings` array. A later provider adapter will replace this with completed findings.
+
 ## Validate the repository
 
 ```bash

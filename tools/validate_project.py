@@ -29,9 +29,11 @@ REQUIRED_FILES = [
     "schemas/style.schema.json",
     "schemas/finding.schema.json",
     "schemas/model-policy.schema.json",
+    "schemas/review.schema.json",
     "src/ruwritingstyles/__init__.py",
     "src/ruwritingstyles/cli.py",
     "src/ruwritingstyles/config.py",
+    "src/ruwritingstyles/review.py",
     "src/ruwritingstyles/runs.py",
     "src/ruwritingstyles/segment.py",
 ]

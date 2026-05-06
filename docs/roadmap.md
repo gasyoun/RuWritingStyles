@@ -177,6 +177,8 @@ rws review article.md --style zalizniak-zametki
 
 Критерий готовности: один и тот же запуск можно повторить и получить сопоставимый JSON-отчет.
 
+Текущее состояние: добавлен offline-режим `rws review runs/<run-id> --style <style-id>`, который создает prompt bundle для одного style agent и стартовый `.review.json` со статусом `prompt_ready`. Следующий шаг - подключить provider adapter, который будет заполнять `findings`.
+
 ## Этап 4. Параллельная проверка несколькими стилями
 
 Цель: документ проверяется сразу несколькими стилями, а результаты складываются в общую доску.
@@ -373,7 +375,7 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 ## Ближайшие задачи
 
 1. Заменить временный `tools/validate_project.py` полноценной YAML/JSON Schema validation.
-2. Реализовать `rws review` для одного стиля.
+2. Подключить provider adapter для заполнения findings в `rws review`.
 3. Реализовать JSON Schema validation для style findings.
 4. Реализовать `rws review` для нескольких стилей.
 5. Добавить `rws council`.
