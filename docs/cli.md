@@ -135,6 +135,24 @@ The prompt includes:
 
 The `.review.json` file starts with `status: prompt_ready` and an empty `findings` array. A later provider adapter will replace this with completed findings.
 
+## Create a council bundle
+
+After review bundles exist:
+
+```bash
+rws council runs/cli-smoke-readme
+```
+
+The command creates:
+
+```text
+runs/cli-smoke-readme/
+  council.prompt.md
+  council.json
+```
+
+The council prompt includes all `reviews/*.review.json` files and `segments.json`. The first implementation layer creates `status: prompt_ready`; a later provider adapter will fill `replies` and `decisions`.
+
 ## Validate the repository
 
 ```bash

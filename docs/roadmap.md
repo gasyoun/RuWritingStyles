@@ -222,6 +222,8 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 
 Критерий готовности: итоговый `council.json` показывает, какие правки согласованы, какие спорны и какие требуют человека.
 
+Текущее состояние: добавлен offline-режим `rws council runs/<run-id>`, который собирает `reviews/*.review.json` и `segments.json` в `council.prompt.md` и стартовый `council.json` со статусом `prompt_ready`.
+
 ## Этап 6. Синтезатор редакции
 
 Цель: отдельный редактор применяет согласованные улучшения к исходному документу.
@@ -377,7 +379,7 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 1. Заменить временный `tools/validate_project.py` полноценной YAML/JSON Schema validation.
 2. Подключить provider adapter для заполнения findings в `rws review`.
 3. Реализовать JSON Schema validation для style findings.
-4. Добавить `rws council`.
+4. Подключить provider adapter для заполнения `council.json`.
 5. Добавить `rws revise`.
 6. Добавить `rws verify`.
 7. Подготовить демонстрационный документ и пример запуска.
