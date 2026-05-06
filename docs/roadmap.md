@@ -392,7 +392,7 @@ rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readin
 2. Проверить OpenAI, Google и Anthropic provider adapters на реальных API keys и малом демонстрационном документе.
 3. Заменить ручную validation logic в `rws validate-run` полноценной JSON Schema validation.
 4. Подготовить минимальный eval-набор для сравнения моделей и провайдеров.
-5. Добавить полноценный HTML/CLI summary для просмотра находок по `span_id`.
+5. Добавить HTML summary для просмотра находок по `span_id`.
 6. Проверить и расширить retry/backoff на provider-specific rate-limit headers.
 
 ## Определение готовности MVP
