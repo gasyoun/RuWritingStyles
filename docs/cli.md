@@ -124,6 +124,14 @@ runs/<run-id>/report.md
 
 The report summarizes segment counts, style review status, findings, council decisions, revision status, and verifier warnings.
 
+To package the completed run:
+
+```bash
+rws export runs/cli-smoke-readme
+```
+
+This creates `runs/cli-smoke-readme/cli-smoke-readme-bundle.zip`.
+
 ## Segment format
 
 `segments.json` contains stable `span_id` values:
@@ -268,6 +276,20 @@ rws report runs/cli-smoke-readme
 
 This refreshes `runs/cli-smoke-readme/report.md` from the JSON artifacts already present in the run directory. It is useful after manual edits or after executing only part of the pipeline.
 
+## Export a run bundle
+
+```bash
+rws export runs/cli-smoke-readme
+```
+
+The bundle includes `report.md`, source and normalized documents, JSON artifacts, prompts, `revised.md` when present, and `bundle-manifest.json`.
+
+Use `--output` to choose a different ZIP path:
+
+```bash
+rws export runs/cli-smoke-readme --output exports/cli-smoke-readme.zip
+```
+
 ## Validate a run
 
 ```bash
@@ -298,7 +320,7 @@ python tools/validate_project.py
 python -m unittest discover -s tests
 ```
 
-The current tests cover Markdown segmentation, the full offline pipeline, mock provider execution, run reports, and the demo input document:
+The current tests cover Markdown segmentation, the full offline pipeline, mock provider execution, run reports, run export bundles, and the demo input document:
 
 ```text
 rws run README.md --run-id unittest-readme
