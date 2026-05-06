@@ -1,0 +1,84 @@
+version: "0.1"
+schema: "../schemas/style.schema.json"
+description: "Machine-readable index of RuWritingStyles style passports."
+
+mvp_style_ids:
+  - zalizniak-ocherk
+  - zalizniak-zametki
+  - tronsky-readings
+
+passports:
+  - id: albedil-sbornik
+    path: styles/passports/albedil-sbornik.yml
+    source_prompt: ClaudeStyles/albedil-sbornik-style.md
+  - id: kazanskiy-korpus
+    path: styles/passports/kazanskiy-korpus.yml
+    source_prompt: ClaudeStyles/kazanskiy-korpus-style.md
+  - id: lidova-commentary
+    path: styles/passports/lidova-commentary.yml
+    source_prompt: ClaudeStyles/lidova-commentary-style.md
+  - id: tronsky-readings
+    path: styles/passports/tronsky-readings.yml
+    source_prompt: ClaudeStyles/tronsky-readings-style.md
+  - id: zalizniak-enklitiki
+    path: styles/passports/zalizniak-enklitiki.yml
+    source_prompt: ClaudeStyles/zalizniak-enklitiki-style.md
+  - id: zalizniak-imennoe
+    path: styles/passports/zalizniak-imennoe.yml
+    source_prompt: ClaudeStyles/zalizniak-imennoe-style.md
+  - id: zalizniak-ocherk
+    path: styles/passports/zalizniak-ocherk.yml
+    source_prompt: ClaudeStyles/zalizniak-ocherk-style.md
+  - id: zalizniak-shkolnikov-1
+    path: styles/passports/zalizniak-shkolnikov-1.yml
+    source_prompt: ClaudeStyles/zalizniak-shkolnikov_1-style.md
+  - id: zalizniak-slovo
+    path: styles/passports/zalizniak-slovo.yml
+    source_prompt: ClaudeStyles/zalizniak-slovo-style.md
+  - id: zalizniak-udarenie
+    path: styles/passports/zalizniak-udarenie.yml
+    source_prompt: ClaudeStyles/zalizniak-udarenie-style.md
+  - id: zalizniak-zametki
+    path: styles/passports/zalizniak-zametki.yml
+    source_prompt: ClaudeStyles/zalizniak-zametki-style.md
+  - id: zaliznyak-novgorod
+    path: styles/passports/zaliznyak-novgorod.yml
+    source_prompt: ClaudeStyles/zaliznyak-novgorod-style.md
+
+available_style_sources:
+  - id: albedil-sbornik
+    name: Albedil-Sbornik
+    source_prompt: ClaudeStyles/albedil-sbornik-style.md
+  - id: kazanskiy-korpus
+    name: Казанский
+    source_prompt: ClaudeStyles/kazanskiy-korpus-style.md
+  - id: lidova-commentary
+    name: Лидова
+    source_prompt: ClaudeStyles/lidova-commentary-style.md
+  - id: tronsky-readings
+    name: Tronsky-Readings
+    source_prompt: ClaudeStyles/tronsky-readings-style.md
+  - id: zalizniak-enklitiki
+    name: Зализняк-энклитики
+    source_prompt: ClaudeStyles/zalizniak-enklitiki-style.md
+  - id: zalizniak-imennoe
+    name: Зализняк-именное
+    source_prompt: ClaudeStyles/zalizniak-imennoe-style.md
+  - id: zalizniak-ocherk
+    name: Зализняк-очерк
+    source_prompt: ClaudeStyles/zalizniak-ocherk-style.md
+  - id: zalizniak-shkolnikov-1
+    name: Зализняк-школьников_1
+    source_prompt: ClaudeStyles/zalizniak-shkolnikov_1-style.md
+  - id: zalizniak-slovo
+    name: Зализняк-слово
+    source_prompt: ClaudeStyles/zalizniak-slovo-style.md
+  - id: zalizniak-udarenie
+    name: Зализняк-ударение
+    source_prompt: ClaudeStyles/zalizniak-udarenie-style.md
+  - id: zalizniak-zametki
+    name: Зализняк-заметки
+    source_prompt: ClaudeStyles/zalizniak-zametki-style.md
+  - id: zaliznyak-novgorod
+    name: Зализняк-новгород
+    source_prompt: ClaudeStyles/zaliznyak-novgorod-style.md

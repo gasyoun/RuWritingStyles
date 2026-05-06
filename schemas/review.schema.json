@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/review.schema.json",
+  "title": "RuWritingStyles review artifact",
+  "type": "object",
+  "required": [
+    "run_id",
+    "style_id",
+    "status",
+    "prompt_path",
+    "expected_finding_schema",
+    "segment_count",
+    "findings"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "style_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["prompt_ready", "completed"]
+    },
+    "prompt_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expected_finding_schema": {
+      "type": "string",
+      "const": "schemas/finding.schema.json"
+    },
+    "segment_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "summary": {
+      "type": "string"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "finding.schema.json"
+      }
+    }
+  }
+}
