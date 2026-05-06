@@ -72,8 +72,9 @@ def extract_yaml_scalar_paths(text: str, key: str) -> list[str]:
 
 def check_style_paths() -> None:
     manifest = read_text(ROOT / "styles" / "manifest.yml")
+    passport_paths = extract_yaml_scalar_paths(manifest, "path")
 
-    for relative in extract_yaml_scalar_paths(manifest, "path"):
+    for relative in passport_paths:
         if not (ROOT / relative).exists():
             fail(f"manifest references missing passport {relative}")
 
@@ -84,6 +85,22 @@ def check_style_paths() -> None:
     for relative in sorted(set(source_prompts)):
         if not (ROOT / relative).exists():
             fail(f"missing source prompt {relative}")
+
+    claude_sources = {path.relative_to(ROOT).as_posix() for path in (ROOT / "ClaudeStyles").glob("*.md")}
+    passport_sources = set()
+    for passport in sorted((ROOT / "styles" / "passports").glob("*.yml")):
+        passport_sources.update(extract_yaml_scalar_paths(read_text(passport), "source_prompt"))
+
+    if claude_sources != passport_sources:
+        missing = sorted(claude_sources - passport_sources)
+        extra = sorted(passport_sources - claude_sources)
+        if missing:
+            fail(f"missing passports for source prompts: {', '.join(missing)}")
+        if extra:
+            fail(f"passports reference unknown source prompts: {', '.join(extra)}")
+
+    if len(passport_paths) != len(claude_sources):
+        fail(f"manifest passport count {len(passport_paths)} does not match ClaudeStyles count {len(claude_sources)}")
 
     ok("style manifest and passport paths resolve")
 

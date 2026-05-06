@@ -6,7 +6,7 @@ import argparse
 from pathlib import Path
 import sys
 
-from .config import load_manifest, load_model_policy, repo_root_from
+from .config import load_manifest, load_model_policy, load_passport_summaries, repo_root_from
 from .runs import create_prepare_run
 from .segment import normalize_document, read_document, segment_markdown
 
@@ -34,6 +34,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="Show the loaded style manifest and default model policy summary.",
     )
     show_config.set_defaults(func=cmd_show_config)
+
+    list_styles = subparsers.add_parser(
+        "list-styles",
+        help="List style passports known to styles/manifest.yml.",
+    )
+    list_styles.add_argument(
+        "--mvp",
+        action="store_true",
+        help="Show only the MVP styles used by the first review prototype.",
+    )
+    list_styles.set_defaults(func=cmd_list_styles)
 
     return parser
 
@@ -82,6 +93,23 @@ def cmd_show_config(_: argparse.Namespace) -> int:
     print(f"- model: {model_policy.default_model}")
     print(f"- reasoning: {model_policy.default_reasoning}")
     print(f"- speed: {model_policy.default_speed}")
+    return 0
+
+
+def cmd_list_styles(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    manifest = load_manifest(repo_root)
+    summaries = load_passport_summaries(repo_root, manifest)
+    if args.mvp:
+        summaries = tuple(summary for summary in summaries if summary.is_mvp)
+
+    for summary in summaries:
+        marker = " *" if summary.is_mvp else ""
+        print(f"{summary.style_id}{marker}")
+        print(f"  name: {summary.name}")
+        print(f"  role: {summary.role}")
+        print(f"  prompt: {summary.source_prompt.relative_to(repo_root)}")
+        print(f"  passport: {summary.passport_path.relative_to(repo_root)}")
     return 0
 
 

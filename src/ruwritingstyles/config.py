@@ -42,6 +42,18 @@ class ModelPolicy:
     default_speed: str
 
 
+@dataclass(frozen=True)
+class StylePassportSummary:
+    """A compact view of a style passport for CLI listing."""
+
+    style_id: str
+    name: str
+    role: str
+    source_prompt: Path
+    passport_path: Path
+    is_mvp: bool
+
+
 def _read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
@@ -115,6 +127,27 @@ def load_model_policy(repo_root: Path) -> ModelPolicy:
         default_reasoning=_scalar(default_block, "reasoning", "xhigh"),
         default_speed=_scalar(default_block, "speed", "standard"),
     )
+
+
+def load_passport_summaries(repo_root: Path, manifest: Manifest | None = None) -> tuple[StylePassportSummary, ...]:
+    actual_manifest = manifest or load_manifest(repo_root)
+    summaries: list[StylePassportSummary] = []
+    mvp_ids = set(actual_manifest.mvp_style_ids)
+
+    for ref in actual_manifest.passports:
+        text = _read(ref.path)
+        summaries.append(
+            StylePassportSummary(
+                style_id=ref.style_id,
+                name=_scalar(text, "name", ref.style_id),
+                role=_scalar(text, "role", "unknown"),
+                source_prompt=ref.source_prompt,
+                passport_path=ref.path,
+                is_mvp=ref.style_id in mvp_ids,
+            )
+        )
+
+    return tuple(summaries)
 
 
 def repo_root_from(start: Path | None = None) -> Path:
