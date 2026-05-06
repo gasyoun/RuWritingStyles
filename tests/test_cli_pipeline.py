@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import json
 from pathlib import Path
 import shutil
@@ -17,7 +18,12 @@ from ruwritingstyles.cli import main
 from ruwritingstyles.config import load_model_routes
 from ruwritingstyles.evals import load_eval_cases
 from ruwritingstyles.findings import load_finding_summaries, render_finding_summaries
-from ruwritingstyles.providers import _extract_anthropic_text, _extract_gemini_text, _is_retryable_status
+from ruwritingstyles.providers import (
+    _extract_anthropic_text,
+    _extract_gemini_text,
+    _is_retryable_status,
+    _retry_delay_from_headers,
+)
 from ruwritingstyles.segment import normalize_document, segment_markdown
 
 
@@ -66,6 +72,34 @@ class ProviderParsingTests(unittest.TestCase):
         self.assertEqual(_extract_anthropic_text(anthropic), '{"ok": true}')
         self.assertTrue(_is_retryable_status(429))
         self.assertFalse(_is_retryable_status(400))
+
+    def test_provider_retry_delay_uses_rate_limit_headers(self) -> None:
+        now = datetime(2026, 5, 7, 10, 0, 0, tzinfo=timezone.utc)
+        self.assertEqual(_retry_delay_from_headers({"Retry-After": "2.5"}, 1.0, now=now), 2.5)
+        self.assertEqual(
+            _retry_delay_from_headers(
+                {
+                    "x-ratelimit-remaining-requests": "0",
+                    "x-ratelimit-reset-requests": "1s",
+                    "x-ratelimit-remaining-tokens": "100",
+                    "x-ratelimit-reset-tokens": "6m0s",
+                },
+                1.0,
+                now=now,
+            ),
+            1.0,
+        )
+        self.assertEqual(
+            _retry_delay_from_headers(
+                {
+                    "anthropic-ratelimit-tokens-remaining": "0",
+                    "anthropic-ratelimit-tokens-reset": "2026-05-07T10:00:05Z",
+                },
+                1.0,
+                now=now,
+            ),
+            5.0,
+        )
 
 
 class ModelPolicyTests(unittest.TestCase):

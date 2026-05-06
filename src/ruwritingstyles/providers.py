@@ -7,6 +7,8 @@ opt-in adapters for OpenAI, Google Gemini, and Anthropic Claude.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 import json
 import os
 from pathlib import Path
@@ -377,6 +379,7 @@ def _post_json_with_retries(
     last_error: Exception | None = None
 
     for attempt in range(1, attempts + 1):
+        sleep_for = delay
         req = request.Request(
             url,
             data=encoded,
@@ -391,12 +394,13 @@ def _post_json_with_retries(
             last_error = ProviderError(f"{provider_name} API error {exc.code}: {detail}")
             if not _is_retryable_status(exc.code) or attempt == attempts:
                 raise last_error from exc
+            sleep_for = _retry_delay_from_headers(exc.headers, delay)
         except error.URLError as exc:
             last_error = ProviderError(f"{provider_name} API request failed: {exc}")
             if attempt == attempts:
                 raise last_error from exc
 
-        time.sleep(delay)
+        time.sleep(sleep_for)
         delay *= 2
 
     raise last_error or ProviderError(f"{provider_name} API request failed")
@@ -420,3 +424,132 @@ def _provider_retry_delay() -> float:
 
 def _is_retryable_status(status: int) -> bool:
     return status in {429, 500, 502, 503, 504}
+
+
+def _retry_delay_from_headers(headers: Any, fallback_delay: float, now: datetime | None = None) -> float:
+    retry_after = _parse_retry_after(_header_value(headers, "retry-after"), now=now)
+    if retry_after is not None:
+        return retry_after
+
+    delays = _exhausted_reset_delays(
+        headers,
+        [
+            ("x-ratelimit-remaining-requests", "x-ratelimit-reset-requests"),
+            ("x-ratelimit-remaining-tokens", "x-ratelimit-reset-tokens"),
+            ("anthropic-ratelimit-requests-remaining", "anthropic-ratelimit-requests-reset"),
+            ("anthropic-ratelimit-tokens-remaining", "anthropic-ratelimit-tokens-reset"),
+            ("anthropic-ratelimit-input-tokens-remaining", "anthropic-ratelimit-input-tokens-reset"),
+            ("anthropic-ratelimit-output-tokens-remaining", "anthropic-ratelimit-output-tokens-reset"),
+        ],
+        now=now,
+    )
+    if delays:
+        return max(delays)
+    return fallback_delay
+
+
+def _exhausted_reset_delays(
+    headers: Any,
+    pairs: list[tuple[str, str]],
+    now: datetime | None = None,
+) -> list[float]:
+    delays: list[float] = []
+    for remaining_header, reset_header in pairs:
+        if not _is_exhausted_remaining_header(_header_value(headers, remaining_header)):
+            continue
+        delay = _parse_reset_delay(_header_value(headers, reset_header), now=now)
+        if delay is not None:
+            delays.append(delay)
+    return delays
+
+
+def _parse_retry_after(value: str | None, now: datetime | None = None) -> float | None:
+    if not value:
+        return None
+    stripped = value.strip()
+    delay = _parse_positive_float(stripped)
+    if delay is not None:
+        return delay
+    return _parse_datetime_delay(stripped, now=now)
+
+
+def _parse_reset_delay(value: str | None, now: datetime | None = None) -> float | None:
+    if not value:
+        return None
+    stripped = value.strip()
+    delay = _parse_openai_duration(stripped)
+    if delay is not None:
+        return delay
+    delay = _parse_positive_float(stripped)
+    if delay is not None:
+        return delay
+    return _parse_datetime_delay(stripped, now=now)
+
+
+def _parse_openai_duration(value: str) -> float | None:
+    matches = re.findall(r"([0-9]+(?:\.[0-9]+)?)(ms|s|m|h)", value)
+    if not matches:
+        return None
+    unit_seconds = {
+        "ms": 0.001,
+        "s": 1.0,
+        "m": 60.0,
+        "h": 3600.0,
+    }
+    return sum(float(amount) * unit_seconds[unit] for amount, unit in matches)
+
+
+def _parse_datetime_delay(value: str, now: datetime | None = None) -> float | None:
+    parsed = _parse_datetime(value)
+    if parsed is None:
+        return None
+    actual_now = now or datetime.now(timezone.utc)
+    if actual_now.tzinfo is None:
+        actual_now = actual_now.replace(tzinfo=timezone.utc)
+    return max(0.0, (parsed - actual_now).total_seconds())
+
+
+def _parse_datetime(value: str) -> datetime | None:
+    normalized = value.strip()
+    if normalized.endswith("Z"):
+        normalized = normalized[:-1] + "+00:00"
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        try:
+            parsed = parsedate_to_datetime(value)
+        except (TypeError, ValueError):
+            return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def _parse_positive_float(value: str) -> float | None:
+    try:
+        return max(0.0, float(value))
+    except ValueError:
+        return None
+
+
+def _is_exhausted_remaining_header(value: str | None) -> bool:
+    if value is None:
+        return False
+    try:
+        return float(value.strip()) <= 0
+    except ValueError:
+        return False
+
+
+def _header_value(headers: Any, name: str) -> str | None:
+    if headers is None:
+        return None
+    value = headers.get(name)
+    if value is not None:
+        return str(value)
+    lower_name = name.lower()
+    if isinstance(headers, dict):
+        for key, item in headers.items():
+            if str(key).lower() == lower_name:
+                return str(item)
+    return None

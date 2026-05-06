@@ -16,6 +16,8 @@
 
 Все провайдерные различия должны быть спрятаны в provider adapter. Файлы стилей, JSON-схемы замечаний и `council.json` должны оставаться переносимыми.
 
+Общий execution layer уже учитывает rate-limit поведение провайдеров: сначала используется стандартный `Retry-After`, затем OpenAI `x-ratelimit-reset-*` и Anthropic `anthropic-ratelimit-*-reset` для исчерпанных лимитов. Для Gemini фиксируется тот же общий механизм `Retry-After`, если сервис возвращает этот заголовок.
+
 ## OpenAI GPT-5.5
 
 Основной маршрут проекта.
@@ -131,7 +133,10 @@
 - OpenAI: https://developers.openai.com/api/docs/models
 - OpenAI GPT-5.5: https://developers.openai.com/api/docs/guides/latest-model
 - OpenAI Agents SDK: https://developers.openai.com/api/docs/guides/agents
+- OpenAI API rate limits: https://platform.openai.com/docs/guides/rate-limits
 - Google Gemini 3.1 Pro Preview: https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview
+- Google Gemini API rate limits: https://ai.google.dev/gemini-api/docs/rate-limits
 - Google DeepMind Gemini 3.1 Pro model card: https://deepmind.google/models/model-cards/gemini-3-1-pro/
 - Anthropic Claude models overview: https://platform.claude.com/docs/en/about-claude/models/overview
 - Anthropic Claude Sonnet: https://www.anthropic.com/claude/sonnet
+- Anthropic API rate limits: https://docs.anthropic.com/en/api/rate-limits
