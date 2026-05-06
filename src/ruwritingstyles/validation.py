@@ -41,6 +41,7 @@ def validate_run_dir(run_dir: Path) -> ValidationResult:
         data = _load_json(run_dir / artifact, messages)
         if isinstance(data, dict):
             _validate_common_status(data, messages, artifact)
+    _validate_eval_result(run_dir / "eval-result.json", messages)
     _validate_provider_log(run_dir / "provider.log.jsonl", messages)
 
     return ValidationResult(ok=not messages, messages=tuple(messages))
@@ -144,3 +145,14 @@ def _validate_provider_log(path: Path, messages: list[str]) -> None:
                 messages.append(f"provider.log.jsonl line {index} missing {key}")
         if entry.get("status") not in {"completed", "error"}:
             messages.append(f"provider.log.jsonl line {index} has invalid status {entry.get('status')!r}")
+
+
+def _validate_eval_result(path: Path, messages: list[str]) -> None:
+    if not path.exists():
+        return
+    data = _load_json(path, messages)
+    if not isinstance(data, dict):
+        return
+    for key in ["case_id", "run_id", "provider", "model", "finding_count", "verification_status"]:
+        if key not in data:
+            messages.append(f"eval-result.json missing {key}")

@@ -25,6 +25,7 @@ def render_run_report(run_dir: Path) -> str:
     council = _load_json(run_dir / "council.json")
     revision = _load_json(run_dir / "revision.json")
     verification = _load_json(run_dir / "verification.json")
+    eval_result = _load_json(run_dir / "eval-result.json")
     provider_log = load_provider_log(run_dir)
 
     run_id = _run_id(run_dir, segments_doc, council, revision, verification)
@@ -35,6 +36,7 @@ def render_run_report(run_dir: Path) -> str:
         f"# Run Report: {run_id}",
         _input_section(source, segments),
         _status_section(reviews, council, revision, verification),
+        _eval_section(eval_result),
         _review_section(reviews),
         _findings_section(reviews),
         _provider_log_section(provider_log),
@@ -94,6 +96,20 @@ def _review_section(reviews: list[dict[str, Any]]) -> str:
             )
         )
     return "## Reviews\n\n" + _table(("Style", "Status", "Findings", "Summary"), rows)
+
+
+def _eval_section(eval_result: dict[str, Any]) -> str:
+    if not eval_result:
+        return ""
+    rows = [
+        ("case", str(eval_result.get("case_id") or "")),
+        ("provider", str(eval_result.get("provider") or "")),
+        ("model", str(eval_result.get("model") or "")),
+        ("finding_count", str(eval_result.get("finding_count") or 0)),
+        ("verification_status", str(eval_result.get("verification_status") or "")),
+        ("matched_expected_risks", ", ".join(eval_result.get("matched_expected_risks") or [])),
+    ]
+    return "## Eval Result\n\n" + _table(("Field", "Value"), rows)
 
 
 def _findings_section(reviews: list[dict[str, Any]]) -> str:

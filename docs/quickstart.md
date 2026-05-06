@@ -55,6 +55,12 @@ To package the result:
 rws export runs/demo-pseudo-etymology
 ```
 
+To run the same document as an eval case:
+
+```bash
+rws eval-run --case pseudo-etymology --provider mock --run-id eval-pseudo-etymology
+```
+
 The mock provider is deterministic and only proves that the pipeline works. Use a real provider for substantive findings:
 
 ```bash

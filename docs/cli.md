@@ -74,6 +74,18 @@ rws eval-list
 
 This reads `evals/manifest.json` and prints the current comparison cases, their input documents, default styles, and expected risks.
 
+## Run An Eval Case
+
+```bash
+rws eval-run --case pseudo-etymology --provider mock
+```
+
+This executes the case through the current pipeline and writes `eval-result.json` into the run directory. Use real providers the same way once API keys are configured:
+
+```bash
+rws eval-run --case pseudo-etymology --provider openai --model gpt-5.5
+```
+
 ## Prepare a document
 
 ```bash

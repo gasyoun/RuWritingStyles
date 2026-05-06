@@ -9,7 +9,7 @@ import sys
 from .config import load_manifest, load_model_policy, load_model_routes, load_passport_summaries, repo_root_from
 from .council import create_council_bundle
 from .diff import write_revision_diff
-from .evals import load_eval_cases
+from .evals import load_eval_cases, run_eval_case
 from .execution import (
     execute_council_artifact,
     execute_review_artifact,
@@ -100,6 +100,18 @@ def build_parser() -> argparse.ArgumentParser:
         help="List evaluation cases from evals/manifest.json.",
     )
     eval_list.set_defaults(func=cmd_eval_list)
+
+    eval_run = subparsers.add_parser(
+        "eval-run",
+        help="Run one evaluation case through the executable pipeline.",
+    )
+    eval_run.add_argument("--case", required=True, help="Eval case id from `rws eval-list`.")
+    eval_run.add_argument(
+        "--run-id",
+        help="Optional deterministic run id. The target runs/<run-id> must not already exist.",
+    )
+    _add_provider_args(eval_run)
+    eval_run.set_defaults(func=cmd_eval_run)
 
     review = subparsers.add_parser(
         "review",
@@ -196,6 +208,19 @@ def _add_execute_args(parser: argparse.ArgumentParser) -> None:
         default="mock",
         choices=["mock", "openai", "google", "anthropic"],
         help="Provider used with --execute. Defaults to deterministic mock.",
+    )
+    parser.add_argument(
+        "--model",
+        help="Optional provider-specific model override.",
+    )
+
+
+def _add_provider_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--provider",
+        default="mock",
+        choices=["mock", "openai", "google", "anthropic"],
+        help="Provider used for execution. Defaults to deterministic mock.",
     )
     parser.add_argument(
         "--model",
@@ -373,6 +398,20 @@ def cmd_eval_list(_: argparse.Namespace) -> int:
         print(f"  purpose: {case.purpose}")
         print(f"  styles: {', '.join(case.default_styles)}")
         print(f"  risks: {', '.join(case.expected_risks)}")
+    return 0
+
+
+def cmd_eval_run(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    result = run_eval_case(
+        repo_root=repo_root,
+        case_id=args.case,
+        provider_name=args.provider,
+        model=args.model,
+        run_id=args.run_id,
+    )
+    print(f"created {result.run_dir.relative_to(repo_root)}")
+    print(f"eval result {result.result_path.relative_to(repo_root)}")
     return 0
 
 
