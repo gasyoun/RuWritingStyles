@@ -9,6 +9,7 @@ import sys
 from .config import load_manifest, load_model_policy, load_passport_summaries, repo_root_from
 from .council import create_council_bundle
 from .review import create_review_bundle
+from .revision import create_revision_bundle
 from .runs import create_prepare_run
 from .segment import normalize_document, read_document, segment_markdown
 
@@ -69,6 +70,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     council.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
     council.set_defaults(func=cmd_council)
+
+    revise = subparsers.add_parser(
+        "revise",
+        help="Create an offline revision bundle from a council artifact.",
+    )
+    revise.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    revise.set_defaults(func=cmd_revise)
 
     return parser
 
@@ -169,6 +177,15 @@ def cmd_council(args: argparse.Namespace) -> int:
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
     bundle = create_council_bundle(repo_root=repo_root, run_dir=run_dir)
     print(f"created {bundle.council_json.relative_to(repo_root)}")
+    print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
+    return 0
+
+
+def cmd_revise(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    bundle = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
+    print(f"created {bundle.revision_json.relative_to(repo_root)}")
     print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
     return 0
 

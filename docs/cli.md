@@ -153,6 +153,24 @@ runs/cli-smoke-readme/
 
 The council prompt includes all `reviews/*.review.json` files and `segments.json`. The first implementation layer creates `status: prompt_ready`; a later provider adapter will fill `replies` and `decisions`.
 
+## Create a revision bundle
+
+After a council artifact exists:
+
+```bash
+rws revise runs/cli-smoke-readme
+```
+
+The command creates:
+
+```text
+runs/cli-smoke-readme/
+  revision.prompt.md
+  revision.json
+```
+
+The revision prompt includes `normalized.md` and `council.json`. The first implementation layer creates `status: prompt_ready`; a later provider adapter will produce the revised Markdown and applied-change list.
+
 ## Validate the repository
 
 ```bash
