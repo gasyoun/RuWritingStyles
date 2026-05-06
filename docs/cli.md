@@ -364,7 +364,7 @@ rws export runs/cli-smoke-readme --output exports/cli-smoke-readme.zip
 rws validate-run runs/cli-smoke-readme
 ```
 
-The command checks that run artifacts exist, parse as JSON where needed, and that any completed style findings point to known `span_id` values.
+The command checks that run artifacts exist, parse as JSON where needed, pass the local JSON Schema subset for review/council/revision/verification artifacts, and that any completed style findings point to known `span_id` values.
 
 ## Validate the repository
 
@@ -378,6 +378,7 @@ The validator currently checks:
 - JSON schemas parse;
 - style manifest and passport paths resolve;
 - `model_policy.yml` contains the required providers and model IDs;
+- the lightweight JSON Schema validator module is present;
 - `pyproject.toml` exposes the `rws` CLI.
 
 ## Run tests

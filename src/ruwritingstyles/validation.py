@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from .schema_validation import validate_json_schema
+
 
 @dataclass(frozen=True)
 class ValidationResult:
@@ -19,13 +21,14 @@ class ValidationResult:
 def validate_run_dir(run_dir: Path) -> ValidationResult:
     run_dir = run_dir.resolve()
     messages: list[str] = []
+    schema_store = _load_schema_store(_repo_root_from_run_dir(run_dir), messages)
 
     segments = _load_json(run_dir / "segments.json", messages)
     if isinstance(segments, dict):
         _validate_segments(segments, messages)
     span_ids = _span_ids(segments)
 
-    for required in ["original.md", "normalized.md", "report.md"]:
+    for required in ["original.md", "normalized.md", "report.md", "summary.html"]:
         if not (run_dir / required).exists():
             messages.append(f"missing {required}")
 
@@ -35,11 +38,17 @@ def validate_run_dir(run_dir: Path) -> ValidationResult:
     for path in review_paths:
         review = _load_json(path, messages)
         if isinstance(review, dict):
+            _validate_with_schema(review, "review.schema.json", path.name, schema_store, messages)
             _validate_review(review, span_ids, messages, path)
 
-    for artifact in ["council.json", "revision.json", "verification.json"]:
+    for artifact, schema_name in [
+        ("council.json", "council.schema.json"),
+        ("revision.json", "revision.schema.json"),
+        ("verification.json", "verification.schema.json"),
+    ]:
         data = _load_json(run_dir / artifact, messages)
         if isinstance(data, dict):
+            _validate_with_schema(data, schema_name, artifact, schema_store, messages)
             _validate_common_status(data, messages, artifact)
     _validate_eval_result(run_dir / "eval-result.json", messages)
     _validate_provider_log(run_dir / "provider.log.jsonl", messages)
@@ -156,3 +165,37 @@ def _validate_eval_result(path: Path, messages: list[str]) -> None:
     for key in ["case_id", "run_id", "provider", "model", "finding_count", "verification_status"]:
         if key not in data:
             messages.append(f"eval-result.json missing {key}")
+
+
+def _validate_with_schema(
+    data: dict[str, Any],
+    schema_name: str,
+    artifact: str,
+    schema_store: dict[str, dict[str, Any]],
+    messages: list[str],
+) -> None:
+    schema = schema_store.get(schema_name)
+    if schema is None:
+        messages.append(f"missing schema {schema_name}")
+        return
+    for message in validate_json_schema(data, schema, schema_store=schema_store):
+        messages.append(f"{artifact} schema {message}")
+
+
+def _repo_root_from_run_dir(run_dir: Path) -> Path:
+    if run_dir.parent.name == "runs":
+        return run_dir.parent.parent
+    return Path(__file__).resolve().parents[2]
+
+
+def _load_schema_store(repo_root: Path, messages: list[str]) -> dict[str, dict[str, Any]]:
+    schema_dir = repo_root / "schemas"
+    if not schema_dir.exists():
+        messages.append(f"missing schema directory {schema_dir}")
+        return {}
+    store: dict[str, dict[str, Any]] = {}
+    for path in sorted(schema_dir.glob("*.json")):
+        data = _load_json(path, messages)
+        if isinstance(data, dict):
+            store[path.name] = data
+    return store
