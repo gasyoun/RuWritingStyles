@@ -18,6 +18,7 @@ from .execution import (
 )
 from .export import export_run_bundle
 from .findings import load_finding_summaries, render_finding_summaries
+from .html_summary import write_html_report
 from .providers import provider_from_name
 from .report import write_run_report
 from .review import create_review_bundle
@@ -170,10 +171,17 @@ def build_parser() -> argparse.ArgumentParser:
 
     report = subparsers.add_parser(
         "report",
-        help="Render or refresh the Markdown report for a run directory.",
+        help="Render or refresh Markdown and HTML reports for a run directory.",
     )
     report.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
     report.set_defaults(func=cmd_report)
+
+    html_report = subparsers.add_parser(
+        "html-report",
+        help="Render or refresh the static HTML summary for a run directory.",
+    )
+    html_report.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    html_report.set_defaults(func=cmd_html_report)
 
     export = subparsers.add_parser(
         "export",
@@ -330,8 +338,7 @@ def cmd_run(args: argparse.Namespace) -> int:
             model=args.model,
         )
         print(f"completed {verification.verification_json.relative_to(repo_root)}")
-    report_path = write_run_report(run_dir)
-    print(f"updated {report_path.relative_to(repo_root)}")
+    _write_reports(repo_root, run_dir)
     return 0
 
 
@@ -438,8 +445,7 @@ def cmd_review(args: argparse.Namespace) -> int:
                 model=args.model,
             )
             print(f"completed {bundle.review_json.relative_to(repo_root)}")
-    report_path = write_run_report(run_dir)
-    print(f"updated {report_path.relative_to(repo_root)}")
+    _write_reports(repo_root, run_dir)
     return 0
 
 
@@ -472,8 +478,7 @@ def cmd_council(args: argparse.Namespace) -> int:
             model=args.model,
         )
         print(f"completed {bundle.council_json.relative_to(repo_root)}")
-    report_path = write_run_report(run_dir)
-    print(f"updated {report_path.relative_to(repo_root)}")
+    _write_reports(repo_root, run_dir)
     return 0
 
 
@@ -493,8 +498,7 @@ def cmd_revise(args: argparse.Namespace) -> int:
         print(f"completed {bundle.revision_json.relative_to(repo_root)}")
         diff_path = write_revision_diff(run_dir)
         print(f"updated {diff_path.relative_to(repo_root)}")
-    report_path = write_run_report(run_dir)
-    print(f"updated {report_path.relative_to(repo_root)}")
+    _write_reports(repo_root, run_dir)
     return 0
 
 
@@ -512,8 +516,7 @@ def cmd_verify(args: argparse.Namespace) -> int:
             model=args.model,
         )
         print(f"completed {bundle.verification_json.relative_to(repo_root)}")
-    report_path = write_run_report(run_dir)
-    print(f"updated {report_path.relative_to(repo_root)}")
+    _write_reports(repo_root, run_dir)
     return 0
 
 
@@ -527,8 +530,15 @@ def cmd_findings(args: argparse.Namespace) -> int:
 def cmd_report(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
-    report_path = write_run_report(run_dir)
-    print(f"updated {report_path.relative_to(repo_root)}")
+    _write_reports(repo_root, run_dir)
+    return 0
+
+
+def cmd_html_report(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    html_path = write_html_report(run_dir)
+    print(f"updated {html_path.relative_to(repo_root)}")
     return 0
 
 
@@ -567,6 +577,13 @@ def _display_path(repo_root: Path, path: Path) -> Path | str:
         return path.resolve().relative_to(repo_root.resolve())
     except ValueError:
         return str(path)
+
+
+def _write_reports(repo_root: Path, run_dir: Path) -> None:
+    report_path = write_run_report(run_dir)
+    html_path = write_html_report(run_dir)
+    print(f"updated {report_path.relative_to(repo_root)}")
+    print(f"updated {html_path.relative_to(repo_root)}")
 
 
 def main(argv: list[str] | None = None) -> int:

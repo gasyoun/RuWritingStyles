@@ -34,6 +34,7 @@ runs/demo-pseudo-etymology/
   normalized.md
   segments.json
   report.md
+  summary.html
   provider.log.jsonl
   reviews/
   council.json
@@ -52,8 +53,11 @@ rws validate-run runs/demo-pseudo-etymology
 To package the result:
 
 ```bash
+rws html-report runs/demo-pseudo-etymology
 rws export runs/demo-pseudo-etymology
 ```
+
+`summary.html` is a local static summary with findings grouped by `span_id`; it is also included in the ZIP bundle.
 
 To run the same document as an eval case:
 

@@ -363,7 +363,7 @@
 - [`docs/agent-protocol.md`](docs/agent-protocol.md) задает протокол, по которому разные стили проверяют документ, отвечают друг другу и участвуют в итоговой редакции.
 - [`docs/style-contract.md`](docs/style-contract.md) описывает машинный паспорт стиля: роль, проверки, ограничения и участие в совете стилей.
 - [`docs/provider-roadmaps.md`](docs/provider-roadmaps.md) описывает версии roadmap для OpenAI GPT-5.5, Google Gemini 3.1 Pro и Anthropic Claude Sonnet 4.6.
-- [`docs/cli.md`](docs/cli.md) описывает первый CLI-слой: загрузку конфигурации, подготовку документа и `segments.json`.
+- [`docs/cli.md`](docs/cli.md) описывает CLI-слой: загрузку конфигурации, подготовку документа, агентный прогон, `report.md`, `summary.html` и export bundle.
 - [`docs/quickstart.md`](docs/quickstart.md) показывает минимальный запуск пайплайна на демонстрационном документе.
 - [`model_policy.yml`](model_policy.yml) задает стартовую маршрутизацию моделей по задачам.
 - [`styles/manifest.yml`](styles/manifest.yml) и [`styles/passports/`](styles/passports/) начинают машинно-читаемый слой стилей.

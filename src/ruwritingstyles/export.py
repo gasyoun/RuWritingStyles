@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 from zipfile import ZIP_DEFLATED, ZipFile
 
+from .html_summary import write_html_report
 from .report import write_run_report
 
 
@@ -18,11 +19,12 @@ def export_run_bundle(run_dir: Path, output_path: Path | None = None) -> Path:
         raise FileNotFoundError(f"missing run directory {run_dir}")
 
     report_path = write_run_report(run_dir)
+    html_path = write_html_report(run_dir)
     run_id = _run_id(run_dir)
     bundle_path = (output_path or (run_dir / f"{run_id}-bundle.zip")).resolve()
     bundle_path.parent.mkdir(parents=True, exist_ok=True)
 
-    files = _bundle_files(run_dir, report_path)
+    files = _bundle_files(run_dir, report_path, html_path)
     manifest = {
         "run_id": run_id,
         "artifact_count": len(files),
@@ -37,12 +39,13 @@ def export_run_bundle(run_dir: Path, output_path: Path | None = None) -> Path:
     return bundle_path
 
 
-def _bundle_files(run_dir: Path, report_path: Path) -> list[Path]:
+def _bundle_files(run_dir: Path, report_path: Path, html_path: Path) -> list[Path]:
     candidates = [
         run_dir / "original.md",
         run_dir / "normalized.md",
         run_dir / "segments.json",
         report_path,
+        html_path,
         run_dir / "provider.log.jsonl",
         run_dir / "eval-result.json",
         run_dir / "revised.md",

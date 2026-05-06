@@ -8,6 +8,7 @@ import re
 from pathlib import Path
 
 from .config import Manifest, ModelPolicy
+from .html_summary import write_html_report
 from .report import write_run_report
 from .segment import Segment
 
@@ -50,6 +51,7 @@ def create_prepare_run(
         encoding="utf-8",
     )
     write_run_report(run_dir)
+    write_html_report(run_dir)
     return run_dir
 
 

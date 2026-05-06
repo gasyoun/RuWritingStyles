@@ -1,6 +1,6 @@
 # CLI
 
-RuWritingStyles CLI starts with a deliberately small command set. It prepares reproducible run artifacts, creates prompts for style agents, can execute them through a provider, and keeps a Markdown report for each run.
+RuWritingStyles CLI starts with a deliberately small command set. It prepares reproducible run artifacts, creates prompts for style agents, can execute them through a provider, and keeps Markdown plus static HTML reports for each run.
 
 ## Install for local development
 
@@ -108,6 +108,7 @@ runs/<run-id>/
   normalized.md
   segments.json
   report.md
+  summary.html
 ```
 
 `runs/` is ignored by Git because run artifacts are local outputs.
@@ -166,9 +167,10 @@ Each `run` refreshes:
 
 ```text
 runs/<run-id>/report.md
+runs/<run-id>/summary.html
 ```
 
-The report summarizes segment counts, style review status, findings, council decisions, revision status, and verifier warnings.
+The reports summarize segment counts, style review status, findings, council decisions, revision status, and verifier warnings. `summary.html` is a portable static view with findings grouped by `span_id`.
 When `--execute` produces `revised.md`, `run` also writes `revision.diff`.
 Provider executions are appended to `provider.log.jsonl` without API keys or request bodies.
 
@@ -329,9 +331,10 @@ This prints completed style findings grouped by `span_id`, with the segment exce
 
 ```bash
 rws report runs/cli-smoke-readme
+rws html-report runs/cli-smoke-readme
 ```
 
-This refreshes `runs/cli-smoke-readme/report.md` from the JSON artifacts already present in the run directory. It is useful after manual edits or after executing only part of the pipeline.
+`rws report` refreshes both `report.md` and `summary.html` from the JSON artifacts already present in the run directory. `rws html-report` refreshes only the static HTML summary. These commands are useful after manual edits or after executing only part of the pipeline.
 
 ## Create a revision diff
 
@@ -347,7 +350,7 @@ This writes `runs/cli-smoke-readme/revision.diff` as a unified diff from `normal
 rws export runs/cli-smoke-readme
 ```
 
-The bundle includes `report.md`, `provider.log.jsonl`, source and normalized documents, JSON artifacts, prompts, `revised.md` and `revision.diff` when present, and `bundle-manifest.json`.
+The bundle includes `report.md`, `summary.html`, `provider.log.jsonl`, source and normalized documents, JSON artifacts, prompts, `revised.md` and `revision.diff` when present, and `bundle-manifest.json`.
 
 Use `--output` to choose a different ZIP path:
 
@@ -385,7 +388,7 @@ python tools/validate_project.py
 python -m unittest discover -s tests
 ```
 
-The current tests cover Markdown segmentation, the full offline pipeline, mock provider execution, run reports, run export bundles, and the demo input document:
+The current tests cover Markdown segmentation, the full offline pipeline, mock provider execution, Markdown/HTML run reports, run export bundles, and the demo input document:
 
 ```text
 rws run README.md --run-id unittest-readme

@@ -113,6 +113,7 @@ class CliPipelineTests(unittest.TestCase):
         self.assertEqual(exit_code, 0)
 
         self.assertTrue((self.run_dir / "segments.json").exists())
+        self.assertTrue((self.run_dir / "summary.html").exists())
         self.assertTrue((self.run_dir / "council.json").exists())
         self.assertTrue((self.run_dir / "revision.json").exists())
         self.assertTrue((self.run_dir / "verification.json").exists())
@@ -183,12 +184,19 @@ class CliPipelineTests(unittest.TestCase):
         self.assertIn("Mock provider placeholder finding", report)
         self.assertIn("## Provider Log", report)
         self.assertEqual(main(["report", str(self.executed_run_dir)]), 0)
+        html_report = (self.executed_run_dir / "summary.html").read_text(encoding="utf-8")
+        self.assertIn("Run Summary", html_report)
+        self.assertIn("Findings By Span", html_report)
+        self.assertIn("Mock provider placeholder finding", html_report)
+        self.assertIn("Provider Log", html_report)
+        self.assertEqual(main(["html-report", str(self.executed_run_dir)]), 0)
         self.assertEqual(main(["export", str(self.executed_run_dir)]), 0)
         bundle_path = self.executed_run_dir / "unittest-readme-executed-bundle.zip"
         self.assertTrue(bundle_path.exists())
         with ZipFile(bundle_path) as archive:
             names = set(archive.namelist())
         self.assertIn("unittest-readme-executed/report.md", names)
+        self.assertIn("unittest-readme-executed/summary.html", names)
         self.assertIn("unittest-readme-executed/provider.log.jsonl", names)
         self.assertIn("unittest-readme-executed/revised.md", names)
         self.assertIn("unittest-readme-executed/revision.diff", names)
