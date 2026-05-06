@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import re
+import time
 from typing import Any
 from urllib.parse import quote
 from urllib import request, error
@@ -37,11 +38,17 @@ class BaseProvider:
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
         raise NotImplementedError
 
+    def effective_model(self, provider_request: ProviderRequest) -> str:
+        return provider_request.model or ""
+
 
 class MockProvider(BaseProvider):
     """Deterministic provider for local development and tests."""
 
     name = "mock"
+
+    def effective_model(self, provider_request: ProviderRequest) -> str:
+        return provider_request.model or "mock"
 
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
         task = provider_request.task
@@ -130,8 +137,11 @@ class OpenAIProvider(BaseProvider):
         if not self.api_key:
             raise ProviderError("OPENAI_API_KEY is required for provider 'openai'")
 
+    def effective_model(self, provider_request: ProviderRequest) -> str:
+        return provider_request.model or os.environ.get("RWS_OPENAI_MODEL") or "gpt-5.5"
+
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
-        model = provider_request.model or os.environ.get("RWS_OPENAI_MODEL") or "gpt-5.5"
+        model = self.effective_model(provider_request)
         body = {
             "model": model,
             "input": [
@@ -154,23 +164,15 @@ class OpenAIProvider(BaseProvider):
         if effort:
             body["reasoning"] = {"effort": effort}
 
-        req = request.Request(
-            self.endpoint,
-            data=json.dumps(body).encode("utf-8"),
+        data = _post_json_with_retries(
+            provider_name="OpenAI",
+            url=self.endpoint,
+            body=body,
             headers={
                 "Authorization": f"Bearer {self.api_key}",
                 "Content-Type": "application/json",
             },
-            method="POST",
         )
-        try:
-            with request.urlopen(req, timeout=120) as response:
-                data = json.loads(response.read().decode("utf-8"))
-        except error.HTTPError as exc:
-            detail = exc.read().decode("utf-8", errors="replace")
-            raise ProviderError(f"OpenAI API error {exc.code}: {detail}") from exc
-        except error.URLError as exc:
-            raise ProviderError(f"OpenAI API request failed: {exc}") from exc
 
         text = _extract_output_text(data)
         try:
@@ -190,8 +192,11 @@ class GoogleProvider(BaseProvider):
         if not self.api_key:
             raise ProviderError("GEMINI_API_KEY or GOOGLE_API_KEY is required for provider 'google'")
 
+    def effective_model(self, provider_request: ProviderRequest) -> str:
+        return provider_request.model or os.environ.get("RWS_GOOGLE_MODEL") or "gemini-3.1-pro-preview"
+
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
-        model = provider_request.model or os.environ.get("RWS_GOOGLE_MODEL") or "gemini-3.1-pro-preview"
+        model = self.effective_model(provider_request)
         body = {
             "contents": [
                 {
@@ -205,20 +210,12 @@ class GoogleProvider(BaseProvider):
             },
         }
 
-        req = request.Request(
-            self.endpoint_template.format(model=quote(model, safe=""), api_key=quote(self.api_key, safe="")),
-            data=json.dumps(body).encode("utf-8"),
+        data = _post_json_with_retries(
+            provider_name="Google Gemini",
+            url=self.endpoint_template.format(model=quote(model, safe=""), api_key=quote(self.api_key, safe="")),
+            body=body,
             headers={"Content-Type": "application/json"},
-            method="POST",
         )
-        try:
-            with request.urlopen(req, timeout=120) as response:
-                data = json.loads(response.read().decode("utf-8"))
-        except error.HTTPError as exc:
-            detail = exc.read().decode("utf-8", errors="replace")
-            raise ProviderError(f"Google Gemini API error {exc.code}: {detail}") from exc
-        except error.URLError as exc:
-            raise ProviderError(f"Google Gemini API request failed: {exc}") from exc
 
         text = _extract_gemini_text(data)
         try:
@@ -238,8 +235,11 @@ class AnthropicProvider(BaseProvider):
         if not self.api_key:
             raise ProviderError("ANTHROPIC_API_KEY is required for provider 'anthropic'")
 
+    def effective_model(self, provider_request: ProviderRequest) -> str:
+        return provider_request.model or os.environ.get("RWS_ANTHROPIC_MODEL") or "claude-sonnet-4-6"
+
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
-        model = provider_request.model or os.environ.get("RWS_ANTHROPIC_MODEL") or "claude-sonnet-4-6"
+        model = self.effective_model(provider_request)
         max_tokens = int(os.environ.get("RWS_ANTHROPIC_MAX_TOKENS", "8192"))
         body = {
             "model": model,
@@ -258,24 +258,16 @@ class AnthropicProvider(BaseProvider):
             },
         }
 
-        req = request.Request(
-            self.endpoint,
-            data=json.dumps(body).encode("utf-8"),
+        data = _post_json_with_retries(
+            provider_name="Anthropic",
+            url=self.endpoint,
+            body=body,
             headers={
                 "x-api-key": self.api_key,
                 "anthropic-version": os.environ.get("ANTHROPIC_VERSION", "2023-06-01"),
                 "content-type": "application/json",
             },
-            method="POST",
         )
-        try:
-            with request.urlopen(req, timeout=120) as response:
-                data = json.loads(response.read().decode("utf-8"))
-        except error.HTTPError as exc:
-            detail = exc.read().decode("utf-8", errors="replace")
-            raise ProviderError(f"Anthropic API error {exc.code}: {detail}") from exc
-        except error.URLError as exc:
-            raise ProviderError(f"Anthropic API request failed: {exc}") from exc
 
         text = _extract_anthropic_text(data)
         try:
@@ -369,3 +361,62 @@ def _extract_anthropic_text(data: dict[str, Any]) -> str:
     if chunks:
         return "".join(chunks)
     raise ProviderError("Anthropic response did not include output text")
+
+
+def _post_json_with_retries(
+    *,
+    provider_name: str,
+    url: str,
+    body: dict[str, Any],
+    headers: dict[str, str],
+    timeout: int = 120,
+) -> dict[str, Any]:
+    attempts = _provider_attempt_count()
+    delay = _provider_retry_delay()
+    encoded = json.dumps(body).encode("utf-8")
+    last_error: Exception | None = None
+
+    for attempt in range(1, attempts + 1):
+        req = request.Request(
+            url,
+            data=encoded,
+            headers=headers,
+            method="POST",
+        )
+        try:
+            with request.urlopen(req, timeout=timeout) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="replace")
+            last_error = ProviderError(f"{provider_name} API error {exc.code}: {detail}")
+            if not _is_retryable_status(exc.code) or attempt == attempts:
+                raise last_error from exc
+        except error.URLError as exc:
+            last_error = ProviderError(f"{provider_name} API request failed: {exc}")
+            if attempt == attempts:
+                raise last_error from exc
+
+        time.sleep(delay)
+        delay *= 2
+
+    raise last_error or ProviderError(f"{provider_name} API request failed")
+
+
+def _provider_attempt_count() -> int:
+    raw = os.environ.get("RWS_PROVIDER_MAX_ATTEMPTS", "3")
+    try:
+        return max(1, int(raw))
+    except ValueError:
+        return 3
+
+
+def _provider_retry_delay() -> float:
+    raw = os.environ.get("RWS_PROVIDER_RETRY_SECONDS", "1.0")
+    try:
+        return max(0.0, float(raw))
+    except ValueError:
+        return 1.0
+
+
+def _is_retryable_status(status: int) -> bool:
+    return status in {429, 500, 502, 503, 504}

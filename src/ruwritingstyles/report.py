@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from .provider_log import load_provider_log
+
 
 def write_run_report(run_dir: Path) -> Path:
     """Render a human-readable report.md for a run directory."""
@@ -23,6 +25,7 @@ def render_run_report(run_dir: Path) -> str:
     council = _load_json(run_dir / "council.json")
     revision = _load_json(run_dir / "revision.json")
     verification = _load_json(run_dir / "verification.json")
+    provider_log = load_provider_log(run_dir)
 
     run_id = _run_id(run_dir, segments_doc, council, revision, verification)
     segments = segments_doc.get("segments", []) if isinstance(segments_doc.get("segments"), list) else []
@@ -34,6 +37,7 @@ def render_run_report(run_dir: Path) -> str:
         _status_section(reviews, council, revision, verification),
         _review_section(reviews),
         _findings_section(reviews),
+        _provider_log_section(provider_log),
         _council_section(council),
         _revision_section(run_dir, revision),
         _verification_section(verification),
@@ -132,6 +136,23 @@ def _council_section(council: dict[str, Any]) -> str:
             )
         )
     return f"## Council\n\nStatus: `{_status(council)}`\n\n" + _table(("Finding", "Decision", "Reason"), rows)
+
+
+def _provider_log_section(entries: list[dict[str, Any]]) -> str:
+    if not entries:
+        return "## Provider Log\n\nNo provider executions yet."
+    rows = []
+    for entry in entries:
+        rows.append(
+            (
+                str(entry.get("task") or ""),
+                str(entry.get("provider") or ""),
+                str(entry.get("model") or ""),
+                str(entry.get("status") or ""),
+                str(entry.get("duration_ms") or 0),
+            )
+        )
+    return "## Provider Log\n\n" + _table(("Task", "Provider", "Model", "Status", "Duration ms"), rows)
 
 
 def _revision_section(run_dir: Path, revision: dict[str, Any]) -> str:

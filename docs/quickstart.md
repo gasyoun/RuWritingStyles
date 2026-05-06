@@ -34,6 +34,7 @@ runs/demo-pseudo-etymology/
   normalized.md
   segments.json
   report.md
+  provider.log.jsonl
   reviews/
   council.json
   revision.json
