@@ -44,6 +44,7 @@ def _bundle_files(run_dir: Path, report_path: Path) -> list[Path]:
         run_dir / "segments.json",
         report_path,
         run_dir / "provider.log.jsonl",
+        run_dir / "eval-result.json",
         run_dir / "revised.md",
         run_dir / "revision.diff",
         run_dir / "council.json",

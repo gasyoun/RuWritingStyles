@@ -91,6 +91,7 @@ class CliPipelineTests(unittest.TestCase):
     run_dir = ROOT / "runs" / "unittest-readme"
     executed_run_dir = ROOT / "runs" / "unittest-readme-executed"
     demo_run_dir = ROOT / "runs" / "unittest-demo"
+    eval_run_dir = ROOT / "runs" / "unittest-eval-pseudo"
 
     def tearDown(self) -> None:
         if self.run_dir.exists():
@@ -99,6 +100,8 @@ class CliPipelineTests(unittest.TestCase):
             shutil.rmtree(self.executed_run_dir)
         if self.demo_run_dir.exists():
             shutil.rmtree(self.demo_run_dir)
+        if self.eval_run_dir.exists():
+            shutil.rmtree(self.eval_run_dir)
 
     def test_full_offline_run_creates_expected_artifacts(self) -> None:
         if self.run_dir.exists():
@@ -209,6 +212,29 @@ class CliPipelineTests(unittest.TestCase):
         self.assertEqual(exit_code, 0)
         self.assertTrue((self.demo_run_dir / "revised.md").exists())
         self.assertEqual(main(["validate-run", str(self.demo_run_dir)]), 0)
+
+    def test_eval_run_creates_eval_result(self) -> None:
+        if self.eval_run_dir.exists():
+            shutil.rmtree(self.eval_run_dir)
+
+        exit_code = main(
+            [
+                "eval-run",
+                "--case",
+                "pseudo-etymology",
+                "--provider",
+                "mock",
+                "--run-id",
+                "unittest-eval-pseudo",
+            ]
+        )
+        self.assertEqual(exit_code, 0)
+        result = json.loads((self.eval_run_dir / "eval-result.json").read_text(encoding="utf-8"))
+        self.assertEqual(result["case_id"], "pseudo-etymology")
+        self.assertEqual(result["provider"], "mock")
+        self.assertEqual(result["finding_count"], 3)
+        self.assertTrue((self.eval_run_dir / "provider.log.jsonl").exists())
+        self.assertEqual(main(["validate-run", str(self.eval_run_dir)]), 0)
 
 
 if __name__ == "__main__":
