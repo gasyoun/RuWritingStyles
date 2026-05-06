@@ -43,6 +43,17 @@ class ModelPolicy:
 
 
 @dataclass(frozen=True)
+class ModelRoute:
+    """One provider/task route from model_policy.yml."""
+
+    provider: str
+    task: str
+    model: str
+    mode_name: str
+    mode_value: str
+
+
+@dataclass(frozen=True)
 class StylePassportSummary:
     """A compact view of a style passport for CLI listing."""
 
@@ -127,6 +138,58 @@ def load_model_policy(repo_root: Path) -> ModelPolicy:
         default_reasoning=_scalar(default_block, "reasoning", "xhigh"),
         default_speed=_scalar(default_block, "speed", "standard"),
     )
+
+
+def load_model_routes(repo_root: Path) -> tuple[ModelRoute, ...]:
+    path = repo_root / "model_policy.yml"
+    routes: list[ModelRoute] = []
+    provider = ""
+    in_routes = False
+    task = ""
+    fields: dict[str, str] = {}
+
+    def flush() -> None:
+        if provider and task and fields.get("model"):
+            mode_name = "reasoning" if fields.get("reasoning") else "thinking"
+            routes.append(
+                ModelRoute(
+                    provider=provider,
+                    task=task,
+                    model=str(fields["model"]),
+                    mode_name=mode_name,
+                    mode_value=str(fields.get(mode_name) or ""),
+                )
+            )
+
+    for line in _read(path).splitlines():
+        provider_match = re.match(r"^\s{2}(openai|google|anthropic):\s*$", line)
+        task_routes_match = re.match(r"^\s{4}task_routes:\s*$", line)
+        task_match = re.match(r"^\s{6}([a-z_]+):\s*$", line)
+        field_match = re.match(r"^\s{8}(model|reasoning|thinking):\s*['\"]?([^'\"\n]+?)['\"]?\s*$", line)
+
+        if provider_match:
+            flush()
+            provider = provider_match.group(1)
+            in_routes = False
+            task = ""
+            fields = {}
+            continue
+        if task_routes_match and provider:
+            flush()
+            in_routes = True
+            task = ""
+            fields = {}
+            continue
+        if in_routes and task_match:
+            flush()
+            task = task_match.group(1)
+            fields = {}
+            continue
+        if in_routes and field_match and task:
+            fields[field_match.group(1)] = field_match.group(2).strip()
+
+    flush()
+    return tuple(routes)
 
 
 def load_passport_summaries(repo_root: Path, manifest: Manifest | None = None) -> tuple[StylePassportSummary, ...]:

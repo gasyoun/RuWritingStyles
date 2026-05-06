@@ -43,6 +43,15 @@ This loads:
 
 It prints the MVP styles and the default development model policy.
 
+## Show Model Routes
+
+```bash
+rws model-routes
+rws model-routes --provider openai --task style_review
+```
+
+This prints the task-to-model routes from `model_policy.yml`, including provider-specific reasoning or thinking settings.
+
 ## List styles
 
 ```bash

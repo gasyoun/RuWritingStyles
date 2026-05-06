@@ -14,6 +14,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from ruwritingstyles.cli import main
+from ruwritingstyles.config import load_model_routes
 from ruwritingstyles.providers import _extract_anthropic_text, _extract_gemini_text
 from ruwritingstyles.segment import normalize_document, segment_markdown
 
@@ -61,6 +62,16 @@ class ProviderParsingTests(unittest.TestCase):
         }
         self.assertEqual(_extract_gemini_text(gemini), '{"ok": true}')
         self.assertEqual(_extract_anthropic_text(anthropic), '{"ok": true}')
+
+
+class ModelPolicyTests(unittest.TestCase):
+    def test_model_routes_load_from_policy(self) -> None:
+        routes = load_model_routes(ROOT)
+        route = next(route for route in routes if route.provider == "openai" and route.task == "style_review")
+        self.assertEqual(route.model, "gpt-5.5")
+        self.assertEqual(route.mode_name, "reasoning")
+        self.assertEqual(route.mode_value, "medium")
+        self.assertEqual(main(["model-routes", "--provider", "openai", "--task", "style_review"]), 0)
 
 
 class CliPipelineTests(unittest.TestCase):
