@@ -285,6 +285,7 @@ def _eval_section(eval_result: dict[str, Any]) -> str:
     if not eval_result:
         return ""
     scoring = eval_result.get("scoring") if isinstance(eval_result.get("scoring"), dict) else {}
+    diff_metrics = eval_result.get("diff_metrics") if isinstance(eval_result.get("diff_metrics"), dict) else {}
     rows = [
         ("Case", str(eval_result.get("case_id") or "")),
         ("Provider", str(eval_result.get("provider") or "")),
@@ -294,6 +295,9 @@ def _eval_section(eval_result: dict[str, Any]) -> str:
         ("Matched risks", ", ".join(_strings(eval_result.get("matched_expected_risks")))),
         ("Scoring passed", str(scoring.get("passed") if scoring else "")),
         ("Required matches", str(scoring.get("required_match_count") if scoring else "")),
+        ("Diff within limits", str(scoring.get("diff_within_limits") if scoring else "")),
+        ("Changed line ratio", _value(diff_metrics.get("changed_line_ratio"))),
+        ("Char delta ratio", _value(diff_metrics.get("char_delta_ratio"))),
     ]
     return _section_table("Eval Result", ("Field", "Value"), rows)
 

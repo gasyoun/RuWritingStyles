@@ -101,6 +101,8 @@ def _review_section(reviews: list[dict[str, Any]]) -> str:
 def _eval_section(eval_result: dict[str, Any]) -> str:
     if not eval_result:
         return ""
+    scoring = eval_result.get("scoring") if isinstance(eval_result.get("scoring"), dict) else {}
+    diff_metrics = eval_result.get("diff_metrics") if isinstance(eval_result.get("diff_metrics"), dict) else {}
     rows = [
         ("case", str(eval_result.get("case_id") or "")),
         ("provider", str(eval_result.get("provider") or "")),
@@ -108,7 +110,10 @@ def _eval_section(eval_result: dict[str, Any]) -> str:
         ("finding_count", str(eval_result.get("finding_count") or 0)),
         ("verification_status", str(eval_result.get("verification_status") or "")),
         ("matched_expected_risks", ", ".join(eval_result.get("matched_expected_risks") or [])),
-        ("scoring_passed", str((eval_result.get("scoring") or {}).get("passed", ""))),
+        ("scoring_passed", str(scoring.get("passed", ""))),
+        ("diff_within_limits", str(scoring.get("diff_within_limits", ""))),
+        ("changed_line_ratio", _value(diff_metrics.get("changed_line_ratio"))),
+        ("char_delta_ratio", _value(diff_metrics.get("char_delta_ratio"))),
     ]
     return "## Eval Result\n\n" + _table(("Field", "Value"), rows)
 

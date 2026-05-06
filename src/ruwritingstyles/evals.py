@@ -9,7 +9,7 @@ from typing import Any
 
 from .config import load_manifest, load_model_policy
 from .council import create_council_bundle
-from .diff import write_revision_diff
+from .diff import calculate_revision_diff_metrics, write_revision_diff
 from .execution import (
     execute_council_artifact,
     execute_review_artifact,
@@ -37,6 +37,8 @@ class EvalCase:
     required_finding_types: tuple[str, ...]
     min_required_matches: int
     allowed_verification_statuses: tuple[str, ...]
+    max_changed_line_ratio: float
+    max_char_delta_ratio: float
 
 
 @dataclass(frozen=True)
@@ -143,6 +145,8 @@ def _case(repo_root: Path, data: dict[str, Any]) -> EvalCase:
         required_finding_types=_required_finding_types(data),
         min_required_matches=_min_required_matches(data),
         allowed_verification_statuses=_allowed_verification_statuses(data),
+        max_changed_line_ratio=_scoring_float(data, "max_changed_line_ratio", 0.75),
+        max_char_delta_ratio=_scoring_float(data, "max_char_delta_ratio", 0.5),
     )
 
 
@@ -168,6 +172,12 @@ def _allowed_verification_statuses(data: dict[str, Any]) -> tuple[str, ...]:
     return tuple(str(item) for item in values if item)
 
 
+def _scoring_float(data: dict[str, Any], key: str, default: float) -> float:
+    scoring = data.get("scoring") if isinstance(data.get("scoring"), dict) else {}
+    value = scoring.get(key)
+    return float(value) if isinstance(value, (int, float)) and value >= 0 else default
+
+
 def _write_eval_result(
     *,
     repo_root: Path,
@@ -181,9 +191,15 @@ def _write_eval_result(
     verification = _load_json(run_dir / "verification.json")
     verification_status = str(verification.get("status") or "missing")
     required_matches = sorted(set(case.required_finding_types).intersection(finding_types))
+    diff_metrics = calculate_revision_diff_metrics(run_dir)
+    diff_within_limits = (
+        diff_metrics["changed_line_ratio"] <= case.max_changed_line_ratio
+        and diff_metrics["char_delta_ratio"] <= case.max_char_delta_ratio
+    )
     passed = (
         len(required_matches) >= case.min_required_matches
         and verification_status in set(case.allowed_verification_statuses)
+        and diff_within_limits
     )
     result = {
         "case_id": case.case_id,
@@ -198,6 +214,7 @@ def _write_eval_result(
         "finding_types": sorted(finding_types),
         "matched_expected_risks": matched,
         "verification_status": verification_status,
+        "diff_metrics": diff_metrics,
         "scoring": {
             "passed": passed,
             "required_finding_types": list(case.required_finding_types),
@@ -205,6 +222,9 @@ def _write_eval_result(
             "required_match_count": len(required_matches),
             "min_required_matches": case.min_required_matches,
             "allowed_verification_statuses": list(case.allowed_verification_statuses),
+            "diff_within_limits": diff_within_limits,
+            "max_changed_line_ratio": case.max_changed_line_ratio,
+            "max_char_delta_ratio": case.max_char_delta_ratio,
         },
     }
     path = run_dir / "eval-result.json"
