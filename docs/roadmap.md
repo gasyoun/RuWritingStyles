@@ -149,6 +149,8 @@ limits:
 
 Также добавлен `rws run`, который выполняет весь текущий offline pipeline одной командой: `prepare`, `review`, `council`, `revise`, `verify`.
 
+Текущий smoke test для этого слоя находится в `tests/test_cli_pipeline.py` и запускается стандартным `python -m unittest discover -s tests`.
+
 ## Этап 3. Одиночная проверка стилем
 
 Цель: один стиль проверяет документ и выдает структурированные замечания, а не свободный пересказ.
