@@ -33,6 +33,25 @@ def build_parser() -> argparse.ArgumentParser:
     )
     prepare.set_defaults(func=cmd_prepare)
 
+    run = subparsers.add_parser(
+        "run",
+        help="Run the full offline pipeline: prepare, review, council, revise, verify.",
+    )
+    run.add_argument("input", type=Path, help="Input .md or .txt document.")
+    run.add_argument(
+        "--run-id",
+        help="Optional deterministic run id. The target runs/<run-id> must not already exist.",
+    )
+    run_styles = run.add_mutually_exclusive_group()
+    run_styles.add_argument("--style", help="One style id from `rws list-styles`.")
+    run_styles.add_argument("--styles", help="Comma-separated style ids from `rws list-styles`.")
+    run_styles.add_argument(
+        "--mvp",
+        action="store_true",
+        help="Use the MVP styles from styles/manifest.yml. This is the default.",
+    )
+    run.set_defaults(func=cmd_run)
+
     show_config = subparsers.add_parser(
         "show-config",
         help="Show the loaded style manifest and default model policy summary.",
@@ -116,6 +135,50 @@ def cmd_prepare(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_run(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    input_path = args.input if args.input.is_absolute() else (Path.cwd() / args.input)
+    input_path = input_path.resolve()
+
+    manifest = load_manifest(repo_root)
+    model_policy = load_model_policy(repo_root)
+    original_text = read_document(input_path)
+    normalized_text = normalize_document(original_text)
+    segments = segment_markdown(normalized_text)
+
+    run_dir = create_prepare_run(
+        repo_root=repo_root,
+        input_path=input_path,
+        original_text=original_text,
+        normalized_text=normalized_text,
+        segments=segments,
+        manifest=manifest,
+        model_policy=model_policy,
+        run_id=args.run_id,
+    )
+
+    style_ids = _selected_style_ids(args, manifest)
+    print(f"created {run_dir.relative_to(repo_root)}")
+    print(f"segments: {len(segments)}")
+
+    for style_id in style_ids:
+        bundle = create_review_bundle(
+            repo_root=repo_root,
+            run_dir=run_dir,
+            style_id=style_id,
+            manifest=manifest,
+        )
+        print(f"created {bundle.review_json.relative_to(repo_root)}")
+
+    council = create_council_bundle(repo_root=repo_root, run_dir=run_dir)
+    print(f"created {council.council_json.relative_to(repo_root)}")
+    revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
+    print(f"created {revision.revision_json.relative_to(repo_root)}")
+    verification = create_verification_bundle(repo_root=repo_root, run_dir=run_dir)
+    print(f"created {verification.verification_json.relative_to(repo_root)}")
+    return 0
+
+
 def cmd_show_config(_: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     manifest = load_manifest(repo_root)
@@ -157,16 +220,7 @@ def cmd_review(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     manifest = load_manifest(repo_root)
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
-
-    if args.mvp:
-        style_ids = list(manifest.mvp_style_ids)
-    elif args.styles:
-        style_ids = [style_id.strip() for style_id in args.styles.split(",") if style_id.strip()]
-    else:
-        style_ids = [args.style]
-
-    if not style_ids:
-        raise ValueError("no style ids selected")
+    style_ids = _selected_style_ids(args, manifest)
 
     for style_id in style_ids:
         bundle = create_review_bundle(
@@ -178,6 +232,21 @@ def cmd_review(args: argparse.Namespace) -> int:
         print(f"created {bundle.review_json.relative_to(repo_root)}")
         print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
     return 0
+
+
+def _selected_style_ids(args: argparse.Namespace, manifest) -> list[str]:
+    if getattr(args, "mvp", False):
+        style_ids = list(manifest.mvp_style_ids)
+    elif getattr(args, "styles", None):
+        style_ids = [style_id.strip() for style_id in args.styles.split(",") if style_id.strip()]
+    elif getattr(args, "style", None):
+        style_ids = [args.style]
+    else:
+        style_ids = list(manifest.mvp_style_ids)
+
+    if not style_ids:
+        raise ValueError("no style ids selected")
+    return style_ids
 
 
 def cmd_council(args: argparse.Namespace) -> int:

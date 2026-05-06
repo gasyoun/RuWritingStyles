@@ -81,6 +81,27 @@ runs/<run-id>/
 
 `runs/` is ignored by Git because run artifacts are local outputs.
 
+## Run the full offline pipeline
+
+```bash
+rws run README.md
+```
+
+For deterministic smoke tests:
+
+```bash
+rws run README.md --run-id cli-smoke-readme
+```
+
+By default, `rws run` uses the MVP style set from `styles/manifest.yml`. You can override it:
+
+```bash
+rws run README.md --style zalizniak-zametki
+rws run README.md --styles zalizniak-ocherk,zalizniak-zametki
+```
+
+The command creates the same `runs/<run-id>/` directory as `prepare`, then adds review, council, revision, and verification artifacts.
+
 ## Segment format
 
 `segments.json` contains stable `span_id` values:
