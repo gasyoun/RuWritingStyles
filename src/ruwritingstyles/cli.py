@@ -513,6 +513,25 @@ def cmd_run(args: argparse.Namespace) -> int:
             )
             print(f"completed {bundle.review_json.relative_to(repo_root)}")
 
+    if args.deliberate:
+        print("\n--- Cross-Style Deliberation (Debate) ---")
+        for style_id in style_ids:
+            bundle = create_deliberation_bundle(
+                repo_root=repo_root,
+                run_dir=run_dir,
+                style_id=style_id,
+                manifest=manifest,
+            )
+            print(f"created {bundle.deliberation_json.relative_to(repo_root)}")
+            if args.execute:
+                execute_deliberation_artifact(
+                    repo_root=repo_root,
+                    delib_path=bundle.deliberation_json,
+                    provider=provider_from_name(args.provider),
+                    model=args.model,
+                )
+                print(f"completed {bundle.deliberation_json.relative_to(repo_root)}")
+
     for iteration in range(1, args.max_iterations + 1):
         if iteration > 1:
             print(f"\n--- Fact-Checking Iteration {iteration} ---")
