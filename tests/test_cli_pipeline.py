@@ -30,7 +30,7 @@ from ruwritingstyles.provider_log import load_provider_log, render_provider_log
 from ruwritingstyles.provider_status import provider_statuses, provider_statuses_json, render_provider_statuses
 from ruwritingstyles.schema_validation import validate_json_schema
 from ruwritingstyles.segment import normalize_document, segment_markdown
-from ruwritingstyles.validation import _load_schema_store
+from ruwritingstyles.validation import _load_schema_store, validate_provider_status_file
 
 
 class SegmentTests(unittest.TestCase):
@@ -150,6 +150,21 @@ class ModelPolicyTests(unittest.TestCase):
         rendered_json = provider_statuses_json(statuses, provider="openai")
         self.assertEqual(rendered_json[0]["configured_env"], "OPENAI_API_KEY")
         self.assertNotIn("sk-secret", json.dumps(rendered_json))
+        schema_store = _load_schema_store(ROOT, [])
+        self.assertEqual(
+            validate_json_schema(
+                rendered_json,
+                schema_store["provider-status.schema.json"],
+                schema_store=schema_store,
+            ),
+            (),
+        )
+        status_path = ROOT / "runs" / "unittest-provider-status.json"
+        status_path.parent.mkdir(exist_ok=True)
+        status_path.write_text(json.dumps(rendered_json), encoding="utf-8")
+        self.assertTrue(validate_provider_status_file(status_path).ok)
+        self.assertEqual(main(["validate-provider-status", str(status_path)]), 0)
+        status_path.unlink()
         with patch.dict("os.environ", {}, clear=True):
             self.assertEqual(main(["provider-status", "--provider", "mock", "--strict"]), 0)
             self.assertEqual(main(["provider-status", "--provider", "mock", "--json"]), 0)

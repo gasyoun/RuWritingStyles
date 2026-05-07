@@ -28,7 +28,12 @@ from .review import create_review_bundle
 from .revision import create_revision_bundle
 from .runs import create_prepare_run
 from .segment import normalize_document, read_document, segment_markdown
-from .validation import validate_eval_comparison_file, validate_eval_suite_dir, validate_run_dir
+from .validation import (
+    validate_eval_comparison_file,
+    validate_eval_suite_dir,
+    validate_provider_status_file,
+    validate_run_dir,
+)
 from .verification import create_verification_bundle
 
 
@@ -328,6 +333,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="Comparison JSON path, for example runs/<suite>/comparison.json.",
     )
     validate_eval_comparison.set_defaults(func=cmd_validate_eval_comparison)
+
+    validate_provider_status = subparsers.add_parser(
+        "validate-provider-status",
+        help="Validate a provider-status --json artifact.",
+    )
+    validate_provider_status.add_argument(
+        "status",
+        type=Path,
+        help="Provider status JSON path created from `rws provider-status --json`.",
+    )
+    validate_provider_status.set_defaults(func=cmd_validate_provider_status)
 
     return parser
 
@@ -857,6 +873,17 @@ def cmd_validate_eval_comparison(args: argparse.Namespace) -> int:
     result = validate_eval_comparison_file(comparison)
     if result.ok:
         print("OK eval comparison artifact valid")
+        return 0
+    for message in result.messages:
+        print(f"FAIL {message}", file=sys.stderr)
+    return 1
+
+
+def cmd_validate_provider_status(args: argparse.Namespace) -> int:
+    status = args.status if args.status.is_absolute() else (Path.cwd() / args.status)
+    result = validate_provider_status_file(status)
+    if result.ok:
+        print("OK provider status artifact valid")
         return 0
     for message in result.messages:
         print(f"FAIL {message}", file=sys.stderr)

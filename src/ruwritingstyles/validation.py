@@ -92,6 +92,25 @@ def validate_eval_comparison_file(comparison_path: Path) -> ValidationResult:
     return ValidationResult(ok=not messages, messages=tuple(messages))
 
 
+def validate_provider_status_file(status_path: Path) -> ValidationResult:
+    status_path = status_path.resolve()
+    messages: list[str] = []
+    repo_root = _repo_root_from_artifact(status_path)
+    schema_store = _load_schema_store(repo_root, messages)
+    data = _load_json(status_path, messages)
+    if isinstance(data, list):
+        schema = schema_store.get("provider-status.schema.json")
+        if schema is None:
+            messages.append("missing schema provider-status.schema.json")
+        else:
+            for message in validate_json_schema(data, schema, schema_store=schema_store):
+                messages.append(f"{status_path.name} schema {message}")
+        _validate_provider_status_result(data, messages)
+    elif data is not None:
+        messages.append(f"{status_path.name} must contain a JSON array")
+    return ValidationResult(ok=not messages, messages=tuple(messages))
+
+
 def _load_json(path: Path, messages: list[str]) -> Any:
     if not path.exists():
         messages.append(f"missing {path.name}")
@@ -330,6 +349,29 @@ def _validate_eval_comparison_result(data: dict[str, Any], messages: list[str]) 
         expected = round(float(candidate) - float(baseline), 6)
         if abs(float(delta) - expected) > 0.000001:
             messages.append("eval-suite-comparison.json pass_rate_delta does not match candidate-baseline")
+
+
+def _validate_provider_status_result(data: list[Any], messages: list[str]) -> None:
+    seen: set[str] = set()
+    for index, row in enumerate(data):
+        if not isinstance(row, dict):
+            messages.append(f"provider-status.json results[{index}] must be an object")
+            continue
+        provider = row.get("provider")
+        if isinstance(provider, str):
+            if provider in seen:
+                messages.append(f"provider-status.json duplicate provider {provider}")
+            seen.add(provider)
+        api_key_env = row.get("api_key_env")
+        missing_env = row.get("missing_env")
+        configured_env = row.get("configured_env")
+        ready = row.get("ready")
+        if ready is True and missing_env:
+            messages.append(f"provider-status.json {provider} is ready but has missing_env")
+        if ready is False and not missing_env:
+            messages.append(f"provider-status.json {provider} is not ready but missing_env is empty")
+        if configured_env and isinstance(api_key_env, list) and configured_env not in api_key_env:
+            messages.append(f"provider-status.json {provider} configured_env is not listed in api_key_env")
 
 
 def _validate_with_schema(
