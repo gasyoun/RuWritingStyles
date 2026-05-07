@@ -173,6 +173,7 @@ runs/<run-id>/summary.html
 The reports summarize segment counts, style review status, findings, council decisions, revision status, and verifier warnings. `summary.html` is a portable static view with findings grouped by `span_id`.
 When `--execute` produces `revised.md`, `run` also writes `revision.diff`.
 Provider executions are appended to `provider.log.jsonl` without API keys or request bodies.
+Each provider log entry includes `retry_count`, `retry_delay_seconds`, and `retry_statuses`, so real API runs can show when rate limits or transient errors affected the pipeline.
 
 To package the completed run:
 

@@ -149,11 +149,28 @@ def _validate_provider_log(path: Path, messages: list[str]) -> None:
         if not isinstance(entry, dict):
             messages.append(f"provider.log.jsonl line {index} must be an object")
             continue
-        for key in ["timestamp", "task", "provider", "model", "artifact", "status", "duration_ms"]:
+        for key in [
+            "timestamp",
+            "task",
+            "provider",
+            "model",
+            "artifact",
+            "status",
+            "duration_ms",
+            "retry_count",
+            "retry_delay_seconds",
+            "retry_statuses",
+        ]:
             if key not in entry:
                 messages.append(f"provider.log.jsonl line {index} missing {key}")
         if entry.get("status") not in {"completed", "error"}:
             messages.append(f"provider.log.jsonl line {index} has invalid status {entry.get('status')!r}")
+        if not isinstance(entry.get("retry_count"), int):
+            messages.append(f"provider.log.jsonl line {index} has invalid retry_count")
+        if not isinstance(entry.get("retry_delay_seconds"), (int, float)):
+            messages.append(f"provider.log.jsonl line {index} has invalid retry_delay_seconds")
+        if not isinstance(entry.get("retry_statuses"), list):
+            messages.append(f"provider.log.jsonl line {index} has invalid retry_statuses")
 
 
 def _validate_eval_result(path: Path, messages: list[str]) -> None:
