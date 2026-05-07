@@ -15,7 +15,13 @@ class CouncilBundle:
     prompt_md: Path
 
 
-def create_council_bundle(*, repo_root: Path, run_dir: Path, manifest: Manifest) -> CouncilBundle:
+def create_council_bundle(
+    *,
+    repo_root: Path,
+    run_dir: Path,
+    manifest: Manifest,
+    verification_feedback: dict[str, Any] | None = None,
+) -> CouncilBundle:
     run_dir = run_dir.resolve()
     segments_path = run_dir / "segments.json"
     reviews_dir = run_dir / "reviews"
@@ -43,6 +49,7 @@ def create_council_bundle(*, repo_root: Path, run_dir: Path, manifest: Manifest)
             segments_json=segments_path.read_text(encoding="utf-8"),
             review_docs=review_docs,
             manifest=manifest,
+            verification_feedback=verification_feedback,
         ),
         encoding="utf-8",
     )
@@ -81,6 +88,7 @@ def _render_prompt(
     segments_json: str,
     review_docs: list[dict[str, Any]],
     manifest: Manifest,
+    verification_feedback: dict[str, Any] | None = None,
 ) -> str:
     weights = {ref.style_id: ref.weight for ref in manifest.passports}
     council_config = manifest.council or CouncilConfig("Coordinator", "Neutral deliberation.")
@@ -101,6 +109,21 @@ def _render_prompt(
 
     grouped_findings_json = json.dumps(by_span, ensure_ascii=False, indent=2)
 
+    feedback_section = ""
+    if verification_feedback:
+        warnings = verification_feedback.get("warnings", [])
+        if warnings:
+            feedback_json = json.dumps(warnings, ensure_ascii=False, indent=2)
+            feedback_section = f"""
+## Verification Feedback (CRITICAL)
+
+The previous revision attempt failed verification with these warnings. You MUST address these issues in your new decisions.
+
+```json
+{feedback_json}
+```
+"""
+
     return f"""# Council Request
 
 You are the RuWritingStyles council: `{council_config.archetype}`.
@@ -111,7 +134,7 @@ Read the style review findings, compare advice across styles, and return a struc
 
 **Conflict Resolution Strategy:**
 {council_config.conflict_resolution_strategy}
-
+{feedback_section}
 ## Instructions
 
 1. **Compare Advice**: For each document span, look at findings from all styles.

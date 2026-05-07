@@ -25,6 +25,9 @@ All notable changes to the RuWritingStyles project will be documented in this fi
 - Council Logic: Findings are now grouped by `span_id` in the prompt for easier cross-style comparison.
 - Council Logic: Introduced `_style_weight` to help the council weigh different style authoritativeness.
 - Manifest Schema: Added `weight` to style passports and a `council` configuration block.
+- Fact-Checking Loop: Implemented iterative refinement loop in `rws run` and `eval-run`.
+- Fact-Checking Loop: Council prompt now accepts verification feedback to address factual regressions.
+- Fact-Checking Loop: Added `--max-iterations` argument to control the depth of recursive improvement.
 
 ### Task 3: Real-world provider validation
 - Blocked by: Missing API keys for OpenAI, Anthropic, and Google.

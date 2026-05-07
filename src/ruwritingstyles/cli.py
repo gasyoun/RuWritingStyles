@@ -73,6 +73,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Use the MVP styles from styles/manifest.yml. This is the default.",
     )
+    run.add_argument(
+        "--max-iterations",
+        type=int,
+        default=1,
+        help="Maximum number of fact-checking iterations if verification fails.",
+    )
     _add_execute_args(run)
     run.set_defaults(func=cmd_run)
 
@@ -228,6 +234,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Create an offline council bundle from prepared style reviews.",
     )
     council.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    council.add_argument("--feedback", type=Path, help="Optional verification.json to use as feedback.")
     _add_execute_args(council)
     council.set_defaults(func=cmd_council)
 
@@ -474,38 +481,66 @@ def cmd_run(args: argparse.Namespace) -> int:
             )
             print(f"completed {bundle.review_json.relative_to(repo_root)}")
 
-    council = create_council_bundle(repo_root=repo_root, run_dir=run_dir, manifest=manifest)
-    print(f"created {council.council_json.relative_to(repo_root)}")
-    if args.execute:
-        execute_council_artifact(
+    for iteration in range(1, args.max_iterations + 1):
+        if iteration > 1:
+            print(f"\n--- Fact-Checking Iteration {iteration} ---")
+
+        verification_feedback = None
+        if iteration > 1:
+            prev_verification = run_dir / "verification.json"
+            if prev_verification.exists():
+                verification_feedback = json.loads(prev_verification.read_text(encoding="utf-8"))
+
+        council = create_council_bundle(
             repo_root=repo_root,
-            council_path=council.council_json,
-            provider=provider_from_name(args.provider),
-            model=args.model,
+            run_dir=run_dir,
+            manifest=manifest,
+            verification_feedback=verification_feedback,
         )
-        print(f"completed {council.council_json.relative_to(repo_root)}")
-    revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
-    print(f"created {revision.revision_json.relative_to(repo_root)}")
-    if args.execute:
-        execute_revision_artifact(
-            repo_root=repo_root,
-            revision_path=revision.revision_json,
-            provider=provider_from_name(args.provider),
-            model=args.model,
-        )
-        print(f"completed {revision.revision_json.relative_to(repo_root)}")
-        diff_path = write_revision_diff(run_dir)
-        print(f"updated {diff_path.relative_to(repo_root)}")
-    verification = create_verification_bundle(repo_root=repo_root, run_dir=run_dir)
-    print(f"created {verification.verification_json.relative_to(repo_root)}")
-    if args.execute:
-        execute_verification_artifact(
-            repo_root=repo_root,
-            verification_path=verification.verification_json,
-            provider=provider_from_name(args.provider),
-            model=args.model,
-        )
-        print(f"completed {verification.verification_json.relative_to(repo_root)}")
+        print(f"created {council.council_json.relative_to(repo_root)}")
+        if args.execute:
+            execute_council_artifact(
+                repo_root=repo_root,
+                council_path=council.council_json,
+                provider=provider_from_name(args.provider),
+                model=args.model,
+            )
+            print(f"completed {council.council_json.relative_to(repo_root)}")
+
+        revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
+        print(f"created {revision.revision_json.relative_to(repo_root)}")
+        if args.execute:
+            execute_revision_artifact(
+                repo_root=repo_root,
+                revision_path=revision.revision_json,
+                provider=provider_from_name(args.provider),
+                model=args.model,
+            )
+            print(f"completed {revision.revision_json.relative_to(repo_root)}")
+            diff_path = write_revision_diff(run_dir)
+            print(f"updated {diff_path.relative_to(repo_root)}")
+
+        verification = create_verification_bundle(repo_root=repo_root, run_dir=run_dir)
+        print(f"created {verification.verification_json.relative_to(repo_root)}")
+        if args.execute:
+            execute_verification_artifact(
+                repo_root=repo_root,
+                verification_path=verification.verification_json,
+                provider=provider_from_name(args.provider),
+                model=args.model,
+            )
+            print(f"completed {verification.verification_json.relative_to(repo_root)}")
+
+            # Check if we should loop
+            v_doc = json.loads(verification.verification_json.read_text(encoding="utf-8"))
+            if not v_doc.get("warnings") or iteration == args.max_iterations:
+                break
+            else:
+                print(f"Verification failed with {len(v_doc.get('warnings'))} warnings. Retrying...")
+        else:
+            # If not executing, we only do one iteration of prompt generation
+            break
+
     _write_reports(repo_root, run_dir)
     return 0
 
@@ -760,7 +795,18 @@ def cmd_council(args: argparse.Namespace) -> int:
     if args.execute and args.require_provider_ready:
         _require_provider_ready(args.provider)
     manifest = load_manifest(repo_root)
-    bundle = create_council_bundle(repo_root=repo_root, run_dir=run_dir, manifest=manifest)
+    feedback = None
+    if args.feedback:
+        feedback_path = args.feedback if args.feedback.is_absolute() else (Path.cwd() / args.feedback)
+        if feedback_path.exists():
+            feedback = json.loads(feedback_path.read_text(encoding="utf-8"))
+
+    bundle = create_council_bundle(
+        repo_root=repo_root,
+        run_dir=run_dir,
+        manifest=manifest,
+        verification_feedback=feedback,
+    )
     print(f"created {bundle.council_json.relative_to(repo_root)}")
     print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
     if args.execute:
