@@ -134,6 +134,8 @@ The command accepts suite directories or direct `eval-suite-result.json` paths, 
 rws eval-compare runs/openai-suite runs/gemini-suite --output runs/eval-compare-openai-gemini.md --json-output runs/eval-compare-openai-gemini.json
 ```
 
+Use `--strict` in CI when a lower candidate pass rate or any per-case regression should return exit code `1`.
+
 ## Export An Eval Suite
 
 ```bash

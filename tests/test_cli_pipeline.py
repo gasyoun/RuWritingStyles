@@ -458,6 +458,48 @@ class CliPipelineTests(unittest.TestCase):
         self.assertIn("unittest-suite/cases/unittest-suite-source-claim/eval-result.json", names)
         self.assertIn("unittest-suite/cases/unittest-suite-register-shift/eval-result.json", names)
 
+    def test_eval_compare_strict_returns_failure_on_regression(self) -> None:
+        baseline_dir = ROOT / "runs" / "unittest-compare-baseline"
+        candidate_dir = ROOT / "runs" / "unittest-compare-candidate"
+        for path in [baseline_dir, candidate_dir]:
+            if path.exists():
+                shutil.rmtree(path)
+            path.mkdir(parents=True)
+        baseline = {
+            "suite_id": "unittest-compare-baseline",
+            "provider": "mock",
+            "model": "mock",
+            "case_count": 1,
+            "passed_count": 1,
+            "failed_count": 0,
+            "pass_rate": 1.0,
+            "results": [
+                {
+                    "case_id": "pseudo-etymology",
+                    "run_dir": "runs/unittest-suite-pseudo-etymology",
+                    "result_path": "runs/unittest-suite-pseudo-etymology/eval-result.json",
+                    "passed": True,
+                    "finding_count": 3,
+                    "verification_status": "needs_human_review",
+                    "changed_line_ratio": 0.0,
+                    "char_delta_ratio": 0.0,
+                }
+            ],
+        }
+        candidate = dict(baseline)
+        candidate["suite_id"] = "unittest-compare-candidate"
+        candidate["passed_count"] = 0
+        candidate["failed_count"] = 1
+        candidate["pass_rate"] = 0.0
+        candidate["results"] = [dict(baseline["results"][0], passed=False)]
+        (baseline_dir / "eval-suite-result.json").write_text(json.dumps(baseline, indent=2) + "\n", encoding="utf-8")
+        (candidate_dir / "eval-suite-result.json").write_text(json.dumps(candidate, indent=2) + "\n", encoding="utf-8")
+        try:
+            self.assertEqual(main(["eval-compare", str(baseline_dir), str(candidate_dir), "--strict"]), 1)
+        finally:
+            shutil.rmtree(baseline_dir)
+            shutil.rmtree(candidate_dir)
+
     def test_eval_suite_strict_returns_failure_on_failed_cases(self) -> None:
         if self.eval_suite_dir.exists():
             shutil.rmtree(self.eval_suite_dir)
