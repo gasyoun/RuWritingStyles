@@ -17,6 +17,8 @@ class Segment:
     start_line: int
     end_line: int
 
+    tags: tuple[str, ...] = ()
+
     def to_json(self) -> dict[str, object]:
         return {
             "span_id": self.span_id,
@@ -24,6 +26,7 @@ class Segment:
             "text": self.text,
             "start_line": self.start_line,
             "end_line": self.end_line,
+            "tags": list(self.tags),
         }
 
 
@@ -49,21 +52,24 @@ def segment_markdown(text: str) -> list[Segment]:
     in_fence = False
     fence: list[str] = []
     fence_start = 1
+    pending_tags: list[str] = []
 
     def flush_paragraph(end_line: int) -> None:
-        nonlocal paragraph, paragraph_start
+        nonlocal paragraph, paragraph_start, pending_tags
         if not paragraph:
             return
         content = "\n".join(paragraph).strip()
         if content:
-            segments.append(_segment("paragraph", content, paragraph_start, end_line))
+            segments.append(_segment("paragraph", content, paragraph_start, end_line, tuple(pending_tags)))
         paragraph = []
+        pending_tags = []
 
     def flush_fence(end_line: int) -> None:
-        nonlocal fence, fence_start
+        nonlocal fence, fence_start, pending_tags
         if fence:
-            segments.append(_segment("code", "\n".join(fence), fence_start, end_line))
+            segments.append(_segment("code", "\n".join(fence), fence_start, end_line, tuple(pending_tags)))
         fence = []
+        pending_tags = []
 
     for index, line in enumerate(lines, start=1):
         stripped = line.strip()
@@ -88,9 +94,17 @@ def segment_markdown(text: str) -> list[Segment]:
             flush_paragraph(index - 1)
             continue
 
+        if stripped.startswith("<!--") and "rws:" in stripped:
+            tag_match = re.search(r"rws:([\w,:-]+)", stripped)
+            if tag_match:
+                tags = tag_match.group(1).split(",")
+                pending_tags.extend(t.strip() for t in tags)
+            continue
+
         if stripped.startswith("#"):
             flush_paragraph(index - 1)
-            segments.append(_segment("heading", stripped, index, index))
+            segments.append(_segment("heading", stripped, index, index, tuple(pending_tags)))
+            pending_tags = []
             continue
 
         if not paragraph:
@@ -105,13 +119,14 @@ def segment_markdown(text: str) -> list[Segment]:
     return [_renumber(segment, idx) for idx, segment in enumerate(segments, start=1)]
 
 
-def _segment(segment_type: str, text: str, start_line: int, end_line: int) -> Segment:
+def _segment(segment_type: str, text: str, start_line: int, end_line: int, tags: tuple[str, ...] = ()) -> Segment:
     return Segment(
         span_id="pending",
         segment_type=segment_type,
         text=text,
         start_line=start_line,
         end_line=end_line,
+        tags=tags,
     )
 
 
@@ -128,4 +143,5 @@ def _renumber(segment: Segment, index: int) -> Segment:
         text=segment.text,
         start_line=segment.start_line,
         end_line=segment.end_line,
+        tags=segment.tags,
     )

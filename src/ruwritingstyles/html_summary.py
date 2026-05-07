@@ -6,6 +6,7 @@ from html import escape
 import json
 from pathlib import Path
 from typing import Any
+import difflib
 
 from .provider_log import load_provider_log
 
@@ -38,7 +39,8 @@ def render_html_report(run_dir: Path) -> str:
         _hero(run_id, source, segments, reviews, findings, council, revision, verification, eval_result),
         _artifact_links(run_dir),
         _eval_section(eval_result),
-        _diff_section(run_dir),
+        _commitments_section(council),
+        _diff_section(run_dir, council),
         _finding_section(findings),
         _review_section(reviews),
         _council_section(council),
@@ -254,35 +256,61 @@ def _page(title: str, body: str) -> str:
       font-weight: 800;
       text-transform: uppercase;
       font-size: 0.75rem;
-    }}
-    .accepted .decision-status {{ color: #2e7d32; }}
-    .rejected .decision-status {{ color: #c62828; }}
+    }
+    .accepted .decision-status { color: #2e7d32; }
+    .rejected .decision-status { color: #c62828; }
     
-    table {{
+    .diff-table {
+      display: flex;
+      flex-direction: column;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 13px;
+      line-height: 20px;
+    }
+    .diff-line {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    .diff-line:last-child { border-bottom: none; }
+    .diff-line > div {
+      padding: 4px 8px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .diff-line .orig { border-right: 1px solid var(--line); background: rgba(0,0,0,0.01); }
+    .diff-line.delete .orig { background: #ffeef0; }
+    .diff-line.insert .rev { background: #e6ffed; }
+    .diff-line.replace .orig { background: #fff5b1; }
+    .diff-line.replace .rev { background: #e6ffed; }
+    .del { background: #fdb8c0; text-decoration: line-through; }
+    .ins { background: #acf2bd; font-weight: bold; }
+    
+    table {
       width: 100%;
       border-collapse: collapse;
       min-width: 560px;
-    }}
-    th, td {{
+    }
+    th, td {
       padding: 12px 14px;
       border-bottom: 1px solid var(--line);
       text-align: left;
       vertical-align: top;
-    }}
-    th {{
+    }
+    th {
       color: var(--muted);
       font-size: 0.8rem;
       text-transform: uppercase;
-    }}
-    @media (max-width: 560px) {{
-      main {{
+    }
+    @media (max-width: 560px) {
+      main {
         width: min(100% - 20px, 1120px);
         padding-top: 20px;
-      }}
-      .metric strong {{ font-size: 1.25rem; }}
-      h1 {{ font-size: 2rem; }}
-      .panel {{ padding: 10px; }}
-    }}
+      }
+      .metric strong { font-size: 1.25rem; }
+      h1 { font-size: 2rem; }
+      .panel { padding: 10px; }
+    }
   </style>
 </head>
 <body>
@@ -460,29 +488,103 @@ def _council_section(council: dict[str, Any]) -> str:
     </section>"""
 
 
-def _diff_section(run_dir: Path) -> str:
+def _diff_section(run_dir: Path, council: dict[str, Any]) -> str:
     original_path = run_dir / "normalized.md"
     revised_path = run_dir / "revised.md"
     
     if not revised_path.exists():
         return ""
         
-    original_text = original_path.read_text(encoding="utf-8") if original_path.exists() else "Original not found."
+    original_text = original_path.read_text(encoding="utf-8") if original_path.exists() else ""
     revised_text = revised_path.read_text(encoding="utf-8")
     
+    # Simple line-by-line word-level diff
+    orig_lines = original_text.splitlines()
+    rev_lines = revised_text.splitlines()
+    
+    diff_html = []
+    
+    # We'll use a simple heuristic to align lines if they are mostly the same length
+    # For a real robust diff, we'd use difflib.HtmlDiff, but we want custom styling.
+    
+    matcher = difflib.SequenceMatcher(None, orig_lines, rev_lines)
+    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        if tag == 'equal':
+            for i in range(i1, i2):
+                diff_html.append(_diff_row(orig_lines[i], rev_lines[j1 + (i - i1)], "equal"))
+        elif tag == 'replace':
+            # Highlight changes within lines if counts match
+            if (i2 - i1) == (j2 - j1):
+                for k in range(i2 - i1):
+                    diff_html.append(_diff_row(orig_lines[i1 + k], rev_lines[j1 + k], "replace"))
+            else:
+                for i in range(i1, i2):
+                    diff_html.append(_diff_row(orig_lines[i], "", "delete"))
+                for j in range(j1, j2):
+                    diff_html.append(_diff_row("", rev_lines[j], "insert"))
+        elif tag == 'delete':
+            for i in range(i1, i2):
+                diff_html.append(_diff_row(orig_lines[i], "", "delete"))
+        elif tag == 'insert':
+            for j in range(j1, j2):
+                diff_html.append(_diff_row("", rev_lines[j], "insert"))
+
     return f"""    <section>
-      <h2>Side-by-Side Comparison</h2>
-      <div class="diff-container">
-        <div class="diff-box">
-          <h3>Original (Normalized)</h3>
-          {_e(original_text)}
-        </div>
-        <div class="diff-box">
-          <h3>Revised</h3>
-          {_e(revised_text)}
+      <h2>Visual Review</h2>
+      <div class="panel">
+        <div class="diff-table">
+          {"".join(diff_html)}
         </div>
       </div>
     </section>"""
+
+
+def _diff_row(orig: str, rev: str, tag: str) -> str:
+    if tag == "equal":
+        return f'<div class="diff-line equal"><div class="orig">{_e(orig)}</div><div class="rev">{_e(rev)}</div></div>'
+    
+    if tag == "replace":
+        # Word-level highlight
+        o_words = orig.split()
+        r_words = rev.split()
+        o_h, r_h = _word_diff(orig, rev)
+        return f'<div class="diff-line replace"><div class="orig">{o_h}</div><div class="rev">{r_h}</div></div>'
+        
+    if tag == "delete":
+        return f'<div class="diff-line delete"><div class="orig">{_e(orig)}</div><div class="rev"></div></div>'
+        
+    if tag == "insert":
+        return f'<div class="diff-line insert"><div class="orig"></div><div class="rev">{_e(rev)}</div></div>'
+    
+    return ""
+
+
+def _word_diff(orig: str, rev: str) -> tuple[str, str]:
+    o_html = []
+    r_html = []
+    
+    s = difflib.SequenceMatcher(None, orig, rev)
+    for tag, i1, i2, j1, j2 in s.get_opcodes():
+        if tag == 'equal':
+            o_html.append(_e(orig[i1:i2]))
+            r_html.append(_e(rev[j1:j2]))
+        elif tag == 'replace':
+            o_html.append(f'<span class="del">{_e(orig[i1:i2])}</span>')
+            r_html.append(f'<span class="ins">{_e(rev[j1:j2])}</span>')
+        elif tag == 'delete':
+            o_html.append(f'<span class="del">{_e(orig[i1:i2])}</span>')
+        elif tag == 'insert':
+            r_html.append(f'<span class="ins">{_e(rev[j1:j2])}</span>')
+            
+    return "".join(o_html), "".join(r_html)
+
+
+def _commitments_section(council: dict[str, Any]) -> str:
+    commitments = _dicts(council.get("stylistic_commitments"))
+    if not commitments:
+        return ""
+    rows = [(c.get("term", ""), c.get("decision", ""), c.get("rationale", "")) for c in commitments]
+    return _section_table("Stylistic Commitments", ("Term", "Decision", "Rationale"), rows)
 
 
 def _revision_section(revision: dict[str, Any]) -> str:

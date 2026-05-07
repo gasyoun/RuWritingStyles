@@ -39,6 +39,16 @@ def create_council_bundle(
     if delib_dir.exists():
         delib_paths = sorted(delib_dir.glob("*.delib.json"))
 
+    scrutiny_path = run_dir / "scrutiny" / "scrutiny.json"
+    scrutiny_doc = None
+    if scrutiny_path.exists():
+        scrutiny_doc = _load_review(scrutiny_path)
+
+    project_context_path = run_dir.parent / "project-context.json"
+    project_context = None
+    if project_context_path.exists():
+        project_context = json.loads(project_context_path.read_text(encoding="utf-8"))
+
     segments_doc = json.loads(segments_path.read_text(encoding="utf-8"))
     run_id = str(segments_doc.get("run_id") or run_dir.name)
 
@@ -55,6 +65,8 @@ def create_council_bundle(
             segments_json=segments_path.read_text(encoding="utf-8"),
             review_docs=review_docs,
             delib_docs=delib_docs,
+            scrutiny_doc=scrutiny_doc,
+            project_context=project_context,
             manifest=manifest,
             verification_feedback=verification_feedback,
         ),
@@ -95,6 +107,8 @@ def _render_prompt(
     segments_json: str,
     review_docs: list[dict[str, Any]],
     delib_docs: list[dict[str, Any]],
+    scrutiny_doc: dict[str, Any] | None,
+    project_context: dict[str, Any] | None,
     manifest: Manifest,
     verification_feedback: dict[str, Any] | None = None,
 ) -> str:
@@ -125,6 +139,36 @@ def _render_prompt(
     grouped_findings_json = json.dumps(by_span, ensure_ascii=False, indent=2)
     replies_json = json.dumps(all_replies, ensure_ascii=False, indent=2)
 
+    context_section = ""
+    if project_context:
+        commitments = project_context.get("stylistic_commitments", [])
+        if commitments:
+            commitments_json = json.dumps(commitments, ensure_ascii=False, indent=2)
+            context_section = f"""
+## Project Context (Cross-Document Consistency)
+
+The following stylistic commitments were made in previous documents of this project. You MUST follow these decisions to ensure consistency across the entire corpus.
+
+```json
+{commitments_json}
+```
+"""
+
+    scrutiny_section = ""
+    if scrutiny_doc:
+        findings = scrutiny_doc.get("findings", [])
+        if findings:
+            scrutiny_findings_json = json.dumps(findings, ensure_ascii=False, indent=2)
+            scrutiny_section = f"""
+## Linguistic Scrutiny Findings (Expert Advice)
+
+A Senior Philologist has audited the document. You MUST treat these findings as authoritative for etymology and anachronism resolution.
+
+```json
+{scrutiny_findings_json}
+```
+"""
+
     feedback_section = ""
     if verification_feedback:
         warnings = verification_feedback.get("warnings", [])
@@ -150,13 +194,20 @@ Read the style review findings, compare advice across styles, and return a struc
 
 **Conflict Resolution Strategy:**
 {council_config.conflict_resolution_strategy}
+{context_section}
+{scrutiny_section}
 {feedback_section}
 ## Instructions
 
 1. **Compare Advice**: For each document span, look at findings from all styles.
 2. **Resolve Conflicts**: If styles suggest different changes for the same span, use your strategy and the `_style_weight` (higher is more authoritative) to decide.
 3. **Synthesis**: You can accept a finding exactly, reject it, or create a "modified" finding that combines advice from multiple styles.
-4. **Informational**: Mark findings as informational if they are interesting observations that don't justify a text change.
+4. **Impact Assessment**: Pay close attention to `tags` in `segments.json`. 
+   - If a segment has a `rhyme` tag, ensure proposed changes do not break the rhyme.
+   - If it has a `meter` tag, preserve the rhythm.
+   - If it has a `tone` tag, maintain the specified tone level.
+   - REJECT advice that violates these protected qualities unless the advice is specifically fixing an error in that quality.
+5. **Informational**: Mark findings as informational if they are interesting observations that don't justify a text change.
 
 ## Required Output
 
@@ -180,6 +231,13 @@ Return a JSON object with this shape:
       "finding_id": "finding-001",
       "status": "accepted_with_modification",
       "reason": "Why this decision follows from the council strategy."
+    }}
+  ],
+  "stylistic_commitments": [
+    {{
+      "term": "X",
+      "decision": "Use 'X' instead of 'Y' consistently.",
+      "rationale": "Consistent with Tronsky's preference for historical roots."
     }}
   ]
 }}

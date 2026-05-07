@@ -12,12 +12,14 @@ from typing import Any
 from .config import load_manifest, load_model_policy
 from .council import create_council_bundle
 from .diff import calculate_revision_diff_metrics, write_revision_diff
+from .assess import create_impact_bundle
 from .execution import (
     execute_council_artifact,
     execute_review_artifact,
     execute_deliberation_artifact,
     execute_revision_artifact,
     execute_verification_artifact,
+    execute_impact_artifact,
 )
 from .providers import ProviderRequest, provider_from_name
 from .report import write_run_report
@@ -164,10 +166,30 @@ def run_eval_case(
             model=model,
         )
 
+        impact = create_impact_bundle(repo_root=repo_root, run_dir=run_dir)
+        execute_impact_artifact(
+            repo_root=repo_root,
+            impact_path=impact.impact_json,
+            provider=provider,
+            model=model,
+        )
+
         # Check if we should loop
         v_doc = json.loads(verification.verification_json.read_text(encoding="utf-8"))
-        if not v_doc.get("warnings") or iteration == 3:
+        i_doc = json.loads(impact.impact_json.read_text(encoding="utf-8"))
+
+        v_warnings = v_doc.get("warnings", [])
+        i_warnings = [
+            f"Impact failure in {a['span_id']} ({a['tag']}): {a['comment']}"
+            for a in i_doc.get("assessments", []) if not a.get("passed")
+        ]
+        combined_warnings = v_warnings + i_warnings
+
+        if not combined_warnings or iteration == 3:
             break
+        else:
+            merged_feedback = {"warnings": combined_warnings}
+            (run_dir / "verification.json").write_text(json.dumps(merged_feedback, ensure_ascii=False, indent=2), encoding="utf-8")
 
     result_path = _write_eval_result(
         repo_root=repo_root,

@@ -90,6 +90,7 @@ def execute_council_artifact(*, repo_root: Path, council_path: Path, provider: B
     council["status"] = "completed"
     council["replies"] = output.get("replies", [])
     council["decisions"] = output.get("decisions", [])
+    council["stylistic_commitments"] = output.get("stylistic_commitments", [])
     _write_json(council_path, council)
 
 
@@ -123,6 +124,29 @@ def execute_revision_artifact(*, repo_root: Path, revision_path: Path, provider:
     _write_json(revision_path, revision)
 
 
+def execute_scrutiny_artifact(*, repo_root: Path, scrutiny_path: Path, provider: BaseProvider, model: str | None = None) -> None:
+    scrutiny = _load_json(scrutiny_path)
+    prompt_path = repo_root / str(scrutiny["prompt_path"])
+    output = _generate_with_log(
+        repo_root=repo_root,
+        run_dir=scrutiny_path.parent.parent,
+        artifact_path=scrutiny_path,
+        provider=provider,
+        provider_request=ProviderRequest(
+            task="scrutiny",
+            prompt=prompt_path.read_text(encoding="utf-8"),
+            schema=load_schema(repo_root, "schemas/scrutiny-output.schema.json"),
+            metadata={
+                "run_id": scrutiny["run_id"],
+            },
+            model=model,
+        ),
+    )
+    scrutiny["status"] = "completed"
+    scrutiny["findings"] = output.get("findings", [])
+    _write_json(scrutiny_path, scrutiny)
+
+
 def execute_verification_artifact(*, repo_root: Path, verification_path: Path, provider: BaseProvider, model: str | None = None) -> None:
     verification = _load_json(verification_path)
     prompt_path = repo_root / str(verification["prompt_path"])
@@ -145,6 +169,29 @@ def execute_verification_artifact(*, repo_root: Path, verification_path: Path, p
     verification["passed"] = output.get("passed", [])
     verification["warnings"] = output.get("warnings", [])
     _write_json(verification_path, verification)
+
+
+def execute_impact_artifact(*, repo_root: Path, impact_path: Path, provider: BaseProvider, model: str | None = None) -> None:
+    impact = _load_json(impact_path)
+    prompt_path = repo_root / str(impact["prompt_path"])
+    output = _generate_with_log(
+        repo_root=repo_root,
+        run_dir=impact_path.parent,
+        artifact_path=impact_path,
+        provider=provider,
+        provider_request=ProviderRequest(
+            task="assessment",
+            prompt=prompt_path.read_text(encoding="utf-8"),
+            schema=load_schema(repo_root, "schemas/impact-output.schema.json"),
+            metadata={
+                "run_id": impact["run_id"],
+            },
+            model=model,
+        ),
+    )
+    impact["status"] = output.get("status", "completed")
+    impact["assessments"] = output.get("assessments", [])
+    _write_json(impact_path, impact)
 
 
 def _load_json(path: Path) -> dict[str, Any]:

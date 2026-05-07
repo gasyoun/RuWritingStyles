@@ -50,6 +50,14 @@ class ModelPolicy:
     default_model: str
     default_reasoning: str
     default_speed: str
+    routes: tuple[ModelRoute, ...] = ()
+
+    def resolve_model(self, task: str, provider_name: str) -> str:
+        """Resolve the best model for a specific task and provider."""
+        for route in self.routes:
+            if route.provider == provider_name and route.task == task:
+                return route.model
+        return self.default_model
 
 
 @dataclass(frozen=True)
@@ -162,6 +170,7 @@ def load_model_policy(repo_root: Path) -> ModelPolicy:
         default_model=_scalar(default_block, "model", "gpt-5.5"),
         default_reasoning=_scalar(default_block, "reasoning", "xhigh"),
         default_speed=_scalar(default_block, "speed", "standard"),
+        routes=load_model_routes(repo_root),
     )
 
 

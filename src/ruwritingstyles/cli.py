@@ -8,6 +8,9 @@ from pathlib import Path
 import sys
 
 from .config import load_manifest, load_model_policy, load_model_routes, load_passport_summaries, repo_root_from
+from .assess import create_impact_bundle
+from .scrutiny import create_scrutiny_bundle
+from .project import update_project_context
 from .council import create_council_bundle
 from .council_summary import load_council_summary, render_council_summary
 from .diff import write_revision_diff
@@ -18,6 +21,8 @@ from .execution import (
     execute_deliberation_artifact,
     execute_revision_artifact,
     execute_verification_artifact,
+    execute_impact_artifact,
+    execute_scrutiny_artifact,
 )
 from .export import export_eval_suite_bundle, export_run_bundle
 from .findings import load_finding_summaries, render_finding_summaries
@@ -85,8 +90,54 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Enable multi-turn deliberation (style agents debate each other).",
     )
+    run.add_argument(
+        "--scrutiny",
+        action="store_true",
+        help="Enable deep linguistic scrutiny (expert philological audit).",
+    )
+    run.add_argument(
+        "--project-dir",
+        type=Path,
+        help="Optional project directory to store shared stylistic context.",
+    )
+    run.add_argument(
+        "--interactive",
+        "-i",
+        action="store_true",
+        help="Interactively review and override Council decisions before revision.",
+    )
     _add_execute_args(run)
     run.set_defaults(func=cmd_run)
+
+    project_run = subparsers.add_parser(
+        "project-run",
+        help="Run the pipeline on a directory of documents with shared consistency.",
+    )
+    project_run.add_argument("input_dir", type=Path, help="Directory containing .md files.")
+    project_run.add_argument(
+        "--deliberate",
+        action="store_true",
+        help="Enable multi-turn deliberation.",
+    )
+    project_run.add_argument(
+        "--scrutiny",
+        action="store_true",
+        help="Enable deep linguistic scrutiny.",
+    )
+    project_run.add_argument(
+        "--max-iterations",
+        type=int,
+        default=1,
+        help="Max fact-checking iterations.",
+    )
+    project_run.add_argument(
+        "--interactive",
+        "-i",
+        action="store_true",
+        help="Interactively review and override Council decisions.",
+    )
+    _add_execute_args(project_run)
+    project_run.set_defaults(func=cmd_project_run)
 
     show_config = subparsers.add_parser(
         "show-config",
@@ -277,6 +328,22 @@ def build_parser() -> argparse.ArgumentParser:
     revise.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
     _add_execute_args(revise)
     revise.set_defaults(func=cmd_revise)
+
+    assess = subparsers.add_parser(
+        "assess",
+        help="Perform impact assessment on a revised document (rhyme/meter check).",
+    )
+    assess.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    _add_execute_args(assess)
+    assess.set_defaults(func=cmd_assess)
+
+    scrutiny = subparsers.add_parser(
+        "scrutiny",
+        help="Perform deep philological scrutiny (etymology/anachronism check).",
+    )
+    scrutiny.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    _add_execute_args(scrutiny)
+    scrutiny.set_defaults(func=cmd_scrutiny)
 
     verify = subparsers.add_parser(
         "verify",
@@ -481,6 +548,12 @@ def cmd_run(args: argparse.Namespace) -> int:
     normalized_text = normalize_document(original_text)
     segments = segment_markdown(normalized_text)
 
+    run_id = args.run_id
+    project_dir = getattr(args, "project_dir", None)
+    if project_dir:
+        project_dir = project_dir if project_dir.is_absolute() else (Path.cwd() / project_dir)
+        project_dir.mkdir(parents=True, exist_ok=True)
+
     run_dir = create_prepare_run(
         repo_root=repo_root,
         input_path=input_path,
@@ -489,8 +562,14 @@ def cmd_run(args: argparse.Namespace) -> int:
         segments=segments,
         manifest=manifest,
         model_policy=model_policy,
-        run_id=args.run_id,
+        run_id=run_id,
     )
+
+    if project_dir:
+        # Copy project context into the run directory for the Council to see
+        context_path = project_dir / "project-context.json"
+        if context_path.exists():
+            (run_dir / "project-context.json").write_text(context_path.read_text(encoding="utf-8"), encoding="utf-8")
 
     style_ids = _selected_style_ids(args, manifest)
     print(f"created {run_dir.relative_to(repo_root)}")
@@ -528,9 +607,22 @@ def cmd_run(args: argparse.Namespace) -> int:
                     repo_root=repo_root,
                     delib_path=bundle.deliberation_json,
                     provider=provider_from_name(args.provider),
-                    model=args.model,
+                    model=args.model or model_policy.resolve_model("style_review", args.provider),
                 )
                 print(f"completed {bundle.deliberation_json.relative_to(repo_root)}")
+
+    if args.scrutiny:
+        print("\n--- Linguistic Scrutiny (Expert Audit) ---")
+        bundle = create_scrutiny_bundle(repo_root=repo_root, run_dir=run_dir)
+        print(f"created {bundle.scrutiny_json.relative_to(repo_root)}")
+        if args.execute:
+            execute_scrutiny_artifact(
+                repo_root=repo_root,
+                scrutiny_path=bundle.scrutiny_json,
+                provider=provider_from_name(args.provider),
+                model=args.model or model_policy.resolve_model("verification", args.provider),
+            )
+            print(f"completed {bundle.scrutiny_json.relative_to(repo_root)}")
 
     for iteration in range(1, args.max_iterations + 1):
         if iteration > 1:
@@ -554,9 +646,12 @@ def cmd_run(args: argparse.Namespace) -> int:
                 repo_root=repo_root,
                 council_path=council.council_json,
                 provider=provider_from_name(args.provider),
-                model=args.model,
+                model=args.model or model_policy.resolve_model("council", args.provider),
             )
             print(f"completed {council.council_json.relative_to(repo_root)}")
+
+            if args.interactive:
+                _interactive_council_review(repo_root, council.council_json)
 
         revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
         print(f"created {revision.revision_json.relative_to(repo_root)}")
@@ -565,7 +660,7 @@ def cmd_run(args: argparse.Namespace) -> int:
                 repo_root=repo_root,
                 revision_path=revision.revision_json,
                 provider=provider_from_name(args.provider),
-                model=args.model,
+                model=args.model or model_policy.resolve_model("synthesis", args.provider),
             )
             print(f"completed {revision.revision_json.relative_to(repo_root)}")
             diff_path = write_revision_diff(run_dir)
@@ -578,21 +673,50 @@ def cmd_run(args: argparse.Namespace) -> int:
                 repo_root=repo_root,
                 verification_path=verification.verification_json,
                 provider=provider_from_name(args.provider),
-                model=args.model,
+                model=args.model or model_policy.resolve_model("verification", args.provider),
             )
             print(f"completed {verification.verification_json.relative_to(repo_root)}")
 
+        # Impact Assessment
+        impact = create_impact_bundle(repo_root=repo_root, run_dir=run_dir)
+        print(f"created {impact.impact_json.relative_to(repo_root)}")
+        if args.execute:
+            execute_impact_artifact(
+                repo_root=repo_root,
+                impact_path=impact.impact_json,
+                provider=provider_from_name(args.provider),
+                model=args.model or model_policy.resolve_model("verification", args.provider),
+            )
+            print(f"completed {impact.impact_json.relative_to(repo_root)}")
+
             # Check if we should loop
             v_doc = json.loads(verification.verification_json.read_text(encoding="utf-8"))
-            if not v_doc.get("warnings") or iteration == args.max_iterations:
+            i_doc = json.loads(impact.impact_json.read_text(encoding="utf-8"))
+            
+            v_warnings = v_doc.get("warnings", [])
+            i_warnings = [
+                f"Impact failure in {a['span_id']} ({a['tag']}): {a['comment']}"
+                for a in i_doc.get("assessments", []) if not a.get("passed")
+            ]
+            
+            combined_warnings = v_warnings + i_warnings
+            
+            if not combined_warnings or iteration == args.max_iterations:
                 break
             else:
-                print(f"Verification failed with {len(v_doc.get('warnings'))} warnings. Retrying...")
+                # Merge impact warnings into a dummy verification structure for the next council iteration
+                merged_feedback = {"warnings": combined_warnings}
+                (run_dir / "verification.json").write_text(json.dumps(merged_feedback, ensure_ascii=False, indent=2), encoding="utf-8")
+                print(f"Verification/Impact failed with {len(combined_warnings)} warnings. Retrying...")
         else:
-            # If not executing, we only do one iteration of prompt generation
+            # If not executing, we only do one iteration
             break
 
     _write_reports(repo_root, run_dir)
+
+    if project_dir and args.execute:
+        update_project_context(project_dir, run_dir)
+
     return 0
 
 
@@ -614,6 +738,116 @@ def cmd_show_config(_: argparse.Namespace) -> int:
     print(f"- reasoning: {model_policy.default_reasoning}")
     print(f"- speed: {model_policy.default_speed}")
     return 0
+
+
+def cmd_project_run(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    input_dir = args.input_dir if args.input_dir.is_absolute() else (Path.cwd() / args.input_dir)
+    if not input_dir.exists() or not input_dir.is_dir():
+        print(f"error: {input_dir} is not a directory")
+        return 1
+
+    md_files = sorted(input_dir.glob("*.md"))
+    if not md_files:
+        print(f"no .md files found in {input_dir}")
+        return 0
+
+    print(f"Project Run: {len(md_files)} files in {input_dir.name}")
+    
+    # We use the input_dir as the project_dir
+    project_dir = input_dir / ".rws-project"
+    project_dir.mkdir(parents=True, exist_ok=True)
+
+    md_file = md_files[0]
+    # Process files
+    for md_file in md_files:
+        print(f"\n>>> Processing {md_file.name}...")
+        # Create a clean args object for cmd_run
+        run_args = argparse.Namespace(
+            input=md_file,
+            run_id=None,
+            execute=args.execute,
+            provider=args.provider,
+            model=args.model,
+            require_provider_ready=args.require_provider_ready,
+            style=None,
+            styles=None,
+            mvp=True,
+            deliberate=args.deliberate,
+            scrutiny=args.scrutiny,
+            max_iterations=args.max_iterations,
+            interactive=args.interactive,
+            project_dir=project_dir,
+        )
+        cmd_run(run_args)
+    
+    print(f"\nProject run complete. Context saved to {project_dir / 'project-context.json'}")
+    return 0
+
+
+def _interactive_council_review(repo_root: Path, council_path: Path) -> None:
+    """Interactively review council decisions in the console."""
+    council = json.loads(council_path.read_text(encoding="utf-8"))
+    decisions = council.get("decisions", [])
+    if not decisions:
+        return
+
+    # Load findings for context
+    findings_map = {}
+    for review_rel in council.get("review_files", []):
+        review = json.loads((repo_root / str(review_rel)).read_text(encoding="utf-8"))
+        for f in review.get("findings", []):
+            findings_map[f["id"]] = f
+
+    print("\n--- Interactive Council Review ---")
+    print("Commands: [y]es/accept, [n]o/reject, [i]nformational, [s]kip/keep original, [a]ccept all, [q]uit")
+    
+    accept_all = False
+    new_decisions = []
+    
+    for decision in decisions:
+        fid = decision["finding_id"]
+        finding = findings_map.get(fid, {})
+        
+        if accept_all:
+            new_decisions.append(decision)
+            continue
+            
+        print(f"\nFinding: {fid}")
+        print(f"Style:   {finding.get('style_id', 'unknown')}")
+        print(f"Type:    {finding.get('type', 'unknown')}")
+        print(f"Comment: {finding.get('finding', '')}")
+        print(f"Suggest: {finding.get('suggestion', '')}")
+        print(f"Council Decision: {decision['status']} (Reason: {decision['reason']})")
+        
+        while True:
+            choice = input("Your decision? [y/n/i/s/a/q]: ").lower().strip()
+            if choice == 'y':
+                decision['status'] = 'accepted'
+                break
+            elif choice == 'n':
+                decision['status'] = 'rejected'
+                break
+            elif choice == 'i':
+                decision['status'] = 'informational'
+                break
+            elif choice == 's':
+                # Keep what council decided
+                break
+            elif choice == 'a':
+                accept_all = True
+                break
+            elif choice == 'q':
+                print("Aborting interactive review. Keeping previous decisions.")
+                return
+            else:
+                print("Invalid choice.")
+        
+        new_decisions.append(decision)
+
+    council["decisions"] = new_decisions
+    council_path.write_text(json.dumps(council, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print("\nCouncil decisions updated.")
 
 
 def cmd_model_routes(args: argparse.Namespace) -> int:
@@ -898,6 +1132,42 @@ def cmd_deliberate(args: argparse.Namespace) -> int:
                 model=args.model,
             )
             print(f"completed {bundle.deliberation_json.relative_to(repo_root)}")
+    return 0
+
+
+def cmd_scrutiny(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    if args.execute and args.require_provider_ready:
+        _require_provider_ready(args.provider)
+    bundle = create_scrutiny_bundle(repo_root=repo_root, run_dir=run_dir)
+    print(f"created {bundle.scrutiny_json.relative_to(repo_root)}")
+    if args.execute:
+        execute_scrutiny_artifact(
+            repo_root=repo_root,
+            scrutiny_path=bundle.scrutiny_json,
+            provider=provider_from_name(args.provider),
+            model=args.model,
+        )
+        print(f"completed {bundle.scrutiny_json.relative_to(repo_root)}")
+    return 0
+
+
+def cmd_assess(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    if args.execute and args.require_provider_ready:
+        _require_provider_ready(args.provider)
+    bundle = create_impact_bundle(repo_root=repo_root, run_dir=run_dir)
+    print(f"created {bundle.impact_json.relative_to(repo_root)}")
+    if args.execute:
+        execute_impact_artifact(
+            repo_root=repo_root,
+            impact_path=bundle.impact_json,
+            provider=provider_from_name(args.provider),
+            model=args.model,
+        )
+        print(f"completed {bundle.impact_json.relative_to(repo_root)}")
     return 0
 
 
