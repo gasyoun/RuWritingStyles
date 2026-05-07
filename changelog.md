@@ -18,8 +18,12 @@ All notable changes to the RuWritingStyles project will be documented in this fi
 - HTML Report: Side-by-side document comparison view (Original vs Revised).
 - HTML Report: Council decisions now displayed as stylized status cards instead of a plain table.
 - HTML Report: Modernized UI with CSS Grid, improved typography, and interactive hover states.
+- Eval Scoring: Added `strict_fidelity` check to fail cases if verification produces warnings.
+- Eval Scoring: Added `max_finding_count` limit to catch hallucination/over-reporting.
+- Eval Manifest: Updated `pseudo-etymology` case to enforce strict factual fidelity.
 
-## [In Progress] - 2026-05-07
+## [Blocked] - 2026-05-07
 
-### Adding
-- Task 3: Real-world provider validation (testing Anthropic/OpenAI/Google adapters).
+### Task 3: Real-world provider validation
+- Blocked by: Missing API keys for OpenAI, Anthropic, and Google.
+- Readiness: All adapters (urllib-based) are implemented and passed code review.

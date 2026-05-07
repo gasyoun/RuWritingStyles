@@ -45,7 +45,9 @@
                 "items": { "type": "string" }
               },
               "max_changed_line_ratio": { "type": "number" },
-              "max_char_delta_ratio": { "type": "number" }
+              "max_char_delta_ratio": { "type": "number" },
+              "strict_fidelity": { "type": "boolean" },
+              "max_finding_count": { "type": "integer" }
             }
           }
         }

@@ -41,6 +41,8 @@ class EvalCase:
     allowed_verification_statuses: tuple[str, ...]
     max_changed_line_ratio: float
     max_char_delta_ratio: float
+    strict_fidelity: bool
+    max_finding_count: int | None
 
 
 @dataclass(frozen=True)
@@ -335,6 +337,8 @@ def _case(repo_root: Path, data: dict[str, Any]) -> EvalCase:
         allowed_verification_statuses=_allowed_verification_statuses(data),
         max_changed_line_ratio=_scoring_float(data, "max_changed_line_ratio", 0.75),
         max_char_delta_ratio=_scoring_float(data, "max_char_delta_ratio", 0.5),
+        strict_fidelity=_scoring_bool(data, "strict_fidelity", False),
+        max_finding_count=_scoring_int_or_none(data, "max_finding_count"),
     )
 
 
@@ -366,6 +370,18 @@ def _scoring_float(data: dict[str, Any], key: str, default: float) -> float:
     return float(value) if isinstance(value, (int, float)) and value >= 0 else default
 
 
+def _scoring_bool(data: dict[str, Any], key: str, default: bool) -> bool:
+    scoring = data.get("scoring") if isinstance(data.get("scoring"), dict) else {}
+    value = scoring.get(key)
+    return bool(value) if value is not None else default
+
+
+def _scoring_int_or_none(data: dict[str, Any], key: str) -> int | None:
+    scoring = data.get("scoring") if isinstance(data.get("scoring"), dict) else {}
+    value = scoring.get(key)
+    return int(value) if isinstance(value, int) else None
+
+
 def _write_eval_result(
     *,
     repo_root: Path,
@@ -384,10 +400,16 @@ def _write_eval_result(
         diff_metrics["changed_line_ratio"] <= case.max_changed_line_ratio
         and diff_metrics["char_delta_ratio"] <= case.max_char_delta_ratio
     )
+    finding_count = _finding_count(run_dir)
+    finding_count_within_limits = case.max_finding_count is None or finding_count <= case.max_finding_count
+    fidelity_passed = not case.strict_fidelity or not verification.get("warnings")
+
     passed = (
         len(required_matches) >= case.min_required_matches
         and verification_status in set(case.allowed_verification_statuses)
         and diff_within_limits
+        and finding_count_within_limits
+        and fidelity_passed
     )
     result = {
         "case_id": case.case_id,
@@ -413,6 +435,11 @@ def _write_eval_result(
             "diff_within_limits": diff_within_limits,
             "max_changed_line_ratio": case.max_changed_line_ratio,
             "max_char_delta_ratio": case.max_char_delta_ratio,
+            "strict_fidelity": case.strict_fidelity,
+            "fidelity_passed": fidelity_passed,
+            "max_finding_count": case.max_finding_count,
+            "finding_count": finding_count,
+            "finding_count_within_limits": finding_count_within_limits,
         },
     }
     path = run_dir / "eval-result.json"
