@@ -409,3 +409,27 @@ MVP готов, когда можно взять один Markdown-докуме�
 - все артефакты в папке `runs/`.
 
 Такой MVP уже будет отличаться от обычного набора промптов: он покажет, что RuWritingStyles умеет не только задавать стиль ответа, но и организовывать коллективную редактуру документа.
+## Implementation status 2026-05-07
+
+The current prototype already contains the executable spine for the multi-style agent workflow:
+
+- `rws run` creates a full local pipeline: prepare, review, council, revise, verify, report, and HTML summary.
+- `--execute --provider mock` fills artifacts deterministically for tests.
+- Opt-in real provider adapters exist for OpenAI, Google Gemini, and Anthropic Claude.
+- `rws provider-status`, `--strict`, `--json`, `schemas/provider-status.schema.json`, and `rws validate-provider-status` provide safe readiness checks without exposing keys.
+- `.env.example` documents local real-provider setup while `.env*` is ignored by Git.
+- Provider execution telemetry records retry counts, retry delays, retry statuses, duration, artifact path, provider, and model.
+- `rws provider-log` exposes provider telemetry for a run.
+- `rws council-summary` exposes council replies and decisions for a run.
+- `rws eval-suite` runs all manifest cases and writes a suite report.
+- `rws eval-suite --compare-to` writes `comparison.md` and `comparison.json` against a baseline immediately after a candidate run.
+- `rws eval-compare`, `--json-output`, `--strict`, `rws validate-eval-suite`, `rws validate-eval-comparison`, and `rws eval-status` support regression tracking.
+- `rws export-eval-suite` packages suite reports and referenced case-run artifacts into a portable ZIP.
+- Manual GitHub Actions workflow `Eval Smoke` runs baseline and candidate mock suites, validates the comparison, prints statuses, exports the candidate bundle, and uploads it as an artifact.
+
+Current validation checkpoint:
+
+- `python -m compileall -q src tools tests`
+- `python tools/validate_project.py`
+- `python -m unittest discover -s tests` with 17 tests
+- `git diff --check`
