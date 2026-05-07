@@ -97,6 +97,18 @@ rws eval-run --case pseudo-etymology --provider openai --model gpt-5.5
 
 `eval-result.json` includes finding types, matched expected risks, verification status, diff magnitude metrics, and a minimal pass/fail scoring block from `evals/manifest.json`.
 
+## Run The Eval Suite
+
+```bash
+rws eval-suite --provider mock
+```
+
+This runs every case from `evals/manifest.json` and writes `runs/<suite-id>/eval-suite-result.json` with `case_count`, `passed_count`, `failed_count`, `pass_rate`, and per-case result paths. Use `--suite-id` for deterministic local smoke tests:
+
+```bash
+rws eval-suite --provider mock --suite-id cli-smoke-suite
+```
+
 ## Prepare a document
 
 ```bash

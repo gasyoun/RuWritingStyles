@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime, timezone
 import json
 from pathlib import Path
+import re
 from typing import Any
 
 from .config import load_manifest, load_model_policy
@@ -46,6 +48,14 @@ class EvalRunResult:
     """Summary of one executed eval case."""
 
     run_dir: Path
+    result_path: Path
+
+
+@dataclass(frozen=True)
+class EvalSuiteResult:
+    """Summary of a full eval manifest run."""
+
+    suite_dir: Path
     result_path: Path
 
 
@@ -119,6 +129,59 @@ def run_eval_case(
     )
     write_run_report(run_dir)
     return EvalRunResult(run_dir=run_dir, result_path=result_path)
+
+
+def run_eval_suite(
+    *,
+    repo_root: Path,
+    provider_name: str = "mock",
+    model: str | None = None,
+    suite_id: str | None = None,
+) -> EvalSuiteResult:
+    actual_suite_id = suite_id or _make_suite_id(provider_name)
+    suite_dir = repo_root / "runs" / actual_suite_id
+    suite_dir.mkdir(parents=True, exist_ok=False)
+
+    rows: list[dict[str, Any]] = []
+    for case in load_eval_cases(repo_root):
+        case_run_id = f"{actual_suite_id}-{case.case_id}"
+        result = run_eval_case(
+            repo_root=repo_root,
+            case_id=case.case_id,
+            provider_name=provider_name,
+            model=model,
+            run_id=case_run_id,
+        )
+        data = _load_json(result.result_path)
+        scoring = data.get("scoring") if isinstance(data.get("scoring"), dict) else {}
+        diff_metrics = data.get("diff_metrics") if isinstance(data.get("diff_metrics"), dict) else {}
+        rows.append(
+            {
+                "case_id": case.case_id,
+                "run_dir": _repo_relative(repo_root, result.run_dir),
+                "result_path": _repo_relative(repo_root, result.result_path),
+                "passed": bool(scoring.get("passed")),
+                "finding_count": data.get("finding_count", 0),
+                "verification_status": data.get("verification_status", "missing"),
+                "changed_line_ratio": diff_metrics.get("changed_line_ratio"),
+                "char_delta_ratio": diff_metrics.get("char_delta_ratio"),
+            }
+        )
+
+    passed_count = sum(1 for row in rows if row["passed"])
+    suite = {
+        "suite_id": actual_suite_id,
+        "provider": provider_name,
+        "model": model or "",
+        "case_count": len(rows),
+        "passed_count": passed_count,
+        "failed_count": len(rows) - passed_count,
+        "pass_rate": round(passed_count / max(1, len(rows)), 6),
+        "results": rows,
+    }
+    result_path = suite_dir / "eval-suite-result.json"
+    result_path.write_text(json.dumps(suite, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return EvalSuiteResult(suite_dir=suite_dir, result_path=result_path)
 
 
 def _find_case(repo_root: Path, case_id: str) -> EvalCase:
@@ -263,3 +326,9 @@ def _repo_relative(repo_root: Path, path: Path) -> str:
         return path.resolve().relative_to(repo_root.resolve()).as_posix()
     except ValueError:
         return str(path)
+
+
+def _make_suite_id(provider_name: str) -> str:
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    provider_slug = re.sub(r"[^a-zA-Z0-9]+", "-", provider_name).strip("-").lower() or "provider"
+    return f"{timestamp}-eval-suite-{provider_slug}"
