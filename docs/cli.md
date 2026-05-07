@@ -149,6 +149,8 @@ rws eval-status runs/openai-suite
 rws eval-status runs/eval-compare-openai-gemini.json
 ```
 
+The repository also includes a manual GitHub Actions workflow, `Eval Smoke`, which runs the mock eval suite, validates it, prints `eval-status`, exports the suite bundle, and uploads the ZIP artifact.
+
 ## Export An Eval Suite
 
 ```bash
