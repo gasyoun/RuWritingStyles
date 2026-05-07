@@ -6,6 +6,7 @@ from pathlib import Path
 import shutil
 import sys
 import unittest
+from unittest.mock import patch
 from zipfile import ZipFile
 
 
@@ -145,7 +146,9 @@ class ModelPolicyTests(unittest.TestCase):
         self.assertIn("ready: yes", rendered)
         self.assertIn("configured_env: OPENAI_API_KEY", rendered)
         self.assertNotIn("sk-secret", rendered)
-        self.assertEqual(main(["provider-status", "--provider", "mock"]), 0)
+        with patch.dict("os.environ", {}, clear=True):
+            self.assertEqual(main(["provider-status", "--provider", "mock", "--strict"]), 0)
+            self.assertEqual(main(["provider-status", "--provider", "openai", "--strict"]), 1)
 
 
 class SchemaValidationTests(unittest.TestCase):
