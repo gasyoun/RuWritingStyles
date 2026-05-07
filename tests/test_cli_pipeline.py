@@ -25,6 +25,7 @@ from ruwritingstyles.providers import (
     _is_retryable_status,
     _retry_delay_from_headers,
 )
+from ruwritingstyles.provider_log import load_provider_log, render_provider_log
 from ruwritingstyles.schema_validation import validate_json_schema
 from ruwritingstyles.segment import normalize_document, segment_markdown
 
@@ -243,6 +244,10 @@ class CliPipelineTests(unittest.TestCase):
         self.assertEqual(provider_log_entry["retry_count"], 0)
         self.assertEqual(provider_log_entry["retry_delay_seconds"], 0.0)
         self.assertEqual(provider_log_entry["retry_statuses"], [])
+        provider_log_summary = render_provider_log(load_provider_log(self.executed_run_dir))
+        self.assertIn("executions: 6", provider_log_summary)
+        self.assertIn("retries: 0", provider_log_summary)
+        self.assertEqual(main(["provider-log", str(self.executed_run_dir)]), 0)
         summaries = load_finding_summaries(self.executed_run_dir, span_id="p002")
         self.assertEqual(len(summaries), 3)
         self.assertIn("Mock provider placeholder finding", render_finding_summaries(summaries))

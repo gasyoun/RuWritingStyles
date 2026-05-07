@@ -328,6 +328,14 @@ rws findings runs/cli-smoke-readme --span p002
 
 This prints completed style findings grouped by `span_id`, with the segment excerpt, severity, style id, finding, suggestion, and confidence.
 
+## Inspect Provider Log
+
+```bash
+rws provider-log runs/cli-smoke-readme
+```
+
+This prints provider execution totals and per-task retry telemetry from `provider.log.jsonl`: duration, retry count, retry delay, retry statuses, and artifact path.
+
 ## Render a run report
 
 ```bash
