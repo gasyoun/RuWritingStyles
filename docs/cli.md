@@ -67,6 +67,8 @@ This prints whether each provider is ready for real API execution based on envir
 
 Use `--strict` in scripts when missing provider configuration should return exit code `1`; use `--json` when automation needs structured, secret-free readiness data. Saved JSON can be checked against `schemas/provider-status.schema.json` with `validate-provider-status`.
 
+For local setup, copy `.env.example` to `.env`, fill only the providers you want to run, and keep `.env` uncommitted.
+
 ## List styles
 
 ```bash
@@ -234,6 +236,8 @@ Provider environment variables:
 - `openai`: `OPENAI_API_KEY`, optional `RWS_OPENAI_MODEL`, optional `RWS_OPENAI_REASONING`.
 - `google`: `GEMINI_API_KEY` or `GOOGLE_API_KEY`, optional `RWS_GOOGLE_MODEL`.
 - `anthropic`: `ANTHROPIC_API_KEY`, optional `RWS_ANTHROPIC_MODEL`, optional `RWS_ANTHROPIC_MAX_TOKENS`.
+
+Use `.env.example` as the local template. The repository ignores `.env` and `.env.*` files so real keys stay out of Git.
 
 Transient provider failures are retried with exponential backoff. Configure this with `RWS_PROVIDER_MAX_ATTEMPTS` and `RWS_PROVIDER_RETRY_SECONDS`. When a provider returns rate-limit headers, the retry layer prefers `Retry-After`, then known OpenAI `x-ratelimit-reset-*` and Anthropic `anthropic-ratelimit-*-reset` headers for exhausted limits.
 
