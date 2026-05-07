@@ -6,11 +6,16 @@ import argparse
 import json
 from pathlib import Path
 import sys
+from datetime import datetime
+from typing import Any
 
 from .config import load_manifest, load_model_policy, load_model_routes, load_passport_summaries, repo_root_from
 from .assess import create_impact_bundle
 from .scrutiny import create_scrutiny_bundle
 from .project import update_project_context
+from .audit import audit_project_consistency
+from .generation import generate_style_passport, save_generated_style
+from .styleguide import generate_stylebook_markdown, save_stylebook
 from .council import create_council_bundle
 from .council_summary import load_council_summary, render_council_summary
 from .diff import write_revision_diff
@@ -109,6 +114,26 @@ def build_parser() -> argparse.ArgumentParser:
     _add_execute_args(run)
     run.set_defaults(func=cmd_run)
 
+    ab_test = subparsers.add_parser(
+        "ab-test",
+        help="Compare multiple Council archetypes on the same document.",
+    )
+    ab_test.add_argument("input_file", type=Path, help="Markdown file to test.")
+    ab_test.add_argument(
+        "--archetypes",
+        "-a",
+        nargs="+",
+        help="List of archetype IDs to compare (e.g., 'The Radical' 'The Minimalist').",
+    )
+    ab_test.add_argument(
+        "--styles",
+        "-s",
+        nargs="+",
+        help="Optional styles to use (overrides manifest MVP).",
+    )
+    _add_execute_args(ab_test)
+    ab_test.set_defaults(func=cmd_ab_test)
+
     project_run = subparsers.add_parser(
         "project-run",
         help="Run the pipeline on a directory of documents with shared consistency.",
@@ -138,6 +163,45 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_execute_args(project_run)
     project_run.set_defaults(func=cmd_project_run)
+
+    audit = subparsers.add_parser(
+        "audit",
+        help="Perform a final project-wide consistency audit against all stylistic commitments.",
+    )
+    audit.add_argument("project_dir", type=Path, help="The project directory containing run subfolders.")
+    _add_provider_args(audit)
+    audit.set_defaults(func=cmd_audit)
+
+    generate_passport = subparsers.add_parser(
+        "generate-passport",
+        help="Use an LLM to generate a new Style Passport and Source Prompt.",
+    )
+    generate_passport.add_argument("name", help="Human-friendly name of the style.")
+    generate_passport.add_argument(
+        "--description",
+        "-d",
+        required=True,
+        help="Detailed description of the style goals and tone.",
+    )
+    generate_passport.add_argument(
+        "--examples",
+        "-e",
+        help="Optional reference text to extract the style from.",
+    )
+    _add_execute_args(generate_passport)
+    generate_passport.set_defaults(func=cmd_generate_passport)
+
+    generate_styleguide = subparsers.add_parser(
+        "generate-styleguide",
+        help="Generate a human-readable Stylebook from passports and archetypes.",
+    )
+    generate_styleguide.add_argument(
+        "--output",
+        "-o",
+        default="STYLEBOOK.md",
+        help="Output filename (default: STYLEBOOK.md).",
+    )
+    generate_styleguide.set_defaults(func=cmd_generate_styleguide)
 
     show_config = subparsers.add_parser(
         "show-config",
@@ -260,14 +324,33 @@ def build_parser() -> argparse.ArgumentParser:
     eval_compare.add_argument(
         "--json-output",
         type=Path,
-        help="Optional machine-readable JSON comparison path.",
-    )
-    eval_compare.add_argument(
-        "--strict",
-        action="store_true",
-        help="Exit with status 1 when candidate pass rate drops or any case regresses.",
+        help="Optional path to write the full comparison JSON result.",
     )
     eval_compare.set_defaults(func=cmd_eval_compare)
+
+    eval_promote = subparsers.add_parser(
+        "eval-promote",
+        help="Promote a suite result to be the new baseline (Gold Standard).",
+    )
+    eval_promote.add_argument("suite_result", type=Path, help="Path to an eval-suite-result.json file.")
+    eval_promote.add_argument(
+        "--tag",
+        default="gold",
+        help="Baseline tag (default: 'gold'). Saves to evals/baselines/<tag>.json",
+    )
+    eval_promote.set_defaults(func=cmd_eval_promote)
+
+    eval_regression = subparsers.add_parser(
+        "eval-regression",
+        help="Run all evals and compare against the 'gold' baseline. Fails on regression.",
+    )
+    eval_regression.add_argument(
+        "--baseline",
+        type=Path,
+        help="Optional baseline path override. Defaults to evals/baselines/gold.json.",
+    )
+    _add_provider_args(eval_regression)
+    eval_regression.set_defaults(func=cmd_eval_regression)
 
     eval_status = subparsers.add_parser(
         "eval-status",
@@ -535,6 +618,128 @@ def cmd_prepare(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_ab_test(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    manifest = load_manifest(repo_root)
+    archetypes_list = args.archetypes
+    if not archetypes_list:
+        # Load all from archetypes.yml
+        from .config import load_archetypes
+        archetypes_list = [a.id for a in load_archetypes(repo_root)]
+    
+    if not archetypes_list:
+        print("error: no archetypes found to test.")
+        return 1
+        
+    print(f"Starting A/B test for {len(archetypes_list)} archetypes...")
+    
+    test_run_id = f"ab-test-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+    test_dir = repo_root / "runs" / test_run_id
+    test_dir.mkdir(parents=True, exist_ok=True)
+    
+    results = []
+    
+    for archetype_id in archetypes_list:
+        print(f"\n>>> Testing Archetype: {archetype_id}")
+        # Create a run for this archetype
+        run_id = f"{test_run_id}-{archetype_id.replace(' ', '-').lower()}"
+        
+        # We need a custom manifest for this run
+        from dataclasses import replace
+        from .config import CouncilConfig
+        custom_manifest = replace(manifest, council=CouncilConfig(archetype=archetype_id, conflict_resolution_strategy=manifest.council.conflict_resolution_strategy if manifest.council else "balanced"))
+        
+        # Build command args for a standard run
+        run_args = argparse.Namespace(
+            input_file=args.input_file,
+            styles=args.styles,
+            run_id=run_id,
+            deliberate=True,
+            scrutiny=True,
+            interactive=False,
+            execute=args.execute,
+            provider=args.provider,
+            model=args.model,
+            require_provider_ready=args.require_provider_ready,
+        )
+        
+        # We can't easily call cmd_run directly because it re-loads the manifest
+        # So we'll run a modified version of its logic
+        status = _execute_ab_run(repo_root, run_args, custom_manifest)
+        if status == 0:
+            results.append({
+                "archetype": archetype_id,
+                "run_dir": repo_root / "runs" / run_id
+            })
+            
+    if results:
+        report_path = _write_ab_comparison_report(repo_root, test_dir, results)
+        print(f"\nA/B Test Complete! Comparison report: {report_path.relative_to(repo_root)}")
+        return 0
+    return 1
+
+
+def _execute_ab_run(repo_root: Path, args: argparse.Namespace, manifest: Any) -> int:
+    # Minimal version of cmd_run that takes a pre-loaded manifest
+    from .runs import create_prepare_run
+    from .execution import execute_review_artifact, execute_council_artifact, execute_revision_artifact
+    from .review import create_review_bundle
+    from .council import create_council_bundle
+    from .revision import create_revision_bundle
+    from .config import load_model_policy, provider_from_name
+    
+    run_dir = create_prepare_run(repo_root, args.input_file, args.run_id)
+    style_ids = args.styles or manifest.mvp_style_ids
+    model_policy = load_model_policy(repo_root)
+    
+    if args.execute:
+        # 1. Review
+        for style_id in style_ids:
+            bundle = create_review_bundle(repo_root=repo_root, run_dir=run_dir, style_id=style_id, manifest=manifest)
+            execute_review_artifact(repo_root=repo_root, review_path=bundle.review_json, provider=provider_from_name(args.provider), model=args.model or model_policy.resolve_model("style_review", args.provider))
+        
+        # 2. Council
+        council = create_council_bundle(repo_root=repo_root, run_dir=run_dir, manifest=manifest)
+        execute_council_artifact(repo_root=repo_root, council_path=council.council_json, provider=provider_from_name(args.provider), model=args.model or model_policy.resolve_model("council", args.provider))
+        
+        # 3. Revision
+        revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir, manifest=manifest)
+        execute_revision_artifact(repo_root=repo_root, revision_path=revision.revision_json, provider=provider_from_name(args.provider), model=args.model or model_policy.resolve_model("synthesis", args.provider))
+        
+    return 0
+
+
+def _write_ab_comparison_report(repo_root: Path, test_dir: Path, results: list[dict[str, Any]]) -> Path:
+    # Generate a simple side-by-side HTML comparison
+    html = [
+        "<html><head><title>Archetype A/B Comparison</title>",
+        "<style>",
+        "  body { font-family: system-ui; padding: 2rem; background: #f8f9fa; }",
+        "  .comparison-grid { display: flex; gap: 1rem; overflow-x: auto; }",
+        "  .column { min-width: 400px; flex: 1; background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid #ddd; }",
+        "  h2 { border-bottom: 2px solid #007bff; padding-bottom: 0.5rem; }",
+        "  pre { white-space: pre-wrap; font-size: 14px; line-height: 1.5; }",
+        "</style></head><body>",
+        f"<h1>Council Archetype A/B Test</h1>",
+        f"<p class='muted'>Test ID: {test_dir.name}</p>",
+        "<div class='comparison-grid'>"
+    ]
+    
+    for res in results:
+        rev_path = res["run_dir"] / "revision.md"
+        content = rev_path.read_text(encoding="utf-8") if rev_path.exists() else "No revision generated."
+        html.append(f"<div class='column'>")
+        html.append(f"<h2>{res['archetype']}</h2>")
+        html.append(f"<pre>{content}</pre>")
+        html.append("</div>")
+        
+    html.append("</div></body></html>")
+    
+    report_path = test_dir / "ab-comparison.html"
+    report_path.write_text("\n".join(html), encoding="utf-8")
+    return report_path
+
+
 def cmd_run(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     input_path = args.input if args.input.is_absolute() else (Path.cwd() / args.input)
@@ -588,7 +793,7 @@ def cmd_run(args: argparse.Namespace) -> int:
                 repo_root=repo_root,
                 review_path=bundle.review_json,
                 provider=provider_from_name(args.provider),
-                model=args.model,
+                model=args.model or model_policy.resolve_model("style_review", args.provider),
             )
             print(f"completed {bundle.review_json.relative_to(repo_root)}")
 
@@ -758,8 +963,6 @@ def cmd_project_run(args: argparse.Namespace) -> int:
     project_dir = input_dir / ".rws-project"
     project_dir.mkdir(parents=True, exist_ok=True)
 
-    md_file = md_files[0]
-    # Process files
     for md_file in md_files:
         print(f"\n>>> Processing {md_file.name}...")
         # Create a clean args object for cmd_run
@@ -783,6 +986,131 @@ def cmd_project_run(args: argparse.Namespace) -> int:
     
     print(f"\nProject run complete. Context saved to {project_dir / 'project-context.json'}")
     return 0
+
+
+def cmd_audit(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    project_dir = args.project_dir if args.project_dir.is_absolute() else (Path.cwd() / args.project_dir)
+    provider = provider_from_name(args.provider)
+    
+    print(f"Auditing project consistency for: {project_dir.name}...")
+    try:
+        report = audit_project_consistency(
+            repo_root=repo_root,
+            project_dir=project_dir,
+            provider=provider,
+            model=args.model,
+        )
+        
+        audit_path = project_dir / "audit-report.json"
+        audit_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+        
+        print(f"\nAudit Summary: {report.get('audit_summary', 'No summary available.')}")
+        violations = report.get("violations", [])
+        if violations:
+            print(f"\nWARNING: Found {len(violations)} consistency violations!")
+            for v in violations:
+                print(f"- [{v.get('document_id')}] {v.get('term')}: {v.get('issue')}")
+        else:
+            print("\nSUCCESS: All documents are consistent with project commitments.")
+            
+        print(f"\nFull audit report saved to: {audit_path.relative_to(repo_root)}")
+        return 0 if not violations else 1
+    except Exception as e:
+        print(f"error: audit failed: {e}")
+        return 1
+
+
+def cmd_eval_promote(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    suite_path = args.suite_result if args.suite_result.is_absolute() else (Path.cwd() / args.suite_result)
+    if not suite_path.exists():
+        print(f"error: suite result not found at {suite_path}")
+        return 1
+        
+    baseline_dir = repo_root / "evals" / "baselines"
+    baseline_dir.mkdir(parents=True, exist_ok=True)
+    
+    target = baseline_dir / f"{args.tag}.json"
+    target.write_text(suite_path.read_text(encoding="utf-8"), encoding="utf-8")
+    
+    print(f"Promoted {suite_path.name} to baseline: {target.relative_to(repo_root)}")
+    return 0
+
+
+def cmd_eval_regression(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    baseline_path = args.baseline
+    if not baseline_path:
+        baseline_path = repo_root / "evals" / "baselines" / "gold.json"
+    
+    if not baseline_path.exists():
+        print(f"error: baseline not found at {baseline_path}. Run `rws eval-suite --execute` then `rws eval-promote` first.")
+        return 1
+        
+    print(f"Running regression test against baseline: {baseline_path.name}")
+    
+    # Run a temporary suite
+    suite_args = argparse.Namespace(
+        suite_id=None,
+        execute=True,
+        provider=args.provider,
+        model=args.model,
+        require_provider_ready=args.require_provider_ready,
+        strict=True,
+        compare_to=baseline_path,
+        deliberate=True,
+        scrutiny=True,
+    )
+    
+    try:
+        status = cmd_eval_suite(suite_args)
+        if status == 0:
+            print("\nSUCCESS: No regressions detected.")
+        else:
+            print("\nFAILURE: Regressions or failures detected. See comparison report.")
+        return status
+    except Exception as e:
+        print(f"error: regression test failed: {e}")
+        return 1
+
+
+def cmd_generate_passport(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    provider = provider_from_name(args.provider)
+    
+    print(f"Generating style passport for: {args.name}...")
+    try:
+        result = generate_style_passport(
+            repo_root=repo_root,
+            provider=provider,
+            model=args.model,
+            style_name=args.name,
+            description=args.description,
+            examples=args.examples,
+        )
+        passport_id = save_generated_style(repo_root, result)
+        print(f"Success! Generated style '{passport_id}'.")
+        print(f"- Passport: styles/passports/{passport_id}.yml")
+        print(f"- Prompt:   ClaudeStyles/{passport_id}-style.md")
+        print(f"- Manifest updated.")
+        return 0
+    except Exception as e:
+        print(f"error: failed to generate style: {e}")
+        return 1
+
+
+def cmd_generate_styleguide(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    print("Generating Stylebook...")
+    try:
+        content = generate_stylebook_markdown(repo_root)
+        path = save_stylebook(repo_root, content, args.output)
+        print(f"Success! Stylebook saved to: {path.relative_to(repo_root)}")
+        return 0
+    except Exception as e:
+        print(f"error: failed to generate styleguide: {e}")
+        return 1
 
 
 def _interactive_council_review(repo_root: Path, council_path: Path) -> None:

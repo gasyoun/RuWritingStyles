@@ -42,7 +42,14 @@
     },
     "language": {
       "type": "string",
-      "enum": ["ru"]
+      "enum": ["ru", "en", "be", "uk"]
+    },
+    "supported_languages": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["ru", "en", "be", "uk"]
+      }
     },
     "best_for": {
       "type": "array",
