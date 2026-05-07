@@ -97,6 +97,11 @@ def build_parser() -> argparse.ArgumentParser:
         choices=["mock", "openai", "google", "anthropic"],
         help="Filter readiness to one provider.",
     )
+    provider_status.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit with status 1 when any selected provider is not ready.",
+    )
     provider_status.set_defaults(func=cmd_provider_status)
 
     list_styles = subparsers.add_parser(
@@ -413,7 +418,12 @@ def cmd_model_routes(args: argparse.Namespace) -> int:
 
 
 def cmd_provider_status(args: argparse.Namespace) -> int:
-    print(render_provider_statuses(provider_statuses(), provider=args.provider))
+    statuses = provider_statuses()
+    print(render_provider_statuses(statuses, provider=args.provider))
+    if args.strict:
+        selected = tuple(status for status in statuses if args.provider is None or status.provider == args.provider)
+        if any(not status.ready for status in selected):
+            return 1
     return 0
 
 
