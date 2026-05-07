@@ -15,7 +15,7 @@ class CouncilBundle:
     prompt_md: Path
 
 
-def create_council_bundle(*, repo_root: Path, run_dir: Path) -> CouncilBundle:
+def create_council_bundle(*, repo_root: Path, run_dir: Path, manifest: Manifest) -> CouncilBundle:
     run_dir = run_dir.resolve()
     segments_path = run_dir / "segments.json"
     reviews_dir = run_dir / "reviews"
@@ -42,6 +42,7 @@ def create_council_bundle(*, repo_root: Path, run_dir: Path) -> CouncilBundle:
             run_dir=run_dir,
             segments_json=segments_path.read_text(encoding="utf-8"),
             review_docs=review_docs,
+            manifest=manifest,
         ),
         encoding="utf-8",
     )
@@ -78,20 +79,45 @@ def _render_prompt(
     run_id: str,
     run_dir: Path,
     segments_json: str,
-    review_docs: list[dict[str, object]],
+    review_docs: list[dict[str, Any]],
+    manifest: Manifest,
 ) -> str:
-    reviews_json = json.dumps(review_docs, ensure_ascii=False, indent=2)
+    weights = {ref.style_id: ref.weight for ref in manifest.passports}
+    council_config = manifest.council or CouncilConfig("Coordinator", "Neutral deliberation.")
+
+    # Group findings by span for the prompt
+    by_span: dict[str, list[dict[str, Any]]] = {}
+    for doc in review_docs:
+        style_id = str(doc.get("style_id", "unknown"))
+        weight = weights.get(style_id, 1.0)
+        findings = doc.get("findings")
+        if isinstance(findings, list):
+            for finding in findings:
+                if isinstance(finding, dict):
+                    fid = finding.get("span_id", "global")
+                    f_with_meta = dict(finding)
+                    f_with_meta["_style_weight"] = weight
+                    by_span.setdefault(fid, []).append(f_with_meta)
+
+    grouped_findings_json = json.dumps(by_span, ensure_ascii=False, indent=2)
 
     return f"""# Council Request
 
-You are the RuWritingStyles council coordinator.
+You are the RuWritingStyles council: `{council_config.archetype}`.
 
-Read the style review artifacts, compare findings across styles, and return a structured council result. Do not rewrite the document. Decide which findings are accepted, accepted with modification, rejected, deferred, or informational.
+## Your Mission
 
-## Run
+Read the style review findings, compare advice across styles, and return a structured council result. 
 
-- Run id: `{run_id}`
-- Run directory: `{_repo_relative(repo_root, run_dir)}`
+**Conflict Resolution Strategy:**
+{council_config.conflict_resolution_strategy}
+
+## Instructions
+
+1. **Compare Advice**: For each document span, look at findings from all styles.
+2. **Resolve Conflicts**: If styles suggest different changes for the same span, use your strategy and the `_style_weight` (higher is more authoritative) to decide.
+3. **Synthesis**: You can accept a finding exactly, reject it, or create a "modified" finding that combines advice from multiple styles.
+4. **Informational**: Mark findings as informational if they are interesting observations that don't justify a text change.
 
 ## Required Output
 
@@ -106,30 +132,27 @@ Return a JSON object with this shape:
       "reply_to": "finding-001",
       "style_id": "zalizniak-shkolnikov-1",
       "position": "agree_with_modification",
-      "comment": "Why this style modifies the finding.",
-      "proposed_adjustment": "Concrete adjustment."
+      "comment": "Synthesis of Zalizniak and Tronsky advice.",
+      "proposed_adjustment": "Synthesized revision text."
     }}
   ],
   "decisions": [
     {{
       "finding_id": "finding-001",
       "status": "accepted_with_modification",
-      "reason": "Why this decision follows from the council."
+      "reason": "Why this decision follows from the council strategy."
     }}
   ]
 }}
 ```
 
 Allowed reply positions: `agree`, `agree_with_modification`, `disagree`, `needs_human_decision`, `out_of_scope`.
-
 Allowed decision statuses: `accepted`, `accepted_with_modification`, `rejected`, `deferred`, `informational`.
 
-Use only finding IDs and `span_id` values present in the review artifacts and `segments.json`.
-
-## Review Artifacts
+## Findings Grouped By Span
 
 ```json
-{reviews_json}
+{grouped_findings_json}
 ```
 
 ## Segments JSON

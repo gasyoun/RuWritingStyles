@@ -21,8 +21,10 @@ All notable changes to the RuWritingStyles project will be documented in this fi
 - Eval Scoring: Added `strict_fidelity` check to fail cases if verification produces warnings.
 - Eval Scoring: Added `max_finding_count` limit to catch hallucination/over-reporting.
 - Eval Manifest: Updated `pseudo-etymology` case to enforce strict factual fidelity.
-
-## [Blocked] - 2026-05-07
+- Council Logic: Upgraded deliberation system with archetypes and conflict resolution strategies.
+- Council Logic: Findings are now grouped by `span_id` in the prompt for easier cross-style comparison.
+- Council Logic: Introduced `_style_weight` to help the council weigh different style authoritativeness.
+- Manifest Schema: Added `weight` to style passports and a `council` configuration block.
 
 ### Task 3: Real-world provider validation
 - Blocked by: Missing API keys for OpenAI, Anthropic, and Google.

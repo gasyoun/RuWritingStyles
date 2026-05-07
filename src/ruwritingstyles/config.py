@@ -20,6 +20,15 @@ class StylePassportRef:
     style_id: str
     path: Path
     source_prompt: Path
+    weight: float = 1.0
+
+
+@dataclass(frozen=True)
+class CouncilConfig:
+    """Council deliberation strategies."""
+
+    archetype: str
+    conflict_resolution_strategy: str
 
 
 @dataclass(frozen=True)
@@ -29,6 +38,7 @@ class Manifest:
     path: Path
     mvp_style_ids: tuple[str, ...]
     passports: tuple[StylePassportRef, ...]
+    council: CouncilConfig | None = None
 
 
 @dataclass(frozen=True)
@@ -107,11 +117,25 @@ def load_manifest(repo_root: Path) -> Manifest:
             current = {"id": item_match.group(1).strip()}
         elif field_match and current:
             current[field_match.group(1)] = field_match.group(2).strip()
+        elif current:
+            weight_match = re.match(r"^\s+weight:\s*([0-9.]+)\s*$", line)
+            if weight_match:
+                current["weight"] = weight_match.group(1)
 
     if current:
         entries.append(_passport_ref(repo_root, current))
 
-    return Manifest(path=path, mvp_style_ids=mvp_style_ids, passports=tuple(entries))
+    council_block = _block(text, "council")
+    council = None
+    if council_block:
+        council = CouncilConfig(
+            archetype=_scalar(council_block, "archetype", "The Coordinator"),
+            conflict_resolution_strategy=_scalar(
+                council_block, "conflict_resolution_strategy", "Neutral deliberation."
+            ),
+        )
+
+    return Manifest(path=path, mvp_style_ids=mvp_style_ids, passports=tuple(entries), council=council)
 
 
 def _passport_ref(repo_root: Path, data: dict[str, str]) -> StylePassportRef:
@@ -123,6 +147,7 @@ def _passport_ref(repo_root: Path, data: dict[str, str]) -> StylePassportRef:
         style_id=data["id"],
         path=repo_root / data["path"],
         source_prompt=repo_root / data["source_prompt"],
+        weight=float(data.get("weight", "1.0")),
     )
 
 

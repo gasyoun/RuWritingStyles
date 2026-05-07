@@ -7,6 +7,10 @@ mvp_style_ids:
   - zalizniak-zametki
   - tronsky-readings
 
+council:
+  archetype: "The Conciliator"
+  conflict_resolution_strategy: "Favor foundational linguistic accuracy (Zalizniak) for structure, and historical context (Tronsky) for semantic nuance."
+
 passports:
   - id: albedil-sbornik
     path: styles/passports/albedil-sbornik.yml
@@ -20,6 +24,7 @@ passports:
   - id: tronsky-readings
     path: styles/passports/tronsky-readings.yml
     source_prompt: ClaudeStyles/tronsky-readings-style.md
+    weight: 1.2
   - id: zalizniak-enklitiki
     path: styles/passports/zalizniak-enklitiki.yml
     source_prompt: ClaudeStyles/zalizniak-enklitiki-style.md
@@ -29,6 +34,7 @@ passports:
   - id: zalizniak-ocherk
     path: styles/passports/zalizniak-ocherk.yml
     source_prompt: ClaudeStyles/zalizniak-ocherk-style.md
+    weight: 1.5
   - id: zalizniak-shkolnikov-1
     path: styles/passports/zalizniak-shkolnikov-1.yml
     source_prompt: ClaudeStyles/zalizniak-shkolnikov_1-style.md

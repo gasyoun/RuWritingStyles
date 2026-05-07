@@ -474,7 +474,7 @@ def cmd_run(args: argparse.Namespace) -> int:
             )
             print(f"completed {bundle.review_json.relative_to(repo_root)}")
 
-    council = create_council_bundle(repo_root=repo_root, run_dir=run_dir)
+    council = create_council_bundle(repo_root=repo_root, run_dir=run_dir, manifest=manifest)
     print(f"created {council.council_json.relative_to(repo_root)}")
     if args.execute:
         execute_council_artifact(
@@ -759,7 +759,8 @@ def cmd_council(args: argparse.Namespace) -> int:
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
     if args.execute and args.require_provider_ready:
         _require_provider_ready(args.provider)
-    bundle = create_council_bundle(repo_root=repo_root, run_dir=run_dir)
+    manifest = load_manifest(repo_root)
+    bundle = create_council_bundle(repo_root=repo_root, run_dir=run_dir, manifest=manifest)
     print(f"created {bundle.council_json.relative_to(repo_root)}")
     print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
     if args.execute:
