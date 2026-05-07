@@ -28,7 +28,7 @@ from .review import create_review_bundle
 from .revision import create_revision_bundle
 from .runs import create_prepare_run
 from .segment import normalize_document, read_document, segment_markdown
-from .validation import validate_run_dir
+from .validation import validate_eval_suite_dir, validate_run_dir
 from .verification import create_verification_bundle
 
 
@@ -243,6 +243,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     validate_run.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
     validate_run.set_defaults(func=cmd_validate_run)
+
+    validate_eval_suite = subparsers.add_parser(
+        "validate-eval-suite",
+        help="Validate eval-suite result artifacts and referenced case runs.",
+    )
+    validate_eval_suite.add_argument(
+        "suite_dir",
+        type=Path,
+        help="Eval suite directory, for example runs/<suite-id>.",
+    )
+    validate_eval_suite.set_defaults(func=cmd_validate_eval_suite)
 
     return parser
 
@@ -644,6 +655,17 @@ def cmd_validate_run(args: argparse.Namespace) -> int:
     result = validate_run_dir(run_dir)
     if result.ok:
         print("OK run artifacts valid")
+        return 0
+    for message in result.messages:
+        print(f"FAIL {message}", file=sys.stderr)
+    return 1
+
+
+def cmd_validate_eval_suite(args: argparse.Namespace) -> int:
+    suite_dir = args.suite_dir if args.suite_dir.is_absolute() else (Path.cwd() / args.suite_dir)
+    result = validate_eval_suite_dir(suite_dir)
+    if result.ok:
+        print("OK eval suite artifacts valid")
         return 0
     for message in result.messages:
         print(f"FAIL {message}", file=sys.stderr)

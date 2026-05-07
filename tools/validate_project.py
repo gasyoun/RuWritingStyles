@@ -33,6 +33,8 @@ REQUIRED_FILES = [
     "schemas/finding.schema.json",
     "schemas/council.schema.json",
     "schemas/council-output.schema.json",
+    "schemas/eval-result.schema.json",
+    "schemas/eval-suite-result.schema.json",
     "schemas/model-policy.schema.json",
     "schemas/review.schema.json",
     "schemas/review-output.schema.json",

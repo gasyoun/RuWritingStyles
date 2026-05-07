@@ -50,8 +50,26 @@ def validate_run_dir(run_dir: Path) -> ValidationResult:
         if isinstance(data, dict):
             _validate_with_schema(data, schema_name, artifact, schema_store, messages)
             _validate_common_status(data, messages, artifact)
-    _validate_eval_result(run_dir / "eval-result.json", messages)
+    _validate_eval_result(run_dir / "eval-result.json", schema_store, messages)
     _validate_provider_log(run_dir / "provider.log.jsonl", messages)
+
+    return ValidationResult(ok=not messages, messages=tuple(messages))
+
+
+def validate_eval_suite_dir(suite_dir: Path) -> ValidationResult:
+    suite_dir = suite_dir.resolve()
+    messages: list[str] = []
+    repo_root = _repo_root_from_run_dir(suite_dir)
+    schema_store = _load_schema_store(repo_root, messages)
+
+    result_path = suite_dir / "eval-suite-result.json"
+    data = _load_json(result_path, messages)
+    if isinstance(data, dict):
+        _validate_with_schema(data, "eval-suite-result.schema.json", "eval-suite-result.json", schema_store, messages)
+        _validate_eval_suite_result(repo_root, data, messages)
+
+    if not (suite_dir / "eval-suite-report.md").exists():
+        messages.append("missing eval-suite-report.md")
 
     return ValidationResult(ok=not messages, messages=tuple(messages))
 
@@ -173,12 +191,13 @@ def _validate_provider_log(path: Path, messages: list[str]) -> None:
             messages.append(f"provider.log.jsonl line {index} has invalid retry_statuses")
 
 
-def _validate_eval_result(path: Path, messages: list[str]) -> None:
+def _validate_eval_result(path: Path, schema_store: dict[str, dict[str, Any]], messages: list[str]) -> None:
     if not path.exists():
         return
     data = _load_json(path, messages)
     if not isinstance(data, dict):
         return
+    _validate_with_schema(data, "eval-result.schema.json", "eval-result.json", schema_store, messages)
     for key in ["case_id", "run_id", "provider", "model", "finding_count", "verification_status"]:
         if key not in data:
             messages.append(f"eval-result.json missing {key}")
@@ -194,6 +213,82 @@ def _validate_eval_result(path: Path, messages: list[str]) -> None:
         messages.append("eval-result.json missing scoring")
     elif "diff_within_limits" not in scoring:
         messages.append("eval-result.json scoring missing diff_within_limits")
+    matched_required = scoring.get("matched_required_finding_types") if isinstance(scoring, dict) else None
+    required_match_count = scoring.get("required_match_count") if isinstance(scoring, dict) else None
+    if isinstance(matched_required, list) and required_match_count != len(matched_required):
+        messages.append("eval-result.json scoring required_match_count does not match matched_required_finding_types")
+
+
+def _validate_eval_suite_result(repo_root: Path, data: dict[str, Any], messages: list[str]) -> None:
+    results = data.get("results")
+    if not isinstance(results, list):
+        messages.append("eval-suite-result.json results must be a list")
+        return
+
+    case_count = len(results)
+    passed_count = sum(1 for row in results if isinstance(row, dict) and row.get("passed") is True)
+    failed_count = case_count - passed_count
+    expected_pass_rate = round(passed_count / max(1, case_count), 6)
+
+    if data.get("case_count") != case_count:
+        messages.append("eval-suite-result.json case_count does not match results length")
+    if data.get("passed_count") != passed_count:
+        messages.append("eval-suite-result.json passed_count does not match passed results")
+    if data.get("failed_count") != failed_count:
+        messages.append("eval-suite-result.json failed_count does not match failed results")
+    if isinstance(data.get("pass_rate"), (int, float)) and abs(float(data["pass_rate"]) - expected_pass_rate) > 0.000001:
+        messages.append("eval-suite-result.json pass_rate does not match passed_count/case_count")
+
+    for index, row in enumerate(results):
+        if not isinstance(row, dict):
+            messages.append(f"eval-suite-result.json results[{index}] must be an object")
+            continue
+        _validate_eval_suite_row(repo_root, index, row, messages)
+
+
+def _validate_eval_suite_row(repo_root: Path, index: int, row: dict[str, Any], messages: list[str]) -> None:
+    label = str(row.get("case_id") or f"results[{index}]")
+    run_dir = _repo_path(repo_root, row.get("run_dir"))
+    result_path = _repo_path(repo_root, row.get("result_path"))
+
+    if run_dir is None:
+        messages.append(f"eval-suite-result.json {label} missing run_dir")
+        return
+    if result_path is None:
+        messages.append(f"eval-suite-result.json {label} missing result_path")
+        return
+    if not run_dir.exists():
+        messages.append(f"eval-suite-result.json {label} references missing run_dir {run_dir}")
+        return
+    if not result_path.exists():
+        messages.append(f"eval-suite-result.json {label} references missing result_path {result_path}")
+        return
+    if result_path.resolve() != (run_dir / "eval-result.json").resolve():
+        messages.append(f"eval-suite-result.json {label} result_path does not match run_dir/eval-result.json")
+
+    child = _load_json(result_path, messages)
+    if isinstance(child, dict):
+        _compare_eval_suite_row(label, row, child, messages)
+
+    child_result = validate_run_dir(run_dir)
+    for message in child_result.messages:
+        messages.append(f"eval-suite-result.json {label} run invalid: {message}")
+
+
+def _compare_eval_suite_row(label: str, row: dict[str, Any], child: dict[str, Any], messages: list[str]) -> None:
+    scoring = child.get("scoring") if isinstance(child.get("scoring"), dict) else {}
+    diff_metrics = child.get("diff_metrics") if isinstance(child.get("diff_metrics"), dict) else {}
+    expected = {
+        "case_id": child.get("case_id"),
+        "passed": scoring.get("passed"),
+        "finding_count": child.get("finding_count"),
+        "verification_status": child.get("verification_status"),
+        "changed_line_ratio": diff_metrics.get("changed_line_ratio"),
+        "char_delta_ratio": diff_metrics.get("char_delta_ratio"),
+    }
+    for key, value in expected.items():
+        if row.get(key) != value:
+            messages.append(f"eval-suite-result.json {label} {key} does not match child eval-result.json")
 
 
 def _validate_with_schema(
@@ -228,3 +323,12 @@ def _load_schema_store(repo_root: Path, messages: list[str]) -> dict[str, dict[s
         if isinstance(data, dict):
             store[path.name] = data
     return store
+
+
+def _repo_path(repo_root: Path, value: Any) -> Path | None:
+    if not isinstance(value, str) or not value.strip():
+        return None
+    path = Path(value)
+    if path.is_absolute():
+        return path
+    return repo_root / path
