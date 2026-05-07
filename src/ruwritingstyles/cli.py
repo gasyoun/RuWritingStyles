@@ -9,6 +9,7 @@ import sys
 
 from .config import load_manifest, load_model_policy, load_model_routes, load_passport_summaries, repo_root_from
 from .council import create_council_bundle
+from .council_summary import load_council_summary, render_council_summary
 from .diff import write_revision_diff
 from .evals import compare_eval_suites, load_eval_cases, render_eval_suite_comparison, run_eval_case, run_eval_suite
 from .execution import (
@@ -260,6 +261,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     provider_log.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
     provider_log.set_defaults(func=cmd_provider_log)
+
+    council_summary = subparsers.add_parser(
+        "council-summary",
+        help="Show council replies and decisions for a run.",
+    )
+    council_summary.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    council_summary.set_defaults(func=cmd_council_summary)
 
     diff = subparsers.add_parser(
         "diff",
@@ -818,6 +826,12 @@ def cmd_findings(args: argparse.Namespace) -> int:
 def cmd_provider_log(args: argparse.Namespace) -> int:
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
     print(render_provider_log(load_provider_log(run_dir)))
+    return 0
+
+
+def cmd_council_summary(args: argparse.Namespace) -> int:
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    print(render_council_summary(load_council_summary(run_dir)))
     return 0
 
 
