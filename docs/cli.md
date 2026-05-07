@@ -142,6 +142,13 @@ Validate a saved comparison JSON with:
 rws validate-eval-comparison runs/eval-compare-openai-gemini.json
 ```
 
+For short CI logs or quick inspection, use:
+
+```bash
+rws eval-status runs/openai-suite
+rws eval-status runs/eval-compare-openai-gemini.json
+```
+
 ## Export An Eval Suite
 
 ```bash

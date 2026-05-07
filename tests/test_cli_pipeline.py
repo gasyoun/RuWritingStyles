@@ -423,6 +423,7 @@ class CliPipelineTests(unittest.TestCase):
         self.assertTrue((self.eval_suite_case_run_dir / "eval-result.json").exists())
         self.assertTrue((self.eval_suite_source_run_dir / "eval-result.json").exists())
         self.assertTrue((self.eval_suite_register_run_dir / "eval-result.json").exists())
+        self.assertEqual(main(["eval-status", str(self.eval_suite_dir)]), 0)
         self.assertEqual(main(["validate-eval-suite", str(self.eval_suite_dir)]), 0)
         comparison_path = self.eval_suite_dir / "comparison.md"
         comparison_json_path = self.eval_suite_dir / "comparison.json"
@@ -444,6 +445,7 @@ class CliPipelineTests(unittest.TestCase):
         comparison = json.loads(comparison_json_path.read_text(encoding="utf-8"))
         self.assertEqual(comparison["case_count"], 3)
         self.assertEqual(comparison["pass_rate_delta"], 0.0)
+        self.assertEqual(main(["eval-status", str(comparison_json_path)]), 0)
         schema_store = _load_schema_store(ROOT, [])
         self.assertEqual(
             validate_json_schema(

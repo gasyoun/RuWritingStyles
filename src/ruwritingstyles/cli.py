@@ -180,6 +180,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     eval_compare.set_defaults(func=cmd_eval_compare)
 
+    eval_status = subparsers.add_parser(
+        "eval-status",
+        help="Show a compact status summary for an eval suite or comparison JSON.",
+    )
+    eval_status.add_argument(
+        "artifact",
+        type=Path,
+        help="Suite directory, eval-suite-result.json, or eval comparison JSON.",
+    )
+    eval_status.set_defaults(func=cmd_eval_status)
+
     review = subparsers.add_parser(
         "review",
         help="Create an offline review bundle for one style and a prepared run directory.",
@@ -598,6 +609,38 @@ def cmd_eval_compare(args: argparse.Namespace) -> int:
     if args.strict and _eval_comparison_has_regression(comparison.data):
         return 1
     return 0
+
+
+def cmd_eval_status(args: argparse.Namespace) -> int:
+    artifact = args.artifact if args.artifact.is_absolute() else (Path.cwd() / args.artifact)
+    data = _load_json(_eval_status_json_path(artifact))
+    if "baseline" in data and "candidate" in data:
+        print("eval comparison")
+        print(f"  baseline: {data.get('baseline', {}).get('suite_id', '')}")
+        print(f"  candidate: {data.get('candidate', {}).get('suite_id', '')}")
+        print(f"  cases: {data.get('case_count', 0)}")
+        print(f"  pass_rate_delta: {data.get('pass_rate_delta', 0)}")
+        print(f"  newly_passed: {len(data.get('newly_passed', []))}")
+        print(f"  regressed: {len(data.get('regressed', []))}")
+        return 0
+    if "suite_id" in data and "results" in data:
+        print("eval suite")
+        print(f"  suite_id: {data.get('suite_id', '')}")
+        print(f"  provider: {data.get('provider', '')}")
+        print(f"  model: {data.get('model', '')}")
+        print(f"  cases: {data.get('case_count', 0)}")
+        print(f"  passed: {data.get('passed_count', 0)}")
+        print(f"  failed: {data.get('failed_count', 0)}")
+        print(f"  pass_rate: {data.get('pass_rate', 0)}")
+        return 0
+    raise ValueError(f"unknown eval artifact shape: {artifact}")
+
+
+def _eval_status_json_path(artifact: Path) -> Path:
+    artifact = artifact.resolve()
+    if artifact.is_dir():
+        return artifact / "eval-suite-result.json"
+    return artifact
 
 
 def _eval_comparison_has_regression(data: dict) -> bool:
