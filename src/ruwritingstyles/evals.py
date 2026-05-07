@@ -57,6 +57,7 @@ class EvalSuiteResult:
 
     suite_dir: Path
     result_path: Path
+    report_path: Path
 
 
 def load_eval_cases(repo_root: Path) -> tuple[EvalCase, ...]:
@@ -181,7 +182,47 @@ def run_eval_suite(
     }
     result_path = suite_dir / "eval-suite-result.json"
     result_path.write_text(json.dumps(suite, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    return EvalSuiteResult(suite_dir=suite_dir, result_path=result_path)
+    report_path = suite_dir / "eval-suite-report.md"
+    report_path.write_text(render_eval_suite_report(suite), encoding="utf-8")
+    return EvalSuiteResult(suite_dir=suite_dir, result_path=result_path, report_path=report_path)
+
+
+def render_eval_suite_report(suite: dict[str, Any]) -> str:
+    """Render a Markdown report for eval-suite-result.json."""
+
+    rows = suite.get("results") if isinstance(suite.get("results"), list) else []
+    lines = [
+        f"# Eval Suite: {suite.get('suite_id') or ''}",
+        "",
+        f"- Provider: `{suite.get('provider') or ''}`",
+        f"- Model: `{suite.get('model') or ''}`",
+        f"- Cases: {suite.get('case_count') or 0}",
+        f"- Passed: {suite.get('passed_count') or 0}",
+        f"- Failed: {suite.get('failed_count') or 0}",
+        f"- Pass rate: {suite.get('pass_rate') or 0}",
+        "",
+        "| Case | Passed | Findings | Verification | Changed line ratio | Char delta ratio | Result |",
+        "|---|---:|---:|---|---:|---:|---|",
+    ]
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    _cell(str(row.get("case_id") or "")),
+                    "yes" if row.get("passed") else "no",
+                    _cell(str(row.get("finding_count") or 0)),
+                    _cell(str(row.get("verification_status") or "")),
+                    _cell(_value(row.get("changed_line_ratio"))),
+                    _cell(_value(row.get("char_delta_ratio"))),
+                    _cell(str(row.get("result_path") or "")),
+                ]
+            )
+            + " |"
+        )
+    return "\n".join(lines) + "\n"
 
 
 def _find_case(repo_root: Path, case_id: str) -> EvalCase:
@@ -332,3 +373,13 @@ def _make_suite_id(provider_name: str) -> str:
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
     provider_slug = re.sub(r"[^a-zA-Z0-9]+", "-", provider_name).strip("-").lower() or "provider"
     return f"{timestamp}-eval-suite-{provider_slug}"
+
+
+def _cell(value: str) -> str:
+    return value.replace("\n", " ").replace("|", "\\|").strip()
+
+
+def _value(value: Any) -> str:
+    if value is None:
+        return ""
+    return str(value)

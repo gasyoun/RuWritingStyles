@@ -384,7 +384,28 @@ class CliPipelineTests(unittest.TestCase):
         self.assertEqual(result["case_count"], 1)
         self.assertEqual(result["failed_count"], 1)
         self.assertEqual(result["results"][0]["case_id"], "pseudo-etymology")
+        report = (self.eval_suite_dir / "eval-suite-report.md").read_text(encoding="utf-8")
+        self.assertIn("# Eval Suite: unittest-suite", report)
+        self.assertIn("| pseudo-etymology | no |", report)
         self.assertTrue((self.eval_suite_case_run_dir / "eval-result.json").exists())
+
+    def test_eval_suite_strict_returns_failure_on_failed_cases(self) -> None:
+        if self.eval_suite_dir.exists():
+            shutil.rmtree(self.eval_suite_dir)
+        if self.eval_suite_case_run_dir.exists():
+            shutil.rmtree(self.eval_suite_case_run_dir)
+
+        exit_code = main(
+            [
+                "eval-suite",
+                "--provider",
+                "mock",
+                "--suite-id",
+                "unittest-suite",
+                "--strict",
+            ]
+        )
+        self.assertEqual(exit_code, 1)
 
 
 if __name__ == "__main__":

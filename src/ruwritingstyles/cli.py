@@ -141,6 +141,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--suite-id",
         help="Optional deterministic suite id. Creates runs/<suite-id>/eval-suite-result.json.",
     )
+    eval_suite.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit with status 1 when any eval case fails.",
+    )
     _add_provider_args(eval_suite)
     eval_suite.set_defaults(func=cmd_eval_suite)
 
@@ -480,9 +485,12 @@ def cmd_eval_suite(args: argparse.Namespace) -> int:
     data = _load_json(result.result_path)
     print(f"created {result.suite_dir.relative_to(repo_root)}")
     print(f"eval suite result {result.result_path.relative_to(repo_root)}")
+    print(f"eval suite report {result.report_path.relative_to(repo_root)}")
     print(f"cases: {data.get('case_count', 0)}")
     print(f"passed: {data.get('passed_count', 0)}")
     print(f"failed: {data.get('failed_count', 0)}")
+    if args.strict and int(data.get("failed_count", 0)) > 0:
+        return 1
     return 0
 
 

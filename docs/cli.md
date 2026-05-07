@@ -106,11 +106,14 @@ rws eval-run --case pseudo-etymology --provider openai --model gpt-5.5
 rws eval-suite --provider mock
 ```
 
-This runs every case from `evals/manifest.json` and writes `runs/<suite-id>/eval-suite-result.json` with `case_count`, `passed_count`, `failed_count`, `pass_rate`, and per-case result paths. Use `--suite-id` for deterministic local smoke tests:
+This runs every case from `evals/manifest.json` and writes both `runs/<suite-id>/eval-suite-result.json` and `runs/<suite-id>/eval-suite-report.md` with `case_count`, `passed_count`, `failed_count`, `pass_rate`, and per-case result paths. Use `--suite-id` for deterministic local smoke tests:
 
 ```bash
 rws eval-suite --provider mock --suite-id cli-smoke-suite
+rws eval-suite --provider mock --suite-id cli-smoke-suite --strict
 ```
+
+Use `--strict` when any failed eval case should return exit code `1`.
 
 ## Prepare a document
 
