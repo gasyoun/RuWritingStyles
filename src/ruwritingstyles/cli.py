@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 import sys
 
 from .config import load_manifest, load_model_policy, load_model_routes, load_passport_summaries, repo_root_from
 from .council import create_council_bundle
 from .diff import write_revision_diff
-from .evals import load_eval_cases, run_eval_case
+from .evals import load_eval_cases, run_eval_case, run_eval_suite
 from .execution import (
     execute_council_artifact,
     execute_review_artifact,
@@ -126,6 +127,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_provider_args(eval_run)
     eval_run.set_defaults(func=cmd_eval_run)
+
+    eval_suite = subparsers.add_parser(
+        "eval-suite",
+        help="Run all evaluation cases from evals/manifest.json.",
+    )
+    eval_suite.add_argument(
+        "--suite-id",
+        help="Optional deterministic suite id. Creates runs/<suite-id>/eval-suite-result.json.",
+    )
+    _add_provider_args(eval_suite)
+    eval_suite.set_defaults(func=cmd_eval_suite)
 
     review = subparsers.add_parser(
         "review",
@@ -447,6 +459,23 @@ def cmd_eval_run(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_eval_suite(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    result = run_eval_suite(
+        repo_root=repo_root,
+        provider_name=args.provider,
+        model=args.model,
+        suite_id=args.suite_id,
+    )
+    data = _load_json(result.result_path)
+    print(f"created {result.suite_dir.relative_to(repo_root)}")
+    print(f"eval suite result {result.result_path.relative_to(repo_root)}")
+    print(f"cases: {data.get('case_count', 0)}")
+    print(f"passed: {data.get('passed_count', 0)}")
+    print(f"failed: {data.get('failed_count', 0)}")
+    return 0
+
+
 def cmd_review(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     manifest = load_manifest(repo_root)
@@ -608,6 +637,10 @@ def _display_path(repo_root: Path, path: Path) -> Path | str:
         return path.resolve().relative_to(repo_root.resolve())
     except ValueError:
         return str(path)
+
+
+def _load_json(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def _write_reports(repo_root: Path, run_dir: Path) -> None:

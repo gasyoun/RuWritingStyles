@@ -190,6 +190,8 @@ class CliPipelineTests(unittest.TestCase):
     executed_run_dir = ROOT / "runs" / "unittest-readme-executed"
     demo_run_dir = ROOT / "runs" / "unittest-demo"
     eval_run_dir = ROOT / "runs" / "unittest-eval-pseudo"
+    eval_suite_dir = ROOT / "runs" / "unittest-suite"
+    eval_suite_case_run_dir = ROOT / "runs" / "unittest-suite-pseudo-etymology"
 
     def tearDown(self) -> None:
         if self.run_dir.exists():
@@ -200,6 +202,10 @@ class CliPipelineTests(unittest.TestCase):
             shutil.rmtree(self.demo_run_dir)
         if self.eval_run_dir.exists():
             shutil.rmtree(self.eval_run_dir)
+        if self.eval_suite_dir.exists():
+            shutil.rmtree(self.eval_suite_dir)
+        if self.eval_suite_case_run_dir.exists():
+            shutil.rmtree(self.eval_suite_case_run_dir)
 
     def test_full_offline_run_creates_expected_artifacts(self) -> None:
         if self.run_dir.exists():
@@ -353,6 +359,29 @@ class CliPipelineTests(unittest.TestCase):
         self.assertEqual(result["diff_metrics"]["char_delta_ratio"], 0)
         self.assertTrue((self.eval_run_dir / "provider.log.jsonl").exists())
         self.assertEqual(main(["validate-run", str(self.eval_run_dir)]), 0)
+
+    def test_eval_suite_runs_manifest_cases(self) -> None:
+        if self.eval_suite_dir.exists():
+            shutil.rmtree(self.eval_suite_dir)
+        if self.eval_suite_case_run_dir.exists():
+            shutil.rmtree(self.eval_suite_case_run_dir)
+
+        exit_code = main(
+            [
+                "eval-suite",
+                "--provider",
+                "mock",
+                "--suite-id",
+                "unittest-suite",
+            ]
+        )
+        self.assertEqual(exit_code, 0)
+        result = json.loads((self.eval_suite_dir / "eval-suite-result.json").read_text(encoding="utf-8"))
+        self.assertEqual(result["suite_id"], "unittest-suite")
+        self.assertEqual(result["case_count"], 1)
+        self.assertEqual(result["failed_count"], 1)
+        self.assertEqual(result["results"][0]["case_id"], "pseudo-etymology")
+        self.assertTrue((self.eval_suite_case_run_dir / "eval-result.json").exists())
 
 
 if __name__ == "__main__":
