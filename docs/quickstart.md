@@ -71,6 +71,8 @@ To run the full eval manifest:
 rws eval-suite --provider mock --suite-id demo-suite
 ```
 
+The suite writes `eval-suite-result.json` and `eval-suite-report.md`. Add `--strict` when failed cases should make scripts return exit code `1`.
+
 The mock provider is deterministic and only proves that the pipeline works. Use a real provider for substantive findings:
 
 ```bash
