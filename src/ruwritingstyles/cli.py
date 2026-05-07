@@ -15,6 +15,7 @@ from .evals import compare_eval_suites, load_eval_cases, render_eval_suite_compa
 from .execution import (
     execute_council_artifact,
     execute_review_artifact,
+    execute_deliberation_artifact,
     execute_revision_artifact,
     execute_verification_artifact,
 )
@@ -25,7 +26,7 @@ from .provider_log import load_provider_log, render_provider_log
 from .provider_status import provider_statuses, provider_statuses_json, render_provider_statuses
 from .providers import provider_from_name
 from .report import write_run_report
-from .review import create_review_bundle
+from .review import create_review_bundle, create_deliberation_bundle
 from .revision import create_revision_bundle
 from .runs import create_prepare_run
 from .segment import normalize_document, read_document, segment_markdown
@@ -78,6 +79,11 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=1,
         help="Maximum number of fact-checking iterations if verification fails.",
+    )
+    run.add_argument(
+        "--deliberate",
+        action="store_true",
+        help="Enable multi-turn deliberation (style agents debate each other).",
     )
     _add_execute_args(run)
     run.set_defaults(func=cmd_run)
@@ -147,6 +153,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--run-id",
         help="Optional deterministic run id. The target runs/<run-id> must not already exist.",
     )
+    eval_run.add_argument(
+        "--deliberate",
+        action="store_true",
+        help="Enable multi-turn deliberation (style agents debate each other).",
+    )
     _add_provider_args(eval_run)
     eval_run.set_defaults(func=cmd_eval_run)
 
@@ -167,6 +178,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--compare-to",
         type=Path,
         help="Optional baseline suite directory or eval-suite-result.json to compare after the run.",
+    )
+    eval_suite.add_argument(
+        "--deliberate",
+        action="store_true",
+        help="Enable multi-turn deliberation (style agents debate each other).",
     )
     _add_provider_args(eval_suite)
     eval_suite.set_defaults(func=cmd_eval_suite)
@@ -237,6 +253,22 @@ def build_parser() -> argparse.ArgumentParser:
     council.add_argument("--feedback", type=Path, help="Optional verification.json to use as feedback.")
     _add_execute_args(council)
     council.set_defaults(func=cmd_council)
+
+    deliberate = subparsers.add_parser(
+        "deliberate",
+        help="Perform cross-style deliberation/debate from prepared style reviews.",
+    )
+    deliberate.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    delib_styles = deliberate.add_mutually_exclusive_group(required=True)
+    delib_styles.add_argument("--style", help="One style id from `rws list-styles`.")
+    delib_styles.add_argument("--styles", help="Comma-separated style ids from `rws list-styles`.")
+    delib_styles.add_argument(
+        "--mvp",
+        action="store_true",
+        help="Create deliberation bundles for the MVP styles.",
+    )
+    _add_execute_args(deliberate)
+    deliberate.set_defaults(func=cmd_deliberate)
 
     revise = subparsers.add_parser(
         "revise",
@@ -818,6 +850,33 @@ def cmd_council(args: argparse.Namespace) -> int:
         )
         print(f"completed {bundle.council_json.relative_to(repo_root)}")
     _write_reports(repo_root, run_dir)
+    return 0
+
+
+def cmd_deliberate(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    manifest = load_manifest(repo_root)
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    style_ids = _selected_style_ids(args, manifest)
+    if args.execute and args.require_provider_ready:
+        _require_provider_ready(args.provider)
+
+    for style_id in style_ids:
+        bundle = create_deliberation_bundle(
+            repo_root=repo_root,
+            run_dir=run_dir,
+            style_id=style_id,
+            manifest=manifest,
+        )
+        print(f"created {bundle.deliberation_json.relative_to(repo_root)}")
+        if args.execute:
+            execute_deliberation_artifact(
+                repo_root=repo_root,
+                delib_path=bundle.deliberation_json,
+                provider=provider_from_name(args.provider),
+                model=args.model,
+            )
+            print(f"completed {bundle.deliberation_json.relative_to(repo_root)}")
     return 0
 
 
