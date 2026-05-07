@@ -34,12 +34,18 @@ def create_council_bundle(
     if not review_paths:
         raise FileNotFoundError(f"no review JSON files found in {reviews_dir}")
 
+    delib_dir = run_dir / "deliberations"
+    delib_paths = []
+    if delib_dir.exists():
+        delib_paths = sorted(delib_dir.glob("*.delib.json"))
+
     segments_doc = json.loads(segments_path.read_text(encoding="utf-8"))
     run_id = str(segments_doc.get("run_id") or run_dir.name)
 
     prompt_path = run_dir / "council.prompt.md"
     council_path = run_dir / "council.json"
     review_docs = [_load_review(path) for path in review_paths]
+    delib_docs = [_load_review(path) for path in delib_paths]
 
     prompt_path.write_text(
         _render_prompt(
@@ -48,6 +54,7 @@ def create_council_bundle(
             run_dir=run_dir,
             segments_json=segments_path.read_text(encoding="utf-8"),
             review_docs=review_docs,
+            delib_docs=delib_docs,
             manifest=manifest,
             verification_feedback=verification_feedback,
         ),
@@ -87,6 +94,7 @@ def _render_prompt(
     run_dir: Path,
     segments_json: str,
     review_docs: list[dict[str, Any]],
+    delib_docs: list[dict[str, Any]],
     manifest: Manifest,
     verification_feedback: dict[str, Any] | None = None,
 ) -> str:
@@ -107,7 +115,15 @@ def _render_prompt(
                     f_with_meta["_style_weight"] = weight
                     by_span.setdefault(fid, []).append(f_with_meta)
 
+    # Collect replies from deliberations
+    all_replies: list[dict[str, Any]] = []
+    for doc in delib_docs:
+        replies = doc.get("replies")
+        if isinstance(replies, list):
+            all_replies.extend(replies)
+
     grouped_findings_json = json.dumps(by_span, ensure_ascii=False, indent=2)
+    replies_json = json.dumps(all_replies, ensure_ascii=False, indent=2)
 
     feedback_section = ""
     if verification_feedback:
@@ -171,6 +187,14 @@ Return a JSON object with this shape:
 
 Allowed reply positions: `agree`, `agree_with_modification`, `disagree`, `needs_human_decision`, `out_of_scope`.
 Allowed decision statuses: `accepted`, `accepted_with_modification`, `rejected`, `deferred`, `informational`.
+
+## Cross-Style Deliberation (Debate)
+
+Style agents have reviewed each other's findings. Use these replies to understand consensus or disagreement.
+
+```json
+{replies_json}
+```
 
 ## Findings Grouped By Span
 

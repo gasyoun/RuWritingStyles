@@ -38,6 +38,30 @@ def execute_review_artifact(*, repo_root: Path, review_path: Path, provider: Bas
     _write_json(review_path, review)
 
 
+def execute_deliberation_artifact(*, repo_root: Path, delib_path: Path, provider: BaseProvider, model: str | None = None) -> None:
+    delib = _load_json(delib_path)
+    prompt_path = repo_root / str(delib["prompt_path"])
+    output = _generate_with_log(
+        repo_root=repo_root,
+        run_dir=delib_path.parents[1],
+        artifact_path=delib_path,
+        provider=provider,
+        provider_request=ProviderRequest(
+            task="deliberation",
+            prompt=prompt_path.read_text(encoding="utf-8"),
+            schema=load_schema(repo_root, "schemas/deliberation-output.schema.json"),
+            metadata={
+                "run_id": delib["run_id"],
+                "style_id": delib["style_id"],
+            },
+            model=model,
+        ),
+    )
+    delib["status"] = "completed"
+    delib["replies"] = output.get("replies", [])
+    _write_json(delib_path, delib)
+
+
 def execute_council_artifact(*, repo_root: Path, council_path: Path, provider: BaseProvider, model: str | None = None) -> None:
     council = _load_json(council_path)
     prompt_path = repo_root / str(council["prompt_path"])
