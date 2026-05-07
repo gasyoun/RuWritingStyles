@@ -26,6 +26,7 @@ from ruwritingstyles.providers import (
     _retry_delay_from_headers,
 )
 from ruwritingstyles.provider_log import load_provider_log, render_provider_log
+from ruwritingstyles.provider_status import provider_statuses, render_provider_statuses
 from ruwritingstyles.schema_validation import validate_json_schema
 from ruwritingstyles.segment import normalize_document, segment_markdown
 
@@ -126,6 +127,25 @@ class ModelPolicyTests(unittest.TestCase):
         self.assertEqual(route.mode_name, "reasoning")
         self.assertEqual(route.mode_value, "medium")
         self.assertEqual(main(["model-routes", "--provider", "openai", "--task", "style_review"]), 0)
+
+    def test_provider_statuses_do_not_expose_keys(self) -> None:
+        statuses = provider_statuses(
+            {
+                "OPENAI_API_KEY": "sk-secret",
+                "RWS_OPENAI_MODEL": "gpt-test",
+            }
+        )
+        openai = next(status for status in statuses if status.provider == "openai")
+        google = next(status for status in statuses if status.provider == "google")
+        self.assertTrue(openai.ready)
+        self.assertEqual(openai.configured_env, "OPENAI_API_KEY")
+        self.assertEqual(openai.model, "gpt-test")
+        self.assertFalse(google.ready)
+        rendered = render_provider_statuses(statuses, provider="openai")
+        self.assertIn("ready: yes", rendered)
+        self.assertIn("configured_env: OPENAI_API_KEY", rendered)
+        self.assertNotIn("sk-secret", rendered)
+        self.assertEqual(main(["provider-status", "--provider", "mock"]), 0)
 
 
 class SchemaValidationTests(unittest.TestCase):

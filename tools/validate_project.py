@@ -51,6 +51,7 @@ REQUIRED_FILES = [
     "src/ruwritingstyles/findings.py",
     "src/ruwritingstyles/html_summary.py",
     "src/ruwritingstyles/provider_log.py",
+    "src/ruwritingstyles/provider_status.py",
     "src/ruwritingstyles/providers.py",
     "src/ruwritingstyles/report.py",
     "src/ruwritingstyles/review.py",
