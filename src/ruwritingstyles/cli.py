@@ -1368,12 +1368,32 @@ def cmd_dashboard(args: argparse.Namespace) -> int:
 
 
 
+def _cleanup_port(port: int) -> None:
+    import subprocess
+    import re
+    try:
+        # Find PID using netstat
+        output = subprocess.check_output(f"netstat -ano | findstr :{port}", shell=True).decode()
+        pids = set(re.findall(r"LISTENING\s+(\d+)", output))
+        for pid in pids:
+            print(f"Port {port} is busy (PID: {pid}). Cleaning up...")
+            subprocess.run(f"taskkill /F /PID {pid}", shell=True, capture_output=True)
+    except subprocess.CalledProcessError:
+        # Port is likely free
+        pass
+
 def cmd_web(args: argparse.Namespace) -> int:
     import subprocess
     import time
     import webbrowser
     
     repo_root = repo_root_from()
+    
+    # Automatic cleanup before start
+    print("Pre-flight check: Cleaning up ports 8000 and 5173...")
+    _cleanup_port(8000)
+    _cleanup_port(5173)
+    
     print("Launching RuWritingStyles Web Studio...")
     
     # 1. Start API Backend

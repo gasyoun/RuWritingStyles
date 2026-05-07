@@ -48,6 +48,12 @@ def provider_statuses(env: Mapping[str, str] | None = None) -> tuple[ProviderSta
             model=_env(actual_env, "RWS_ANTHROPIC_MODEL") or "claude-sonnet-4-6",
             env=actual_env,
         ),
+        _status(
+            provider="openrouter",
+            api_key_env=("OPENROUTER_API_KEY", "NOUS_PORTAL_API_KEY"),
+            model=_env(actual_env, "RWS_OPENROUTER_MODEL") or "google/gemini-2.0-flash-exp:free",
+            env=actual_env,
+        ),
     )
 
 

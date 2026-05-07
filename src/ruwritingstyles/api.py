@@ -11,6 +11,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from .provider_status import provider_statuses, provider_statuses_json
+from .config import repo_root_from
+from .runs import list_runs, load_run_artifact, create_prepare_run
+from .pipeline import run_full_pipeline
 
 app = FastAPI(title="RuWritingStyles API")
 
@@ -18,6 +21,79 @@ app = FastAPI(title="RuWritingStyles API")
 async def get_status(provider: str = "google"):
     statuses = provider_statuses()
     return provider_statuses_json(statuses, provider=provider)
+
+@app.get("/runs")
+async def get_runs():
+    repo_root = repo_root_from()
+    return list_runs(repo_root)
+
+@app.get("/runs/{run_id}")
+async def get_run_details(run_id: str):
+    repo_root = repo_root_from()
+    run_dir = repo_root / "runs" / run_id
+    
+    original_text = ""
+    orig_path = run_dir / "original.md"
+    if orig_path.exists():
+        original_text = orig_path.read_text(encoding="utf-8")
+        
+    revised_text = ""
+    rev_path = run_dir / "revision.md"
+    if rev_path.exists():
+        revised_text = rev_path.read_text(encoding="utf-8")
+        
+    sentiment = {}
+    sent_path = run_dir / "sentiment.json"
+    if sent_path.exists():
+        sentiment = json.loads(sent_path.read_text(encoding="utf-8"))
+        
+    return {
+        "id": run_id,
+        "original_text": original_text,
+        "revised_text": revised_text,
+        "sentiment": sentiment,
+        "revision": load_run_artifact(run_dir, "revision.json")
+    }
+
+class RunRequest(BaseModel):
+    input_path: str
+    provider: str
+    execute: bool = True
+
+@app.post("/runs/execute")
+async def execute_run(req: RunRequest):
+    from .config import load_manifest, load_model_policy
+    from .normalize import normalize_document
+    from .segment import segment_document
+    
+    repo_root = repo_root_from()
+    input_path = Path(req.input_path)
+    if not input_path.exists():
+        raise HTTPException(status_code=404, detail=f"Input file not found at: {req.input_path}")
+        
+    # Standard preparation pipeline
+    original_text = input_path.read_text(encoding="utf-8")
+    manifest = load_manifest(repo_root)
+    model_policy = load_model_policy(repo_root)
+    
+    normalized_text = normalize_document(original_text)
+    segments = segment_document(normalized_text)
+    
+    run_dir = create_prepare_run(
+        repo_root=repo_root,
+        input_path=input_path,
+        original_text=original_text,
+        normalized_text=normalized_text,
+        segments=segments,
+        manifest=manifest,
+        model_policy=model_policy
+    )
+    
+    if req.execute:
+        # Run the full pipeline (this will take a minute)
+        run_full_pipeline(repo_root, run_dir, provider_name=req.provider)
+        
+    return {"run_id": run_dir.name}
 
 # Enable CORS for the Vite frontend
 app.add_middleware(
