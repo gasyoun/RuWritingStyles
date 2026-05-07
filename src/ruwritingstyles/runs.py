@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 import json
 import re
 from pathlib import Path
+from typing import Any
 
 from .config import Manifest, ModelPolicy
 from .html_summary import write_html_report
@@ -53,6 +54,26 @@ def create_prepare_run(
     write_run_report(run_dir)
     write_html_report(run_dir)
     return run_dir
+
+
+def list_runs(repo_root: Path) -> list[str]:
+    runs_dir = repo_root / "runs"
+    if not runs_dir.exists():
+        return []
+    # Return directory names, sorted by creation time (newest first)
+    dirs = [d for d in runs_dir.iterdir() if d.is_dir()]
+    dirs.sort(key=lambda d: d.stat().st_mtime, reverse=True)
+    return [d.name for d in dirs]
+
+
+def load_run_artifact(run_dir: Path, filename: str) -> dict[str, Any]:
+    path = run_dir / filename
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
 
 
 def _repo_relative(repo_root: Path, path: Path) -> str:

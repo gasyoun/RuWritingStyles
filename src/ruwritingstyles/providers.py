@@ -323,6 +323,61 @@ class AnthropicProvider(BaseProvider):
             raise ProviderError(f"Anthropic response did not contain parseable JSON: {text[:500]}") from exc
 
 
+class OpenRouterProvider(BaseProvider):
+    """OpenRouter / Nous Portal API provider (OpenAI-compatible)."""
+
+    name = "openrouter"
+    endpoint = "https://openrouter.ai/api/v1/chat/completions"
+
+    def __init__(self, api_key: str | None = None) -> None:
+        self.api_key = api_key or os.environ.get("OPENROUTER_API_KEY") or os.environ.get("NOUS_PORTAL_API_KEY")
+        if not self.api_key:
+            raise ProviderError("OPENROUTER_API_KEY or NOUS_PORTAL_API_KEY is required for provider 'openrouter'")
+
+    def effective_model(self, provider_request: ProviderRequest) -> str:
+        return provider_request.model or os.environ.get("RWS_OPENROUTER_MODEL") or "google/gemini-2.0-flash-exp:free"
+
+    def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
+        model = self.effective_model(provider_request)
+        body = {
+            "model": model,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": provider_request.prompt,
+                }
+            ],
+            "response_format": {"type": "json_object"},
+        }
+
+        telemetry = ProviderRetryTelemetry()
+        try:
+            data = _post_json_with_retries(
+                provider_name="OpenRouter",
+                url=self.endpoint,
+                body=body,
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": "https://github.com/gasyoun/RuWritingStyles",
+                    "X-Title": "RuWritingStyles Philological Engine",
+                },
+                telemetry=telemetry,
+            )
+        finally:
+            self._set_retry_telemetry(telemetry)
+
+        # OpenRouter returns standard OpenAI chat completion format
+        if "choices" not in data or not data["choices"]:
+            raise ProviderError(f"OpenRouter response missing choices: {data}")
+            
+        text = data["choices"][0]["message"]["content"]
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise ProviderError(f"OpenRouter response did not contain parseable JSON: {text[:500]}") from exc
+
+
 def provider_from_name(name: str) -> BaseProvider:
     if name == "mock":
         return MockProvider()
@@ -332,6 +387,8 @@ def provider_from_name(name: str) -> BaseProvider:
         return GoogleProvider()
     if name == "anthropic":
         return AnthropicProvider()
+    if name == "openrouter":
+        return OpenRouterProvider()
     raise ProviderError(f"unknown provider {name!r}")
 
 
