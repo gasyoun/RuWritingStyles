@@ -24,6 +24,16 @@ class StylePassportRef:
 
 
 @dataclass(frozen=True)
+class CouncilArchetype:
+    """A specific council personality."""
+    id: str
+    name: str
+    description: str
+    instructions: str
+    weights: dict[str, float]
+
+
+@dataclass(frozen=True)
 class CouncilConfig:
     """Council deliberation strategies."""
 
@@ -224,6 +234,59 @@ def load_model_routes(repo_root: Path) -> tuple[ModelRoute, ...]:
 
     flush()
     return tuple(routes)
+
+
+def load_archetypes(repo_root: Path) -> tuple[CouncilArchetype, ...]:
+    path = repo_root / "styles" / "archetypes.yml"
+    if not path.exists():
+        return ()
+    text = _read(path)
+    
+    archetypes: list[CouncilArchetype] = []
+    # Simplified parser for the archetypes block
+    lines = text.splitlines()
+    current: dict[str, Any] = {}
+    
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        id_match = re.match(r"^\s*-\s+id:\s*['\"]?([^'\"\n]+?)['\"]?\s*$", line)
+        if id_match:
+            if current: archetypes.append(CouncilArchetype(**current))
+            current = {"id": id_match.group(1).strip(), "weights": {}}
+            i += 1
+            while i < len(lines) and not re.match(r"^\s*-\s+id:", lines[i]):
+                l = lines[i]
+                name_m = re.match(r"^\s+name:\s*(.*)$", l)
+                desc_m = re.match(r"^\s+description:\s*(.*)$", l)
+                inst_m = re.match(r"^\s+instructions:\s*\|\s*$", l)
+                wght_m = re.match(r"^\s+weights:\s*$", l)
+                
+                if name_m: current["name"] = name_m.group(1).strip().strip("'\"")
+                elif desc_m: current["description"] = desc_m.group(1).strip().strip("'\"")
+                elif inst_m:
+                    i += 1
+                    inst_lines = []
+                    while i < len(lines) and (lines[i].startswith("      ") or lines[i].strip() == ""):
+                        inst_lines.append(lines[i][6:])
+                        i += 1
+                    current["instructions"] = "\n".join(inst_lines)
+                    continue
+                elif wght_m:
+                    i += 1
+                    while i < len(lines) and re.match(r"^\s{6}([a-z0-9_-]+):", lines[i]):
+                        wm = re.match(r"^\s{6}([a-z0-9_-]+):\s*([0-9.]+)\s*$", lines[i])
+                        if wm: current["weights"][wm.group(1)] = float(wm.group(2))
+                        i += 1
+                    continue
+                i += 1
+            continue
+        i += 1
+                
+    if current:
+        archetypes.append(CouncilArchetype(**current))
+        
+    return tuple(archetypes)
 
 
 def load_passport_summaries(repo_root: Path, manifest: Manifest | None = None) -> tuple[StylePassportSummary, ...]:

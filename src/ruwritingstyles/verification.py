@@ -90,12 +90,32 @@ def _render_prompt(
 ) -> str:
     revised_block = revised_document_text.strip() or "(No revised document has been produced yet.)"
 
+    project_context_path = run_dir.parent / "project-context.json"
+    project_context_section = ""
+    if project_context_path.exists():
+        project_context = json.loads(project_context_path.read_text(encoding="utf-8"))
+        commitments = project_context.get("commitments", [])
+        if commitments:
+            commitments_json = json.dumps(commitments, ensure_ascii=False, indent=2)
+            project_context_section = f"""
+## Stylistic Commitments (Binding Rules)
+
+The following rules were established in previous documents of this project. You MUST verify that the revised document strictly follows these decisions. Flag any inconsistencies as CRITICAL warnings.
+
+```json
+{commitments_json}
+```
+"""
+
     return f"""# Verification Request
 
 You are the RuWritingStyles verifier.
 
-Check whether the revised document preserves the source document's facts, argument structure, citations, examples, and unresolved questions. Do not improve the prose; only verify fidelity and risks.
+Check whether the revised document preserves the source document's facts, argument structure, citations, examples, and unresolved questions. 
 
+**Style Consistency Mission**:
+Verify that all "Stylistic Commitments" provided below are correctly implemented in the revised text.
+{project_context_section}
 ## Run
 
 - Run id: `{run_id}`

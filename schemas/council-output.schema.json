@@ -93,7 +93,11 @@
         "properties": {
           "term": { "type": "string" },
           "decision": { "type": "string" },
-          "rationale": { "type": "string" }
+          "rationale": { "type": "string" },
+          "translations": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          }
         }
       }
     }

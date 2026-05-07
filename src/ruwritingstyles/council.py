@@ -15,6 +15,8 @@ class CouncilBundle:
     prompt_md: Path
 
 
+from .config import CouncilArchetype, Manifest, load_archetypes
+
 def create_council_bundle(
     *,
     repo_root: Path,
@@ -38,6 +40,10 @@ def create_council_bundle(
     delib_paths = []
     if delib_dir.exists():
         delib_paths = sorted(delib_dir.glob("*.delib.json"))
+
+    archetypes = load_archetypes(repo_root)
+    archetype_map = {a.id: a for a in archetypes}
+    chosen_archetype = archetype_map.get(manifest.council.archetype) if manifest.council else None
 
     scrutiny_path = run_dir / "scrutiny" / "scrutiny.json"
     scrutiny_doc = None
@@ -68,6 +74,7 @@ def create_council_bundle(
             scrutiny_doc=scrutiny_doc,
             project_context=project_context,
             manifest=manifest,
+            archetype=chosen_archetype,
             verification_feedback=verification_feedback,
         ),
         encoding="utf-8",
@@ -110,6 +117,7 @@ def _render_prompt(
     scrutiny_doc: dict[str, Any] | None,
     project_context: dict[str, Any] | None,
     manifest: Manifest,
+    archetype: CouncilArchetype | None,
     verification_feedback: dict[str, Any] | None = None,
 ) -> str:
     weights = {ref.style_id: ref.weight for ref in manifest.passports}
@@ -147,7 +155,7 @@ def _render_prompt(
             context_section = f"""
 ## Project Context (Cross-Document Consistency)
 
-The following stylistic commitments were made in previous documents of this project. You MUST follow these decisions to ensure consistency across the entire corpus.
+The following stylistic commitments were made in previous documents of this project. You MUST follow these decisions. If the current document is in a different language, use the 'translations' provided or adapt the decision to the current language while maintaining the same stylistic intent.
 
 ```json
 {commitments_json}
@@ -184,13 +192,27 @@ The previous revision attempt failed verification with these warnings. You MUST 
 ```
 """
 
+    mission_instructions = chosen_archetype.instructions if chosen_archetype else "Read the style review findings, compare advice across styles, and return a structured council result."
+    personality_desc = f"Personality: {chosen_archetype.description}" if chosen_archetype else ""
+
+    weights_json = "{}"
+    if chosen_archetype and chosen_archetype.weights:
+        weights_json = json.dumps(chosen_archetype.weights, ensure_ascii=False, indent=2)
+
     return f"""# Council Request
 
-You are the RuWritingStyles council: `{council_config.archetype}`.
+You are the RuWritingStyles council: `{chosen_archetype.name if chosen_archetype else manifest.council.archetype if manifest.council else "The Coordinator"}`.
+{personality_desc}
 
 ## Your Mission
 
-Read the style review findings, compare advice across styles, and return a structured council result. 
+{mission_instructions}
+
+**Council Weights (Style Authority):**
+The following weights represent the authority of each style agent. Use these when resolving conflicts.
+```json
+{weights_json}
+```
 
 **Conflict Resolution Strategy:**
 {council_config.conflict_resolution_strategy}
@@ -237,7 +259,11 @@ Return a JSON object with this shape:
     {{
       "term": "X",
       "decision": "Use 'X' instead of 'Y' consistently.",
-      "rationale": "Consistent with Tronsky's preference for historical roots."
+      "rationale": "Consistent with Tronsky's preference for historical roots.",
+      "translations": {{
+        "en": "X_en",
+        "be": "X_be"
+      }}
     }}
   ]
 }}

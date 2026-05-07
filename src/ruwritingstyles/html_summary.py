@@ -284,8 +284,57 @@ def _page(title: str, body: str) -> str:
     .diff-line.replace .orig { background: #fff5b1; }
     .diff-line.replace .rev { background: #e6ffed; }
     .del { background: #fdb8c0; text-decoration: line-through; }
-    .ins { background: #acf2bd; font-weight: bold; }
-    
+    .ins { background: #acf2bd; font-weight: bold; cursor: pointer; transition: background 0.2s; position: relative; }
+    .ins:hover { background: #96e0ab; }
+    .ins:hover::after {
+      content: "Click to Discard";
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      white-space: nowrap;
+      z-index: 10;
+    }
+    .ins.discarded {
+      background: #eee !important;
+      color: #aaa;
+      text-decoration: line-through;
+      font-weight: normal;
+    }
+    .ins.discarded::after { content: "Click to Restore"; }
+
+    .resolution-toolbar {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--panel);
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      width: 280px;
+    }
+    .resolution-toolbar.active { display: flex; }
+    .btn-save {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn-save:hover { opacity: 0.9; }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -317,6 +366,57 @@ def _page(title: str, body: str) -> str:
   <main>
 {body}
   </main>
+  
+  <div id="resolution-toolbar" class="resolution-toolbar">
+    <h3 style="margin-bottom: 4px">Interactive Resolution</h3>
+    <p class="muted" style="font-size: 12px">You have <span id="discard-count">0</span> discarded changes.</p>
+    <button class="btn-save" onclick="exportResolution()">Download Resolution JSON</button>
+  </div>
+
+  <script>
+    let discarded = new Set();
+    
+    function toggleChange(el, id) {
+      if (discarded.has(id)) {
+        discarded.delete(id);
+        el.classList.remove('discarded');
+      } else {
+        discarded.add(id);
+        el.classList.add('discarded');
+      }
+      
+      const toolbar = document.getElementById('resolution-toolbar');
+      const countEl = document.getElementById('discard-count');
+      
+      countEl.innerText = discarded.size;
+      if (discarded.size > 0) {
+        toolbar.classList.add('active');
+      } else {
+        // Keep it active once started? Or hide? Let's keep active if > 0
+        toolbar.classList.add('active');
+      }
+    }
+    
+    function exportResolution() {
+      const data = {
+        run_id: document.querySelector('.muted code').innerText,
+        discarded_indices: Array.from(discarded),
+        timestamp: new Date().toISOString()
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `resolution-${data.run_id}.json`;
+      a.click();
+    }
+
+    // Auto-assign IDs to insertion spans for tracking
+    document.querySelectorAll('.ins').forEach((el, index) => {
+      const id = 'change-' + index;
+      el.onclick = () => toggleChange(el, id);
+    });
+  </script>
 </body>
 </html>
 """
