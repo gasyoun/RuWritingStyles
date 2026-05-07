@@ -424,6 +424,7 @@ class CliPipelineTests(unittest.TestCase):
         self.assertTrue((self.eval_suite_register_run_dir / "eval-result.json").exists())
         self.assertEqual(main(["validate-eval-suite", str(self.eval_suite_dir)]), 0)
         comparison_path = self.eval_suite_dir / "comparison.md"
+        comparison_json_path = self.eval_suite_dir / "comparison.json"
         self.assertEqual(
             main(
                 [
@@ -432,11 +433,16 @@ class CliPipelineTests(unittest.TestCase):
                     str(self.eval_suite_dir),
                     "--output",
                     str(comparison_path),
+                    "--json-output",
+                    str(comparison_json_path),
                 ]
             ),
             0,
         )
         self.assertIn("# Eval Suite Comparison", comparison_path.read_text(encoding="utf-8"))
+        comparison = json.loads(comparison_json_path.read_text(encoding="utf-8"))
+        self.assertEqual(comparison["case_count"], 3)
+        self.assertEqual(comparison["pass_rate_delta"], 0.0)
         self.assertEqual(main(["export-eval-suite", str(self.eval_suite_dir)]), 0)
         bundle_path = self.eval_suite_dir / "unittest-suite-bundle.zip"
         self.assertTrue(bundle_path.exists())
@@ -446,6 +452,7 @@ class CliPipelineTests(unittest.TestCase):
         self.assertIn("unittest-suite/eval-suite-result.json", names)
         self.assertIn("unittest-suite/eval-suite-report.md", names)
         self.assertIn("unittest-suite/comparison.md", names)
+        self.assertIn("unittest-suite/comparison.json", names)
         self.assertIn("unittest-suite/cases/unittest-suite-pseudo-etymology/eval-result.json", names)
         self.assertIn("unittest-suite/cases/unittest-suite-pseudo-etymology/provider.log.jsonl", names)
         self.assertIn("unittest-suite/cases/unittest-suite-source-claim/eval-result.json", names)
