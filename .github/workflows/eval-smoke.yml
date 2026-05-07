@@ -22,7 +22,12 @@ jobs:
           python-version: "3.12"
 
       - name: Run mock eval suite
-        run: python -m ruwritingstyles.cli eval-suite --provider mock --suite-id "${{ inputs.suite_id }}"
+        run: python -m ruwritingstyles.cli eval-suite --provider mock --suite-id "${{ inputs.suite_id }}-baseline"
+        env:
+          PYTHONPATH: src
+
+      - name: Run candidate mock eval suite with comparison
+        run: python -m ruwritingstyles.cli eval-suite --provider mock --suite-id "${{ inputs.suite_id }}" --compare-to "runs/${{ inputs.suite_id }}-baseline"
         env:
           PYTHONPATH: src
 
@@ -31,8 +36,18 @@ jobs:
         env:
           PYTHONPATH: src
 
+      - name: Validate eval comparison
+        run: python -m ruwritingstyles.cli validate-eval-comparison "runs/${{ inputs.suite_id }}/comparison.json"
+        env:
+          PYTHONPATH: src
+
       - name: Show eval status
         run: python -m ruwritingstyles.cli eval-status "runs/${{ inputs.suite_id }}"
+        env:
+          PYTHONPATH: src
+
+      - name: Show comparison status
+        run: python -m ruwritingstyles.cli eval-status "runs/${{ inputs.suite_id }}/comparison.json"
         env:
           PYTHONPATH: src
 
