@@ -21,7 +21,7 @@ from .export import export_eval_suite_bundle, export_run_bundle
 from .findings import load_finding_summaries, render_finding_summaries
 from .html_summary import write_html_report
 from .provider_log import load_provider_log, render_provider_log
-from .provider_status import provider_statuses, render_provider_statuses
+from .provider_status import provider_statuses, provider_statuses_json, render_provider_statuses
 from .providers import provider_from_name
 from .report import write_run_report
 from .review import create_review_bundle
@@ -101,6 +101,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--strict",
         action="store_true",
         help="Exit with status 1 when any selected provider is not ready.",
+    )
+    provider_status.add_argument(
+        "--json",
+        action="store_true",
+        help="Print secret-free JSON readiness data.",
     )
     provider_status.set_defaults(func=cmd_provider_status)
 
@@ -516,7 +521,10 @@ def cmd_model_routes(args: argparse.Namespace) -> int:
 
 def cmd_provider_status(args: argparse.Namespace) -> int:
     statuses = provider_statuses()
-    print(render_provider_statuses(statuses, provider=args.provider))
+    if args.json:
+        print(json.dumps(provider_statuses_json(statuses, provider=args.provider), ensure_ascii=False, indent=2))
+    else:
+        print(render_provider_statuses(statuses, provider=args.provider))
     if args.strict:
         selected = tuple(status for status in statuses if args.provider is None or status.provider == args.provider)
         if any(not status.ready for status in selected):
