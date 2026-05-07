@@ -28,6 +28,9 @@ All notable changes to the RuWritingStyles project will be documented in this fi
 - Fact-Checking Loop: Implemented iterative refinement loop in `rws run` and `eval-run`.
 - Fact-Checking Loop: Council prompt now accepts verification feedback to address factual regressions.
 - Fact-Checking Loop: Added `--max-iterations` argument to control the depth of recursive improvement.
+- Multi-turn Deliberation: Introduced a cross-style "debate" phase where agents critique each other's findings.
+- Multi-turn Deliberation: Council Coordinator now synthesizes both initial reviews and cross-agent deliberation replies.
+- Multi-turn Deliberation: Added `--deliberate` flag to all run commands and a standalone `rws deliberate` utility.
 
 ### Task 3: Real-world provider validation
 - Blocked by: Missing API keys for OpenAI, Anthropic, and Google.

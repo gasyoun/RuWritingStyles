@@ -666,6 +666,7 @@ def cmd_eval_run(args: argparse.Namespace) -> int:
         provider_name=args.provider,
         model=args.model,
         run_id=args.run_id,
+        deliberate=args.deliberate,
     )
     print(f"created {result.run_dir.relative_to(repo_root)}")
     print(f"eval result {result.result_path.relative_to(repo_root)}")
@@ -681,6 +682,7 @@ def cmd_eval_suite(args: argparse.Namespace) -> int:
         provider_name=args.provider,
         model=args.model,
         suite_id=args.suite_id,
+        deliberate=args.deliberate,
     )
     data = _load_json(result.result_path)
     print(f"created {result.suite_dir.relative_to(repo_root)}")

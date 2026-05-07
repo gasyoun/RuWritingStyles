@@ -15,12 +15,13 @@ from .diff import calculate_revision_diff_metrics, write_revision_diff
 from .execution import (
     execute_council_artifact,
     execute_review_artifact,
+    execute_deliberation_artifact,
     execute_revision_artifact,
     execute_verification_artifact,
 )
 from .providers import ProviderRequest, provider_from_name
 from .report import write_run_report
-from .review import create_review_bundle
+from .review import create_review_bundle, create_deliberation_bundle
 from .revision import create_revision_bundle
 from .runs import create_prepare_run
 from .segment import normalize_document, read_document, segment_markdown
@@ -85,6 +86,7 @@ def run_eval_case(
     provider_name: str = "mock",
     model: str | None = None,
     run_id: str | None = None,
+    deliberate: bool = False,
 ) -> EvalRunResult:
     case = _find_case(repo_root, case_id)
     manifest = load_manifest(repo_root)
@@ -118,6 +120,21 @@ def run_eval_case(
             provider=provider,
             model=model,
         )
+
+    if deliberate:
+        for style_id in case.default_styles:
+            bundle = create_deliberation_bundle(
+                repo_root=repo_root,
+                run_dir=run_dir,
+                style_id=style_id,
+                manifest=manifest,
+            )
+            execute_deliberation_artifact(
+                repo_root=repo_root,
+                delib_path=bundle.deliberation_json,
+                provider=provider,
+                model=model,
+            )
 
     # Fact-Checking Loop (up to 3 iterations)
     for iteration in range(1, 4):
@@ -169,6 +186,7 @@ def run_eval_suite(
     provider_name: str = "mock",
     model: str | None = None,
     suite_id: str | None = None,
+    deliberate: bool = False,
 ) -> EvalSuiteResult:
     actual_suite_id = suite_id or _make_suite_id(provider_name)
     suite_dir = repo_root / "runs" / actual_suite_id
@@ -183,6 +201,7 @@ def run_eval_suite(
             provider_name=provider_name,
             model=model,
             run_id=case_run_id,
+            deliberate=deliberate,
         )
         data = _load_json(result.result_path)
         scoring = data.get("scoring") if isinstance(data.get("scoring"), dict) else {}
