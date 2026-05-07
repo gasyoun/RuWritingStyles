@@ -178,6 +178,7 @@ class SchemaValidationTests(unittest.TestCase):
 class EvalManifestTests(unittest.TestCase):
     def test_eval_manifest_loads_demo_case(self) -> None:
         cases = load_eval_cases(ROOT)
+        self.assertEqual({case.case_id for case in cases}, {"pseudo-etymology", "source-claim", "register-shift"})
         self.assertEqual(cases[0].case_id, "pseudo-etymology")
         self.assertTrue(cases[0].input_path.exists())
         self.assertIn("zalizniak-zametki", cases[0].default_styles)
@@ -195,6 +196,8 @@ class CliPipelineTests(unittest.TestCase):
     eval_run_dir = ROOT / "runs" / "unittest-eval-pseudo"
     eval_suite_dir = ROOT / "runs" / "unittest-suite"
     eval_suite_case_run_dir = ROOT / "runs" / "unittest-suite-pseudo-etymology"
+    eval_suite_source_run_dir = ROOT / "runs" / "unittest-suite-source-claim"
+    eval_suite_register_run_dir = ROOT / "runs" / "unittest-suite-register-shift"
     openai_missing_dir = ROOT / "runs" / "unittest-openai-missing"
 
     def tearDown(self) -> None:
@@ -210,6 +213,10 @@ class CliPipelineTests(unittest.TestCase):
             shutil.rmtree(self.eval_suite_dir)
         if self.eval_suite_case_run_dir.exists():
             shutil.rmtree(self.eval_suite_case_run_dir)
+        if self.eval_suite_source_run_dir.exists():
+            shutil.rmtree(self.eval_suite_source_run_dir)
+        if self.eval_suite_register_run_dir.exists():
+            shutil.rmtree(self.eval_suite_register_run_dir)
         if self.openai_missing_dir.exists():
             shutil.rmtree(self.openai_missing_dir)
 
@@ -404,13 +411,17 @@ class CliPipelineTests(unittest.TestCase):
         self.assertEqual(exit_code, 0)
         result = json.loads((self.eval_suite_dir / "eval-suite-result.json").read_text(encoding="utf-8"))
         self.assertEqual(result["suite_id"], "unittest-suite")
-        self.assertEqual(result["case_count"], 1)
-        self.assertEqual(result["failed_count"], 1)
-        self.assertEqual(result["results"][0]["case_id"], "pseudo-etymology")
+        self.assertEqual(result["case_count"], 3)
+        self.assertEqual(result["failed_count"], 3)
+        self.assertEqual({row["case_id"] for row in result["results"]}, {"pseudo-etymology", "source-claim", "register-shift"})
         report = (self.eval_suite_dir / "eval-suite-report.md").read_text(encoding="utf-8")
         self.assertIn("# Eval Suite: unittest-suite", report)
         self.assertIn("| pseudo-etymology | no |", report)
+        self.assertIn("| source-claim | no |", report)
+        self.assertIn("| register-shift | no |", report)
         self.assertTrue((self.eval_suite_case_run_dir / "eval-result.json").exists())
+        self.assertTrue((self.eval_suite_source_run_dir / "eval-result.json").exists())
+        self.assertTrue((self.eval_suite_register_run_dir / "eval-result.json").exists())
         self.assertEqual(main(["validate-eval-suite", str(self.eval_suite_dir)]), 0)
         comparison_path = self.eval_suite_dir / "comparison.md"
         self.assertEqual(
@@ -437,12 +448,18 @@ class CliPipelineTests(unittest.TestCase):
         self.assertIn("unittest-suite/comparison.md", names)
         self.assertIn("unittest-suite/cases/unittest-suite-pseudo-etymology/eval-result.json", names)
         self.assertIn("unittest-suite/cases/unittest-suite-pseudo-etymology/provider.log.jsonl", names)
+        self.assertIn("unittest-suite/cases/unittest-suite-source-claim/eval-result.json", names)
+        self.assertIn("unittest-suite/cases/unittest-suite-register-shift/eval-result.json", names)
 
     def test_eval_suite_strict_returns_failure_on_failed_cases(self) -> None:
         if self.eval_suite_dir.exists():
             shutil.rmtree(self.eval_suite_dir)
         if self.eval_suite_case_run_dir.exists():
             shutil.rmtree(self.eval_suite_case_run_dir)
+        if self.eval_suite_source_run_dir.exists():
+            shutil.rmtree(self.eval_suite_source_run_dir)
+        if self.eval_suite_register_run_dir.exists():
+            shutil.rmtree(self.eval_suite_register_run_dir)
 
         exit_code = main(
             [

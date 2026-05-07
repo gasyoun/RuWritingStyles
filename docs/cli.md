@@ -85,6 +85,7 @@ rws eval-list
 ```
 
 This reads `evals/manifest.json` and prints the current comparison cases, their input documents, default styles, and expected risks.
+The seed suite currently covers unsupported etymology, over-strong source claims, and scholarly register/overconfidence.
 
 ## Run An Eval Case
 

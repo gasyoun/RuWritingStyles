@@ -30,6 +30,64 @@
         "max_changed_line_ratio": 0.75,
         "max_char_delta_ratio": 0.5
       }
+    },
+    {
+      "id": "source-claim",
+      "input": "examples/input/source-claim.md",
+      "purpose": "Check whether style reviewers separate a late source note from a strong claim about an early stable tradition.",
+      "default_styles": [
+        "zalizniak-ocherk",
+        "tronsky-readings",
+        "albedil-sbornik"
+      ],
+      "expected_risks": [
+        "missing_source_reference",
+        "overgeneralized_tradition_claim",
+        "weak_evidence_for_dating"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "missing_source_reference",
+          "overgeneralized_tradition_claim",
+          "weak_evidence_for_dating"
+        ],
+        "min_required_matches": 1,
+        "allowed_verification_statuses": [
+          "passed",
+          "needs_human_review"
+        ],
+        "max_changed_line_ratio": 0.75,
+        "max_char_delta_ratio": 0.5
+      }
+    },
+    {
+      "id": "register-shift",
+      "input": "examples/input/register-shift.md",
+      "purpose": "Check whether style reviewers catch overconfident scholarly tone and recommend cautious evidential wording.",
+      "default_styles": [
+        "zalizniak-ocherk",
+        "zalizniak-shkolnikov-1",
+        "tronsky-readings"
+      ],
+      "expected_risks": [
+        "overconfident_conclusion",
+        "register_mismatch",
+        "missing_parallel_evidence"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "overconfident_conclusion",
+          "register_mismatch",
+          "missing_parallel_evidence"
+        ],
+        "min_required_matches": 1,
+        "allowed_verification_statuses": [
+          "passed",
+          "needs_human_review"
+        ],
+        "max_changed_line_ratio": 0.75,
+        "max_char_delta_ratio": 0.5
+      }
     }
   ]
 }
