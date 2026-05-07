@@ -50,6 +50,8 @@ def validate_run_dir(run_dir: Path) -> ValidationResult:
         if isinstance(data, dict):
             _validate_with_schema(data, schema_name, artifact, schema_store, messages)
             _validate_common_status(data, messages, artifact)
+            if artifact == "council.json":
+                _validate_council(data, review_paths, messages)
     _validate_eval_result(run_dir / "eval-result.json", schema_store, messages)
     _validate_provider_log(run_dir / "provider.log.jsonl", messages)
 
@@ -183,6 +185,39 @@ def _validate_common_status(data: dict[str, Any], messages: list[str], artifact:
         messages.append(f"{artifact} missing status")
     if "run_id" not in data:
         messages.append(f"{artifact} missing run_id")
+
+
+def _validate_council(data: dict[str, Any], review_paths: list[Path], messages: list[str]) -> None:
+    finding_ids = _review_finding_ids(review_paths, messages)
+    for label, rows in [
+        ("replies", data.get("replies")),
+        ("decisions", data.get("decisions")),
+    ]:
+        if not isinstance(rows, list):
+            messages.append(f"council.json {label} must be a list")
+    replies = data.get("replies") if isinstance(data.get("replies"), list) else []
+    decisions = data.get("decisions") if isinstance(data.get("decisions"), list) else []
+    for index, reply in enumerate(replies):
+        if isinstance(reply, dict):
+            reply_to = reply.get("reply_to")
+            if finding_ids and reply_to not in finding_ids:
+                messages.append(f"council.json replies[{index}] references unknown finding {reply_to!r}")
+    for index, decision in enumerate(decisions):
+        if isinstance(decision, dict):
+            finding_id = decision.get("finding_id")
+            if finding_ids and finding_id not in finding_ids:
+                messages.append(f"council.json decisions[{index}] references unknown finding {finding_id!r}")
+
+
+def _review_finding_ids(review_paths: list[Path], messages: list[str]) -> set[str]:
+    finding_ids: set[str] = set()
+    for path in review_paths:
+        data = _load_json(path, messages)
+        findings = data.get("findings") if isinstance(data, dict) and isinstance(data.get("findings"), list) else []
+        for finding in findings:
+            if isinstance(finding, dict) and finding.get("id"):
+                finding_ids.add(str(finding["id"]))
+    return finding_ids
 
 
 def _validate_provider_log(path: Path, messages: list[str]) -> None:
