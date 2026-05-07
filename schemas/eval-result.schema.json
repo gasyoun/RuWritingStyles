@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/eval-result.schema.json",
+  "title": "RuWritingStyles eval case result",
+  "type": "object",
+  "required": [
+    "case_id",
+    "run_id",
+    "run_dir",
+    "input",
+    "provider",
+    "model",
+    "styles",
+    "expected_risks",
+    "finding_count",
+    "finding_types",
+    "matched_expected_risks",
+    "verification_status",
+    "diff_metrics",
+    "scoring"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "run_dir": {
+      "type": "string",
+      "minLength": 1
+    },
+    "input": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provider": {
+      "type": "string",
+      "enum": ["mock", "openai", "google", "anthropic"]
+    },
+    "model": {
+      "type": "string"
+    },
+    "styles": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]*$"
+      }
+    },
+    "expected_risks": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9_]+$"
+      }
+    },
+    "finding_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "finding_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9_]+$"
+      }
+    },
+    "matched_expected_risks": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9_]+$"
+      }
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": ["prompt_ready", "passed", "needs_human_review", "failed", "missing"]
+    },
+    "diff_metrics": {
+      "type": "object",
+      "required": [
+        "original_lines",
+        "revised_lines",
+        "added_lines",
+        "removed_lines",
+        "changed_line_count",
+        "changed_line_ratio",
+        "original_chars",
+        "revised_chars",
+        "char_delta_ratio",
+        "original_words",
+        "revised_words",
+        "word_delta_ratio"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "original_lines": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "revised_lines": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "added_lines": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "removed_lines": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "changed_line_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "changed_line_ratio": {
+          "type": "number",
+          "minimum": 0
+        },
+        "original_chars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "revised_chars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "char_delta_ratio": {
+          "type": "number",
+          "minimum": 0
+        },
+        "original_words": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "revised_words": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "word_delta_ratio": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "scoring": {
+      "type": "object",
+      "required": [
+        "passed",
+        "required_finding_types",
+        "matched_required_finding_types",
+        "required_match_count",
+        "min_required_matches",
+        "allowed_verification_statuses",
+        "diff_within_limits",
+        "max_changed_line_ratio",
+        "max_char_delta_ratio"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "passed": {
+          "type": "boolean"
+        },
+        "required_finding_types": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          }
+        },
+        "matched_required_finding_types": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          }
+        },
+        "required_match_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_required_matches": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "allowed_verification_statuses": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["prompt_ready", "passed", "needs_human_review", "failed"]
+          }
+        },
+        "diff_within_limits": {
+          "type": "boolean"
+        },
+        "max_changed_line_ratio": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_char_delta_ratio": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

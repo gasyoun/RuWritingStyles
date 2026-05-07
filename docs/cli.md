@@ -115,6 +115,12 @@ rws eval-suite --provider mock --suite-id cli-smoke-suite --strict
 
 Use `--strict` when any failed eval case should return exit code `1`.
 
+To validate the suite summary and every referenced case run:
+
+```bash
+rws validate-eval-suite runs/cli-smoke-suite
+```
+
 ## Prepare a document
 
 ```bash
@@ -400,7 +406,15 @@ rws export runs/cli-smoke-readme --output exports/cli-smoke-readme.zip
 rws validate-run runs/cli-smoke-readme
 ```
 
-The command checks that run artifacts exist, parse as JSON where needed, pass the local JSON Schema subset for review/council/revision/verification artifacts, and that any completed style findings point to known `span_id` values.
+The command checks that run artifacts exist, parse as JSON where needed, pass the local JSON Schema subset for review/council/revision/verification/eval artifacts, and that any completed style findings point to known `span_id` values.
+
+## Validate an eval suite
+
+```bash
+rws validate-eval-suite runs/cli-smoke-suite
+```
+
+The command checks `eval-suite-result.json` against `schemas/eval-suite-result.schema.json`, verifies suite counters, confirms per-case paths exist, checks each child `eval-result.json`, and then runs the normal run validator for every referenced case run.
 
 ## Validate the repository
 
