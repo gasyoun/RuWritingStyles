@@ -168,6 +168,11 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="Optional Markdown report path.",
     )
+    eval_compare.add_argument(
+        "--json-output",
+        type=Path,
+        help="Optional machine-readable JSON comparison path.",
+    )
     eval_compare.set_defaults(func=cmd_eval_compare)
 
     review = subparsers.add_parser(
@@ -569,6 +574,11 @@ def cmd_eval_compare(args: argparse.Namespace) -> int:
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(rendered, encoding="utf-8")
         print(f"wrote {output}")
+    if args.json_output:
+        json_output = args.json_output if args.json_output.is_absolute() else (Path.cwd() / args.json_output)
+        json_output.parent.mkdir(parents=True, exist_ok=True)
+        json_output.write_text(json.dumps(comparison.data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(f"wrote {json_output}")
     return 0
 
 
