@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/manifest.schema.json",
+  "title": "RuWritingStyles style manifest",
+  "type": "object",
+  "required": ["version", "mvp_style_ids", "passports"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "string" },
+    "schema": { "type": "string" },
+    "description": { "type": "string" },
+    "mvp_style_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "passports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "path", "source_prompt"],
+        "properties": {
+          "id": { "type": "string" },
+          "path": { "type": "string" },
+          "source_prompt": { "type": "string" }
+        }
+      }
+    },
+    "available_style_sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "source_prompt"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "source_prompt": { "type": "string" }
+        }
+      }
+    }
+  }
+}
