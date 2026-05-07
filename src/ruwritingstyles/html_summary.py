@@ -38,6 +38,7 @@ def render_html_report(run_dir: Path) -> str:
         _hero(run_id, source, segments, reviews, findings, council, revision, verification, eval_result),
         _artifact_links(run_dir),
         _eval_section(eval_result),
+        _diff_section(run_dir),
         _finding_section(findings),
         _review_section(reviews),
         _council_section(council),
@@ -100,100 +101,170 @@ def _page(title: str, body: str) -> str:
     }}
     h3 {{
       margin-bottom: 8px;
-      font-size: 1rem;
-      letter-spacing: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
     }}
-    section {{ margin-top: 28px; }}
-    a {{ color: var(--accent); }}
+    section {{ margin-top: 48px; }}
+    a {{ 
+      color: var(--accent); 
+      text-decoration: none;
+      transition: color 0.2s;
+    }}
+    a:hover {{ color: var(--ink); }}
     code {{
-      padding: 0.1rem 0.25rem;
+      padding: 0.15rem 0.35rem;
       border-radius: 4px;
-      background: #ecebe4;
+      background: rgba(0,0,0,0.06);
+      font-size: 0.9em;
     }}
     .muted {{ color: var(--muted); }}
     .metrics {{
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 10px;
-      margin-top: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-top: 32px;
     }}
-    .metric, .finding, .panel {{
+    .metric, .finding, .panel, .decision-card {{
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }}
     .metric {{
-      padding: 12px;
-      min-height: 80px;
+      padding: 16px;
+      min-height: 90px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }}
+    .metric:hover {{
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }}
     .metric strong {{
       display: block;
-      font-size: 1.45rem;
+      font-size: 1.6rem;
       line-height: 1.2;
+      color: var(--accent);
     }}
     .metric span {{
       display: block;
       color: var(--muted);
-      font-size: 0.88rem;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
     }}
     .links {{
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
     }}
     .links a {{
       display: inline-flex;
       align-items: center;
-      min-height: 34px;
-      padding: 6px 10px;
+      min-height: 38px;
+      padding: 6px 14px;
       border: 1px solid var(--line);
-      border-radius: 6px;
+      border-radius: 8px;
       background: var(--panel);
-      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }}
+    .links a:hover {{
+      background: var(--accent-soft);
+      border-color: var(--accent);
     }}
     .finding {{
-      padding: 14px;
-      margin-top: 12px;
+      padding: 20px;
+      margin-top: 16px;
     }}
     .finding-head {{
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }}
     .tag {{
       display: inline-flex;
       align-items: center;
-      min-height: 24px;
-      padding: 2px 7px;
-      border-radius: 4px;
+      min-height: 26px;
+      padding: 2px 10px;
+      border-radius: 6px;
       background: var(--accent-soft);
       color: var(--accent);
-      font-size: 0.82rem;
-      font-weight: 650;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
     }}
     .tag.warn {{
       background: var(--warn-soft);
       color: var(--warn);
     }}
     .excerpt {{
-      margin: 8px 0 12px;
-      padding-left: 12px;
-      border-left: 3px solid var(--line);
+      margin: 12px 0 16px;
+      padding: 12px 16px;
+      border-left: 4px solid var(--line);
+      background: rgba(0,0,0,0.02);
       color: var(--muted);
+      font-style: italic;
+      border-radius: 0 8px 8px 0;
     }}
     .panel {{
-      padding: 14px;
+      padding: 20px;
       overflow-x: auto;
     }}
+    .diff-container {{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }}
+    .diff-box {{
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px;
+      font-size: 0.95rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }}
+    .diff-box h3 {{
+      margin-top: 0;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+    }}
+    .decision-grid {{
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }}
+    .decision-card {{
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }}
+    .decision-card.accepted {{ border-left: 4px solid #2e7d32; }}
+    .decision-card.rejected {{ border-left: 4px solid #c62828; }}
+    .decision-status {{
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+    }}
+    .accepted .decision-status {{ color: #2e7d32; }}
+    .rejected .decision-status {{ color: #c62828; }}
+    
     table {{
       width: 100%;
       border-collapse: collapse;
       min-width: 560px;
     }}
     th, td {{
-      padding: 8px 10px;
+      padding: 12px 14px;
       border-bottom: 1px solid var(--line);
       text-align: left;
       vertical-align: top;
@@ -369,15 +440,49 @@ def _council_section(council: dict[str, Any]) -> str:
       <h2>Council</h2>
       <p class="muted">Status: <code>{_e(_status(council))}</code>; no decisions yet.</p>
     </section>"""
-    rows = [
-        (
-            str(decision.get("finding_id") or ""),
-            str(decision.get("status") or ""),
-            str(decision.get("reason") or ""),
-        )
-        for decision in decisions
-    ]
-    return _section_table("Council", ("Finding", "Decision", "Reason"), rows)
+    
+    cards = []
+    for decision in decisions:
+        status = str(decision.get("status") or "pending").lower()
+        cls = "accepted" if "accept" in status else "rejected" if "reject" in status else "pending"
+        cards.append(f"""
+        <div class="decision-card {cls}">
+          <div class="decision-status">{_e(status)}</div>
+          <h3>{_e(decision.get("finding_id") or "Finding")}</h3>
+          <p>{_e(decision.get("reason") or "No reason provided.")}</p>
+        </div>""")
+        
+    return f"""    <section>
+      <h2>Council Decisions</h2>
+      <div class="decision-grid">
+{''.join(cards)}
+      </div>
+    </section>"""
+
+
+def _diff_section(run_dir: Path) -> str:
+    original_path = run_dir / "normalized.md"
+    revised_path = run_dir / "revised.md"
+    
+    if not revised_path.exists():
+        return ""
+        
+    original_text = original_path.read_text(encoding="utf-8") if original_path.exists() else "Original not found."
+    revised_text = revised_path.read_text(encoding="utf-8")
+    
+    return f"""    <section>
+      <h2>Side-by-Side Comparison</h2>
+      <div class="diff-container">
+        <div class="diff-box">
+          <h3>Original (Normalized)</h3>
+          {_e(original_text)}
+        </div>
+        <div class="diff-box">
+          <h3>Revised</h3>
+          {_e(revised_text)}
+        </div>
+      </div>
+    </section>"""
 
 
 def _revision_section(revision: dict[str, Any]) -> str:
