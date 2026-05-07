@@ -420,6 +420,14 @@ rws provider-log runs/cli-smoke-readme
 
 This prints provider execution totals and per-task retry telemetry from `provider.log.jsonl`: duration, retry count, retry delay, retry statuses, and artifact path.
 
+## Inspect Council Decisions
+
+```bash
+rws council-summary runs/cli-smoke-readme
+```
+
+This prints council status, reply count, decision count, and the accepted/deferred/informational decisions from `council.json`.
+
 ## Render a run report
 
 ```bash

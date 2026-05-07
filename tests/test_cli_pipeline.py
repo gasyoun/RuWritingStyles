@@ -17,6 +17,7 @@ if str(SRC) not in sys.path:
 
 from ruwritingstyles.cli import main
 from ruwritingstyles.config import load_model_routes
+from ruwritingstyles.council_summary import load_council_summary, render_council_summary
 from ruwritingstyles.evals import load_eval_cases
 from ruwritingstyles.findings import load_finding_summaries, render_finding_summaries
 from ruwritingstyles.providers import (
@@ -327,6 +328,10 @@ class CliPipelineTests(unittest.TestCase):
         council = json.loads((self.executed_run_dir / "council.json").read_text(encoding="utf-8"))
         self.assertEqual(council["status"], "completed")
         self.assertEqual(len(council["decisions"]), 3)
+        council_summary = render_council_summary(load_council_summary(self.executed_run_dir))
+        self.assertIn("decisions: 3", council_summary)
+        self.assertIn("status=informational", council_summary)
+        self.assertEqual(main(["council-summary", str(self.executed_run_dir)]), 0)
         provider_log_lines = (self.executed_run_dir / "provider.log.jsonl").read_text(encoding="utf-8").splitlines()
         self.assertEqual(len(provider_log_lines), 6)
         provider_log_entry = json.loads(provider_log_lines[0])
