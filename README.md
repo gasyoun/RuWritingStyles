@@ -453,17 +453,39 @@
 - [`PDFtoTXT/update.py`](PDFtoTXT/update.py) сейчас относится к служебной обработке указателей для `AAZ_Zametki_2025`; не считайте его универсальным конвертером всех PDF.
 - Перед коммитом полезно проверить README на старые имена файлов и затем выполнить `git diff --check`.
 
-## Prototype CLI quick run
+## Движок RuWritingStyles (CLI & Multi-Agent)
+
+RuWritingStyles — это не просто набор промптов, а полноценная платформа для высокоточного филологического аудита и миграции текстов.
+
+### Основные возможности
+
+*   **Мультиагентный аудит**: Система запускает «Совет» (Council) из нескольких узкоспециализированных агентов-филологов, которые ведут дискуссию для достижения стилистического консенсуса.
+*   **Стилистическая миграция**: Инструменты для автоматического перевода целых корпусов документов из одного филологического регистра в другой (например, из «Академического» в «Научпоп») с сохранением всех фактов.
+*   **Филологическая база знаний**: Агенты обращаются к локальному репозиторию исследований (`knowledge/`) для проверки терминологии и исключения анахронизмов.
+*   **Сентимент-анализ для ученых**: Отслеживание «академической дистанции», уровня уверенности (модальности) и сложности лексики в процессе редактуры.
+*   **Регрессионное тестирование**: Автоматическая проверка того, что новые версии промптов или моделей не ухудшают качество работы с установленными стилями-якорями.
+*   **Интерактивный Dashboard**: Единая панель управления проектом (`DASHBOARD.html`) со статистикой по всему корпусу.
+
+### Быстрый старт (CLI)
 
 ```bash
-PYTHONPATH=src python -m ruwritingstyles.cli run examples/input/pseudo-etymology.md --run-id demo --execute --provider mock
-PYTHONPATH=src python -m ruwritingstyles.cli eval-suite --provider mock --suite-id local-eval
-PYTHONPATH=src python -m ruwritingstyles.cli validate-eval-suite runs/local-eval
-PYTHONPATH=src python -m ruwritingstyles.cli eval-status runs/local-eval
-PYTHONPATH=src python -m ruwritingstyles.cli export-eval-suite runs/local-eval
+# Полный цикл: сегментация, аудит, дискуссия Совета и финальная правка
+PYTHONPATH=src python -m ruwritingstyles.cli run input.md --execute --provider google
+
+# Сравнение работы разных архетипов Совета (The Radical vs The Minimalist)
+PYTHONPATH=src python -m ruwritingstyles.cli ab-test input.md --archetypes "The Radical" "The Minimalist" --execute
+
+# Миграция всего архива документов в новый стиль
+PYTHONPATH=src python -m ruwritingstyles.cli migrate-corpus data/archive --to-style zaliznyak-shkolnikov --execute
+
+# Бенчмарк моделей: кто лучше справляется с филологическими задачами?
+PYTHONPATH=src python -m ruwritingstyles.cli eval-benchmark --models "gpt-5.5" "gemini-3.1-pro" --provider google
+
+# Генерация общего интерактивного отчета по проекту
+PYTHONPATH=src python -m ruwritingstyles.cli dashboard
 ```
 
-The mock provider is deterministic and needs no API key. For real providers, run `rws provider-status --strict --provider openai` first and then use `--require-provider-ready` with execution commands.
+Для работы с реальными провайдерами проверьте готовность ключей: `rws provider-status --strict`.
 
 [albedil-sbornik]: ClaudeStyles/albedil-sbornik-style.md
 [kazanskiy-korpus]: ClaudeStyles/kazanskiy-korpus-style.md

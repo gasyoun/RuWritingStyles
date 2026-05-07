@@ -256,9 +256,9 @@ def _page(title: str, body: str) -> str:
       font-weight: 800;
       text-transform: uppercase;
       font-size: 0.75rem;
-    }
-    .accepted .decision-status { color: #2e7d32; }
-    .rejected .decision-status { color: #c62828; }
+    }}
+    .accepted .decision-status {{ color: #2e7d32; }}
+    .rejected .decision-status {{ color: #c62828; }}
     
     .diff-table {
       display: flex;
@@ -351,15 +351,15 @@ def _page(title: str, body: str) -> str:
       font-size: 0.8rem;
       text-transform: uppercase;
     }
-    @media (max-width: 560px) {
-      main {
-        width: min(100% - 20px, 1120px);
+    @media (max-width: 560px) {{
+      main {{
+        width: min(100%% - 20px, 1120px);
         padding-top: 20px;
-      }
-      .metric strong { font-size: 1.25rem; }
-      h1 { font-size: 2rem; }
-      .panel { padding: 10px; }
-    }
+      }}
+      .metric strong {{ font-size: 1.25rem; }}
+      h1 {{ font-size: 2rem; }}
+      .panel {{ padding: 10px; }}
+    }}
   </style>
 </head>
 <body>
@@ -376,46 +376,46 @@ def _page(title: str, body: str) -> str:
   <script>
     let discarded = new Set();
     
-    function toggleChange(el, id) {
-      if (discarded.has(id)) {
+    function toggleChange(el, id) {{
+      if (discarded.has(id)) {{
         discarded.delete(id);
         el.classList.remove('discarded');
-      } else {
+      }} else {{
         discarded.add(id);
         el.classList.add('discarded');
-      }
+      }}
       
       const toolbar = document.getElementById('resolution-toolbar');
       const countEl = document.getElementById('discard-count');
       
       countEl.innerText = discarded.size;
-      if (discarded.size > 0) {
+      if (discarded.size > 0) {{
         toolbar.classList.add('active');
-      } else {
+      }} else {{
         // Keep it active once started? Or hide? Let's keep active if > 0
         toolbar.classList.add('active');
-      }
-    }
+      }}
+    }}
     
-    function exportResolution() {
-      const data = {
+    function exportResolution() {{
+      const data = {{
         run_id: document.querySelector('.muted code').innerText,
         discarded_indices: Array.from(discarded),
         timestamp: new Date().toISOString()
-      };
-      const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+      }};
+      const blob = new Blob([JSON.stringify(data, null, 2)], {{type: 'application/json'}});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `resolution-${data.run_id}.json`;
+      a.download = `resolution-${{data.run_id}}.json`;
       a.click();
-    }
+    }}
 
     // Auto-assign IDs to insertion spans for tracking
-    document.querySelectorAll('.ins').forEach((el, index) => {
+    document.querySelectorAll('.ins').forEach((el, index) => {{
       const id = 'change-' + index;
       el.onclick = () => toggleChange(el, id);
-    });
+    }});
   </script>
 </body>
 </html>

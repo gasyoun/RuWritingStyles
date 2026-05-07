@@ -16,6 +16,7 @@ class CouncilBundle:
 
 
 from .config import CouncilArchetype, Manifest, load_archetypes
+from .knowledge import search_knowledge_base, extract_keywords_from_reviews
 
 def create_council_bundle(
     *,
@@ -55,6 +56,10 @@ def create_council_bundle(
     if project_context_path.exists():
         project_context = json.loads(project_context_path.read_text(encoding="utf-8"))
 
+    # Knowledge Base Integration
+    keywords = extract_keywords_from_reviews(run_dir)
+    external_research = search_knowledge_base(repo_root, keywords)
+
     segments_doc = json.loads(segments_path.read_text(encoding="utf-8"))
     run_id = str(segments_doc.get("run_id") or run_dir.name)
 
@@ -73,6 +78,7 @@ def create_council_bundle(
             delib_docs=delib_docs,
             scrutiny_doc=scrutiny_doc,
             project_context=project_context,
+            external_research=external_research,
             manifest=manifest,
             archetype=chosen_archetype,
             verification_feedback=verification_feedback,
@@ -116,6 +122,7 @@ def _render_prompt(
     delib_docs: list[dict[str, Any]],
     scrutiny_doc: dict[str, Any] | None,
     project_context: dict[str, Any] | None,
+    external_research: str,
     manifest: Manifest,
     archetype: CouncilArchetype | None,
     verification_feedback: dict[str, Any] | None = None,
@@ -192,6 +199,16 @@ The previous revision attempt failed verification with these warnings. You MUST 
 ```
 """
 
+    research_section = ""
+    if external_research:
+        research_section = f"""
+## External Research (Knowledge Base)
+
+The following data was retrieved from the project's philological knowledge base. You SHOULD use these facts to resolve terminological disputes.
+
+{external_research}
+"""
+
     mission_instructions = chosen_archetype.instructions if chosen_archetype else "Read the style review findings, compare advice across styles, and return a structured council result."
     personality_desc = f"Personality: {chosen_archetype.description}" if chosen_archetype else ""
 
@@ -218,6 +235,7 @@ The following weights represent the authority of each style agent. Use these whe
 {council_config.conflict_resolution_strategy}
 {context_section}
 {scrutiny_section}
+{research_section}
 {feedback_section}
 ## Instructions
 
