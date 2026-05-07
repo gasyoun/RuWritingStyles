@@ -144,6 +144,7 @@ def _generate_with_log(
     try:
         output = provider.generate_json(provider_request)
     except Exception as exc:
+        telemetry = provider.retry_telemetry()
         append_provider_log(
             run_dir=run_dir,
             task=provider_request.task,
@@ -152,10 +153,14 @@ def _generate_with_log(
             artifact_path=_repo_relative(repo_root, artifact_path),
             status="error",
             duration_ms=_elapsed_ms(start),
+            retry_count=_int(telemetry.get("retry_count")),
+            retry_delay_seconds=_float(telemetry.get("retry_delay_seconds")),
+            retry_statuses=_strings(telemetry.get("retry_statuses")),
             error=str(exc),
         )
         raise
 
+    telemetry = provider.retry_telemetry()
     append_provider_log(
         run_dir=run_dir,
         task=provider_request.task,
@@ -164,6 +169,9 @@ def _generate_with_log(
         artifact_path=_repo_relative(repo_root, artifact_path),
         status="completed",
         duration_ms=_elapsed_ms(start),
+        retry_count=_int(telemetry.get("retry_count")),
+        retry_delay_seconds=_float(telemetry.get("retry_delay_seconds")),
+        retry_statuses=_strings(telemetry.get("retry_statuses")),
     )
     return output
 
@@ -187,3 +195,15 @@ def _repo_relative(repo_root: Path, path: Path) -> str:
         return path.resolve().relative_to(repo_root.resolve()).as_posix()
     except ValueError:
         return str(path)
+
+
+def _int(value: Any) -> int:
+    return value if isinstance(value, int) else 0
+
+
+def _float(value: Any) -> float:
+    return float(value) if isinstance(value, (int, float)) else 0.0
+
+
+def _strings(value: Any) -> list[str]:
+    return [str(item) for item in value] if isinstance(value, list) else []

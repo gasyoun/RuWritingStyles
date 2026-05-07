@@ -17,6 +17,9 @@ def append_provider_log(
     artifact_path: str,
     status: str,
     duration_ms: int,
+    retry_count: int = 0,
+    retry_delay_seconds: float = 0.0,
+    retry_statuses: list[str] | None = None,
     error: str | None = None,
 ) -> Path:
     """Append one JSONL entry to provider.log.jsonl."""
@@ -30,6 +33,9 @@ def append_provider_log(
         "artifact": artifact_path,
         "status": status,
         "duration_ms": duration_ms,
+        "retry_count": retry_count,
+        "retry_delay_seconds": retry_delay_seconds,
+        "retry_statuses": retry_statuses or [],
     }
     if error:
         entry["error"] = error

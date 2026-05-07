@@ -30,6 +30,29 @@ class ProviderRequest:
     model: str | None = None
 
 
+@dataclass
+class ProviderRetryTelemetry:
+    """Retry details from the most recent provider HTTP request."""
+
+    retry_count: int = 0
+    retry_delay_seconds: float = 0.0
+    retry_statuses: list[str] | None = None
+
+    def record(self, status: str, delay_seconds: float) -> None:
+        self.retry_count += 1
+        self.retry_delay_seconds += delay_seconds
+        if self.retry_statuses is None:
+            self.retry_statuses = []
+        self.retry_statuses.append(status)
+
+    def to_json(self) -> dict[str, Any]:
+        return {
+            "retry_count": self.retry_count,
+            "retry_delay_seconds": round(self.retry_delay_seconds, 3),
+            "retry_statuses": list(self.retry_statuses or []),
+        }
+
+
 class ProviderError(RuntimeError):
     """Raised when a provider cannot complete a request."""
 
@@ -43,6 +66,12 @@ class BaseProvider:
     def effective_model(self, provider_request: ProviderRequest) -> str:
         return provider_request.model or ""
 
+    def retry_telemetry(self) -> dict[str, Any]:
+        return getattr(self, "_last_retry_telemetry", ProviderRetryTelemetry().to_json())
+
+    def _set_retry_telemetry(self, telemetry: ProviderRetryTelemetry) -> None:
+        self._last_retry_telemetry = telemetry.to_json()
+
 
 class MockProvider(BaseProvider):
     """Deterministic provider for local development and tests."""
@@ -53,6 +82,7 @@ class MockProvider(BaseProvider):
         return provider_request.model or "mock"
 
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
+        self._set_retry_telemetry(ProviderRetryTelemetry())
         task = provider_request.task
         metadata = provider_request.metadata
         if task == "review":
@@ -166,15 +196,20 @@ class OpenAIProvider(BaseProvider):
         if effort:
             body["reasoning"] = {"effort": effort}
 
-        data = _post_json_with_retries(
-            provider_name="OpenAI",
-            url=self.endpoint,
-            body=body,
-            headers={
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json",
-            },
-        )
+        telemetry = ProviderRetryTelemetry()
+        try:
+            data = _post_json_with_retries(
+                provider_name="OpenAI",
+                url=self.endpoint,
+                body=body,
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json",
+                },
+                telemetry=telemetry,
+            )
+        finally:
+            self._set_retry_telemetry(telemetry)
 
         text = _extract_output_text(data)
         try:
@@ -212,12 +247,17 @@ class GoogleProvider(BaseProvider):
             },
         }
 
-        data = _post_json_with_retries(
-            provider_name="Google Gemini",
-            url=self.endpoint_template.format(model=quote(model, safe=""), api_key=quote(self.api_key, safe="")),
-            body=body,
-            headers={"Content-Type": "application/json"},
-        )
+        telemetry = ProviderRetryTelemetry()
+        try:
+            data = _post_json_with_retries(
+                provider_name="Google Gemini",
+                url=self.endpoint_template.format(model=quote(model, safe=""), api_key=quote(self.api_key, safe="")),
+                body=body,
+                headers={"Content-Type": "application/json"},
+                telemetry=telemetry,
+            )
+        finally:
+            self._set_retry_telemetry(telemetry)
 
         text = _extract_gemini_text(data)
         try:
@@ -260,16 +300,21 @@ class AnthropicProvider(BaseProvider):
             },
         }
 
-        data = _post_json_with_retries(
-            provider_name="Anthropic",
-            url=self.endpoint,
-            body=body,
-            headers={
-                "x-api-key": self.api_key,
-                "anthropic-version": os.environ.get("ANTHROPIC_VERSION", "2023-06-01"),
-                "content-type": "application/json",
-            },
-        )
+        telemetry = ProviderRetryTelemetry()
+        try:
+            data = _post_json_with_retries(
+                provider_name="Anthropic",
+                url=self.endpoint,
+                body=body,
+                headers={
+                    "x-api-key": self.api_key,
+                    "anthropic-version": os.environ.get("ANTHROPIC_VERSION", "2023-06-01"),
+                    "content-type": "application/json",
+                },
+                telemetry=telemetry,
+            )
+        finally:
+            self._set_retry_telemetry(telemetry)
 
         text = _extract_anthropic_text(data)
         try:
@@ -371,6 +416,7 @@ def _post_json_with_retries(
     url: str,
     body: dict[str, Any],
     headers: dict[str, str],
+    telemetry: ProviderRetryTelemetry | None = None,
     timeout: int = 120,
 ) -> dict[str, Any]:
     attempts = _provider_attempt_count()
@@ -395,10 +441,14 @@ def _post_json_with_retries(
             if not _is_retryable_status(exc.code) or attempt == attempts:
                 raise last_error from exc
             sleep_for = _retry_delay_from_headers(exc.headers, delay)
+            if telemetry is not None:
+                telemetry.record(str(exc.code), sleep_for)
         except error.URLError as exc:
             last_error = ProviderError(f"{provider_name} API request failed: {exc}")
             if attempt == attempts:
                 raise last_error from exc
+            if telemetry is not None:
+                telemetry.record("url_error", sleep_for)
 
         time.sleep(sleep_for)
         delay *= 2

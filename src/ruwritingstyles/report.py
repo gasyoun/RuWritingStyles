@@ -172,9 +172,14 @@ def _provider_log_section(entries: list[dict[str, Any]]) -> str:
                 str(entry.get("model") or ""),
                 str(entry.get("status") or ""),
                 str(entry.get("duration_ms") or 0),
+                str(entry.get("retry_count") or 0),
+                _value(entry.get("retry_delay_seconds")),
             )
         )
-    return "## Provider Log\n\n" + _table(("Task", "Provider", "Model", "Status", "Duration ms"), rows)
+    return "## Provider Log\n\n" + _table(
+        ("Task", "Provider", "Model", "Status", "Duration ms", "Retries", "Retry delay s"),
+        rows,
+    )
 
 
 def _revision_section(run_dir: Path, revision: dict[str, Any]) -> str:

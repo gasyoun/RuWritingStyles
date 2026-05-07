@@ -19,6 +19,7 @@ from ruwritingstyles.config import load_model_routes
 from ruwritingstyles.evals import load_eval_cases
 from ruwritingstyles.findings import load_finding_summaries, render_finding_summaries
 from ruwritingstyles.providers import (
+    ProviderRetryTelemetry,
     _extract_anthropic_text,
     _extract_gemini_text,
     _is_retryable_status,
@@ -73,6 +74,19 @@ class ProviderParsingTests(unittest.TestCase):
         self.assertEqual(_extract_anthropic_text(anthropic), '{"ok": true}')
         self.assertTrue(_is_retryable_status(429))
         self.assertFalse(_is_retryable_status(400))
+
+    def test_provider_retry_telemetry_records_attempts(self) -> None:
+        telemetry = ProviderRetryTelemetry()
+        telemetry.record("429", 1.25)
+        telemetry.record("503", 2.0)
+        self.assertEqual(
+            telemetry.to_json(),
+            {
+                "retry_count": 2,
+                "retry_delay_seconds": 3.25,
+                "retry_statuses": ["429", "503"],
+            },
+        )
 
     def test_provider_retry_delay_uses_rate_limit_headers(self) -> None:
         now = datetime(2026, 5, 7, 10, 0, 0, tzinfo=timezone.utc)
@@ -226,6 +240,9 @@ class CliPipelineTests(unittest.TestCase):
         provider_log_entry = json.loads(provider_log_lines[0])
         self.assertEqual(provider_log_entry["provider"], "mock")
         self.assertEqual(provider_log_entry["status"], "completed")
+        self.assertEqual(provider_log_entry["retry_count"], 0)
+        self.assertEqual(provider_log_entry["retry_delay_seconds"], 0.0)
+        self.assertEqual(provider_log_entry["retry_statuses"], [])
         summaries = load_finding_summaries(self.executed_run_dir, span_id="p002")
         self.assertEqual(len(summaries), 3)
         self.assertIn("Mock provider placeholder finding", render_finding_summaries(summaries))
