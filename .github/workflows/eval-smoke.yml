@@ -1,0 +1,63 @@
+name: Eval Smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite_id:
+        description: "Deterministic suite id"
+        required: false
+        default: "github-eval-smoke"
+
+jobs:
+  eval-smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run mock eval suite
+        run: python -m ruwritingstyles.cli eval-suite --provider mock --suite-id "${{ inputs.suite_id }}-baseline"
+        env:
+          PYTHONPATH: src
+
+      - name: Run candidate mock eval suite with comparison
+        run: python -m ruwritingstyles.cli eval-suite --provider mock --suite-id "${{ inputs.suite_id }}" --compare-to "runs/${{ inputs.suite_id }}-baseline"
+        env:
+          PYTHONPATH: src
+
+      - name: Validate eval suite
+        run: python -m ruwritingstyles.cli validate-eval-suite "runs/${{ inputs.suite_id }}"
+        env:
+          PYTHONPATH: src
+
+      - name: Validate eval comparison
+        run: python -m ruwritingstyles.cli validate-eval-comparison "runs/${{ inputs.suite_id }}/comparison.json"
+        env:
+          PYTHONPATH: src
+
+      - name: Show eval status
+        run: python -m ruwritingstyles.cli eval-status "runs/${{ inputs.suite_id }}"
+        env:
+          PYTHONPATH: src
+
+      - name: Show comparison status
+        run: python -m ruwritingstyles.cli eval-status "runs/${{ inputs.suite_id }}/comparison.json"
+        env:
+          PYTHONPATH: src
+
+      - name: Export eval suite
+        run: python -m ruwritingstyles.cli export-eval-suite "runs/${{ inputs.suite_id }}"
+        env:
+          PYTHONPATH: src
+
+      - name: Upload eval bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ inputs.suite_id }}-bundle"
+          path: "runs/${{ inputs.suite_id }}/${{ inputs.suite_id }}-bundle.zip"

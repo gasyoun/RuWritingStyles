@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/eval-suite-comparison-suite.schema.json",
+  "title": "RuWritingStyles eval suite comparison side",
+  "type": "object",
+  "required": [
+    "suite_id",
+    "provider",
+    "model",
+    "path"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "suite_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provider": {
+      "type": "string"
+    },
+    "model": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

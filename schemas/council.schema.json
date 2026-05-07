@@ -35,13 +35,73 @@
     "replies": {
       "type": "array",
       "items": {
-        "type": "object"
+        "type": "object",
+        "required": [
+          "reply_to",
+          "style_id",
+          "position",
+          "comment"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "reply_to": {
+            "type": "string",
+            "minLength": 1
+          },
+          "style_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "position": {
+            "type": "string",
+            "enum": [
+              "agree",
+              "agree_with_modification",
+              "disagree",
+              "needs_human_decision",
+              "out_of_scope"
+            ]
+          },
+          "comment": {
+            "type": "string",
+            "minLength": 1
+          },
+          "proposed_adjustment": {
+            "type": "string"
+          }
+        }
       }
     },
     "decisions": {
       "type": "array",
       "items": {
-        "type": "object"
+        "type": "object",
+        "required": [
+          "finding_id",
+          "status",
+          "reason"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "finding_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "accepted_with_modification",
+              "rejected",
+              "deferred",
+              "informational"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
       }
     }
   }

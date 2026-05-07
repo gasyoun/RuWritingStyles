@@ -65,10 +65,20 @@ To run the same document as an eval case:
 rws eval-run --case pseudo-etymology --provider mock --run-id eval-pseudo-etymology
 ```
 
+To run the full eval manifest:
+
+```bash
+rws eval-suite --provider mock --suite-id demo-suite
+```
+
+The suite writes `eval-suite-result.json` and `eval-suite-report.md`. Add `--strict` when failed cases should make scripts return exit code `1`.
+
 The mock provider is deterministic and only proves that the pipeline works. Use a real provider for substantive findings:
 
 ```bash
+cp .env.example .env
 set OPENAI_API_KEY=...
+rws provider-status --provider openai --strict
 rws run examples/input/pseudo-etymology.md --execute --provider openai --model gpt-5.5
 ```
 
@@ -77,6 +87,8 @@ The CLI also accepts `--provider google` and `--provider anthropic` when the rel
 In PowerShell:
 
 ```powershell
+Copy-Item .env.example .env
 $env:OPENAI_API_KEY='...'
+rws provider-status --provider openai --strict
 rws run examples/input/pseudo-etymology.md --execute --provider openai --model gpt-5.5
 ```

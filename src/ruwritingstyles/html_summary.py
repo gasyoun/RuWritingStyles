@@ -432,10 +432,16 @@ def _provider_log_section(entries: list[dict[str, Any]]) -> str:
             str(entry.get("model") or ""),
             str(entry.get("status") or ""),
             str(entry.get("duration_ms") or 0),
+            str(entry.get("retry_count") or 0),
+            _value(entry.get("retry_delay_seconds")),
         )
         for entry in entries
     ]
-    return _section_table("Provider Log", ("Task", "Provider", "Model", "Status", "Duration ms"), rows)
+    return _section_table(
+        "Provider Log",
+        ("Task", "Provider", "Model", "Status", "Duration ms", "Retries", "Retry delay s"),
+        rows,
+    )
 
 
 def _section_table(title: str, headers: tuple[str, ...], rows: list[tuple[str, ...]]) -> str:

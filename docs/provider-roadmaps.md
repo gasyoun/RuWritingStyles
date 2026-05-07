@@ -16,7 +16,7 @@
 
 Все провайдерные различия должны быть спрятаны в provider adapter. Файлы стилей, JSON-схемы замечаний и `council.json` должны оставаться переносимыми.
 
-Общий execution layer уже учитывает rate-limit поведение провайдеров: сначала используется стандартный `Retry-After`, затем OpenAI `x-ratelimit-reset-*` и Anthropic `anthropic-ratelimit-*-reset` для исчерпанных лимитов. Для Gemini фиксируется тот же общий механизм `Retry-After`, если сервис возвращает этот заголовок.
+Общий execution layer уже учитывает rate-limit поведение провайдеров: сначала используется стандартный `Retry-After`, затем OpenAI `x-ratelimit-reset-*` и Anthropic `anthropic-ratelimit-*-reset` для исчерпанных лимитов. Для Gemini фиксируется тот же общий механизм `Retry-After`, если сервис возвращает этот заголовок. Каждый запуск также пишет retry telemetry в `provider.log.jsonl`: `retry_count`, `retry_delay_seconds` и `retry_statuses`.
 
 ## OpenAI GPT-5.5
 
