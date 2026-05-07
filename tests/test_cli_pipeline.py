@@ -215,9 +215,13 @@ class CliPipelineTests(unittest.TestCase):
     demo_run_dir = ROOT / "runs" / "unittest-demo"
     eval_run_dir = ROOT / "runs" / "unittest-eval-pseudo"
     eval_suite_dir = ROOT / "runs" / "unittest-suite"
+    eval_suite_candidate_dir = ROOT / "runs" / "unittest-suite-candidate"
     eval_suite_case_run_dir = ROOT / "runs" / "unittest-suite-pseudo-etymology"
     eval_suite_source_run_dir = ROOT / "runs" / "unittest-suite-source-claim"
     eval_suite_register_run_dir = ROOT / "runs" / "unittest-suite-register-shift"
+    eval_suite_candidate_case_run_dir = ROOT / "runs" / "unittest-suite-candidate-pseudo-etymology"
+    eval_suite_candidate_source_run_dir = ROOT / "runs" / "unittest-suite-candidate-source-claim"
+    eval_suite_candidate_register_run_dir = ROOT / "runs" / "unittest-suite-candidate-register-shift"
     openai_missing_dir = ROOT / "runs" / "unittest-openai-missing"
 
     def tearDown(self) -> None:
@@ -231,12 +235,20 @@ class CliPipelineTests(unittest.TestCase):
             shutil.rmtree(self.eval_run_dir)
         if self.eval_suite_dir.exists():
             shutil.rmtree(self.eval_suite_dir)
+        if self.eval_suite_candidate_dir.exists():
+            shutil.rmtree(self.eval_suite_candidate_dir)
         if self.eval_suite_case_run_dir.exists():
             shutil.rmtree(self.eval_suite_case_run_dir)
         if self.eval_suite_source_run_dir.exists():
             shutil.rmtree(self.eval_suite_source_run_dir)
         if self.eval_suite_register_run_dir.exists():
             shutil.rmtree(self.eval_suite_register_run_dir)
+        if self.eval_suite_candidate_case_run_dir.exists():
+            shutil.rmtree(self.eval_suite_candidate_case_run_dir)
+        if self.eval_suite_candidate_source_run_dir.exists():
+            shutil.rmtree(self.eval_suite_candidate_source_run_dir)
+        if self.eval_suite_candidate_register_run_dir.exists():
+            shutil.rmtree(self.eval_suite_candidate_register_run_dir)
         if self.openai_missing_dir.exists():
             shutil.rmtree(self.openai_missing_dir)
 
@@ -489,6 +501,47 @@ class CliPipelineTests(unittest.TestCase):
         self.assertIn("unittest-suite/cases/unittest-suite-pseudo-etymology/provider.log.jsonl", names)
         self.assertIn("unittest-suite/cases/unittest-suite-source-claim/eval-result.json", names)
         self.assertIn("unittest-suite/cases/unittest-suite-register-shift/eval-result.json", names)
+
+    def test_eval_suite_can_compare_to_baseline(self) -> None:
+        for path in [
+            self.eval_suite_dir,
+            self.eval_suite_candidate_dir,
+            self.eval_suite_case_run_dir,
+            self.eval_suite_source_run_dir,
+            self.eval_suite_register_run_dir,
+            self.eval_suite_candidate_case_run_dir,
+            self.eval_suite_candidate_source_run_dir,
+            self.eval_suite_candidate_register_run_dir,
+        ]:
+            if path.exists():
+                shutil.rmtree(path)
+
+        self.assertEqual(
+            main(["eval-suite", "--provider", "mock", "--suite-id", "unittest-suite"]),
+            0,
+        )
+        self.assertEqual(
+            main(
+                [
+                    "eval-suite",
+                    "--provider",
+                    "mock",
+                    "--suite-id",
+                    "unittest-suite-candidate",
+                    "--compare-to",
+                    str(self.eval_suite_dir),
+                ]
+            ),
+            0,
+        )
+        comparison_json = self.eval_suite_candidate_dir / "comparison.json"
+        comparison_md = self.eval_suite_candidate_dir / "comparison.md"
+        self.assertTrue(comparison_json.exists())
+        self.assertTrue(comparison_md.exists())
+        comparison = json.loads(comparison_json.read_text(encoding="utf-8"))
+        self.assertEqual(comparison["pass_rate_delta"], 0.0)
+        self.assertEqual(comparison["regressed"], [])
+        self.assertEqual(main(["validate-eval-comparison", str(comparison_json)]), 0)
 
     def test_eval_compare_strict_returns_failure_on_regression(self) -> None:
         baseline_dir = ROOT / "runs" / "unittest-compare-baseline"
