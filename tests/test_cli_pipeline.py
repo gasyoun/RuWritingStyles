@@ -27,7 +27,7 @@ from ruwritingstyles.providers import (
     _retry_delay_from_headers,
 )
 from ruwritingstyles.provider_log import load_provider_log, render_provider_log
-from ruwritingstyles.provider_status import provider_statuses, render_provider_statuses
+from ruwritingstyles.provider_status import provider_statuses, provider_statuses_json, render_provider_statuses
 from ruwritingstyles.schema_validation import validate_json_schema
 from ruwritingstyles.segment import normalize_document, segment_markdown
 from ruwritingstyles.validation import _load_schema_store
@@ -147,8 +147,12 @@ class ModelPolicyTests(unittest.TestCase):
         self.assertIn("ready: yes", rendered)
         self.assertIn("configured_env: OPENAI_API_KEY", rendered)
         self.assertNotIn("sk-secret", rendered)
+        rendered_json = provider_statuses_json(statuses, provider="openai")
+        self.assertEqual(rendered_json[0]["configured_env"], "OPENAI_API_KEY")
+        self.assertNotIn("sk-secret", json.dumps(rendered_json))
         with patch.dict("os.environ", {}, clear=True):
             self.assertEqual(main(["provider-status", "--provider", "mock", "--strict"]), 0)
+            self.assertEqual(main(["provider-status", "--provider", "mock", "--json"]), 0)
             self.assertEqual(main(["provider-status", "--provider", "openai", "--strict"]), 1)
 
 

@@ -71,6 +71,23 @@ def render_provider_statuses(statuses: tuple[ProviderStatus, ...], provider: str
     return "\n".join(lines)
 
 
+def provider_statuses_json(statuses: tuple[ProviderStatus, ...], provider: str | None = None) -> list[dict[str, object]]:
+    """Return provider readiness as secret-free JSON-compatible dictionaries."""
+
+    selected = tuple(status for status in statuses if provider is None or status.provider == provider)
+    return [
+        {
+            "provider": status.provider,
+            "ready": status.ready,
+            "model": status.model,
+            "api_key_env": list(status.api_key_env),
+            "configured_env": status.configured_env,
+            "missing_env": list(status.missing_env),
+        }
+        for status in selected
+    ]
+
+
 def _status(
     *,
     provider: str,
