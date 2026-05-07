@@ -295,6 +295,11 @@ def _add_execute_args(parser: argparse.ArgumentParser) -> None:
         "--model",
         help="Optional provider-specific model override.",
     )
+    parser.add_argument(
+        "--require-provider-ready",
+        action="store_true",
+        help="With --execute, fail before writing artifacts if the selected provider is not configured.",
+    )
 
 
 def _add_provider_args(parser: argparse.ArgumentParser) -> None:
@@ -307,6 +312,11 @@ def _add_provider_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--model",
         help="Optional provider-specific model override.",
+    )
+    parser.add_argument(
+        "--require-provider-ready",
+        action="store_true",
+        help="Fail before execution if the selected provider is not configured.",
     )
 
 
@@ -341,6 +351,8 @@ def cmd_run(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     input_path = args.input if args.input.is_absolute() else (Path.cwd() / args.input)
     input_path = input_path.resolve()
+    if args.execute and args.require_provider_ready:
+        _require_provider_ready(args.provider)
 
     manifest = load_manifest(repo_root)
     model_policy = load_model_policy(repo_root)
@@ -494,6 +506,8 @@ def cmd_eval_list(_: argparse.Namespace) -> int:
 
 def cmd_eval_run(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
+    if args.require_provider_ready:
+        _require_provider_ready(args.provider)
     result = run_eval_case(
         repo_root=repo_root,
         case_id=args.case,
@@ -508,6 +522,8 @@ def cmd_eval_run(args: argparse.Namespace) -> int:
 
 def cmd_eval_suite(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
+    if args.require_provider_ready:
+        _require_provider_ready(args.provider)
     result = run_eval_suite(
         repo_root=repo_root,
         provider_name=args.provider,
@@ -545,6 +561,8 @@ def cmd_review(args: argparse.Namespace) -> int:
     manifest = load_manifest(repo_root)
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
     style_ids = _selected_style_ids(args, manifest)
+    if args.execute and args.require_provider_ready:
+        _require_provider_ready(args.provider)
 
     for style_id in style_ids:
         bundle = create_review_bundle(
@@ -582,9 +600,20 @@ def _selected_style_ids(args: argparse.Namespace, manifest) -> list[str]:
     return style_ids
 
 
+def _require_provider_ready(provider: str) -> None:
+    status = next((item for item in provider_statuses() if item.provider == provider), None)
+    if status is None:
+        raise ValueError(f"unknown provider {provider!r}")
+    if not status.ready:
+        missing = ", ".join(status.missing_env)
+        raise RuntimeError(f"provider {provider!r} is not ready; missing environment: {missing}")
+
+
 def cmd_council(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    if args.execute and args.require_provider_ready:
+        _require_provider_ready(args.provider)
     bundle = create_council_bundle(repo_root=repo_root, run_dir=run_dir)
     print(f"created {bundle.council_json.relative_to(repo_root)}")
     print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
@@ -603,6 +632,8 @@ def cmd_council(args: argparse.Namespace) -> int:
 def cmd_revise(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    if args.execute and args.require_provider_ready:
+        _require_provider_ready(args.provider)
     bundle = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
     print(f"created {bundle.revision_json.relative_to(repo_root)}")
     print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
@@ -623,6 +654,8 @@ def cmd_revise(args: argparse.Namespace) -> int:
 def cmd_verify(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    if args.execute and args.require_provider_ready:
+        _require_provider_ready(args.provider)
     bundle = create_verification_bundle(repo_root=repo_root, run_dir=run_dir)
     print(f"created {bundle.verification_json.relative_to(repo_root)}")
     print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")

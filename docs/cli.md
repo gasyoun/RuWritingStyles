@@ -219,6 +219,11 @@ The reports summarize segment counts, style review status, findings, council dec
 When `--execute` produces `revised.md`, `run` also writes `revision.diff`.
 Provider executions are appended to `provider.log.jsonl` without API keys or request bodies.
 Each provider log entry includes `retry_count`, `retry_delay_seconds`, and `retry_statuses`, so real API runs can show when rate limits or transient errors affected the pipeline.
+For real providers, add `--require-provider-ready` to fail before creating a new run when the selected provider is missing its API key:
+
+```bash
+rws run README.md --run-id cli-openai --execute --provider openai --require-provider-ready
+```
 
 To package the completed run:
 

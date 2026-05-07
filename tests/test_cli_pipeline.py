@@ -195,6 +195,7 @@ class CliPipelineTests(unittest.TestCase):
     eval_run_dir = ROOT / "runs" / "unittest-eval-pseudo"
     eval_suite_dir = ROOT / "runs" / "unittest-suite"
     eval_suite_case_run_dir = ROOT / "runs" / "unittest-suite-pseudo-etymology"
+    openai_missing_dir = ROOT / "runs" / "unittest-openai-missing"
 
     def tearDown(self) -> None:
         if self.run_dir.exists():
@@ -209,6 +210,8 @@ class CliPipelineTests(unittest.TestCase):
             shutil.rmtree(self.eval_suite_dir)
         if self.eval_suite_case_run_dir.exists():
             shutil.rmtree(self.eval_suite_case_run_dir)
+        if self.openai_missing_dir.exists():
+            shutil.rmtree(self.openai_missing_dir)
 
     def test_full_offline_run_creates_expected_artifacts(self) -> None:
         if self.run_dir.exists():
@@ -236,6 +239,26 @@ class CliPipelineTests(unittest.TestCase):
         self.assertEqual(verification["status"], "prompt_ready")
 
         self.assertEqual(main(["validate-run", str(self.run_dir)]), 0)
+
+    def test_provider_preflight_stops_before_run_creation(self) -> None:
+        if self.openai_missing_dir.exists():
+            shutil.rmtree(self.openai_missing_dir)
+
+        with patch.dict("os.environ", {}, clear=True):
+            exit_code = main(
+                [
+                    "run",
+                    "README.md",
+                    "--run-id",
+                    "unittest-openai-missing",
+                    "--execute",
+                    "--provider",
+                    "openai",
+                    "--require-provider-ready",
+                ]
+            )
+        self.assertEqual(exit_code, 1)
+        self.assertFalse(self.openai_missing_dir.exists())
 
     def test_full_mock_executed_run_updates_artifacts(self) -> None:
         if self.executed_run_dir.exists():
