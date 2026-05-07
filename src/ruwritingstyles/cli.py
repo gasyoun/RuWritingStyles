@@ -8,12 +8,22 @@ from pathlib import Path
 import sys
 from datetime import datetime
 from typing import Any
+from dotenv import load_dotenv
+
+# Load API keys from .env file if it exists
+load_dotenv()
 
 from .config import load_manifest, load_model_policy, load_model_routes, load_passport_summaries, repo_root_from
 from .assess import create_impact_bundle
 from .scrutiny import create_scrutiny_bundle
 from .project import update_project_context
 from .audit import audit_project_consistency
+from .repl import run_council_repl
+from .migration import migrate_document_style
+from .sentiment import analyze_philological_sentiment
+from .peer_review import run_peer_review
+from .dashboard import generate_project_dashboard
+from .api import app as web_app
 from .generation import generate_style_passport, save_generated_style
 from .styleguide import generate_stylebook_markdown, save_stylebook
 from .council import create_council_bundle
@@ -55,6 +65,12 @@ def build_parser() -> argparse.ArgumentParser:
         description="RuWritingStyles document preparation and agentic review tooling.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    web = subparsers.add_parser(
+        "web",
+        help="Launch the modern web frontend (RuWritingStyles Web Studio).",
+    )
+    web.set_defaults(func=cmd_web)
 
     prepare = subparsers.add_parser(
         "prepare",
@@ -171,6 +187,75 @@ def build_parser() -> argparse.ArgumentParser:
     audit.add_argument("project_dir", type=Path, help="The project directory containing run subfolders.")
     _add_provider_args(audit)
     audit.set_defaults(func=cmd_audit)
+
+    repl = subparsers.add_parser(
+        "repl",
+        help="Enter an interactive REPL session to chat with the Council.",
+    )
+    repl.add_argument("run_dir", type=Path, help="The run directory containing the council.json.")
+    _add_provider_args(repl)
+    repl.set_defaults(func=cmd_repl)
+
+    migrate_corpus = subparsers.add_parser(
+        "migrate-corpus",
+        help="Migrate an entire directory of documents to a new philological style.",
+    )
+    migrate_corpus.add_argument("input_dir", type=Path, help="Directory containing .md files.")
+    migrate_corpus.add_argument("--from-style", help="The original style (optional context).")
+    migrate_corpus.add_argument("--to-style", required=True, help="The target style ID.")
+    _add_provider_args(migrate_corpus)
+    migrate_corpus.set_defaults(func=cmd_migrate_corpus)
+
+    sentiment = subparsers.add_parser(
+        "sentiment",
+        help="Analyze the tone, distance, and scholarly register shift of a revision.",
+    )
+    sentiment.add_argument("run_dir", type=Path, help="The run directory to analyze.")
+    _add_provider_args(sentiment)
+    sentiment.set_defaults(func=cmd_sentiment)
+
+    peer_review = subparsers.add_parser(
+        "peer-review",
+        help="Use a second Council archetype to critique the revision and council decisions.",
+    )
+    peer_review.add_argument("run_dir", type=Path, help="The run directory to review.")
+    peer_review.add_argument("--archetype", required=True, help="Archetype ID to act as reviewer.")
+    _add_provider_args(peer_review)
+    peer_review.set_defaults(func=cmd_peer_review)
+
+    style_regression = subparsers.add_parser(
+        "style-regression",
+        help="Verify a style passport against its anchor test cases to detect linguistic drift.",
+    )
+    style_regression.add_argument("--style", required=True, help="Style ID to test.")
+    _add_provider_args(style_regression)
+    style_regression.set_defaults(func=cmd_style_regression)
+
+    peer_review_ab = subparsers.add_parser(
+        "peer-review-ab",
+        help="Compare multiple peer reviewers (archetypes) on the same revision.",
+    )
+    peer_review_ab.add_argument("run_dir", type=Path, help="The run directory to review.")
+    peer_review_ab.add_argument("--archetypes", nargs="+", required=True, help="List of archetype IDs.")
+    _add_provider_args(peer_review_ab)
+    peer_review_ab.set_defaults(func=cmd_peer_review_ab)
+
+    dashboard = subparsers.add_parser(
+        "dashboard",
+        help="Generate a project-wide interactive HTML dashboard of all runs and metrics.",
+    )
+    dashboard.add_argument("--output", "-o", type=Path, help="Output HTML path.")
+    dashboard.set_defaults(func=cmd_dashboard)
+
+    migrate = subparsers.add_parser(
+        "migrate",
+        help="Port a document from one philological style to another.",
+    )
+    migrate.add_argument("input_file", type=Path, help="The document to migrate.")
+    migrate.add_argument("--from-style", help="The original style (optional context).")
+    migrate.add_argument("--to-style", required=True, help="The target style ID.")
+    _add_provider_args(migrate)
+    migrate.set_defaults(func=cmd_migrate)
 
     generate_passport = subparsers.add_parser(
         "generate-passport",
@@ -327,6 +412,24 @@ def build_parser() -> argparse.ArgumentParser:
         help="Optional path to write the full comparison JSON result.",
     )
     eval_compare.set_defaults(func=cmd_eval_compare)
+
+    eval_benchmark = subparsers.add_parser(
+        "eval-benchmark",
+        help="Run the evaluation suite on multiple models and generate a leaderboard.",
+    )
+    eval_benchmark.add_argument(
+        "--models",
+        nargs="+",
+        required=True,
+        help="List of model names to benchmark (e.g. 'gpt-5.5' 'gemini-3.1-pro-preview').",
+    )
+    eval_benchmark.add_argument(
+        "--provider",
+        choices=["openai", "google", "anthropic"],
+        required=True,
+        help="Provider to use for all models in this benchmark.",
+    )
+    eval_benchmark.set_defaults(func=cmd_eval_benchmark)
 
     eval_promote = subparsers.add_parser(
         "eval-promote",
@@ -1021,6 +1124,312 @@ def cmd_audit(args: argparse.Namespace) -> int:
         return 1
 
 
+def cmd_repl(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    provider = provider_from_name(args.provider)
+    manifest = load_manifest(repo_root)
+    
+    run_council_repl(
+        repo_root=repo_root,
+        run_dir=run_dir,
+        manifest=manifest,
+        provider=provider,
+        model=args.model,
+    )
+    return 0
+
+
+
+def cmd_migrate_corpus(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    input_dir = args.input_dir if args.input_dir.is_absolute() else (Path.cwd() / args.input_dir)
+    provider = provider_from_name(args.provider)
+    
+    if not input_dir.exists() or not input_dir.is_dir():
+        print(f"error: {input_dir} is not a directory")
+        return 1
+        
+    md_files = sorted(input_dir.glob("*.md"))
+    if not md_files:
+        print(f"no .md files found in {input_dir}")
+        return 0
+        
+    output_dir = input_dir / "migrated"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    print(f"Migrating corpus ({len(md_files)} files) to style: {args.to_style}...")
+    
+    success_count = 0
+    for md_file in md_files:
+        print(f"  -> {md_file.name}")
+        try:
+            migrated_path = migrate_document_style(
+                repo_root=repo_root,
+                input_file=md_file,
+                from_style_id=args.from_style,
+                to_style_id=args.to_style,
+                provider=provider,
+                model=args.model,
+            )
+            # Copy to corpus output dir with original name
+            target = output_dir / md_file.name
+            target.write_text(migrated_path.read_text(encoding="utf-8"), encoding="utf-8")
+            success_count += 1
+        except Exception as e:
+            print(f"    error: {e}")
+            
+    print(f"\nMigration Complete! {success_count}/{len(md_files)} files saved to {output_dir.relative_to(repo_root)}")
+    return 0 if success_count == len(md_files) else 1
+
+
+
+def cmd_sentiment(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    provider = provider_from_name(args.provider)
+    
+    print(f"Analyzing philological sentiment for: {run_dir.name}...")
+    try:
+        result = analyze_philological_sentiment(
+            repo_root=repo_root,
+            run_dir=run_dir,
+            provider=provider,
+            model=args.model,
+        )
+        print(f"\nSentiment Shift Analysis:")
+        print(f"- Academic Distance: {result['original']['distance']} -> {result['revised']['distance']} (Delta: {result['deltas']['distance']})")
+        print(f"- Certainty:         {result['original']['certainty']} -> {result['revised']['certainty']} (Delta: {result['deltas']['certainty']})")
+        print(f"- Complexity:        {result['original']['complexity']} -> {result['revised']['complexity']} (Delta: {result['deltas']['complexity']})")
+        print(f"\nJustification: {result['justification']}")
+        
+        # Trigger report refresh
+        _write_reports(repo_root, run_dir)
+        return 0
+    except Exception as e:
+        print(f"error: sentiment analysis failed: {e}")
+        return 1
+
+
+
+def cmd_peer_review(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    provider = provider_from_name(args.provider)
+    
+    print(f"Running Philological Peer Review for: {run_dir.name}...")
+    print(f"Reviewer Archetype: {args.archetype}")
+    
+    try:
+        result = run_peer_review(
+            repo_root=repo_root,
+            run_dir=run_dir,
+            provider=provider,
+            model=args.model,
+            reviewer_archetype_id=args.archetype,
+        )
+        
+        print(f"\nPeer Review Summary (Score: {result['overall_score']}/10)")
+        print(f"Recommendation: {result['recommendation'].upper()}")
+        print("\nComments:")
+        for comment in result['comments']:
+            print(f"- [{comment['type']}] {comment['text']}")
+            
+        # Trigger report refresh
+        _write_reports(repo_root, run_dir)
+        return 0
+    except Exception as e:
+        print(f"error: peer review failed: {e}")
+        return 1
+
+
+
+def cmd_style_regression(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    style_id = args.style
+    provider = provider_from_name(args.provider)
+    
+    print(f"Running Style Regression Test for: {style_id}...")
+    
+    try:
+        from .evals import run_style_regression_test
+        result = run_style_regression_test(
+            repo_root=repo_root,
+            style_id=style_id,
+            provider_name=args.provider,
+            model=args.model,
+            execute=True,
+        )
+        
+        print(f"\nStyle Regression Result: {result['status'].upper()}")
+        print(f"Total Anchors: {result['total_anchors']}")
+        print(f"Passed:        {result['passed_anchors']}")
+        print(f"Regressions:   {len(result['regressions'])}")
+        
+        if result['regressions']:
+            print("\nREGRESSIONS DETECTED:")
+            for reg in result['regressions']:
+                print(f"- [Case: {reg['case_id']}] {reg['issue']}")
+                
+        return 0 if not result['regressions'] else 1
+    except Exception as e:
+        print(f"error: style regression failed: {e}")
+        return 1
+
+
+
+def cmd_peer_review_ab(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    provider = provider_from_name(args.provider)
+    archetypes = args.archetypes
+    
+    print(f"Running Peer Review A/B Test for: {run_dir.name}...")
+    print(f"Comparing Archetypes: {', '.join(archetypes)}")
+    
+    results = []
+    for arch_id in archetypes:
+        print(f"  -> Reviewing as: {arch_id}")
+        try:
+            res = run_peer_review(
+                repo_root=repo_root,
+                run_dir=run_dir,
+                provider=provider,
+                model=args.model,
+                reviewer_archetype_id=arch_id,
+            )
+            # Rename the file to avoid overwrite
+            p = run_dir / "peer-review.json"
+            new_p = run_dir / f"peer-review-{arch_id.replace(' ', '-').lower()}.json"
+            if p.exists():
+                new_p.write_text(p.read_text(encoding="utf-8"), encoding="utf-8")
+            
+            results.append(res)
+        except Exception as e:
+            print(f"    error for {arch_id}: {e}")
+            
+    if results:
+        report_path = _write_peer_review_ab_report(repo_root, run_dir, results)
+        print(f"\nPeer Review A/B Test Complete! Report: {report_path.relative_to(repo_root)}")
+        return 0
+    return 1
+
+
+def _write_peer_review_ab_report(repo_root: Path, run_dir: Path, results: list[dict[str, Any]]) -> Path:
+    html = [
+        "<html><head><title>Peer Review A/B Comparison</title>",
+        "<style>",
+        "  body { font-family: system-ui; padding: 2rem; }",
+        "  table { width: 100%; border-collapse: collapse; }",
+        "  th, td { border: 1px solid #ddd; padding: 1rem; text-align: left; vertical-align: top; }",
+        "  th { background: #f4f4f4; }",
+        "  .recommendation { font-weight: bold; }",
+        "  .ACCEPT { color: green; }",
+        "  .MAJOR_REVISION { color: red; }",
+        "</style></head><body>",
+        f"<h1>Peer Review A/B Comparison: {run_dir.name}</h1>",
+        "<table><tr>"
+    ]
+    
+    for res in results:
+        html.append(f"<th>{res['reviewer_archetype']}</th>")
+    html.append("</tr><tr>")
+    
+    for res in results:
+        html.append(f"<td>")
+        html.append(f"<div class='recommendation {res['recommendation']}'>Recommendation: {res['recommendation'].upper()}</div>")
+        html.append(f"<div>Score: {res['overall_score']}/10</div>")
+        html.append("<ul>")
+        for c in res.get('comments', []):
+            html.append(f"<li><b>{c['type']}</b>: {c['text']}</li>")
+        html.append("</ul></td>")
+        
+    html.append("</tr></table></body></html>")
+    
+    report_path = run_dir / "peer-review-ab.html"
+    report_path.write_text("\n".join(html), encoding="utf-8")
+    return report_path
+
+
+
+def cmd_dashboard(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    print("Generating Interactive Project Dashboard...")
+    try:
+        from .dashboard import generate_project_dashboard
+        from .api import app as web_app
+        output_path = args.output if args.output else repo_root / "DASHBOARD.html"
+        path = generate_project_dashboard(repo_root, output_path)
+        print(f"Success! Dashboard saved to: {path.relative_to(repo_root)}")
+        return 0
+    except Exception as e:
+        print(f"error: dashboard generation failed: {e}")
+        return 1
+
+
+
+def cmd_web(args: argparse.Namespace) -> int:
+    import subprocess
+    import time
+    import webbrowser
+    
+    repo_root = repo_root_from()
+    print("Launching RuWritingStyles Web Studio...")
+    
+    # 1. Start API Backend
+    api_process = subprocess.Popen(
+        ["python", "-m", "ruwritingstyles.api"],
+        cwd=repo_root
+    )
+    
+    # 2. Start Vite Frontend (if in dev mode)
+    web_dir = repo_root / "web"
+    if web_dir.exists():
+        print("Starting Vite development server...")
+        frontend_process = subprocess.Popen(
+            ["npm", "run", "dev"],
+            cwd=web_dir,
+            shell=True
+        )
+        time.sleep(2)
+        webbrowser.open("http://localhost:5173")
+    else:
+        print("Frontend directory not found. Please run 'npm install' in 'web/'.")
+        return 1
+        
+    try:
+        api_process.wait()
+    except KeyboardInterrupt:
+        print("\nShutting down...")
+        api_process.terminate()
+        if frontend_process:
+            frontend_process.terminate()
+            
+    return 0
+
+
+def cmd_migrate(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    input_file = args.input_file if args.input_file.is_absolute() else (Path.cwd() / args.input_file)
+    provider = provider_from_name(args.provider)
+    
+    print(f"Migrating {input_file.name} to style: {args.to_style}...")
+    try:
+        migrated_path = migrate_document_style(
+            repo_root=repo_root,
+            input_file=input_file,
+            from_style_id=args.from_style,
+            to_style_id=args.to_style,
+            provider=provider,
+            model=args.model,
+        )
+        print(f"Success! Migrated document saved to: {migrated_path.relative_to(repo_root)}")
+        return 0
+    except Exception as e:
+        print(f"error: migration failed: {e}")
+        return 1
+
+
 def cmd_eval_promote(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     suite_path = args.suite_result if args.suite_result.is_absolute() else (Path.cwd() / args.suite_result)
@@ -1665,6 +2074,47 @@ def _write_reports(repo_root: Path, run_dir: Path) -> None:
     html_path = write_html_report(run_dir)
     print(f"updated {report_path.relative_to(repo_root)}")
     print(f"updated {html_path.relative_to(repo_root)}")
+
+
+def cmd_eval_benchmark(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    models = args.models
+    provider = args.provider
+    
+    print(f"Starting benchmark for {len(models)} models on {provider}...")
+    
+    suite_paths = []
+    
+    for model in models:
+        print(f"\n>>> Benchmarking Model: {model}")
+        suite_id = f"benchmark-{model.replace('.', '-').lower()}"
+        
+        suite_args = argparse.Namespace(
+            suite_id=suite_id,
+            execute=True,
+            provider=provider,
+            model=model,
+            require_provider_ready=False,
+            strict=False,
+            compare_to=None,
+            deliberate=True,
+            scrutiny=True,
+        )
+        
+        try:
+            status = cmd_eval_suite(suite_args)
+            if status == 0:
+                suite_paths.append(repo_root / "runs" / suite_id / "eval-suite-result.json")
+        except Exception as e:
+            print(f"error: failed to benchmark {model}: {e}")
+            
+    if suite_paths:
+        from .evals import generate_leaderboard_report
+        report_path = generate_leaderboard_report(repo_root, suite_paths)
+        print(f"\nBenchmark Complete! Leaderboard report: {report_path.relative_to(repo_root)}")
+        return 0
+        
+    return 1
 
 
 def main(argv: list[str] | None = None) -> int:

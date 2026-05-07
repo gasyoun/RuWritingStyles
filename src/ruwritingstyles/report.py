@@ -36,6 +36,8 @@ def render_run_report(run_dir: Path) -> str:
         f"# Run Report: {run_id}",
         _input_section(source, segments),
         _status_section(reviews, council, revision, verification),
+        _sentiment_section(run_dir),
+        _peer_review_section(run_dir),
         _eval_section(eval_result),
         _review_section(reviews),
         _findings_section(reviews),
@@ -45,6 +47,57 @@ def render_run_report(run_dir: Path) -> str:
         _verification_section(verification),
     ]
     return "\n\n".join(section for section in sections if section.strip()) + "\n"
+
+
+def _sentiment_section(run_dir: Path) -> str:
+    sentiment_path = run_dir / "sentiment.json"
+    if not sentiment_path.exists():
+        return ""
+    
+    data = json.loads(sentiment_path.read_text(encoding="utf-8"))
+    orig = data.get("original", {})
+    rev = data.get("revised", {})
+    deltas = data.get("deltas", {})
+    
+    rows = [
+        ("Academic Distance", str(orig.get("distance", 0)), str(rev.get("distance", 0)), str(deltas.get("distance", 0))),
+        ("Certainty", str(orig.get("certainty", 0)), str(rev.get("certainty", 0)), str(deltas.get("certainty", 0))),
+        ("Complexity", str(orig.get("complexity", 0)), str(rev.get("complexity", 0)), str(deltas.get("complexity", 0))),
+        ("Politeness", str(orig.get("politeness", 0)), str(rev.get("politeness", 0)), str(deltas.get("politeness", 0))),
+    ]
+    
+    lines = [
+        "## Philological Sentiment Analysis",
+        "",
+        _table(("Dimension", "Original", "Revised", "Delta"), rows),
+        "",
+        f"**Justification**: {data.get('justification', '')}"
+    ]
+    return "\n".join(lines)
+
+
+
+def _peer_review_section(run_dir: Path) -> str:
+    pr_path = run_dir / "peer-review.json"
+    if not pr_path.exists():
+        return ""
+    
+    data = json.loads(pr_path.read_text(encoding="utf-8"))
+    comments = data.get("comments", [])
+    
+    rows = []
+    for c in comments:
+        rows.append((str(c.get("type", "")), str(c.get("text", ""))))
+        
+    lines = [
+        "## Philological Peer Review",
+        f"- **Reviewer Archetype**: {data.get('reviewer_archetype', 'unknown')}",
+        f"- **Overall Score**: {data.get('overall_score', 0)}/10",
+        f"- **Recommendation**: **{data.get('recommendation', 'none').upper()}**",
+        "",
+        _table(("Type", "Comment"), rows)
+    ]
+    return "\n".join(lines)
 
 
 def _input_section(source: str, segments: list[Any]) -> str:
