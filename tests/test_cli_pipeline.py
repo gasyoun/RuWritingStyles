@@ -426,6 +426,17 @@ class CliPipelineTests(unittest.TestCase):
             0,
         )
         self.assertIn("# Eval Suite Comparison", comparison_path.read_text(encoding="utf-8"))
+        self.assertEqual(main(["export-eval-suite", str(self.eval_suite_dir)]), 0)
+        bundle_path = self.eval_suite_dir / "unittest-suite-bundle.zip"
+        self.assertTrue(bundle_path.exists())
+        with ZipFile(bundle_path) as archive:
+            names = set(archive.namelist())
+        self.assertIn("unittest-suite/bundle-manifest.json", names)
+        self.assertIn("unittest-suite/eval-suite-result.json", names)
+        self.assertIn("unittest-suite/eval-suite-report.md", names)
+        self.assertIn("unittest-suite/comparison.md", names)
+        self.assertIn("unittest-suite/cases/unittest-suite-pseudo-etymology/eval-result.json", names)
+        self.assertIn("unittest-suite/cases/unittest-suite-pseudo-etymology/provider.log.jsonl", names)
 
     def test_eval_suite_strict_returns_failure_on_failed_cases(self) -> None:
         if self.eval_suite_dir.exists():
