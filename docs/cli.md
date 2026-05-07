@@ -133,6 +133,14 @@ The command accepts suite directories or direct `eval-suite-result.json` paths, 
 rws eval-compare runs/openai-suite runs/gemini-suite --output runs/eval-compare-openai-gemini.md
 ```
 
+## Export An Eval Suite
+
+```bash
+rws export-eval-suite runs/openai-suite
+```
+
+The bundle includes `eval-suite-result.json`, `eval-suite-report.md`, any additional top-level suite Markdown/JSON files such as comparison reports, and stable artifacts from each referenced case run under `cases/<run-id>/`.
+
 ## Prepare a document
 
 ```bash
@@ -416,6 +424,14 @@ Use `--output` to choose a different ZIP path:
 ```bash
 rws export runs/cli-smoke-readme --output exports/cli-smoke-readme.zip
 ```
+
+## Export an eval suite bundle
+
+```bash
+rws export-eval-suite runs/cli-smoke-suite
+```
+
+The bundle includes the suite summary/report plus each referenced case run's reports, prompts, provider log, eval result, revision diff, and JSON artifacts. Use `--output` to choose a different ZIP path.
 
 ## Validate a run
 

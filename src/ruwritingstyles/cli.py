@@ -17,7 +17,7 @@ from .execution import (
     execute_revision_artifact,
     execute_verification_artifact,
 )
-from .export import export_run_bundle
+from .export import export_eval_suite_bundle, export_run_bundle
 from .findings import load_finding_summaries, render_finding_summaries
 from .html_summary import write_html_report
 from .provider_log import load_provider_log, render_provider_log
@@ -257,6 +257,22 @@ def build_parser() -> argparse.ArgumentParser:
         help="Optional output ZIP path. Defaults to runs/<run-id>/<run-id>-bundle.zip.",
     )
     export.set_defaults(func=cmd_export)
+
+    export_eval_suite = subparsers.add_parser(
+        "export-eval-suite",
+        help="Create a portable ZIP bundle from an eval suite and its case runs.",
+    )
+    export_eval_suite.add_argument(
+        "suite_dir",
+        type=Path,
+        help="Eval suite directory, for example runs/<suite-id>.",
+    )
+    export_eval_suite.add_argument(
+        "--output",
+        type=Path,
+        help="Optional output ZIP path. Defaults to runs/<suite-id>/<suite-id>-bundle.zip.",
+    )
+    export_eval_suite.set_defaults(func=cmd_export_eval_suite)
 
     validate_run = subparsers.add_parser(
         "validate-run",
@@ -714,6 +730,17 @@ def cmd_export(args: argparse.Namespace) -> int:
     if args.output:
         output_path = args.output if args.output.is_absolute() else (Path.cwd() / args.output)
     bundle_path = export_run_bundle(run_dir, output_path)
+    print(f"created {_display_path(repo_root, bundle_path)}")
+    return 0
+
+
+def cmd_export_eval_suite(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    suite_dir = args.suite_dir if args.suite_dir.is_absolute() else (Path.cwd() / args.suite_dir)
+    output_path = None
+    if args.output:
+        output_path = args.output if args.output.is_absolute() else (Path.cwd() / args.output)
+    bundle_path = export_eval_suite_bundle(suite_dir, output_path)
     print(f"created {_display_path(repo_root, bundle_path)}")
     return 0
 
