@@ -28,7 +28,7 @@ from .review import create_review_bundle
 from .revision import create_revision_bundle
 from .runs import create_prepare_run
 from .segment import normalize_document, read_document, segment_markdown
-from .validation import validate_eval_suite_dir, validate_run_dir
+from .validation import validate_eval_comparison_file, validate_eval_suite_dir, validate_run_dir
 from .verification import create_verification_bundle
 
 
@@ -301,6 +301,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="Eval suite directory, for example runs/<suite-id>.",
     )
     validate_eval_suite.set_defaults(func=cmd_validate_eval_suite)
+
+    validate_eval_comparison = subparsers.add_parser(
+        "validate-eval-comparison",
+        help="Validate an eval-compare --json-output artifact.",
+    )
+    validate_eval_comparison.add_argument(
+        "comparison",
+        type=Path,
+        help="Comparison JSON path, for example runs/<suite>/comparison.json.",
+    )
+    validate_eval_comparison.set_defaults(func=cmd_validate_eval_comparison)
 
     return parser
 
@@ -784,6 +795,17 @@ def cmd_validate_eval_suite(args: argparse.Namespace) -> int:
     result = validate_eval_suite_dir(suite_dir)
     if result.ok:
         print("OK eval suite artifacts valid")
+        return 0
+    for message in result.messages:
+        print(f"FAIL {message}", file=sys.stderr)
+    return 1
+
+
+def cmd_validate_eval_comparison(args: argparse.Namespace) -> int:
+    comparison = args.comparison if args.comparison.is_absolute() else (Path.cwd() / args.comparison)
+    result = validate_eval_comparison_file(comparison)
+    if result.ok:
+        print("OK eval comparison artifact valid")
         return 0
     for message in result.messages:
         print(f"FAIL {message}", file=sys.stderr)

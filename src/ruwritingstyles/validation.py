@@ -74,6 +74,24 @@ def validate_eval_suite_dir(suite_dir: Path) -> ValidationResult:
     return ValidationResult(ok=not messages, messages=tuple(messages))
 
 
+def validate_eval_comparison_file(comparison_path: Path) -> ValidationResult:
+    comparison_path = comparison_path.resolve()
+    messages: list[str] = []
+    repo_root = _repo_root_from_artifact(comparison_path)
+    schema_store = _load_schema_store(repo_root, messages)
+    data = _load_json(comparison_path, messages)
+    if isinstance(data, dict):
+        _validate_with_schema(
+            data,
+            "eval-suite-comparison.schema.json",
+            comparison_path.name,
+            schema_store,
+            messages,
+        )
+        _validate_eval_comparison_result(data, messages)
+    return ValidationResult(ok=not messages, messages=tuple(messages))
+
+
 def _load_json(path: Path, messages: list[str]) -> Any:
     if not path.exists():
         messages.append(f"missing {path.name}")
@@ -291,6 +309,29 @@ def _compare_eval_suite_row(label: str, row: dict[str, Any], child: dict[str, An
             messages.append(f"eval-suite-result.json {label} {key} does not match child eval-result.json")
 
 
+def _validate_eval_comparison_result(data: dict[str, Any], messages: list[str]) -> None:
+    results = data.get("results")
+    if not isinstance(results, list):
+        messages.append("eval-suite-comparison.json results must be a list")
+        return
+
+    newly_passed = sorted(row["case_id"] for row in results if isinstance(row, dict) and row.get("status") == "newly_passed")
+    regressed = sorted(row["case_id"] for row in results if isinstance(row, dict) and row.get("status") == "regressed")
+    if sorted(data.get("newly_passed", [])) != newly_passed:
+        messages.append("eval-suite-comparison.json newly_passed does not match result rows")
+    if sorted(data.get("regressed", [])) != regressed:
+        messages.append("eval-suite-comparison.json regressed does not match result rows")
+    if data.get("case_count") != len(results):
+        messages.append("eval-suite-comparison.json case_count does not match results length")
+    baseline = data.get("baseline_pass_rate")
+    candidate = data.get("candidate_pass_rate")
+    delta = data.get("pass_rate_delta")
+    if isinstance(baseline, (int, float)) and isinstance(candidate, (int, float)) and isinstance(delta, (int, float)):
+        expected = round(float(candidate) - float(baseline), 6)
+        if abs(float(delta) - expected) > 0.000001:
+            messages.append("eval-suite-comparison.json pass_rate_delta does not match candidate-baseline")
+
+
 def _validate_with_schema(
     data: dict[str, Any],
     schema_name: str,
@@ -309,6 +350,13 @@ def _validate_with_schema(
 def _repo_root_from_run_dir(run_dir: Path) -> Path:
     if run_dir.parent.name == "runs":
         return run_dir.parent.parent
+    return Path(__file__).resolve().parents[2]
+
+
+def _repo_root_from_artifact(path: Path) -> Path:
+    for parent in [path.parent, *path.parents]:
+        if parent.name == "runs":
+            return parent.parent
     return Path(__file__).resolve().parents[2]
 
 

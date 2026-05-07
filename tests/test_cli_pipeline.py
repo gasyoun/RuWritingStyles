@@ -453,6 +453,7 @@ class CliPipelineTests(unittest.TestCase):
             ),
             (),
         )
+        self.assertEqual(main(["validate-eval-comparison", str(comparison_json_path)]), 0)
         self.assertEqual(main(["export-eval-suite", str(self.eval_suite_dir)]), 0)
         bundle_path = self.eval_suite_dir / "unittest-suite-bundle.zip"
         self.assertTrue(bundle_path.exists())

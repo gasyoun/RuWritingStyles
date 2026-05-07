@@ -136,6 +136,12 @@ rws eval-compare runs/openai-suite runs/gemini-suite --output runs/eval-compare-
 
 Use `--strict` in CI when a lower candidate pass rate or any per-case regression should return exit code `1`.
 
+Validate a saved comparison JSON with:
+
+```bash
+rws validate-eval-comparison runs/eval-compare-openai-gemini.json
+```
+
 ## Export An Eval Suite
 
 ```bash
