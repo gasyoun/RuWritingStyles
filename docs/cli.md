@@ -59,11 +59,13 @@ rws provider-status
 rws provider-status --provider openai
 rws provider-status --provider openai --strict
 rws provider-status --provider openai --json
+rws provider-status --provider openai --json > runs/provider-status-openai.json
+rws validate-provider-status runs/provider-status-openai.json
 ```
 
 This prints whether each provider is ready for real API execution based on environment variables, without exposing API keys. `mock` is always ready. Real providers require `OPENAI_API_KEY`, `GEMINI_API_KEY` or `GOOGLE_API_KEY`, and `ANTHROPIC_API_KEY`.
 
-Use `--strict` in scripts when missing provider configuration should return exit code `1`; use `--json` when automation needs structured, secret-free readiness data.
+Use `--strict` in scripts when missing provider configuration should return exit code `1`; use `--json` when automation needs structured, secret-free readiness data. Saved JSON can be checked against `schemas/provider-status.schema.json` with `validate-provider-status`.
 
 ## List styles
 
