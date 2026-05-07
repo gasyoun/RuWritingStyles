@@ -52,6 +52,15 @@ rws model-routes --provider openai --task style_review
 
 This prints the task-to-model routes from `model_policy.yml`, including provider-specific reasoning or thinking settings.
 
+## Check Provider Readiness
+
+```bash
+rws provider-status
+rws provider-status --provider openai
+```
+
+This prints whether each provider is ready for real API execution based on environment variables, without exposing API keys. `mock` is always ready. Real providers require `OPENAI_API_KEY`, `GEMINI_API_KEY` or `GOOGLE_API_KEY`, and `ANTHROPIC_API_KEY`.
+
 ## List styles
 
 ```bash

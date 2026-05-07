@@ -20,6 +20,7 @@ from .export import export_run_bundle
 from .findings import load_finding_summaries, render_finding_summaries
 from .html_summary import write_html_report
 from .provider_log import load_provider_log, render_provider_log
+from .provider_status import provider_statuses, render_provider_statuses
 from .providers import provider_from_name
 from .report import write_run_report
 from .review import create_review_bundle
@@ -85,6 +86,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     model_routes.add_argument("--task", help="Filter routes to one task, for example style_review.")
     model_routes.set_defaults(func=cmd_model_routes)
+
+    provider_status = subparsers.add_parser(
+        "provider-status",
+        help="Show provider readiness for real API execution without exposing keys.",
+    )
+    provider_status.add_argument(
+        "--provider",
+        choices=["mock", "openai", "google", "anthropic"],
+        help="Filter readiness to one provider.",
+    )
+    provider_status.set_defaults(func=cmd_provider_status)
 
     list_styles = subparsers.add_parser(
         "list-styles",
@@ -385,6 +397,11 @@ def cmd_model_routes(args: argparse.Namespace) -> int:
         print(f"{route.provider}.{route.task}")
         print(f"  model: {route.model}")
         print(f"  {route.mode_name}: {route.mode_value}")
+    return 0
+
+
+def cmd_provider_status(args: argparse.Namespace) -> int:
+    print(render_provider_statuses(provider_statuses(), provider=args.provider))
     return 0
 
 
