@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/eval-suite-comparison.schema.json",
+  "title": "RuWritingStyles eval suite comparison",
+  "type": "object",
+  "required": [
+    "baseline",
+    "candidate",
+    "case_count",
+    "baseline_pass_rate",
+    "candidate_pass_rate",
+    "pass_rate_delta",
+    "newly_passed",
+    "regressed",
+    "results"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "baseline": {
+      "$ref": "eval-suite-comparison-suite.schema.json"
+    },
+    "candidate": {
+      "$ref": "eval-suite-comparison-suite.schema.json"
+    },
+    "case_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "baseline_pass_rate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "candidate_pass_rate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "pass_rate_delta": {
+      "type": "number",
+      "minimum": -1,
+      "maximum": 1
+    },
+    "newly_passed": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]*$"
+      }
+    },
+    "regressed": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]*$"
+      }
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "$ref": "eval-suite-comparison-row.schema.json"
+      }
+    }
+  }
+}

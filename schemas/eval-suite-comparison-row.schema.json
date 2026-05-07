@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/eval-suite-comparison-row.schema.json",
+  "title": "RuWritingStyles eval suite comparison row",
+  "type": "object",
+  "required": [
+    "case_id",
+    "status",
+    "baseline_passed",
+    "candidate_passed",
+    "finding_delta",
+    "changed_line_ratio_delta",
+    "char_delta_ratio_delta"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "missing_baseline",
+        "missing_candidate",
+        "newly_passed",
+        "regressed",
+        "unchanged_passed",
+        "unchanged_failed"
+      ]
+    },
+    "baseline_passed": {
+      "type": ["boolean", "null"]
+    },
+    "candidate_passed": {
+      "type": ["boolean", "null"]
+    },
+    "finding_delta": {
+      "type": ["integer", "null"]
+    },
+    "changed_line_ratio_delta": {
+      "type": ["number", "null"]
+    },
+    "char_delta_ratio_delta": {
+      "type": ["number", "null"]
+    }
+  }
+}

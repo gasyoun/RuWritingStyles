@@ -30,6 +30,7 @@ from ruwritingstyles.provider_log import load_provider_log, render_provider_log
 from ruwritingstyles.provider_status import provider_statuses, render_provider_statuses
 from ruwritingstyles.schema_validation import validate_json_schema
 from ruwritingstyles.segment import normalize_document, segment_markdown
+from ruwritingstyles.validation import _load_schema_store
 
 
 class SegmentTests(unittest.TestCase):
@@ -443,6 +444,15 @@ class CliPipelineTests(unittest.TestCase):
         comparison = json.loads(comparison_json_path.read_text(encoding="utf-8"))
         self.assertEqual(comparison["case_count"], 3)
         self.assertEqual(comparison["pass_rate_delta"], 0.0)
+        schema_store = _load_schema_store(ROOT, [])
+        self.assertEqual(
+            validate_json_schema(
+                comparison,
+                schema_store["eval-suite-comparison.schema.json"],
+                schema_store=schema_store,
+            ),
+            (),
+        )
         self.assertEqual(main(["export-eval-suite", str(self.eval_suite_dir)]), 0)
         bundle_path = self.eval_suite_dir / "unittest-suite-bundle.zip"
         self.assertTrue(bundle_path.exists())
