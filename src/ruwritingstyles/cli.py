@@ -10,7 +10,7 @@ import sys
 from .config import load_manifest, load_model_policy, load_model_routes, load_passport_summaries, repo_root_from
 from .council import create_council_bundle
 from .diff import write_revision_diff
-from .evals import load_eval_cases, run_eval_case, run_eval_suite
+from .evals import compare_eval_suites, load_eval_cases, render_eval_suite_comparison, run_eval_case, run_eval_suite
 from .execution import (
     execute_council_artifact,
     execute_review_artifact,
@@ -148,6 +148,27 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_provider_args(eval_suite)
     eval_suite.set_defaults(func=cmd_eval_suite)
+
+    eval_compare = subparsers.add_parser(
+        "eval-compare",
+        help="Compare two eval-suite results and show pass-rate/case deltas.",
+    )
+    eval_compare.add_argument(
+        "baseline",
+        type=Path,
+        help="Baseline suite directory or eval-suite-result.json.",
+    )
+    eval_compare.add_argument(
+        "candidate",
+        type=Path,
+        help="Candidate suite directory or eval-suite-result.json.",
+    )
+    eval_compare.add_argument(
+        "--output",
+        type=Path,
+        help="Optional Markdown report path.",
+    )
+    eval_compare.set_defaults(func=cmd_eval_compare)
 
     review = subparsers.add_parser(
         "review",
@@ -502,6 +523,20 @@ def cmd_eval_suite(args: argparse.Namespace) -> int:
     print(f"failed: {data.get('failed_count', 0)}")
     if args.strict and int(data.get("failed_count", 0)) > 0:
         return 1
+    return 0
+
+
+def cmd_eval_compare(args: argparse.Namespace) -> int:
+    baseline = args.baseline if args.baseline.is_absolute() else (Path.cwd() / args.baseline)
+    candidate = args.candidate if args.candidate.is_absolute() else (Path.cwd() / args.candidate)
+    comparison = compare_eval_suites(baseline, candidate)
+    rendered = render_eval_suite_comparison(comparison)
+    print(rendered, end="")
+    if args.output:
+        output = args.output if args.output.is_absolute() else (Path.cwd() / args.output)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(rendered, encoding="utf-8")
+        print(f"wrote {output}")
     return 0
 
 

@@ -389,6 +389,20 @@ class CliPipelineTests(unittest.TestCase):
         self.assertIn("| pseudo-etymology | no |", report)
         self.assertTrue((self.eval_suite_case_run_dir / "eval-result.json").exists())
         self.assertEqual(main(["validate-eval-suite", str(self.eval_suite_dir)]), 0)
+        comparison_path = self.eval_suite_dir / "comparison.md"
+        self.assertEqual(
+            main(
+                [
+                    "eval-compare",
+                    str(self.eval_suite_dir),
+                    str(self.eval_suite_dir),
+                    "--output",
+                    str(comparison_path),
+                ]
+            ),
+            0,
+        )
+        self.assertIn("# Eval Suite Comparison", comparison_path.read_text(encoding="utf-8"))
 
     def test_eval_suite_strict_returns_failure_on_failed_cases(self) -> None:
         if self.eval_suite_dir.exists():

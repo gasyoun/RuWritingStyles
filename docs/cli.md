@@ -121,6 +121,18 @@ To validate the suite summary and every referenced case run:
 rws validate-eval-suite runs/cli-smoke-suite
 ```
 
+## Compare Eval Suites
+
+```bash
+rws eval-compare runs/openai-suite runs/gemini-suite
+```
+
+The command accepts suite directories or direct `eval-suite-result.json` paths, then prints pass-rate deltas, newly passed cases, regressions, and per-case finding/diff metric changes. Use `--output` to save the comparison as Markdown:
+
+```bash
+rws eval-compare runs/openai-suite runs/gemini-suite --output runs/eval-compare-openai-gemini.md
+```
+
 ## Prepare a document
 
 ```bash
