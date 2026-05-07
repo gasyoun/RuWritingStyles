@@ -76,7 +76,9 @@ The suite writes `eval-suite-result.json` and `eval-suite-report.md`. Add `--str
 The mock provider is deterministic and only proves that the pipeline works. Use a real provider for substantive findings:
 
 ```bash
+cp .env.example .env
 set OPENAI_API_KEY=...
+rws provider-status --provider openai --strict
 rws run examples/input/pseudo-etymology.md --execute --provider openai --model gpt-5.5
 ```
 
@@ -85,6 +87,8 @@ The CLI also accepts `--provider google` and `--provider anthropic` when the rel
 In PowerShell:
 
 ```powershell
+Copy-Item .env.example .env
 $env:OPENAI_API_KEY='...'
+rws provider-status --provider openai --strict
 rws run examples/input/pseudo-etymology.md --execute --provider openai --model gpt-5.5
 ```
