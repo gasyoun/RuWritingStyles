@@ -19,6 +19,7 @@ from .execution import (
 from .export import export_run_bundle
 from .findings import load_finding_summaries, render_finding_summaries
 from .html_summary import write_html_report
+from .provider_log import load_provider_log, render_provider_log
 from .providers import provider_from_name
 from .report import write_run_report
 from .review import create_review_bundle
@@ -161,6 +162,13 @@ def build_parser() -> argparse.ArgumentParser:
     findings.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
     findings.add_argument("--span", help="Optional span_id filter, for example p002.")
     findings.set_defaults(func=cmd_findings)
+
+    provider_log = subparsers.add_parser(
+        "provider-log",
+        help="Show provider execution log and retry telemetry for a run.",
+    )
+    provider_log.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    provider_log.set_defaults(func=cmd_provider_log)
 
     diff = subparsers.add_parser(
         "diff",
@@ -524,6 +532,12 @@ def cmd_findings(args: argparse.Namespace) -> int:
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
     summaries = load_finding_summaries(run_dir, span_id=args.span)
     print(render_finding_summaries(summaries))
+    return 0
+
+
+def cmd_provider_log(args: argparse.Namespace) -> int:
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    print(render_provider_log(load_provider_log(run_dir)))
     return 0
 
 
