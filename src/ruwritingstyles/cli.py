@@ -154,7 +154,12 @@ def build_parser() -> argparse.ArgumentParser:
     eval_suite.add_argument(
         "--strict",
         action="store_true",
-        help="Exit with status 1 when any eval case fails.",
+        help="Exit with status 1 when any eval case fails or --compare-to detects a regression.",
+    )
+    eval_suite.add_argument(
+        "--compare-to",
+        type=Path,
+        help="Optional baseline suite directory or eval-suite-result.json to compare after the run.",
     )
     _add_provider_args(eval_suite)
     eval_suite.set_defaults(func=cmd_eval_suite)
@@ -609,7 +614,22 @@ def cmd_eval_suite(args: argparse.Namespace) -> int:
     print(f"cases: {data.get('case_count', 0)}")
     print(f"passed: {data.get('passed_count', 0)}")
     print(f"failed: {data.get('failed_count', 0)}")
+    comparison_data = None
+    if args.compare_to:
+        baseline = args.compare_to if args.compare_to.is_absolute() else (Path.cwd() / args.compare_to)
+        comparison = compare_eval_suites(baseline, result.suite_dir)
+        comparison_data = comparison.data
+        comparison_md = result.suite_dir / "comparison.md"
+        comparison_json = result.suite_dir / "comparison.json"
+        comparison_md.write_text(render_eval_suite_comparison(comparison), encoding="utf-8")
+        comparison_json.write_text(json.dumps(comparison.data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(f"comparison report {comparison_md.relative_to(repo_root)}")
+        print(f"comparison json {comparison_json.relative_to(repo_root)}")
+        print(f"pass_rate_delta: {comparison.data.get('pass_rate_delta', 0)}")
+        print(f"regressed: {len(comparison.data.get('regressed', []))}")
     if args.strict and int(data.get("failed_count", 0)) > 0:
+        return 1
+    if args.strict and comparison_data is not None and _eval_comparison_has_regression(comparison_data):
         return 1
     return 0
 

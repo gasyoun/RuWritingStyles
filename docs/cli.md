@@ -117,9 +117,10 @@ This runs every case from `evals/manifest.json` and writes both `runs/<suite-id>
 ```bash
 rws eval-suite --provider mock --suite-id cli-smoke-suite
 rws eval-suite --provider mock --suite-id cli-smoke-suite --strict
+rws eval-suite --provider openai --suite-id openai-candidate --compare-to runs/cli-smoke-suite
 ```
 
-Use `--strict` when any failed eval case should return exit code `1`.
+Use `--compare-to` to immediately write `comparison.md` and `comparison.json` in the new suite directory. Use `--strict` when any failed eval case or comparison regression should return exit code `1`.
 
 To validate the suite summary and every referenced case run:
 
