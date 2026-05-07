@@ -173,6 +173,11 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="Optional machine-readable JSON comparison path.",
     )
+    eval_compare.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit with status 1 when candidate pass rate drops or any case regresses.",
+    )
     eval_compare.set_defaults(func=cmd_eval_compare)
 
     review = subparsers.add_parser(
@@ -579,7 +584,15 @@ def cmd_eval_compare(args: argparse.Namespace) -> int:
         json_output.parent.mkdir(parents=True, exist_ok=True)
         json_output.write_text(json.dumps(comparison.data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(f"wrote {json_output}")
+    if args.strict and _eval_comparison_has_regression(comparison.data):
+        return 1
     return 0
+
+
+def _eval_comparison_has_regression(data: dict) -> bool:
+    regressed = data.get("regressed")
+    pass_rate_delta = data.get("pass_rate_delta")
+    return bool(regressed) or (isinstance(pass_rate_delta, (int, float)) and pass_rate_delta < 0)
 
 
 def cmd_review(args: argparse.Namespace) -> int:
