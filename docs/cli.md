@@ -52,6 +52,23 @@ rws model-routes --provider openai --task style_review
 
 This prints the task-to-model routes from `model_policy.yml`, including provider-specific reasoning or thinking settings.
 
+## Check Provider Readiness
+
+```bash
+rws provider-status
+rws provider-status --provider openai
+rws provider-status --provider openai --strict
+rws provider-status --provider openai --json
+rws provider-status --provider openai --json > runs/provider-status-openai.json
+rws validate-provider-status runs/provider-status-openai.json
+```
+
+This prints whether each provider is ready for real API execution based on environment variables, without exposing API keys. `mock` is always ready. Real providers require `OPENAI_API_KEY`, `GEMINI_API_KEY` or `GOOGLE_API_KEY`, and `ANTHROPIC_API_KEY`.
+
+Use `--strict` in scripts when missing provider configuration should return exit code `1`; use `--json` when automation needs structured, secret-free readiness data. Saved JSON can be checked against `schemas/provider-status.schema.json` with `validate-provider-status`.
+
+For local setup, copy `.env.example` to `.env`, fill only the providers you want to run, and keep `.env` uncommitted.
+
 ## List styles
 
 ```bash
@@ -73,6 +90,7 @@ rws eval-list
 ```
 
 This reads `evals/manifest.json` and prints the current comparison cases, their input documents, default styles, and expected risks.
+The seed suite currently covers unsupported etymology, over-strong source claims, and scholarly register/overconfidence.
 
 ## Run An Eval Case
 
@@ -87,6 +105,65 @@ rws eval-run --case pseudo-etymology --provider openai --model gpt-5.5
 ```
 
 `eval-result.json` includes finding types, matched expected risks, verification status, diff magnitude metrics, and a minimal pass/fail scoring block from `evals/manifest.json`.
+
+## Run The Eval Suite
+
+```bash
+rws eval-suite --provider mock
+```
+
+This runs every case from `evals/manifest.json` and writes both `runs/<suite-id>/eval-suite-result.json` and `runs/<suite-id>/eval-suite-report.md` with `case_count`, `passed_count`, `failed_count`, `pass_rate`, and per-case result paths. Use `--suite-id` for deterministic local smoke tests:
+
+```bash
+rws eval-suite --provider mock --suite-id cli-smoke-suite
+rws eval-suite --provider mock --suite-id cli-smoke-suite --strict
+rws eval-suite --provider openai --suite-id openai-candidate --compare-to runs/cli-smoke-suite
+```
+
+Use `--compare-to` to immediately write `comparison.md` and `comparison.json` in the new suite directory. Use `--strict` when any failed eval case or comparison regression should return exit code `1`.
+
+To validate the suite summary and every referenced case run:
+
+```bash
+rws validate-eval-suite runs/cli-smoke-suite
+```
+
+## Compare Eval Suites
+
+```bash
+rws eval-compare runs/openai-suite runs/gemini-suite
+```
+
+The command accepts suite directories or direct `eval-suite-result.json` paths, then prints pass-rate deltas, newly passed cases, regressions, and per-case finding/diff metric changes. Use `--output` to save the comparison as Markdown and `--json-output` for automation:
+
+```bash
+rws eval-compare runs/openai-suite runs/gemini-suite --output runs/eval-compare-openai-gemini.md --json-output runs/eval-compare-openai-gemini.json
+```
+
+Use `--strict` in CI when a lower candidate pass rate or any per-case regression should return exit code `1`.
+
+Validate a saved comparison JSON with:
+
+```bash
+rws validate-eval-comparison runs/eval-compare-openai-gemini.json
+```
+
+For short CI logs or quick inspection, use:
+
+```bash
+rws eval-status runs/openai-suite
+rws eval-status runs/eval-compare-openai-gemini.json
+```
+
+The repository also includes a manual GitHub Actions workflow, `Eval Smoke`, which runs the mock eval suite, validates it, prints `eval-status`, exports the suite bundle, and uploads the ZIP artifact.
+
+## Export An Eval Suite
+
+```bash
+rws export-eval-suite runs/openai-suite
+```
+
+The bundle includes `eval-suite-result.json`, `eval-suite-report.md`, any additional top-level suite Markdown/JSON files such as comparison reports, and stable artifacts from each referenced case run under `cases/<run-id>/`.
 
 ## Prepare a document
 
@@ -161,6 +238,8 @@ Provider environment variables:
 - `google`: `GEMINI_API_KEY` or `GOOGLE_API_KEY`, optional `RWS_GOOGLE_MODEL`.
 - `anthropic`: `ANTHROPIC_API_KEY`, optional `RWS_ANTHROPIC_MODEL`, optional `RWS_ANTHROPIC_MAX_TOKENS`.
 
+Use `.env.example` as the local template. The repository ignores `.env` and `.env.*` files so real keys stay out of Git.
+
 Transient provider failures are retried with exponential backoff. Configure this with `RWS_PROVIDER_MAX_ATTEMPTS` and `RWS_PROVIDER_RETRY_SECONDS`. When a provider returns rate-limit headers, the retry layer prefers `Retry-After`, then known OpenAI `x-ratelimit-reset-*` and Anthropic `anthropic-ratelimit-*-reset` headers for exhausted limits.
 
 Each `run` refreshes:
@@ -173,6 +252,12 @@ runs/<run-id>/summary.html
 The reports summarize segment counts, style review status, findings, council decisions, revision status, and verifier warnings. `summary.html` is a portable static view with findings grouped by `span_id`.
 When `--execute` produces `revised.md`, `run` also writes `revision.diff`.
 Provider executions are appended to `provider.log.jsonl` without API keys or request bodies.
+Each provider log entry includes `retry_count`, `retry_delay_seconds`, and `retry_statuses`, so real API runs can show when rate limits or transient errors affected the pipeline.
+For real providers, add `--require-provider-ready` to fail before creating a new run when the selected provider is missing its API key:
+
+```bash
+rws run README.md --run-id cli-openai --execute --provider openai --require-provider-ready
+```
 
 To package the completed run:
 
@@ -327,6 +412,22 @@ rws findings runs/cli-smoke-readme --span p002
 
 This prints completed style findings grouped by `span_id`, with the segment excerpt, severity, style id, finding, suggestion, and confidence.
 
+## Inspect Provider Log
+
+```bash
+rws provider-log runs/cli-smoke-readme
+```
+
+This prints provider execution totals and per-task retry telemetry from `provider.log.jsonl`: duration, retry count, retry delay, retry statuses, and artifact path.
+
+## Inspect Council Decisions
+
+```bash
+rws council-summary runs/cli-smoke-readme
+```
+
+This prints council status, reply count, decision count, and the accepted/deferred/informational decisions from `council.json`.
+
 ## Render a run report
 
 ```bash
@@ -358,13 +459,29 @@ Use `--output` to choose a different ZIP path:
 rws export runs/cli-smoke-readme --output exports/cli-smoke-readme.zip
 ```
 
+## Export an eval suite bundle
+
+```bash
+rws export-eval-suite runs/cli-smoke-suite
+```
+
+The bundle includes the suite summary/report plus each referenced case run's reports, prompts, provider log, eval result, revision diff, and JSON artifacts. Use `--output` to choose a different ZIP path.
+
 ## Validate a run
 
 ```bash
 rws validate-run runs/cli-smoke-readme
 ```
 
-The command checks that run artifacts exist, parse as JSON where needed, pass the local JSON Schema subset for review/council/revision/verification artifacts, and that any completed style findings point to known `span_id` values.
+The command checks that run artifacts exist, parse as JSON where needed, pass the local JSON Schema subset for review/council/revision/verification/eval artifacts, and that any completed style findings point to known `span_id` values.
+
+## Validate an eval suite
+
+```bash
+rws validate-eval-suite runs/cli-smoke-suite
+```
+
+The command checks `eval-suite-result.json` against `schemas/eval-suite-result.schema.json`, verifies suite counters, confirms per-case paths exist, checks each child `eval-result.json`, and then runs the normal run validator for every referenced case run.
 
 ## Validate the repository
 

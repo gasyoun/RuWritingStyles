@@ -453,6 +453,18 @@
 - [`PDFtoTXT/update.py`](PDFtoTXT/update.py) сейчас относится к служебной обработке указателей для `AAZ_Zametki_2025`; не считайте его универсальным конвертером всех PDF.
 - Перед коммитом полезно проверить README на старые имена файлов и затем выполнить `git diff --check`.
 
+## Prototype CLI quick run
+
+```bash
+PYTHONPATH=src python -m ruwritingstyles.cli run examples/input/pseudo-etymology.md --run-id demo --execute --provider mock
+PYTHONPATH=src python -m ruwritingstyles.cli eval-suite --provider mock --suite-id local-eval
+PYTHONPATH=src python -m ruwritingstyles.cli validate-eval-suite runs/local-eval
+PYTHONPATH=src python -m ruwritingstyles.cli eval-status runs/local-eval
+PYTHONPATH=src python -m ruwritingstyles.cli export-eval-suite runs/local-eval
+```
+
+The mock provider is deterministic and needs no API key. For real providers, run `rws provider-status --strict --provider openai` first and then use `--require-provider-ready` with execution commands.
+
 [albedil-sbornik]: ClaudeStyles/albedil-sbornik-style.md
 [kazanskiy-korpus]: ClaudeStyles/kazanskiy-korpus-style.md
 [lidova-commentary]: ClaudeStyles/lidova-commentary-style.md

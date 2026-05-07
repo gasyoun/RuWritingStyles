@@ -6,6 +6,7 @@ from pathlib import Path
 import shutil
 import sys
 import unittest
+from unittest.mock import patch
 from zipfile import ZipFile
 
 
@@ -16,16 +17,21 @@ if str(SRC) not in sys.path:
 
 from ruwritingstyles.cli import main
 from ruwritingstyles.config import load_model_routes
+from ruwritingstyles.council_summary import load_council_summary, render_council_summary
 from ruwritingstyles.evals import load_eval_cases
 from ruwritingstyles.findings import load_finding_summaries, render_finding_summaries
 from ruwritingstyles.providers import (
+    ProviderRetryTelemetry,
     _extract_anthropic_text,
     _extract_gemini_text,
     _is_retryable_status,
     _retry_delay_from_headers,
 )
+from ruwritingstyles.provider_log import load_provider_log, render_provider_log
+from ruwritingstyles.provider_status import provider_statuses, provider_statuses_json, render_provider_statuses
 from ruwritingstyles.schema_validation import validate_json_schema
 from ruwritingstyles.segment import normalize_document, segment_markdown
+from ruwritingstyles.validation import _load_schema_store, validate_provider_status_file
 
 
 class SegmentTests(unittest.TestCase):
@@ -74,6 +80,19 @@ class ProviderParsingTests(unittest.TestCase):
         self.assertTrue(_is_retryable_status(429))
         self.assertFalse(_is_retryable_status(400))
 
+    def test_provider_retry_telemetry_records_attempts(self) -> None:
+        telemetry = ProviderRetryTelemetry()
+        telemetry.record("429", 1.25)
+        telemetry.record("503", 2.0)
+        self.assertEqual(
+            telemetry.to_json(),
+            {
+                "retry_count": 2,
+                "retry_delay_seconds": 3.25,
+                "retry_statuses": ["429", "503"],
+            },
+        )
+
     def test_provider_retry_delay_uses_rate_limit_headers(self) -> None:
         now = datetime(2026, 5, 7, 10, 0, 0, tzinfo=timezone.utc)
         self.assertEqual(_retry_delay_from_headers({"Retry-After": "2.5"}, 1.0, now=now), 2.5)
@@ -112,6 +131,46 @@ class ModelPolicyTests(unittest.TestCase):
         self.assertEqual(route.mode_value, "medium")
         self.assertEqual(main(["model-routes", "--provider", "openai", "--task", "style_review"]), 0)
 
+    def test_provider_statuses_do_not_expose_keys(self) -> None:
+        statuses = provider_statuses(
+            {
+                "OPENAI_API_KEY": "sk-secret",
+                "RWS_OPENAI_MODEL": "gpt-test",
+            }
+        )
+        openai = next(status for status in statuses if status.provider == "openai")
+        google = next(status for status in statuses if status.provider == "google")
+        self.assertTrue(openai.ready)
+        self.assertEqual(openai.configured_env, "OPENAI_API_KEY")
+        self.assertEqual(openai.model, "gpt-test")
+        self.assertFalse(google.ready)
+        rendered = render_provider_statuses(statuses, provider="openai")
+        self.assertIn("ready: yes", rendered)
+        self.assertIn("configured_env: OPENAI_API_KEY", rendered)
+        self.assertNotIn("sk-secret", rendered)
+        rendered_json = provider_statuses_json(statuses, provider="openai")
+        self.assertEqual(rendered_json[0]["configured_env"], "OPENAI_API_KEY")
+        self.assertNotIn("sk-secret", json.dumps(rendered_json))
+        schema_store = _load_schema_store(ROOT, [])
+        self.assertEqual(
+            validate_json_schema(
+                rendered_json,
+                schema_store["provider-status.schema.json"],
+                schema_store=schema_store,
+            ),
+            (),
+        )
+        status_path = ROOT / "runs" / "unittest-provider-status.json"
+        status_path.parent.mkdir(exist_ok=True)
+        status_path.write_text(json.dumps(rendered_json), encoding="utf-8")
+        self.assertTrue(validate_provider_status_file(status_path).ok)
+        self.assertEqual(main(["validate-provider-status", str(status_path)]), 0)
+        status_path.unlink()
+        with patch.dict("os.environ", {}, clear=True):
+            self.assertEqual(main(["provider-status", "--provider", "mock", "--strict"]), 0)
+            self.assertEqual(main(["provider-status", "--provider", "mock", "--json"]), 0)
+            self.assertEqual(main(["provider-status", "--provider", "openai", "--strict"]), 1)
+
 
 class SchemaValidationTests(unittest.TestCase):
     def test_schema_validator_reports_required_and_nested_errors(self) -> None:
@@ -140,6 +199,7 @@ class SchemaValidationTests(unittest.TestCase):
 class EvalManifestTests(unittest.TestCase):
     def test_eval_manifest_loads_demo_case(self) -> None:
         cases = load_eval_cases(ROOT)
+        self.assertEqual({case.case_id for case in cases}, {"pseudo-etymology", "source-claim", "register-shift"})
         self.assertEqual(cases[0].case_id, "pseudo-etymology")
         self.assertTrue(cases[0].input_path.exists())
         self.assertIn("zalizniak-zametki", cases[0].default_styles)
@@ -155,6 +215,15 @@ class CliPipelineTests(unittest.TestCase):
     executed_run_dir = ROOT / "runs" / "unittest-readme-executed"
     demo_run_dir = ROOT / "runs" / "unittest-demo"
     eval_run_dir = ROOT / "runs" / "unittest-eval-pseudo"
+    eval_suite_dir = ROOT / "runs" / "unittest-suite"
+    eval_suite_candidate_dir = ROOT / "runs" / "unittest-suite-candidate"
+    eval_suite_case_run_dir = ROOT / "runs" / "unittest-suite-pseudo-etymology"
+    eval_suite_source_run_dir = ROOT / "runs" / "unittest-suite-source-claim"
+    eval_suite_register_run_dir = ROOT / "runs" / "unittest-suite-register-shift"
+    eval_suite_candidate_case_run_dir = ROOT / "runs" / "unittest-suite-candidate-pseudo-etymology"
+    eval_suite_candidate_source_run_dir = ROOT / "runs" / "unittest-suite-candidate-source-claim"
+    eval_suite_candidate_register_run_dir = ROOT / "runs" / "unittest-suite-candidate-register-shift"
+    openai_missing_dir = ROOT / "runs" / "unittest-openai-missing"
 
     def tearDown(self) -> None:
         if self.run_dir.exists():
@@ -165,6 +234,24 @@ class CliPipelineTests(unittest.TestCase):
             shutil.rmtree(self.demo_run_dir)
         if self.eval_run_dir.exists():
             shutil.rmtree(self.eval_run_dir)
+        if self.eval_suite_dir.exists():
+            shutil.rmtree(self.eval_suite_dir)
+        if self.eval_suite_candidate_dir.exists():
+            shutil.rmtree(self.eval_suite_candidate_dir)
+        if self.eval_suite_case_run_dir.exists():
+            shutil.rmtree(self.eval_suite_case_run_dir)
+        if self.eval_suite_source_run_dir.exists():
+            shutil.rmtree(self.eval_suite_source_run_dir)
+        if self.eval_suite_register_run_dir.exists():
+            shutil.rmtree(self.eval_suite_register_run_dir)
+        if self.eval_suite_candidate_case_run_dir.exists():
+            shutil.rmtree(self.eval_suite_candidate_case_run_dir)
+        if self.eval_suite_candidate_source_run_dir.exists():
+            shutil.rmtree(self.eval_suite_candidate_source_run_dir)
+        if self.eval_suite_candidate_register_run_dir.exists():
+            shutil.rmtree(self.eval_suite_candidate_register_run_dir)
+        if self.openai_missing_dir.exists():
+            shutil.rmtree(self.openai_missing_dir)
 
     def test_full_offline_run_creates_expected_artifacts(self) -> None:
         if self.run_dir.exists():
@@ -192,6 +279,26 @@ class CliPipelineTests(unittest.TestCase):
         self.assertEqual(verification["status"], "prompt_ready")
 
         self.assertEqual(main(["validate-run", str(self.run_dir)]), 0)
+
+    def test_provider_preflight_stops_before_run_creation(self) -> None:
+        if self.openai_missing_dir.exists():
+            shutil.rmtree(self.openai_missing_dir)
+
+        with patch.dict("os.environ", {}, clear=True):
+            exit_code = main(
+                [
+                    "run",
+                    "README.md",
+                    "--run-id",
+                    "unittest-openai-missing",
+                    "--execute",
+                    "--provider",
+                    "openai",
+                    "--require-provider-ready",
+                ]
+            )
+        self.assertEqual(exit_code, 1)
+        self.assertFalse(self.openai_missing_dir.exists())
 
     def test_full_mock_executed_run_updates_artifacts(self) -> None:
         if self.executed_run_dir.exists():
@@ -221,11 +328,22 @@ class CliPipelineTests(unittest.TestCase):
         council = json.loads((self.executed_run_dir / "council.json").read_text(encoding="utf-8"))
         self.assertEqual(council["status"], "completed")
         self.assertEqual(len(council["decisions"]), 3)
+        council_summary = render_council_summary(load_council_summary(self.executed_run_dir))
+        self.assertIn("decisions: 3", council_summary)
+        self.assertIn("status=informational", council_summary)
+        self.assertEqual(main(["council-summary", str(self.executed_run_dir)]), 0)
         provider_log_lines = (self.executed_run_dir / "provider.log.jsonl").read_text(encoding="utf-8").splitlines()
         self.assertEqual(len(provider_log_lines), 6)
         provider_log_entry = json.loads(provider_log_lines[0])
         self.assertEqual(provider_log_entry["provider"], "mock")
         self.assertEqual(provider_log_entry["status"], "completed")
+        self.assertEqual(provider_log_entry["retry_count"], 0)
+        self.assertEqual(provider_log_entry["retry_delay_seconds"], 0.0)
+        self.assertEqual(provider_log_entry["retry_statuses"], [])
+        provider_log_summary = render_provider_log(load_provider_log(self.executed_run_dir))
+        self.assertIn("executions: 6", provider_log_summary)
+        self.assertIn("retries: 0", provider_log_summary)
+        self.assertEqual(main(["provider-log", str(self.executed_run_dir)]), 0)
         summaries = load_finding_summaries(self.executed_run_dir, span_id="p002")
         self.assertEqual(len(summaries), 3)
         self.assertIn("Mock provider placeholder finding", render_finding_summaries(summaries))
@@ -311,6 +429,188 @@ class CliPipelineTests(unittest.TestCase):
         self.assertEqual(result["diff_metrics"]["char_delta_ratio"], 0)
         self.assertTrue((self.eval_run_dir / "provider.log.jsonl").exists())
         self.assertEqual(main(["validate-run", str(self.eval_run_dir)]), 0)
+
+    def test_eval_suite_runs_manifest_cases(self) -> None:
+        if self.eval_suite_dir.exists():
+            shutil.rmtree(self.eval_suite_dir)
+        if self.eval_suite_case_run_dir.exists():
+            shutil.rmtree(self.eval_suite_case_run_dir)
+
+        exit_code = main(
+            [
+                "eval-suite",
+                "--provider",
+                "mock",
+                "--suite-id",
+                "unittest-suite",
+            ]
+        )
+        self.assertEqual(exit_code, 0)
+        result = json.loads((self.eval_suite_dir / "eval-suite-result.json").read_text(encoding="utf-8"))
+        self.assertEqual(result["suite_id"], "unittest-suite")
+        self.assertEqual(result["case_count"], 3)
+        self.assertEqual(result["failed_count"], 3)
+        self.assertEqual({row["case_id"] for row in result["results"]}, {"pseudo-etymology", "source-claim", "register-shift"})
+        report = (self.eval_suite_dir / "eval-suite-report.md").read_text(encoding="utf-8")
+        self.assertIn("# Eval Suite: unittest-suite", report)
+        self.assertIn("| pseudo-etymology | no |", report)
+        self.assertIn("| source-claim | no |", report)
+        self.assertIn("| register-shift | no |", report)
+        self.assertTrue((self.eval_suite_case_run_dir / "eval-result.json").exists())
+        self.assertTrue((self.eval_suite_source_run_dir / "eval-result.json").exists())
+        self.assertTrue((self.eval_suite_register_run_dir / "eval-result.json").exists())
+        self.assertEqual(main(["eval-status", str(self.eval_suite_dir)]), 0)
+        self.assertEqual(main(["validate-eval-suite", str(self.eval_suite_dir)]), 0)
+        comparison_path = self.eval_suite_dir / "comparison.md"
+        comparison_json_path = self.eval_suite_dir / "comparison.json"
+        self.assertEqual(
+            main(
+                [
+                    "eval-compare",
+                    str(self.eval_suite_dir),
+                    str(self.eval_suite_dir),
+                    "--output",
+                    str(comparison_path),
+                    "--json-output",
+                    str(comparison_json_path),
+                ]
+            ),
+            0,
+        )
+        self.assertIn("# Eval Suite Comparison", comparison_path.read_text(encoding="utf-8"))
+        comparison = json.loads(comparison_json_path.read_text(encoding="utf-8"))
+        self.assertEqual(comparison["case_count"], 3)
+        self.assertEqual(comparison["pass_rate_delta"], 0.0)
+        self.assertEqual(main(["eval-status", str(comparison_json_path)]), 0)
+        schema_store = _load_schema_store(ROOT, [])
+        self.assertEqual(
+            validate_json_schema(
+                comparison,
+                schema_store["eval-suite-comparison.schema.json"],
+                schema_store=schema_store,
+            ),
+            (),
+        )
+        self.assertEqual(main(["validate-eval-comparison", str(comparison_json_path)]), 0)
+        self.assertEqual(main(["export-eval-suite", str(self.eval_suite_dir)]), 0)
+        bundle_path = self.eval_suite_dir / "unittest-suite-bundle.zip"
+        self.assertTrue(bundle_path.exists())
+        with ZipFile(bundle_path) as archive:
+            names = set(archive.namelist())
+        self.assertIn("unittest-suite/bundle-manifest.json", names)
+        self.assertIn("unittest-suite/eval-suite-result.json", names)
+        self.assertIn("unittest-suite/eval-suite-report.md", names)
+        self.assertIn("unittest-suite/comparison.md", names)
+        self.assertIn("unittest-suite/comparison.json", names)
+        self.assertIn("unittest-suite/cases/unittest-suite-pseudo-etymology/eval-result.json", names)
+        self.assertIn("unittest-suite/cases/unittest-suite-pseudo-etymology/provider.log.jsonl", names)
+        self.assertIn("unittest-suite/cases/unittest-suite-source-claim/eval-result.json", names)
+        self.assertIn("unittest-suite/cases/unittest-suite-register-shift/eval-result.json", names)
+
+    def test_eval_suite_can_compare_to_baseline(self) -> None:
+        for path in [
+            self.eval_suite_dir,
+            self.eval_suite_candidate_dir,
+            self.eval_suite_case_run_dir,
+            self.eval_suite_source_run_dir,
+            self.eval_suite_register_run_dir,
+            self.eval_suite_candidate_case_run_dir,
+            self.eval_suite_candidate_source_run_dir,
+            self.eval_suite_candidate_register_run_dir,
+        ]:
+            if path.exists():
+                shutil.rmtree(path)
+
+        self.assertEqual(
+            main(["eval-suite", "--provider", "mock", "--suite-id", "unittest-suite"]),
+            0,
+        )
+        self.assertEqual(
+            main(
+                [
+                    "eval-suite",
+                    "--provider",
+                    "mock",
+                    "--suite-id",
+                    "unittest-suite-candidate",
+                    "--compare-to",
+                    str(self.eval_suite_dir),
+                ]
+            ),
+            0,
+        )
+        comparison_json = self.eval_suite_candidate_dir / "comparison.json"
+        comparison_md = self.eval_suite_candidate_dir / "comparison.md"
+        self.assertTrue(comparison_json.exists())
+        self.assertTrue(comparison_md.exists())
+        comparison = json.loads(comparison_json.read_text(encoding="utf-8"))
+        self.assertEqual(comparison["pass_rate_delta"], 0.0)
+        self.assertEqual(comparison["regressed"], [])
+        self.assertEqual(main(["validate-eval-comparison", str(comparison_json)]), 0)
+
+    def test_eval_compare_strict_returns_failure_on_regression(self) -> None:
+        baseline_dir = ROOT / "runs" / "unittest-compare-baseline"
+        candidate_dir = ROOT / "runs" / "unittest-compare-candidate"
+        for path in [baseline_dir, candidate_dir]:
+            if path.exists():
+                shutil.rmtree(path)
+            path.mkdir(parents=True)
+        baseline = {
+            "suite_id": "unittest-compare-baseline",
+            "provider": "mock",
+            "model": "mock",
+            "case_count": 1,
+            "passed_count": 1,
+            "failed_count": 0,
+            "pass_rate": 1.0,
+            "results": [
+                {
+                    "case_id": "pseudo-etymology",
+                    "run_dir": "runs/unittest-suite-pseudo-etymology",
+                    "result_path": "runs/unittest-suite-pseudo-etymology/eval-result.json",
+                    "passed": True,
+                    "finding_count": 3,
+                    "verification_status": "needs_human_review",
+                    "changed_line_ratio": 0.0,
+                    "char_delta_ratio": 0.0,
+                }
+            ],
+        }
+        candidate = dict(baseline)
+        candidate["suite_id"] = "unittest-compare-candidate"
+        candidate["passed_count"] = 0
+        candidate["failed_count"] = 1
+        candidate["pass_rate"] = 0.0
+        candidate["results"] = [dict(baseline["results"][0], passed=False)]
+        (baseline_dir / "eval-suite-result.json").write_text(json.dumps(baseline, indent=2) + "\n", encoding="utf-8")
+        (candidate_dir / "eval-suite-result.json").write_text(json.dumps(candidate, indent=2) + "\n", encoding="utf-8")
+        try:
+            self.assertEqual(main(["eval-compare", str(baseline_dir), str(candidate_dir), "--strict"]), 1)
+        finally:
+            shutil.rmtree(baseline_dir)
+            shutil.rmtree(candidate_dir)
+
+    def test_eval_suite_strict_returns_failure_on_failed_cases(self) -> None:
+        if self.eval_suite_dir.exists():
+            shutil.rmtree(self.eval_suite_dir)
+        if self.eval_suite_case_run_dir.exists():
+            shutil.rmtree(self.eval_suite_case_run_dir)
+        if self.eval_suite_source_run_dir.exists():
+            shutil.rmtree(self.eval_suite_source_run_dir)
+        if self.eval_suite_register_run_dir.exists():
+            shutil.rmtree(self.eval_suite_register_run_dir)
+
+        exit_code = main(
+            [
+                "eval-suite",
+                "--provider",
+                "mock",
+                "--suite-id",
+                "unittest-suite",
+                "--strict",
+            ]
+        )
+        self.assertEqual(exit_code, 1)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/eval-suite-result.schema.json",
+  "title": "RuWritingStyles eval suite result",
+  "type": "object",
+  "required": [
+    "suite_id",
+    "provider",
+    "model",
+    "case_count",
+    "passed_count",
+    "failed_count",
+    "pass_rate",
+    "results"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "suite_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provider": {
+      "type": "string",
+      "enum": ["mock", "openai", "google", "anthropic"]
+    },
+    "model": {
+      "type": "string"
+    },
+    "case_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "passed_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "failed_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "pass_rate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "run_dir",
+          "result_path",
+          "passed",
+          "finding_count",
+          "verification_status",
+          "changed_line_ratio",
+          "char_delta_ratio"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "run_dir": {
+            "type": "string",
+            "minLength": 1
+          },
+          "result_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "finding_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "verification_status": {
+            "type": "string",
+            "enum": ["prompt_ready", "passed", "needs_human_review", "failed", "missing"]
+          },
+          "changed_line_ratio": {
+            "type": "number",
+            "minimum": 0
+          },
+          "char_delta_ratio": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  }
+}

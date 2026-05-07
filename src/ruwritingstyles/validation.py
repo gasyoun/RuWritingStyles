@@ -50,9 +50,66 @@ def validate_run_dir(run_dir: Path) -> ValidationResult:
         if isinstance(data, dict):
             _validate_with_schema(data, schema_name, artifact, schema_store, messages)
             _validate_common_status(data, messages, artifact)
-    _validate_eval_result(run_dir / "eval-result.json", messages)
+            if artifact == "council.json":
+                _validate_council(data, review_paths, messages)
+    _validate_eval_result(run_dir / "eval-result.json", schema_store, messages)
     _validate_provider_log(run_dir / "provider.log.jsonl", messages)
 
+    return ValidationResult(ok=not messages, messages=tuple(messages))
+
+
+def validate_eval_suite_dir(suite_dir: Path) -> ValidationResult:
+    suite_dir = suite_dir.resolve()
+    messages: list[str] = []
+    repo_root = _repo_root_from_run_dir(suite_dir)
+    schema_store = _load_schema_store(repo_root, messages)
+
+    result_path = suite_dir / "eval-suite-result.json"
+    data = _load_json(result_path, messages)
+    if isinstance(data, dict):
+        _validate_with_schema(data, "eval-suite-result.schema.json", "eval-suite-result.json", schema_store, messages)
+        _validate_eval_suite_result(repo_root, data, messages)
+
+    if not (suite_dir / "eval-suite-report.md").exists():
+        messages.append("missing eval-suite-report.md")
+
+    return ValidationResult(ok=not messages, messages=tuple(messages))
+
+
+def validate_eval_comparison_file(comparison_path: Path) -> ValidationResult:
+    comparison_path = comparison_path.resolve()
+    messages: list[str] = []
+    repo_root = _repo_root_from_artifact(comparison_path)
+    schema_store = _load_schema_store(repo_root, messages)
+    data = _load_json(comparison_path, messages)
+    if isinstance(data, dict):
+        _validate_with_schema(
+            data,
+            "eval-suite-comparison.schema.json",
+            comparison_path.name,
+            schema_store,
+            messages,
+        )
+        _validate_eval_comparison_result(data, messages)
+    return ValidationResult(ok=not messages, messages=tuple(messages))
+
+
+def validate_provider_status_file(status_path: Path) -> ValidationResult:
+    status_path = status_path.resolve()
+    messages: list[str] = []
+    repo_root = _repo_root_from_artifact(status_path)
+    schema_store = _load_schema_store(repo_root, messages)
+    data = _load_json(status_path, messages)
+    if isinstance(data, list):
+        schema = schema_store.get("provider-status.schema.json")
+        if schema is None:
+            messages.append("missing schema provider-status.schema.json")
+        else:
+            for message in validate_json_schema(data, schema, schema_store=schema_store):
+                messages.append(f"{status_path.name} schema {message}")
+        _validate_provider_status_result(data, messages)
+    elif data is not None:
+        messages.append(f"{status_path.name} must contain a JSON array")
     return ValidationResult(ok=not messages, messages=tuple(messages))
 
 
@@ -130,6 +187,39 @@ def _validate_common_status(data: dict[str, Any], messages: list[str], artifact:
         messages.append(f"{artifact} missing run_id")
 
 
+def _validate_council(data: dict[str, Any], review_paths: list[Path], messages: list[str]) -> None:
+    finding_ids = _review_finding_ids(review_paths, messages)
+    for label, rows in [
+        ("replies", data.get("replies")),
+        ("decisions", data.get("decisions")),
+    ]:
+        if not isinstance(rows, list):
+            messages.append(f"council.json {label} must be a list")
+    replies = data.get("replies") if isinstance(data.get("replies"), list) else []
+    decisions = data.get("decisions") if isinstance(data.get("decisions"), list) else []
+    for index, reply in enumerate(replies):
+        if isinstance(reply, dict):
+            reply_to = reply.get("reply_to")
+            if finding_ids and reply_to not in finding_ids:
+                messages.append(f"council.json replies[{index}] references unknown finding {reply_to!r}")
+    for index, decision in enumerate(decisions):
+        if isinstance(decision, dict):
+            finding_id = decision.get("finding_id")
+            if finding_ids and finding_id not in finding_ids:
+                messages.append(f"council.json decisions[{index}] references unknown finding {finding_id!r}")
+
+
+def _review_finding_ids(review_paths: list[Path], messages: list[str]) -> set[str]:
+    finding_ids: set[str] = set()
+    for path in review_paths:
+        data = _load_json(path, messages)
+        findings = data.get("findings") if isinstance(data, dict) and isinstance(data.get("findings"), list) else []
+        for finding in findings:
+            if isinstance(finding, dict) and finding.get("id"):
+                finding_ids.add(str(finding["id"]))
+    return finding_ids
+
+
 def _validate_provider_log(path: Path, messages: list[str]) -> None:
     if not path.exists():
         return
@@ -149,19 +239,37 @@ def _validate_provider_log(path: Path, messages: list[str]) -> None:
         if not isinstance(entry, dict):
             messages.append(f"provider.log.jsonl line {index} must be an object")
             continue
-        for key in ["timestamp", "task", "provider", "model", "artifact", "status", "duration_ms"]:
+        for key in [
+            "timestamp",
+            "task",
+            "provider",
+            "model",
+            "artifact",
+            "status",
+            "duration_ms",
+            "retry_count",
+            "retry_delay_seconds",
+            "retry_statuses",
+        ]:
             if key not in entry:
                 messages.append(f"provider.log.jsonl line {index} missing {key}")
         if entry.get("status") not in {"completed", "error"}:
             messages.append(f"provider.log.jsonl line {index} has invalid status {entry.get('status')!r}")
+        if not isinstance(entry.get("retry_count"), int):
+            messages.append(f"provider.log.jsonl line {index} has invalid retry_count")
+        if not isinstance(entry.get("retry_delay_seconds"), (int, float)):
+            messages.append(f"provider.log.jsonl line {index} has invalid retry_delay_seconds")
+        if not isinstance(entry.get("retry_statuses"), list):
+            messages.append(f"provider.log.jsonl line {index} has invalid retry_statuses")
 
 
-def _validate_eval_result(path: Path, messages: list[str]) -> None:
+def _validate_eval_result(path: Path, schema_store: dict[str, dict[str, Any]], messages: list[str]) -> None:
     if not path.exists():
         return
     data = _load_json(path, messages)
     if not isinstance(data, dict):
         return
+    _validate_with_schema(data, "eval-result.schema.json", "eval-result.json", schema_store, messages)
     for key in ["case_id", "run_id", "provider", "model", "finding_count", "verification_status"]:
         if key not in data:
             messages.append(f"eval-result.json missing {key}")
@@ -177,6 +285,128 @@ def _validate_eval_result(path: Path, messages: list[str]) -> None:
         messages.append("eval-result.json missing scoring")
     elif "diff_within_limits" not in scoring:
         messages.append("eval-result.json scoring missing diff_within_limits")
+    matched_required = scoring.get("matched_required_finding_types") if isinstance(scoring, dict) else None
+    required_match_count = scoring.get("required_match_count") if isinstance(scoring, dict) else None
+    if isinstance(matched_required, list) and required_match_count != len(matched_required):
+        messages.append("eval-result.json scoring required_match_count does not match matched_required_finding_types")
+
+
+def _validate_eval_suite_result(repo_root: Path, data: dict[str, Any], messages: list[str]) -> None:
+    results = data.get("results")
+    if not isinstance(results, list):
+        messages.append("eval-suite-result.json results must be a list")
+        return
+
+    case_count = len(results)
+    passed_count = sum(1 for row in results if isinstance(row, dict) and row.get("passed") is True)
+    failed_count = case_count - passed_count
+    expected_pass_rate = round(passed_count / max(1, case_count), 6)
+
+    if data.get("case_count") != case_count:
+        messages.append("eval-suite-result.json case_count does not match results length")
+    if data.get("passed_count") != passed_count:
+        messages.append("eval-suite-result.json passed_count does not match passed results")
+    if data.get("failed_count") != failed_count:
+        messages.append("eval-suite-result.json failed_count does not match failed results")
+    if isinstance(data.get("pass_rate"), (int, float)) and abs(float(data["pass_rate"]) - expected_pass_rate) > 0.000001:
+        messages.append("eval-suite-result.json pass_rate does not match passed_count/case_count")
+
+    for index, row in enumerate(results):
+        if not isinstance(row, dict):
+            messages.append(f"eval-suite-result.json results[{index}] must be an object")
+            continue
+        _validate_eval_suite_row(repo_root, index, row, messages)
+
+
+def _validate_eval_suite_row(repo_root: Path, index: int, row: dict[str, Any], messages: list[str]) -> None:
+    label = str(row.get("case_id") or f"results[{index}]")
+    run_dir = _repo_path(repo_root, row.get("run_dir"))
+    result_path = _repo_path(repo_root, row.get("result_path"))
+
+    if run_dir is None:
+        messages.append(f"eval-suite-result.json {label} missing run_dir")
+        return
+    if result_path is None:
+        messages.append(f"eval-suite-result.json {label} missing result_path")
+        return
+    if not run_dir.exists():
+        messages.append(f"eval-suite-result.json {label} references missing run_dir {run_dir}")
+        return
+    if not result_path.exists():
+        messages.append(f"eval-suite-result.json {label} references missing result_path {result_path}")
+        return
+    if result_path.resolve() != (run_dir / "eval-result.json").resolve():
+        messages.append(f"eval-suite-result.json {label} result_path does not match run_dir/eval-result.json")
+
+    child = _load_json(result_path, messages)
+    if isinstance(child, dict):
+        _compare_eval_suite_row(label, row, child, messages)
+
+    child_result = validate_run_dir(run_dir)
+    for message in child_result.messages:
+        messages.append(f"eval-suite-result.json {label} run invalid: {message}")
+
+
+def _compare_eval_suite_row(label: str, row: dict[str, Any], child: dict[str, Any], messages: list[str]) -> None:
+    scoring = child.get("scoring") if isinstance(child.get("scoring"), dict) else {}
+    diff_metrics = child.get("diff_metrics") if isinstance(child.get("diff_metrics"), dict) else {}
+    expected = {
+        "case_id": child.get("case_id"),
+        "passed": scoring.get("passed"),
+        "finding_count": child.get("finding_count"),
+        "verification_status": child.get("verification_status"),
+        "changed_line_ratio": diff_metrics.get("changed_line_ratio"),
+        "char_delta_ratio": diff_metrics.get("char_delta_ratio"),
+    }
+    for key, value in expected.items():
+        if row.get(key) != value:
+            messages.append(f"eval-suite-result.json {label} {key} does not match child eval-result.json")
+
+
+def _validate_eval_comparison_result(data: dict[str, Any], messages: list[str]) -> None:
+    results = data.get("results")
+    if not isinstance(results, list):
+        messages.append("eval-suite-comparison.json results must be a list")
+        return
+
+    newly_passed = sorted(row["case_id"] for row in results if isinstance(row, dict) and row.get("status") == "newly_passed")
+    regressed = sorted(row["case_id"] for row in results if isinstance(row, dict) and row.get("status") == "regressed")
+    if sorted(data.get("newly_passed", [])) != newly_passed:
+        messages.append("eval-suite-comparison.json newly_passed does not match result rows")
+    if sorted(data.get("regressed", [])) != regressed:
+        messages.append("eval-suite-comparison.json regressed does not match result rows")
+    if data.get("case_count") != len(results):
+        messages.append("eval-suite-comparison.json case_count does not match results length")
+    baseline = data.get("baseline_pass_rate")
+    candidate = data.get("candidate_pass_rate")
+    delta = data.get("pass_rate_delta")
+    if isinstance(baseline, (int, float)) and isinstance(candidate, (int, float)) and isinstance(delta, (int, float)):
+        expected = round(float(candidate) - float(baseline), 6)
+        if abs(float(delta) - expected) > 0.000001:
+            messages.append("eval-suite-comparison.json pass_rate_delta does not match candidate-baseline")
+
+
+def _validate_provider_status_result(data: list[Any], messages: list[str]) -> None:
+    seen: set[str] = set()
+    for index, row in enumerate(data):
+        if not isinstance(row, dict):
+            messages.append(f"provider-status.json results[{index}] must be an object")
+            continue
+        provider = row.get("provider")
+        if isinstance(provider, str):
+            if provider in seen:
+                messages.append(f"provider-status.json duplicate provider {provider}")
+            seen.add(provider)
+        api_key_env = row.get("api_key_env")
+        missing_env = row.get("missing_env")
+        configured_env = row.get("configured_env")
+        ready = row.get("ready")
+        if ready is True and missing_env:
+            messages.append(f"provider-status.json {provider} is ready but has missing_env")
+        if ready is False and not missing_env:
+            messages.append(f"provider-status.json {provider} is not ready but missing_env is empty")
+        if configured_env and isinstance(api_key_env, list) and configured_env not in api_key_env:
+            messages.append(f"provider-status.json {provider} configured_env is not listed in api_key_env")
 
 
 def _validate_with_schema(
@@ -200,6 +430,13 @@ def _repo_root_from_run_dir(run_dir: Path) -> Path:
     return Path(__file__).resolve().parents[2]
 
 
+def _repo_root_from_artifact(path: Path) -> Path:
+    for parent in [path.parent, *path.parents]:
+        if parent.name == "runs":
+            return parent.parent
+    return Path(__file__).resolve().parents[2]
+
+
 def _load_schema_store(repo_root: Path, messages: list[str]) -> dict[str, dict[str, Any]]:
     schema_dir = repo_root / "schemas"
     if not schema_dir.exists():
@@ -211,3 +448,12 @@ def _load_schema_store(repo_root: Path, messages: list[str]) -> dict[str, dict[s
         if isinstance(data, dict):
             store[path.name] = data
     return store
+
+
+def _repo_path(repo_root: Path, value: Any) -> Path | None:
+    if not isinstance(value, str) or not value.strip():
+        return None
+    path = Path(value)
+    if path.is_absolute():
+        return path
+    return repo_root / path
