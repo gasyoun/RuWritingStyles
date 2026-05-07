@@ -119,7 +119,7 @@ def run_eval_case(
             model=model,
         )
 
-    council = create_council_bundle(repo_root=repo_root, run_dir=run_dir)
+    council = create_council_bundle(repo_root=repo_root, run_dir=run_dir, manifest=manifest)
     execute_council_artifact(repo_root=repo_root, council_path=council.council_json, provider=provider, model=model)
     revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
     execute_revision_artifact(repo_root=repo_root, revision_path=revision.revision_json, provider=provider, model=model)

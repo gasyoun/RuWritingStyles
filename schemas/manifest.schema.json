@@ -21,8 +21,16 @@
         "properties": {
           "id": { "type": "string" },
           "path": { "type": "string" },
-          "source_prompt": { "type": "string" }
+          "source_prompt": { "type": "string" },
+          "weight": { "type": "number" }
         }
+      }
+    },
+    "council": {
+      "type": "object",
+      "properties": {
+        "archetype": { "type": "string" },
+        "conflict_resolution_strategy": { "type": "string" }
       }
     },
     "available_style_sources": {
