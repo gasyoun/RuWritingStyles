@@ -13,6 +13,17 @@ default_development_mode:
     - schemas
     - first implementation PRs
 
+budget_modes:
+  smoke:
+    description: "Use fast/free models across all tasks for infrastructure testing."
+    fallback_model: "gemini-flash"
+  standard:
+    description: "Use default task-specific routes."
+  expensive:
+    description: "Upgrade all tasks to flagship models with maximum reasoning."
+  verifier-only:
+    description: "Use standard models for most tasks, but flagship for verification."
+
 providers:
   openai:
     docs:
@@ -89,6 +100,35 @@ providers:
       verification:
         model: gemini-3.1-pro-preview
         thinking: high
+
+  openrouter:
+    docs:
+      - https://openrouter.ai/docs/quickstart
+      - https://openrouter.ai/docs/features/structured-outputs
+    models:
+      balanced:
+        id: google/gemini-2.0-flash-exp:free
+        status: preview
+        note: "OpenAI-compatible route for free or low-cost smoke runs through OpenRouter/Nous Portal."
+    task_routes:
+      architecture:
+        model: google/gemini-2.0-flash-exp:free
+        reasoning: medium
+      implementation:
+        model: google/gemini-2.0-flash-exp:free
+        reasoning: medium
+      style_review:
+        model: google/gemini-2.0-flash-exp:free
+        reasoning: medium
+      council:
+        model: google/gemini-2.0-flash-exp:free
+        reasoning: medium
+      synthesis:
+        model: google/gemini-2.0-flash-exp:free
+        reasoning: medium
+      verification:
+        model: google/gemini-2.0-flash-exp:free
+        reasoning: medium
 
   anthropic:
     docs:

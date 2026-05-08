@@ -1,0 +1,234 @@
+"""LLM provider adapters for RuWritingStyles.
+
+The mock provider is deterministic and used by tests. Real providers are
+opt-in adapters for OpenAI, Google Gemini, and Anthropic Claude.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
+import json
+import os
+from pathlib import Path
+import re
+import time
+from typing import Any
+from urllib.parse import quote
+from urllib import request, error
+
+
+@dataclass(frozen=True)
+class ProviderRequest:
+    """Input passed to a provider."""
+
+    task: str
+    prompt: str
+    schema: dict[str, Any]
+    metadata: dict[str, Any]
+    model: str | None = None
+
+
+@dataclass
+class ProviderRetryTelemetry:
+    """Retry details from the most recent provider HTTP request."""
+
+    retry_count: int = 0
+    retry_delay_seconds: float = 0.0
+    retry_statuses: list[str] | None = None
+
+    def record(self, status: str, delay_seconds: float) -> None:
+        self.retry_count += 1
+        self.retry_delay_seconds += delay_seconds
+        if self.retry_statuses is None:
+            self.retry_statuses = []
+        self.retry_statuses.append(status)
+
+    def to_json(self) -> dict[str, Any]:
+        return {
+            "retry_count": self.retry_count,
+            "retry_delay_seconds": round(self.retry_delay_seconds, 3),
+            "retry_statuses": list(self.retry_statuses or []),
+        }
+
+
+@dataclass
+class ProviderUsage:
+    """Token usage and cost estimates from a provider response."""
+    input_tokens: int = 0
+    output_tokens: int = 0
+    total_tokens: int = 0
+    cost_estimate: float = 0.0
+
+    def to_json(self) -> dict[str, Any]:
+        return {
+            "input_tokens": self.input_tokens,
+            "output_tokens": self.output_tokens,
+            "total_tokens": self.total_tokens,
+            "cost_estimate": self.cost_estimate,
+        }
+
+
+class ProviderError(RuntimeError):
+    """Raised when a provider cannot complete a request."""
+
+
+class BaseProvider:
+    name = "base"
+
+    def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
+        raise NotImplementedError
+
+    def effective_model(self, provider_request: ProviderRequest) -> str:
+        return provider_request.model or ""
+
+    def retry_telemetry(self) -> dict[str, Any]:
+        return getattr(self, "_last_retry_telemetry", ProviderRetryTelemetry().to_json())
+
+    def _set_retry_telemetry(self, telemetry: ProviderRetryTelemetry) -> None:
+        self._last_retry_telemetry = telemetry.to_json()
+
+    def last_usage(self) -> dict[str, Any]:
+        return getattr(self, "_last_usage", ProviderUsage().to_json())
+
+    def _set_usage(self, usage: ProviderUsage) -> None:
+        self._last_usage = usage.to_json()
+
+
+class MockProvider(BaseProvider):
+    """Deterministic provider for local development and tests."""
+
+    name = "mock"
+
+    def effective_model(self, provider_request: ProviderRequest) -> str:
+        return provider_request.model or "mock"
+
+    def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
+        self._set_retry_telemetry(ProviderRetryTelemetry())
+        self._set_usage(ProviderUsage())
+        task = provider_request.task
+        metadata = provider_request.metadata
+        if task == "review":
+            return self._review(metadata)
+        if task == "council":
+            return self._council(metadata)
+        if task == "revision":
+            return self._revision(metadata)
+        if task == "verification":
+            return self._verification(metadata)
+        if task == "assessment":
+            return self._assessment(metadata)
+        if task == "syntax_assessment":
+            return self._syntax(metadata)
+        raise ProviderError(f"mock provider does not support task {task!r}")
+
+    def _review(self, metadata: dict[str, Any]) -> dict[str, Any]:
+        style_id = str(metadata["style_id"])
+        span_id = str(metadata.get("first_paragraph_span_id") or "p001")
+        return {
+            "style_id": style_id,
+            "summary": f"Mock review completed for {style_id}.",
+            "findings": [
+                {
+                    "id": "finding-001",
+                    "style_id": style_id,
+                    "span_id": span_id,
+                    "severity": "note",
+                    "type": "mock_observation",
+                    "finding": "Mock provider placeholder finding for pipeline validation.",
+                    "suggestion": "Replace the mock provider with a real provider to get substantive review findings.",
+                    "confidence": 0.1,
+                }
+            ],
+        }
+
+    def _council(self, metadata: dict[str, Any]) -> dict[str, Any]:
+        decisions = []
+        replies = []
+        finding_ids = metadata.get("finding_ids", [])
+        if not finding_ids:
+            finding_ids = ["finding-001"]
+            
+        for finding_id in finding_ids:
+            replies.append({
+                "reply_to": finding_id,
+                "style_id": "mock-style",
+                "bloom_level": "Analyze",
+                "position": "agree",
+                "comment": "Mock analysis of finding.",
+            })
+            decisions.append({
+                "finding_id": finding_id,
+                "bloom_level": "Evaluate",
+                "status": "informational",
+                "primary_school": "ling_iesh",
+                "influence": {"ling_iesh": 0.8, "ling_mss": 0.2},
+                "reason": "Mock council keeps placeholder findings informational.",
+            })
+        return {
+            "run_id": str(metadata["run_id"]),
+            "status": "completed",
+            "replies": replies,
+            "decisions": decisions,
+            "stylistic_commitments": [
+                {
+                    "term": "Mock Term",
+                    "decision": "Keep it as is.",
+                    "rationale": "Mock provider uses a stable placeholder commitment for schema validation.",
+                }
+            ],
+        }
+
+    def _revision(self, metadata: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "run_id": str(metadata["run_id"]),
+            "status": "completed",
+            "revised_document": str(metadata.get("normalized_text") or ""),
+            "applied_changes": [],
+            "unresolved": [
+                {
+                    "reason": "Mock provider copied the normalized document without substantive revision."
+                }
+            ],
+        }
+
+    def _verification(self, metadata: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "run_id": str(metadata["run_id"]),
+            "status": "needs_human_review",
+            "passed": ["artifacts_parse"],
+            "warnings": [
+                {
+                    "message": "Mock provider cannot verify factual fidelity; run a real provider for substantive verification."
+                }
+            ],
+        }
+
+    def _assessment(self, metadata: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "run_id": str(metadata["run_id"]),
+            "status": "completed",
+            "assessments": [
+                {
+                    "span_id": "p001",
+                    "tag": "mock-tag",
+                    "impact": "positive",
+                    "passed": True,
+                    "comment": "Mock assessment.",
+                }
+            ],
+        }
+
+    def _syntax(self, metadata: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "run_id": str(metadata["run_id"]),
+            "shifts": [
+                {
+                    "type": "passive_to_active",
+                    "original_span": "The text was written by mock.",
+                    "revised_span": "Mock wrote the text.",
+                    "comment": "Mock syntax shift.",
+                }
+            ],
+        }

@@ -1,0 +1,37 @@
+id: cluster:ling_nss
+name: "Нормативно-Стилистическая Школа (НСШ)"
+level: cluster
+source_prompt: ClaudeStyles/ling_nss-style.md
+role: clarity_reviewer
+language: ru
+best_for:
+  - нормы языка
+  - стилистическая правка
+  - упрощение текста
+checks:
+  - style_mismatch
+  - wordiness
+  - unclear_for_reader
+  - norm_violation
+limits:
+  - не должна подавлять научную точность ради простоты
+markers:
+  lexical:
+    - "следует писать"
+    - "неверным является"
+    - "нормативно"
+forbidden_edits:
+  - "Нельзя убирать термины, если они определены"
+  - "Нельзя заменять научный регистр разговорным"
+review_mode:
+  rewrite_allowed: true
+  requires_span_ids: true
+  output_format: findings_json
+council:
+  can_reply_to:
+    - clarity
+    - style_overreach
+conflict_priority:
+  default: low
+  when_domain:
+    - normative

@@ -63,7 +63,7 @@ rws provider-status --provider openai --json > runs/provider-status-openai.json
 rws validate-provider-status runs/provider-status-openai.json
 ```
 
-This prints whether each provider is ready for real API execution based on environment variables, without exposing API keys. `mock` is always ready. Real providers require `OPENAI_API_KEY`, `GEMINI_API_KEY` or `GOOGLE_API_KEY`, and `ANTHROPIC_API_KEY`.
+This prints whether each provider is ready for real API execution based on environment variables, without exposing API keys. `mock` is always ready. Real providers use `OPENAI_API_KEY`, `GEMINI_API_KEY` or `GOOGLE_API_KEY`, `ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY`, `RWS_LOCAL_LLM_URL`, or `RWS_OLLAMA_URL` depending on the selected provider.
 
 Use `--strict` in scripts when missing provider configuration should return exit code `1`; use `--json` when automation needs structured, secret-free readiness data. Saved JSON can be checked against `schemas/provider-status.schema.json` with `validate-provider-status`.
 
@@ -75,13 +75,13 @@ For local setup, copy `.env.example` to `.env`, fill only the providers you want
 rws list-styles
 ```
 
-To show only the first MVP styles:
+To show only the current MVP council set:
 
 ```bash
 rws list-styles --mvp
 ```
 
-MVP styles are marked with `*`.
+MVP styles are marked with `*`. The current default set contains 6 style passports from `mvp_style_ids` in `styles/manifest.yml`.
 
 ## List Eval Cases
 
@@ -89,8 +89,8 @@ MVP styles are marked with `*`.
 rws eval-list
 ```
 
-This reads `evals/manifest.json` and prints the current comparison cases, their input documents, default styles, and expected risks.
-The seed suite currently covers unsupported etymology, over-strong source claims, and scholarly register/overconfidence.
+This reads `evals/manifest.json` and prints the current comparison cases, their input documents, default styles, expected risks, scoring thresholds, and tags.
+The current suite contains 33 cases covering unsupported etymology, over-strong source claims, scholarly register/overconfidence, cluster behavior, adversarial caution, syntax and source discipline.
 
 ## Run An Eval Case
 
@@ -154,6 +154,22 @@ For short CI logs or quick inspection, use:
 rws eval-status runs/openai-suite
 rws eval-status runs/eval-compare-openai-gemini.json
 ```
+
+## Promote Eval Suite as Baseline
+
+```bash
+rws eval-promote runs/cli-smoke-suite --tag gold
+```
+
+This promotes the selected suite result to `evals/baselines/gold.json`. This baseline is used for future regression testing in CI.
+
+## Run Regression Tests
+
+```bash
+rws eval-regression --provider mock
+```
+
+This command runs the full evaluation suite and automatically compares it against the `gold.json` baseline. If any per-case regressions are detected or the pass rate drops, the command returns exit code `1`. This is the primary gate for CI/CD stability.
 
 The repository also includes a manual GitHub Actions workflow, `Eval Smoke`, which runs the mock eval suite, validates it, prints `eval-status`, exports the suite bundle, and uploads the ZIP artifact.
 
@@ -237,6 +253,9 @@ Provider environment variables:
 - `openai`: `OPENAI_API_KEY`, optional `RWS_OPENAI_MODEL`, optional `RWS_OPENAI_REASONING`.
 - `google`: `GEMINI_API_KEY` or `GOOGLE_API_KEY`, optional `RWS_GOOGLE_MODEL`.
 - `anthropic`: `ANTHROPIC_API_KEY`, optional `RWS_ANTHROPIC_MODEL`, optional `RWS_ANTHROPIC_MAX_TOKENS`.
+- `openrouter`: `OPENROUTER_API_KEY`, optional `RWS_OPENROUTER_MODEL`.
+- `local`: optional `RWS_LOCAL_LLM_URL`, optional `RWS_LOCAL_LLM_MODEL`.
+- `ollama`: optional `RWS_OLLAMA_URL`, optional `RWS_OLLAMA_MODEL`.
 
 Use `.env.example` as the local template. The repository ignores `.env` and `.env.*` files so real keys stay out of Git.
 
@@ -247,9 +266,12 @@ Each `run` refreshes:
 ```text
 runs/<run-id>/report.md
 runs/<run-id>/summary.html
+runs/<run-id>/impact.json
+runs/<run-id>/syntax.json
 ```
 
-The reports summarize segment counts, style review status, findings, council decisions, revision status, and verifier warnings. `summary.html` is a portable static view with findings grouped by `span_id`.
+The reports summarize segment counts, style review status, findings, council decisions, revision status, verifier warnings, impact assessment, syntax shifts, and scholarly apparatus. `summary.html` is a portable static view with findings grouped by `span_id`.
+The Web/API full pipeline additionally writes `report.tex` and `references.bib`.
 When `--execute` produces `revised.md`, `run` also writes `revision.diff`.
 Provider executions are appended to `provider.log.jsonl` without API keys or request bodies.
 Each provider log entry includes `retry_count`, `retry_delay_seconds`, and `retry_statuses`, so real API runs can show when rate limits or transient errors affected the pipeline.
@@ -303,7 +325,7 @@ For several styles:
 rws review runs/cli-smoke-readme --styles zalizniak-ocherk,zalizniak-zametki
 ```
 
-For the first MVP council set:
+For the current MVP council set:
 
 ```bash
 rws review runs/cli-smoke-readme --mvp
@@ -437,6 +459,22 @@ rws html-report runs/cli-smoke-readme
 
 `rws report` refreshes both `report.md` and `summary.html` from the JSON artifacts already present in the run directory. `rws html-report` refreshes only the static HTML summary. These commands are useful after manual edits or after executing only part of the pipeline.
 
+## Apply Stylistic Resolutions
+
+```bash
+rws apply-resolution runs/cli-smoke-readme
+```
+
+This command reads `runs/<run-id>/resolution.json` (created via Web Studio or manually) and applies human stylistic overrides (accept/reject/defer) to the council decisions. It updates `council.json` with the resolved states.
+
+## Finalize Manuscript
+
+```bash
+rws finalize runs/cli-smoke-readme
+```
+
+This command merges the accepted revisions and human resolutions into the final philological manuscript. It writes the results to the run directory and prepares them for final export.
+
 ## Create a revision diff
 
 ```bash
@@ -473,7 +511,7 @@ The bundle includes the suite summary/report plus each referenced case run's rep
 rws validate-run runs/cli-smoke-readme
 ```
 
-The command checks that run artifacts exist, parse as JSON where needed, pass the local JSON Schema subset for review/council/revision/verification/eval artifacts, and that any completed style findings point to known `span_id` values.
+The command checks that run artifacts exist, parse as JSON where needed, pass the local JSON Schema subset for review/council/revision/verification/eval artifacts, and that any completed style findings point to known `span_id` values. Schema-sensitive fields include style `clusters`, user `profile`, council `bloom_level`, `primary_school`, and `influence` metadata.
 
 ## Validate an eval suite
 
@@ -482,6 +520,22 @@ rws validate-eval-suite runs/cli-smoke-suite
 ```
 
 The command checks `eval-suite-result.json` against `schemas/eval-suite-result.schema.json`, verifies suite counters, confirms per-case paths exist, checks each child `eval-result.json`, and then runs the normal run validator for every referenced case run.
+
+## Validate an eval comparison
+
+```bash
+rws validate-eval-comparison runs/eval-compare.json
+```
+
+The command checks `comparison.json` against `schemas/eval-suite-comparison.schema.json`.
+
+## Validate a provider status
+
+```bash
+rws validate-provider-status runs/provider-status.json
+```
+
+The command checks `provider-status.json` against `schemas/provider-status.schema.json`.
 
 ## Validate the repository
 
@@ -506,7 +560,7 @@ python tools/validate_project.py
 python -m unittest discover -s tests
 ```
 
-The current tests cover Markdown segmentation, the full offline pipeline, mock provider execution, Markdown/HTML run reports, run export bundles, and the demo input document:
+The current tests cover Markdown segmentation, the full offline pipeline, mock provider execution, Markdown/HTML run reports, run export bundles, database registration, eval suite counters, and the demo input document:
 
 ```text
 rws run README.md --run-id unittest-readme

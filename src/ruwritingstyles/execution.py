@@ -9,6 +9,7 @@ from typing import Any
 
 from .provider_log import append_provider_log
 from .providers import BaseProvider, ProviderRequest, load_schema
+from . import hooks
 
 
 def execute_review_artifact(*, repo_root: Path, review_path: Path, provider: BaseProvider, model: str | None = None) -> None:
@@ -36,6 +37,30 @@ def execute_review_artifact(*, repo_root: Path, review_path: Path, provider: Bas
     review["summary"] = output.get("summary", "")
     review["findings"] = output.get("findings", [])
     _write_json(review_path, review)
+
+
+def execute_deliberation_artifact(*, repo_root: Path, delib_path: Path, provider: BaseProvider, model: str | None = None) -> None:
+    delib = _load_json(delib_path)
+    prompt_path = repo_root / str(delib["prompt_path"])
+    output = _generate_with_log(
+        repo_root=repo_root,
+        run_dir=delib_path.parents[1],
+        artifact_path=delib_path,
+        provider=provider,
+        provider_request=ProviderRequest(
+            task="deliberation",
+            prompt=prompt_path.read_text(encoding="utf-8"),
+            schema=load_schema(repo_root, "schemas/deliberation-output.schema.json"),
+            metadata={
+                "run_id": delib["run_id"],
+                "style_id": delib["style_id"],
+            },
+            model=model,
+        ),
+    )
+    delib["status"] = "completed"
+    delib["replies"] = output.get("replies", [])
+    _write_json(delib_path, delib)
 
 
 def execute_council_artifact(*, repo_root: Path, council_path: Path, provider: BaseProvider, model: str | None = None) -> None:
@@ -66,6 +91,7 @@ def execute_council_artifact(*, repo_root: Path, council_path: Path, provider: B
     council["status"] = "completed"
     council["replies"] = output.get("replies", [])
     council["decisions"] = output.get("decisions", [])
+    council["stylistic_commitments"] = output.get("stylistic_commitments", [])
     _write_json(council_path, council)
 
 
@@ -99,6 +125,29 @@ def execute_revision_artifact(*, repo_root: Path, revision_path: Path, provider:
     _write_json(revision_path, revision)
 
 
+def execute_scrutiny_artifact(*, repo_root: Path, scrutiny_path: Path, provider: BaseProvider, model: str | None = None) -> None:
+    scrutiny = _load_json(scrutiny_path)
+    prompt_path = repo_root / str(scrutiny["prompt_path"])
+    output = _generate_with_log(
+        repo_root=repo_root,
+        run_dir=scrutiny_path.parent.parent,
+        artifact_path=scrutiny_path,
+        provider=provider,
+        provider_request=ProviderRequest(
+            task="scrutiny",
+            prompt=prompt_path.read_text(encoding="utf-8"),
+            schema=load_schema(repo_root, "schemas/scrutiny-output.schema.json"),
+            metadata={
+                "run_id": scrutiny["run_id"],
+            },
+            model=model,
+        ),
+    )
+    scrutiny["status"] = "completed"
+    scrutiny["findings"] = output.get("findings", [])
+    _write_json(scrutiny_path, scrutiny)
+
+
 def execute_verification_artifact(*, repo_root: Path, verification_path: Path, provider: BaseProvider, model: str | None = None) -> None:
     verification = _load_json(verification_path)
     prompt_path = repo_root / str(verification["prompt_path"])
@@ -123,12 +172,62 @@ def execute_verification_artifact(*, repo_root: Path, verification_path: Path, p
     _write_json(verification_path, verification)
 
 
+def execute_impact_artifact(*, repo_root: Path, impact_path: Path, provider: BaseProvider, model: str | None = None) -> None:
+    impact = _load_json(impact_path)
+    if impact.get("status") != "prompt_ready":
+        return
+    prompt_path = repo_root / str(impact["prompt_path"])
+    output = _generate_with_log(
+        repo_root=repo_root,
+        run_dir=impact_path.parent,
+        artifact_path=impact_path,
+        provider=provider,
+        provider_request=ProviderRequest(
+            task="assessment",
+            prompt=prompt_path.read_text(encoding="utf-8"),
+            schema=load_schema(repo_root, "schemas/impact-output.schema.json"),
+            metadata={
+                "run_id": impact["run_id"],
+            },
+            model=model,
+        ),
+    )
+    impact["status"] = output.get("status", "completed")
+    impact["assessments"] = output.get("assessments", [])
+    _write_json(impact_path, impact)
+
+
+def execute_syntax_artifact(repo_root: Path, syntax_path: Path, provider: BaseProvider, model: str | None = None) -> None:
+    syntax = _load_json(syntax_path)
+    if syntax.get("status") != "prompt_ready":
+        return
+    prompt_path = repo_root / str(syntax["prompt_path"])
+    output = _generate_with_log(
+        repo_root=repo_root,
+        run_dir=syntax_path.parent,
+        artifact_path=syntax_path,
+        provider=provider,
+        provider_request=ProviderRequest(
+            task="syntax_assessment",
+            prompt=prompt_path.read_text(encoding="utf-8"),
+            schema=load_schema(repo_root, "schemas/syntax-output.schema.json"),
+            metadata={
+                "run_id": syntax["run_id"],
+            },
+            model=model,
+        ),
+    )
+    syntax["status"] = "completed"
+    syntax["shifts"] = output.get("shifts", [])
+    _write_json(syntax_path, syntax)
+
+
 def _load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
 def _write_json(path: Path, data: dict[str, Any]) -> None:
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(hooks.pre_write_artifact(data), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def _generate_with_log(
@@ -141,8 +240,16 @@ def _generate_with_log(
 ) -> dict[str, Any]:
     start = perf_counter()
     model = provider.effective_model(provider_request)
+    
+    # 1. Pre-provider hook
+    provider_request = hooks.pre_provider_call(provider_request)
+    
     try:
         output = provider.generate_json(provider_request)
+        # 2. Schema validate hook
+        output = hooks.post_schema_validate(output, provider_request.schema)
+        # 3. Post-provider hook
+        output = hooks.post_provider_call(output, provider_request)
     except Exception as exc:
         telemetry = provider.retry_telemetry()
         append_provider_log(
@@ -161,6 +268,7 @@ def _generate_with_log(
         raise
 
     telemetry = provider.retry_telemetry()
+    usage = provider.last_usage()
     append_provider_log(
         run_dir=run_dir,
         task=provider_request.task,
@@ -172,6 +280,11 @@ def _generate_with_log(
         retry_count=_int(telemetry.get("retry_count")),
         retry_delay_seconds=_float(telemetry.get("retry_delay_seconds")),
         retry_statuses=_strings(telemetry.get("retry_statuses")),
+        input_tokens=_int(usage.get("input_tokens")),
+        output_tokens=_int(usage.get("output_tokens")),
+        total_tokens=_int(usage.get("total_tokens")),
+        cost_estimate=_float(usage.get("cost_estimate")),
+        schema_repair=telemetry.get("schema_repair", False),
     )
     return output
 

@@ -3,6 +3,8 @@ name: Лидова
 source_prompt: ClaudeStyles/lidova-commentary-style.md
 role: commentary_reviewer
 language: ru
+level: private
+cluster: mts
 
 best_for:
   - история комментария

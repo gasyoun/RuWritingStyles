@@ -12,15 +12,18 @@ from typing import Any
 from .config import load_manifest, load_model_policy
 from .council import create_council_bundle
 from .diff import calculate_revision_diff_metrics, write_revision_diff
+from .assess import create_impact_bundle
 from .execution import (
     execute_council_artifact,
     execute_review_artifact,
+    execute_deliberation_artifact,
     execute_revision_artifact,
     execute_verification_artifact,
+    execute_impact_artifact,
 )
 from .providers import ProviderRequest, provider_from_name
 from .report import write_run_report
-from .review import create_review_bundle
+from .review import create_review_bundle, create_deliberation_bundle
 from .revision import create_revision_bundle
 from .runs import create_prepare_run
 from .segment import normalize_document, read_document, segment_markdown
@@ -41,6 +44,9 @@ class EvalCase:
     allowed_verification_statuses: tuple[str, ...]
     max_changed_line_ratio: float
     max_char_delta_ratio: float
+    strict_fidelity: bool
+    max_finding_count: int | None
+    metadata: dict[str, Any]
 
 
 @dataclass(frozen=True)
@@ -83,6 +89,7 @@ def run_eval_case(
     provider_name: str = "mock",
     model: str | None = None,
     run_id: str | None = None,
+    deliberate: bool = False,
 ) -> EvalRunResult:
     case = _find_case(repo_root, case_id)
     manifest = load_manifest(repo_root)
@@ -101,6 +108,9 @@ def run_eval_case(
         manifest=manifest,
         model_policy=model_policy,
         run_id=run_id,
+        metadata=case.metadata,
+        provider=provider_name,
+        profile="evaluator",
     )
 
     for style_id in case.default_styles:
@@ -117,18 +127,73 @@ def run_eval_case(
             model=model,
         )
 
-    council = create_council_bundle(repo_root=repo_root, run_dir=run_dir)
-    execute_council_artifact(repo_root=repo_root, council_path=council.council_json, provider=provider, model=model)
-    revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
-    execute_revision_artifact(repo_root=repo_root, revision_path=revision.revision_json, provider=provider, model=model)
-    write_revision_diff(run_dir)
-    verification = create_verification_bundle(repo_root=repo_root, run_dir=run_dir)
-    execute_verification_artifact(
-        repo_root=repo_root,
-        verification_path=verification.verification_json,
-        provider=provider,
-        model=model,
-    )
+    if deliberate:
+        for style_id in case.default_styles:
+            bundle = create_deliberation_bundle(
+                repo_root=repo_root,
+                run_dir=run_dir,
+                style_id=style_id,
+                manifest=manifest,
+            )
+            execute_deliberation_artifact(
+                repo_root=repo_root,
+                delib_path=bundle.deliberation_json,
+                provider=provider,
+                model=model,
+            )
+
+    # Fact-Checking Loop (up to 3 iterations)
+    for iteration in range(1, 4):
+        verification_feedback = None
+        if iteration > 1:
+            prev_verification = run_dir / "verification.json"
+            if prev_verification.exists():
+                verification_feedback = json.loads(prev_verification.read_text(encoding="utf-8"))
+
+        council = create_council_bundle(
+            repo_root=repo_root,
+            run_dir=run_dir,
+            manifest=manifest,
+            verification_feedback=verification_feedback,
+        )
+        execute_council_artifact(repo_root=repo_root, council_path=council.council_json, provider=provider, model=model)
+        revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
+        execute_revision_artifact(
+            repo_root=repo_root, revision_path=revision.revision_json, provider=provider, model=model
+        )
+        write_revision_diff(run_dir)
+        verification = create_verification_bundle(repo_root=repo_root, run_dir=run_dir)
+        execute_verification_artifact(
+            repo_root=repo_root,
+            verification_path=verification.verification_json,
+            provider=provider,
+            model=model,
+        )
+
+        impact = create_impact_bundle(repo_root=repo_root, run_dir=run_dir)
+        execute_impact_artifact(
+            repo_root=repo_root,
+            impact_path=impact.impact_json,
+            provider=provider,
+            model=model,
+        )
+
+        # Check if we should loop
+        v_doc = json.loads(verification.verification_json.read_text(encoding="utf-8"))
+        i_doc = json.loads(impact.impact_json.read_text(encoding="utf-8"))
+
+        v_warnings = v_doc.get("warnings", [])
+        i_warnings = [
+            f"Impact failure in {a['span_id']} ({a['tag']}): {a['comment']}"
+            for a in i_doc.get("assessments", []) if not a.get("passed")
+        ]
+        combined_warnings = v_warnings + i_warnings
+
+        if not combined_warnings or iteration == 3:
+            break
+        else:
+            merged_feedback = {"warnings": combined_warnings}
+            (run_dir / "verification.json").write_text(json.dumps(merged_feedback, ensure_ascii=False, indent=2), encoding="utf-8")
 
     result_path = _write_eval_result(
         repo_root=repo_root,
@@ -147,6 +212,7 @@ def run_eval_suite(
     provider_name: str = "mock",
     model: str | None = None,
     suite_id: str | None = None,
+    deliberate: bool = False,
 ) -> EvalSuiteResult:
     actual_suite_id = suite_id or _make_suite_id(provider_name)
     suite_dir = repo_root / "runs" / actual_suite_id
@@ -161,6 +227,7 @@ def run_eval_suite(
             provider_name=provider_name,
             model=model,
             run_id=case_run_id,
+            deliberate=deliberate,
         )
         data = _load_json(result.result_path)
         scoring = data.get("scoring") if isinstance(data.get("scoring"), dict) else {}
@@ -335,6 +402,9 @@ def _case(repo_root: Path, data: dict[str, Any]) -> EvalCase:
         allowed_verification_statuses=_allowed_verification_statuses(data),
         max_changed_line_ratio=_scoring_float(data, "max_changed_line_ratio", 0.75),
         max_char_delta_ratio=_scoring_float(data, "max_char_delta_ratio", 0.5),
+        strict_fidelity=_scoring_bool(data, "strict_fidelity", False),
+        max_finding_count=_scoring_int_or_none(data, "max_finding_count"),
+        metadata=dict(data.get("metadata", {})),
     )
 
 
@@ -366,6 +436,18 @@ def _scoring_float(data: dict[str, Any], key: str, default: float) -> float:
     return float(value) if isinstance(value, (int, float)) and value >= 0 else default
 
 
+def _scoring_bool(data: dict[str, Any], key: str, default: bool) -> bool:
+    scoring = data.get("scoring") if isinstance(data.get("scoring"), dict) else {}
+    value = scoring.get(key)
+    return bool(value) if value is not None else default
+
+
+def _scoring_int_or_none(data: dict[str, Any], key: str) -> int | None:
+    scoring = data.get("scoring") if isinstance(data.get("scoring"), dict) else {}
+    value = scoring.get(key)
+    return int(value) if isinstance(value, int) else None
+
+
 def _write_eval_result(
     *,
     repo_root: Path,
@@ -384,10 +466,16 @@ def _write_eval_result(
         diff_metrics["changed_line_ratio"] <= case.max_changed_line_ratio
         and diff_metrics["char_delta_ratio"] <= case.max_char_delta_ratio
     )
+    finding_count = _finding_count(run_dir)
+    finding_count_within_limits = case.max_finding_count is None or finding_count <= case.max_finding_count
+    fidelity_passed = not case.strict_fidelity or not verification.get("warnings")
+
     passed = (
         len(required_matches) >= case.min_required_matches
         and verification_status in set(case.allowed_verification_statuses)
         and diff_within_limits
+        and finding_count_within_limits
+        and fidelity_passed
     )
     result = {
         "case_id": case.case_id,
@@ -413,6 +501,11 @@ def _write_eval_result(
             "diff_within_limits": diff_within_limits,
             "max_changed_line_ratio": case.max_changed_line_ratio,
             "max_char_delta_ratio": case.max_char_delta_ratio,
+            "strict_fidelity": case.strict_fidelity,
+            "fidelity_passed": fidelity_passed,
+            "max_finding_count": case.max_finding_count,
+            "finding_count": finding_count,
+            "finding_count_within_limits": finding_count_within_limits,
         },
     }
     path = run_dir / "eval-result.json"
@@ -564,3 +657,140 @@ def _value(value: Any) -> str:
     if value is None:
         return ""
     return str(value)
+
+
+def generate_leaderboard_report(repo_root: Path, suite_paths: list[Path]) -> Path:
+    """Generate a Markdown leaderboard comparing multiple eval suites."""
+    suites = []
+    for p in suite_paths:
+        data = json.loads(p.read_text(encoding="utf-8"))
+        suites.append((p, data))
+        
+    md = [
+        "# Model Performance Leaderboard",
+        "",
+        "| Model | Provider | Pass Rate | Match Count (Avg) | Fidelity (Avg) |",
+        "| :--- | :--- | :--- | :--- | :--- |"
+    ]
+    
+    for path, data in suites:
+        model = data.get("model", "unknown")
+        provider = data.get("provider", "unknown")
+        results = data.get("results", [])
+        
+        pass_count = sum(1 for r in results if r.get("passed"))
+        total_count = len(results)
+        pass_rate = f"{pass_count}/{total_count}" if total_count > 0 else "0/0"
+        
+        avg_match = 0
+        if total_count > 0:
+            avg_match = sum(r.get("match_count", 0) for r in results) / total_count
+            
+        avg_fidelity = 0
+        if total_count > 0:
+            avg_fidelity = sum(r.get("char_delta_ratio", 0) for r in results) / total_count
+            
+        md.append(f"| **{model}** | {provider} | {pass_rate} | {avg_match:.2f} | {avg_fidelity:.4f} |")
+        
+    md.append("\n*Generated by RuWritingStyles Multi-Agent Benchmark Suite*")
+    
+    report_path = repo_root / "runs" / f"leaderboard-{datetime.now().strftime('%Y%m%d-%H%M%S')}.md"
+    report_path.write_text("\n".join(md), encoding="utf-8")
+    return report_path
+
+
+def run_style_regression_test(
+    *,
+    repo_root: Path,
+    style_id: str,
+    provider_name: str,
+    model: str | None,
+    execute: bool = True,
+) -> dict[str, Any]:
+    """Run regression tests for a specific style against its anchors."""
+    
+    # 1. Load the style and its anchors
+    # For now, we'll look for a specific 'anchors' list in the style manifest
+    # or use a default convention: evals/anchors/{style_id}/*.json
+    
+    anchor_dir = repo_root / "evals" / "anchors" / style_id
+    if not anchor_dir.exists():
+        # Fallback: check if the style manifest lists anchors
+        # (This would require more complex YAML parsing, so we'll start with the directory convention)
+        return {
+            "status": "error",
+            "message": f"No anchor test cases found for style '{style_id}' in {anchor_dir}",
+            "total_anchors": 0,
+            "passed_anchors": 0,
+            "regressions": []
+        }
+        
+    anchor_files = sorted(anchor_dir.glob("*.json"))
+    if not anchor_files:
+        return {
+            "status": "error",
+            "message": f"Anchor directory found but contains no .json test cases.",
+            "total_anchors": 0,
+            "passed_anchors": 0,
+            "regressions": []
+        }
+        
+    print(f"Found {len(anchor_files)} anchor test cases for {style_id}.")
+    
+    results = []
+    regressions = []
+    
+    for anchor_path in anchor_files:
+        case_id = anchor_path.stem
+        print(f"  -> Testing anchor: {case_id}")
+        
+        # We'll run a standard eval-run but forced to this style
+        try:
+            # We need to mock a Case object or use the existing one if it exists
+            # For style anchors, we might want a simplified runner
+            run_id = f"regression-{style_id}-{case_id}"
+            
+            # Run the case
+            eval_result = run_eval_case(
+                repo_root=repo_root,
+                case_id=case_id,
+                provider_name=provider_name,
+                model=model,
+                run_id=run_id,
+                deliberate=True
+            )
+            
+            # Compare with the anchor baseline (which is the anchor_path itself)
+            baseline_data = json.loads(anchor_path.read_text(encoding="utf-8"))
+            candidate_data = json.loads(eval_result.result_path.read_text(encoding="utf-8"))
+            
+            # Check for regression:
+            # 1. Did it pass?
+            if not candidate_data.get("passed", False):
+                regressions.append({
+                    "case_id": case_id,
+                    "issue": "Case failed automated scoring metrics."
+                })
+                continue
+                
+            # 2. Did the match count drop significantly?
+            b_matches = baseline_data.get("match_count", 0)
+            c_matches = candidate_data.get("match_count", 0)
+            if c_matches < b_matches:
+                regressions.append({
+                    "case_id": case_id,
+                    "issue": f"Regression in match count: {b_matches} -> {c_matches}"
+                })
+                
+        except Exception as e:
+            regressions.append({
+                "case_id": case_id,
+                "issue": f"Execution error: {e}"
+            })
+            
+    return {
+        "status": "success" if not regressions else "failure",
+        "total_anchors": len(anchor_files),
+        "passed_anchors": len(anchor_files) - len(regressions),
+        "regressions": regressions
+    }

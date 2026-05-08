@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/run.schema.json",
+  "title": "RuWritingStyles run metadata",
+  "type": "object",
+  "required": ["run_id", "status", "text_domain"],
+  "properties": {
+    "run_id": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["initializing", "segmented", "reviewed", "deliberating", "revised", "verified", "completed", "failed"]
+    },
+    "text_domain": {
+      "type": "string",
+      "enum": [
+        "etymology",
+        "functional_grammar",
+        "semantics",
+        "discourse_analysis",
+        "typology",
+        "normative",
+        "dialectology",
+        "semiotics",
+        "literary_formalism",
+        "literary_structural",
+        "literary_textology",
+        "literary_mythopoetics",
+        "literary_narratology",
+        "literary_bakhtin",
+        "literary_historico_cultural",
+        "literary_reception",
+        "literary_poststructural",
+        "unknown"
+      ],
+      "default": "unknown"
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  }
+}

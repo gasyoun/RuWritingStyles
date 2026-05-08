@@ -1,0 +1,5 @@
+/* Clean slate for v2.0 workbench - all styles moved to index.css for consistency */
+.studio-container {
+  /* ensures full height even if index.css is loaded late */
+  min-height: 100vh;
+}

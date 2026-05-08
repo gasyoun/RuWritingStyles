@@ -15,8 +15,13 @@ class VerificationBundle:
     prompt_md: Path
 
 
+from .config import load_run_metadata
+
 def create_verification_bundle(*, repo_root: Path, run_dir: Path) -> VerificationBundle:
     run_dir = run_dir.resolve()
+    run_metadata = load_run_metadata(run_dir)
+    text_domain = run_metadata.get("text_domain", "unknown")
+
     original_path = run_dir / "original.md"
     normalized_path = run_dir / "normalized.md"
     revision_path = run_dir / "revision.json"
@@ -44,6 +49,7 @@ def create_verification_bundle(*, repo_root: Path, run_dir: Path) -> Verificatio
             normalized_text=normalized_path.read_text(encoding="utf-8"),
             revision_json=revision_path.read_text(encoding="utf-8"),
             revised_document_text=revised_document_text,
+            text_domain=text_domain,
         ),
         encoding="utf-8",
     )
@@ -87,15 +93,86 @@ def _render_prompt(
     normalized_text: str,
     revision_json: str,
     revised_document_text: str,
+    text_domain: str = "unknown",
 ) -> str:
+    from .context_builder import build_long_artifact_preview, build_unified_context
+    from .knowledge import search_knowledge_base
+
     revised_block = revised_document_text.strip() or "(No revised document has been produced yet.)"
+
+    # --- Knowledge context from philological collections ---
+    domain_keywords = [text_domain] if text_domain != "unknown" else []
+    knowledge_passages = search_knowledge_base(repo_root, domain_keywords)
+    unified_context_block = build_unified_context(
+        manifest={},
+        knowledge_results=knowledge_passages,
+        source_passage_id=None,
+    )
+
+    # --- Revision artifact preview (truncated to save context budget) ---
+    revision_preview = build_long_artifact_preview(run_dir / "revision.json", max_lines=60)
+
+    project_context_path = run_dir.parent / "project-context.json"
+    project_context_section = ""
+    if project_context_path.exists():
+        project_context = json.loads(project_context_path.read_text(encoding="utf-8"))
+        commitments = project_context.get("commitments", [])
+        if commitments:
+            commitments_json = json.dumps(commitments, ensure_ascii=False, indent=2)
+            project_context_section = f"""
+## Stylistic Commitments (Binding Rules)
+
+The following rules were established in previous documents of this project. You MUST verify that the revised document strictly follows these decisions. Flag any inconsistencies as CRITICAL warnings.
+
+```json
+{commitments_json}
+```
+"""
+
+    bib_section = ""
+    bib_path = run_dir.parent / "references.bib"
+    if not bib_path.exists():
+        bib_path = repo_root / "references.bib"
+        
+    if bib_path.exists():
+        bib_content = bib_path.read_text(encoding="utf-8")
+        bib_section = f"""
+## Citation Verifier (Bibliography)
+The following BibTeX entries represent the dynamic bibliography for this document. You MUST strictly verify:
+1. All citations in the text must match these entries (names, dates, bibliographic references).
+2. Direct quotes must be accurately represented and cited.
+3. Transliteration of names must follow academic standards consistently.
+Flag any missing or incorrect citations as CRITICAL warnings.
+
+```bibtex
+{bib_content.strip()[:2000]} 
+```
+"""
+
+    domain_rules = {
+        "etymology": "Rule: EPISTEMIC_CAUTION. All etymological claims must use markers of uncertainty (perhaps, likely) if the source text used them.",
+        "semiotics": "Rule: TERMINOLOGICAL_RIGOR. Do not allow simplification of semiotic terms (code, signifier, interpretant) into generic words.",
+        "dialectology": "Rule: PHONETIC_FIDELITY. Any change to phonetic transcription or dialectal forms must be flagged as a CRITICAL violation.",
+        "history": "Rule: HISTORICAL_DISTANCE. Avoid anachronistic modern terminology in descriptions of past epochs.",
+        "literature": "Rule: SCHOLARLY_ETIQUETTE. Do not allow the removal of academic 'hedging' (it seems, apparently) unless it is redundant. Preserve the epistemic humility of the author.",
+    }.get(text_domain, "Rule: GENERAL_FIDELITY. Preserve all nuanced scholarly phrasing.")
 
     return f"""# Verification Request
 
 You are the RuWritingStyles verifier.
 
-Check whether the revised document preserves the source document's facts, argument structure, citations, examples, and unresolved questions. Do not improve the prose; only verify fidelity and risks.
+## Your Mission
 
+Check whether the revised document preserves the source document's facts, argument structure, citations, examples, and unresolved questions. 
+
+**Philological Fidelity (Domain: {text_domain})**:
+{domain_rules}
+
+**Style Consistency Mission**:
+Verify that all "Stylistic Commitments" provided below are correctly implemented in the revised text.
+{project_context_section}
+{bib_section}
+{unified_context_block}
 ## Run
 
 - Run id: `{run_id}`

@@ -3,6 +3,8 @@ name: Зализняк-ударение
 source_prompt: ClaudeStyles/zalizniak-udarenie-style.md
 role: source_critical_reviewer
 language: ru
+level: private
+cluster: mss
 
 best_for:
   - историческая акцентология

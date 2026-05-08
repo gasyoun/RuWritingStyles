@@ -3,6 +3,8 @@ name: Казанский
 source_prompt: ClaudeStyles/kazanskiy-korpus-style.md
 role: commentary_reviewer
 language: ru
+level: private
+cluster: mts
 
 best_for:
   - филологический комментарий
