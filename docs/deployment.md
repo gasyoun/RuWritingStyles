@@ -122,6 +122,7 @@ python -m ruwritingstyles.api
 python -m compileall -q src tools tests
 python tools/validate_project.py
 python -m unittest discover -s tests
+rws eval-regression --provider mock
 ```
 
 Для frontend:

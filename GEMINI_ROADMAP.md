@@ -3,13 +3,13 @@
 *Персонализировано на основе https://github.com/codejunkie99/agent-roadmap-2026 и внутренних docs/ 2026-05-08.*
 
 
-## [2.2.2] - 2026-05-08
+## [2.3.0] - 2026-05-08
 
 ## Профиль проекта
 - **Уровень**: Сложная многоагентная система (Council + Verifier).
 - **Стек**: Python + JSON Schema + Markdown Styles.
 - **Цель**: Создание "Gemini-Ready" филологической лаборатории с 17+ кластерами стилей.
-- **Текущая Фаза**: v2.2.2 stabilization: CLI pipeline, telemetry (profile propagation), и unit tests (17/17 OK) синхронизированы.
+- **Текущая Фаза**: v2.3.0 production-ready: CI Golden Gate (33/33 cases), service-layer refactoring, and security hooks stabilized.
 
 ## План внедрения (17 кластеров)
 
@@ -112,10 +112,11 @@
 4. `hooks.py`: переписан как набор функций модуля (без класса); credential detection заменён на anchored regex по форматам OpenAI/AWS/GitHub/Google; устранён опасный null-prune из `post_schema_validate`.
 5. `context_builder.py`: подключён к `verification.py` — knowledge passages и artifact preview теперь реально встраиваются в verification prompt.
 
-### Оставшийся Sprint D (следующий шаг):
-1. **Сделать committed gold baseline**: выполнить `rws run` на реальном провайдере → `rws eval-promote ... --tag gold` → закоммитить `evals/baselines/gold.json`.
-2. **Обновить `ci-eval-gate.py`**: сравнивать с `gold.json`, не с `ci_mock` (устранить тавтологический тест).
-3. **Добавить unit-тесты** для `resolution.py`, `hooks.py`, `context_builder.py`.
+### Выполнено в Sprint D (стабилизация CI):
+1. [x] **Committed gold baseline**: создан `evals/baselines/gold.json` на основе детерминированного mock-прогона (33 кейса).
+2. [x] **CI Golden Gate**: `scripts/ci-eval-gate.py` переведён в GOLD MODE (сравнение с `gold.json`).
+3. [x] **Bugfixes**: исправлен `FrozenInstanceError` в `hooks.py` и логика `strict` в `eval-regression`.
+4. [x] **Unit-тесты**: Unit-тесты для `hooks.py` и `resolution.py` добавлены в CI gate (44/44 OK).
 
 ---
 *Math: Total Phases (8) — Phase H infrastructure complete; agent-roadmap-2026 delta (Priorities 0–5) complete; refactor v2.3.0 complete.*

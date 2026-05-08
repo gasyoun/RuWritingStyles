@@ -22,5 +22,6 @@
 python -m compileall -q src tools tests
 python tools/validate_project.py
 python -m unittest discover -s tests
+rws eval-regression --provider mock
 cd web && npm run lint && npm run build
 ```

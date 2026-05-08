@@ -4,7 +4,7 @@
 
 Файл стиля - это `.md`-инструкция для Claude. Ее можно использовать двумя способами: загрузить или вставить в настройку Custom Style, либо временно дать Claude в начале диалога и попросить писать по этому профилю. Сами стили не являются пересказами исходных книг и статей. Это рабочие модели письма: тон, композиция, способ доказательства, тип примеров, допустимая терминология и запреты.
 
-**Status**: v2.2.1 (stabilized) — 17 кластеров, 6 MVP-стилей, 33 eval-кейса, Web Studio, FastAPI, SQLite `rws.db`, Docker/FastAPI static deployment, LaTeX-отчеты и начальный BibTeX export.
+**Status**: v2.3.0 (production-ready) — 17 кластеров, 6 MVP-стилей, 33 eval-кейса, CI Golden Gate, Web Studio (interactive resolution), FastAPI, SQLite `rws.db`, Docker/FastAPI static deployment, LaTeX-отчеты и BibTeX export.
 
 ## Основные этапы (Roadmap)
 - [x] **Фаза A**: Базовая архитектура и CLI.
@@ -16,6 +16,7 @@
 - [x] **Фаза G**: Production infrastructure: SQLite index, FastAPI BackgroundTasks, local providers.
 - [x] **Фаза H**: Philological scale: Docker, multi-run comparison, LaTeX/BibTeX scholarly apparatus.
 - [x] **v2.2.1**: Стабилизация схем, Docker-сборки, Windows UTF-8 CLI, frontend lint/build и тестов.
+- [x] **v2.3.0**: CI Golden Gate (GOLD MODE), рефакторинг сервисного слоя (`resolution.py`), и стабилизация security hooks.
 
 ## Навигация
 
@@ -546,8 +547,9 @@ PYTHONPATH=src python -m ruwritingstyles.cli eval-benchmark --models "gpt-5.5" "
 # Генерация общего интерактивного отчета по проекту
 PYTHONPATH=src python -m ruwritingstyles.cli dashboard
 
-# Инфраструктурный smoke без внешних ключей
-PYTHONPATH=src python -m ruwritingstyles.cli eval-suite --provider mock --suite-id local-smoke
+# Инфраструктурный smoke и регрессия
+PYTHONPATH=src python -m ruwritingstyles.cli eval-regression --provider mock
+PYTHONPATH=src python -m ruwritingstyles.cli eval-status runs/last-regression/comparison.json
 ```
 
 Для работы с реальными провайдерами проверьте готовность ключей: `rws provider-status --strict`.

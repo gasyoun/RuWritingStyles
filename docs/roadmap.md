@@ -11,10 +11,10 @@ RuWritingStyles должен помогать автору или редакто
 Ключевой продуктовый принцип: система не должна просто переписывать текст "красиво". Она должна показывать, где именно текст слаб, какие стили или школы видят проблему, почему правка допустима, что осталось нерешенным и какие изменения нельзя делать без человека.
 
 ## Текущее состояние
-
-На 2026-05-08 уже есть рабочий каркас:
-
-- CLI с командами `prepare`, `run`, `review`, `council`, `deliberate`, `revise`, `verify`, `assess`, `scrutiny`, `eval-suite`, `eval-compare`, `export` и другими.
+ 
+ На 2026-05-08 проект перешел в фазу v2.3.0 (production-ready):
+ 
+ - CLI с командами `prepare`, `run`, `review`, `council`, `deliberate`, `revise`, `verify`, `assess`, `scrutiny`, `eval-suite`, `eval-compare`, `eval-promote`, `eval-regression`, `apply-resolution`, `finalize`, `resume`, `export` и другими.
 - Локальный pipeline на артефактах в `runs/`.
 - Детерминированный `mock` provider для тестов.
 - Провайдерные адаптеры для OpenAI, Google, Anthropic и OpenRouter.
@@ -239,16 +239,19 @@ flowchart TD
 ## Фазы развития
 
 ### Фаза 0. Стабилизация каркаса
-
-Статус: почти завершена.
-
-Готово:
-
-- CLI pipeline работает с `mock`.
-- Eval suite и validation проходят.
-- API routes не дублируются.
-- Web build/lint проходят.
-- OpenRouter включен в provider policy.
+ 
+ Статус: Завершена (v2.3.0).
+ 
+ Готово:
+ 
+ - CLI pipeline работает с `mock`.
+ - Eval suite и validation проходят.
+ - API routes не дублируются.
+ - Web build/lint проходят.
+ - OpenRouter включен в provider policy.
+ - **CI Golden Gate**: Внедрена обязательная проверка регрессии против `gold.json`.
+ - **Service Layer**: Бизнес-логика вынесена в `resolution.py`.
+ - **Security**: Харденинг хуков и устранение `FrozenInstanceError`.
 
 Осталось:
 

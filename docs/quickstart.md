@@ -85,7 +85,13 @@ To run the full eval manifest:
 rws eval-suite --provider mock --suite-id demo-suite
 ```
 
-The suite currently runs 33 cases and writes `eval-suite-result.json` and `eval-suite-report.md`. Add `--strict` when failed cases should make scripts return exit code `1`.
+To run a regression check against the gold baseline:
+
+```bash
+rws eval-regression --provider mock
+```
+
+The suite currently runs 33 cases and writes `eval-suite-result.json` and `eval-suite-report.md`. Add `--strict` when failed cases should make scripts return exit code `1`. `eval-regression` always fails if pass rate drops or a regression is detected.
 
 The mock provider is deterministic. It is useful for checking schemas, file outputs, reports and orchestration; it is not a substantive philological quality signal.
 

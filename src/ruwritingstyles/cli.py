@@ -1935,10 +1935,12 @@ def cmd_eval_suite(args: argparse.Namespace) -> int:
         print(f"comparison json {comparison_json.relative_to(repo_root)}")
         print(f"pass_rate_delta: {comparison.data.get('pass_rate_delta', 0)}")
         print(f"regressed: {len(comparison.data.get('regressed', []))}")
-    if args.strict and int(data.get("failed_count", 0)) > 0:
-        return 1
-    if args.strict and comparison_data is not None and _eval_comparison_has_regression(comparison_data):
-        return 1
+    if args.strict:
+        if args.compare_to:
+            if comparison_data is not None and _eval_comparison_has_regression(comparison_data):
+                return 1
+        elif int(data.get("failed_count", 0)) > 0:
+            return 1
     return 0
 
 

@@ -155,6 +155,22 @@ rws eval-status runs/openai-suite
 rws eval-status runs/eval-compare-openai-gemini.json
 ```
 
+## Promote Eval Suite as Baseline
+
+```bash
+rws eval-promote runs/cli-smoke-suite --tag gold
+```
+
+This promotes the selected suite result to `evals/baselines/gold.json`. This baseline is used for future regression testing in CI.
+
+## Run Regression Tests
+
+```bash
+rws eval-regression --provider mock
+```
+
+This command runs the full evaluation suite and automatically compares it against the `gold.json` baseline. If any per-case regressions are detected or the pass rate drops, the command returns exit code `1`. This is the primary gate for CI/CD stability.
+
 The repository also includes a manual GitHub Actions workflow, `Eval Smoke`, which runs the mock eval suite, validates it, prints `eval-status`, exports the suite bundle, and uploads the ZIP artifact.
 
 ## Export An Eval Suite
@@ -443,6 +459,22 @@ rws html-report runs/cli-smoke-readme
 
 `rws report` refreshes both `report.md` and `summary.html` from the JSON artifacts already present in the run directory. `rws html-report` refreshes only the static HTML summary. These commands are useful after manual edits or after executing only part of the pipeline.
 
+## Apply Stylistic Resolutions
+
+```bash
+rws apply-resolution runs/cli-smoke-readme
+```
+
+This command reads `runs/<run-id>/resolution.json` (created via Web Studio or manually) and applies human stylistic overrides (accept/reject/defer) to the council decisions. It updates `council.json` with the resolved states.
+
+## Finalize Manuscript
+
+```bash
+rws finalize runs/cli-smoke-readme
+```
+
+This command merges the accepted revisions and human resolutions into the final philological manuscript. It writes the results to the run directory and prepares them for final export.
+
 ## Create a revision diff
 
 ```bash
@@ -488,6 +520,22 @@ rws validate-eval-suite runs/cli-smoke-suite
 ```
 
 The command checks `eval-suite-result.json` against `schemas/eval-suite-result.schema.json`, verifies suite counters, confirms per-case paths exist, checks each child `eval-result.json`, and then runs the normal run validator for every referenced case run.
+
+## Validate an eval comparison
+
+```bash
+rws validate-eval-comparison runs/eval-compare.json
+```
+
+The command checks `comparison.json` against `schemas/eval-suite-comparison.schema.json`.
+
+## Validate a provider status
+
+```bash
+rws validate-provider-status runs/provider-status.json
+```
+
+The command checks `provider-status.json` against `schemas/provider-status.schema.json`.
 
 ## Validate the repository
 

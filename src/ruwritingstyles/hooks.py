@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import re
+from dataclasses import replace
 from typing import Any
 
 from .providers import ProviderRequest
@@ -38,7 +39,10 @@ def pre_provider_call(request: ProviderRequest) -> ProviderRequest:
     # File path traversal guardrail
     if re.search(r'\.\.[/\\]', request.prompt):
         logger.warning("Guardrail: directory traversal sequence in prompt — sanitising.")
-        request.prompt = re.sub(r'\.\.[/\\]', '[[PATH_REDACTED]]', request.prompt)
+        request = replace(
+            request,
+            prompt=re.sub(r'\.\.[/\\]', '[[PATH_REDACTED]]', request.prompt)
+        )
 
     return request
 
