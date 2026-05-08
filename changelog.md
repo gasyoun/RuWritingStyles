@@ -1,12 +1,21 @@
-### [2.3.0] - 2026-05-09
+### [2.3.0] - 2026-05-08
+#### Added
+- **CI Golden Gate**: Established `evals/baselines/gold.json` (33/33 cases) and updated `scripts/ci-eval-gate.py` to enforce strict regression testing against the gold baseline (GOLD MODE).
+- **Unit Test Expansion**: Added comprehensive tests for `hooks.py`, `resolution.py`, and `context_builder.py`, reaching 44 passing unit tests.
+
 #### Refactored
 - **Service Layer**: created `resolution.py` with `apply_resolution()` and `write_final_manuscript()` — business logic extracted from CLI and API into a single canonical location.
 - **CLI Shims**: `cmd_apply_resolution` and `cmd_finalize` in `cli.py` are now thin delegation wrappers; duplicate logic eliminated.
 - **API Layer Cleanup**: `api.py` no longer imports or calls `cli.py`; all resolution endpoints use `resolution.py` directly.
 - **CORS Hardened**: wildcard `allow_origins=["*"]` replaced with env-configurable `CORS_ORIGINS` (defaults to localhost:5173/3000); allowed methods restricted.
 - **Middleware Order**: `app.add_middleware()` moved to immediately after `app = FastAPI(...)`, before any route registration.
-- **Hooks Rewritten**: `hooks.py` refactored from a stateless class to module-level functions; credential detection now uses anchored regex patterns (`sk-[A-Za-z0-9]{20,}`, `AKIA[A-Z0-9]{16}`, etc.) safe for Slavic morpheme text; `post_schema_validate` null-prune anti-pattern removed.
+- **Hooks Rewritten**: `hooks.py` refactored from a stateless class to module-level functions; credential detection now uses anchored regex patterns safe for Slavic morpheme text; `post_schema_validate` null-prune anti-pattern removed.
 - **Context Builder Activated**: `context_builder.py` wired into `verification.py`; knowledge passages and artifact previews now injected into the verification prompt.
+
+#### Fixed
+- **FrozenInstanceError**: Resolved crash in `hooks.py` when modifying frozen `ProviderRequest` objects.
+- **CLI Logic**: Fixed `eval-regression` and `eval-suite` strictness logic to properly handle existing failures when comparing against a baseline.
+- **CI Gate Stability**: Removed invalid CLI arguments from the CI script and updated the workflow to be self-sufficient with the gold baseline.
 
 ### [2.2.3] - 2026-05-08
 #### Added

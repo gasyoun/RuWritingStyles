@@ -94,50 +94,29 @@ def step_eval_suite() -> tuple[dict, Path]:
 
 def step_regression(suite_result_path: Path) -> None:
     print("[ 5/6 ] Regression check...")
-    if GOLD_BASELINE.exists():
-        print(f"       GOLD MODE: comparing against {GOLD_BASELINE.name}")
-        result = _run(
-            [
-                sys.executable, "-m", "ruwritingstyles.cli",
-                "eval-regression",
-                "--baseline", str(GOLD_BASELINE),
-                "--provider", "mock",
-                "--strict",
-            ],
-            cwd=REPO_ROOT / "src",
-            check=False,
-        )
-        if "regressed: 0" not in result.stdout:
-            print("       FAIL: Regressions detected vs gold baseline!")
-            print(result.stdout[-2000:])
-            sys.exit(1)
-        print("       OK: zero regressions vs gold baseline")
-    else:
-        print("       SMOKE MODE: no gold baseline — promoting ci_mock and self-comparing")
-        _run(
-            [
-                sys.executable, "-m", "ruwritingstyles.cli",
-                "eval-promote", str(suite_result_path), "--tag", "ci_mock",
-            ],
-            cwd=REPO_ROOT / "src",
-        )
-        result = _run(
-            [
-                sys.executable, "-m", "ruwritingstyles.cli",
-                "eval-regression",
-                "--baseline", str(REPO_ROOT / "evals" / "baselines" / "ci_mock.json"),
-                "--provider", "mock",
-            ],
-            cwd=REPO_ROOT / "src",
-            check=False,
-        )
-        if "regressed: 0" not in result.stdout:
-            print("       FAIL: Unexpected regression in smoke self-comparison!")
-            print(result.stdout[-2000:])
-            sys.exit(1)
-        print("       OK: zero regressions (smoke mode)")
-        print("       TIP: Run `rws eval-suite --provider google --execute` then")
-        print("            `rws eval-promote <result> --tag gold` to activate GOLD MODE.")
+    if not GOLD_BASELINE.exists():
+        print(f"       ERROR: No gold baseline found at {GOLD_BASELINE.relative_to(REPO_ROOT)}")
+        print("       To create one, run:")
+        print("       rws eval-suite --provider google")
+        print("       rws eval-promote <result_path> --tag gold")
+        sys.exit(1)
+
+    print(f"       Comparing against {GOLD_BASELINE.name}")
+    result = _run(
+        [
+            sys.executable, "-m", "ruwritingstyles.cli",
+            "eval-regression",
+            "--baseline", str(GOLD_BASELINE),
+            "--provider", "mock",
+        ],
+        cwd=REPO_ROOT / "src",
+        check=False,
+    )
+    if "regressed: 0" not in result.stdout:
+        print("       FAIL: Regressions detected vs gold baseline!")
+        print(result.stdout[-2000:])
+        sys.exit(1)
+    print("       OK: zero regressions vs gold baseline")
 
 
 def step_web_build() -> None:
@@ -161,8 +140,7 @@ def step_web_build() -> None:
 
 
 def main() -> None:
-    mode = "GOLD" if GOLD_BASELINE.exists() else "SMOKE"
-    print(f"=== RuWritingStyles CI Gate [{mode} MODE] ===\n")
+    print("=== RuWritingStyles CI Gate ===\n")
 
     step_compile()
     step_validate()
