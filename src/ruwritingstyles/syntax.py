@@ -11,7 +11,6 @@ def create_syntax_bundle(*, repo_root: Path, run_dir: Path) -> dict[str, Any]:
     run_dir = run_dir.resolve()
     normalized_path = run_dir / "normalized.md"
     revised_path = run_dir / "revised.md"
-    
     if not normalized_path.exists() or not revised_path.exists():
         return {}
 

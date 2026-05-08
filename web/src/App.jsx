@@ -20,6 +20,8 @@ function App() {
   const [newRunPath, setNewRunPath] = useState('C:\\Users\\user\\Documents\\GitHub\\RuWritingStyles\\article.md');
   const [viewMode, setViewMode] = useState('audit'); // 'audit', 'profile', 'syntax', 'compare'
   const [comparisonData, setComparisonData] = useState([]);
+  const [resolutions, setResolutions] = useState({});
+  const [isFinalizing, setIsFinalizing] = useState(false);
 
   // 1. Fetch Runs List
   const fetchRuns = useCallback(() => {
@@ -77,6 +79,37 @@ function App() {
       setIsNewRunModalOpen(false);
       fetchRuns();
     });
+  };
+
+  const handleApplyResolutions = () => {
+    if (!activeRunId) return;
+    const overrides = Object.values(resolutions);
+    if (overrides.length === 0) return;
+    
+    fetch(`http://localhost:8000/runs/${activeRunId}/resolve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ overrides })
+    }).then(res => res.json()).then(data => {
+      alert(data.status);
+      setResolutions({});
+      // Ideally poll for status, but for now just clear
+    }).catch(err => alert("Error applying resolutions: " + err));
+  };
+
+  const handleFinalize = () => {
+    if (!activeRunId) return;
+    setIsFinalizing(true);
+    fetch(`http://localhost:8000/runs/${activeRunId}/finalize`, { method: 'POST' })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.status === 'finalized' ? 'Final manuscript generated!' : data.status);
+        setIsFinalizing(false);
+      })
+      .catch(err => {
+        alert("Error finalizing: " + err);
+        setIsFinalizing(false);
+      });
   };
 
   const toggleRunSelection = (runId) => {
@@ -187,8 +220,8 @@ function App() {
           </div>
 
           <div className="header-actions">
-             <button className="export-btn">
-               <Download size={16} /> Export
+             <button className="export-btn" onClick={handleFinalize} disabled={isFinalizing}>
+               <Download size={16} /> {isFinalizing ? 'Finalizing...' : 'Finalize'}
              </button>
           </div>
         </header>
@@ -285,25 +318,49 @@ function App() {
                 </div>
 
                 <div className="decisions-panel glass">
-                   <div className="panel-header"><MessageSquare size={16} />Council Deliberations</div>
+                   <div className="panel-header" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                     <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}><MessageSquare size={16} />Council Deliberations</div>
+                     {Object.keys(resolutions).length > 0 && (
+                       <button className="apply-res-btn" onClick={handleApplyResolutions} style={{padding: '4px 8px', fontSize: '12px', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer'}}>
+                         Apply Overrides ({Object.keys(resolutions).length})
+                       </button>
+                     )}
+                   </div>
                    <div className="decisions-list">
-                     {runData.council?.decisions?.map((d, i) => (
+                     {runData.council?.decisions?.map((d, i) => {
+                       const currentRes = resolutions[d.finding_id] || { status: d.status, human_comment: '' };
+                       return (
                        <div key={i} className="decision-item">
                          <div className="decision-meta">
                            <span className="span-tag">{d.finding_id}</span>
-                           <span className={`status-tag ${d.status}`}>{d.status}</span>
+                           <span className={`status-tag ${currentRes.status}`}>{currentRes.status}</span>
                            <span className="bloom-tag" style={{background: BLOOM_COLORS[d.bloom_level]}}>{d.bloom_level}</span>
+                           <select 
+                             value={currentRes.status} 
+                             onChange={(e) => setResolutions(prev => ({...prev, [d.finding_id]: {...currentRes, finding_id: d.finding_id, status: e.target.value}}))}
+                             style={{marginLeft: 'auto', background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: '4px'}}
+                           >
+                             <option value="accepted">Accept</option>
+                             <option value="rejected">Reject</option>
+                           </select>
                          </div>
                          <div className="decision-text">{d.reason}</div>
+                         <input 
+                           type="text" 
+                           placeholder="Human override comment..." 
+                           value={currentRes.human_comment}
+                           onChange={(e) => setResolutions(prev => ({...prev, [d.finding_id]: {...currentRes, finding_id: d.finding_id, human_comment: e.target.value}}))}
+                           style={{width: '100%', marginTop: '8px', padding: '4px 8px', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', borderRadius: '4px', fontSize: '12px'}}
+                         />
                          {d.influence && (
-                           <div className="school-tags">
+                           <div className="school-tags" style={{marginTop: '8px'}}>
                              {Object.entries(d.influence).map(([school, weight]) => (
                                <span key={school} className="school-tag">{school}: {Math.round(weight*100)}%</span>
                              ))}
                            </div>
                          )}
                        </div>
-                     ))}
+                     )})}
                    </div>
                 </div>
               </div>

@@ -1,3 +1,31 @@
+### [2.2.3] - 2026-05-08
+#### Added
+- Durable Pipeline Execution: implemented `rws resume <run_id>` to continue failed/interrupted runs.
+- Database Step Tracking: main CLI pipeline now checkpoints every stage in SQLite `run_steps`.
+- Persistent Run Config: stored full execution parameters in `runs.config_json` for faithful resumption.
+- Web Build CI Gate: added `npm run build` check to `scripts/ci-eval-gate.py`.
+- Human Finalization: added `POST /runs/{run_id}/resolve` and `/finalize` API endpoints.
+- Web Studio UI: integrated interactive human resolution and finalization controls into `App.jsx`.
+- Scholarly Depth: augmented verification pipeline with dynamic BibTeX ingestion (`references.bib`) and strict citation checking.
+- Knowledge Metadata: enriched Gasparov and Tronsky collections with `passage_id`, `reliability`, and `citation_key`.
+- API Step Tracking: added `GET /runs/{run_id}/status` to query execution steps dynamically.
+- Model Policy: implemented budget modes (`smoke`, `standard`, `expensive`, `verifier-only`) in `model_policy.yml`.
+- Extended Telemetry: configured `execution.py` to extract and log token cost estimates and schema repair flags into `provider.log.jsonl`.
+- Context Discipline: introduced `context_builder.py` to unify style passports and knowledge base extraction, formalizing the decision to eschew Vector DBs.
+- Execution Hooks: implemented `hooks.py` with `pre_provider_call`, `post_schema_validate`, and `pre_write_artifact` for schema repair, file path guardrails, and secret redaction.
+- CI/CD Evaluations: integrated `eval-promote` and `eval-regression` into `cli.py` and the `ci-eval-gate.py` pipeline to establish and test against robust project baselines.
+
+#### Fixed
+- Unified pipeline implementation between `cmd_run` and `pipeline.py`.
+- Modernized `scripts/ci-eval-gate.py` CLI arguments.
+
+### [2.2.2] - 2026-05-08 20:10:00
+#### Fixed
+- **CLI Pipeline Stabilization**: Resolved regressions in `db.py`, `revision.py`, and `provider_log.py` that caused execution failures in the `--execute` path.
+- **Telemetry Synchronization**: Propagated the `profile` parameter across all execution stages and database registrations for consistent researcher-centric tracking.
+- **Test Suite Calibration**: Synchronized unit test expectations in `test_cli_pipeline.py` with the updated pipeline logic (now correctly including Syntax Assessment and skipping Impact when no segments are found).
+- **Path Resolution Integrity**: Fixed issues where global `PYTHONPATH` could cause execution of stale library code from other partitions.
+
 ### [2.2.1] - 2026-05-08
 #### Fixed
 - Synchronized JSON schemas with current runtime artifacts: `clusters`, `profile`, `bloom_level`, `primary_school`, `influence`, current council statuses, and underscore-style cluster IDs.

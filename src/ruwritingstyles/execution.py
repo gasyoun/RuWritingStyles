@@ -9,6 +9,7 @@ from typing import Any
 
 from .provider_log import append_provider_log
 from .providers import BaseProvider, ProviderRequest, load_schema
+from .hooks import ExecutionHooks
 
 
 def execute_review_artifact(*, repo_root: Path, review_path: Path, provider: BaseProvider, model: str | None = None) -> None:
@@ -226,6 +227,7 @@ def _load_json(path: Path) -> dict[str, Any]:
 
 
 def _write_json(path: Path, data: dict[str, Any]) -> None:
+    data = ExecutionHooks.pre_write_artifact(data)
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
@@ -239,8 +241,16 @@ def _generate_with_log(
 ) -> dict[str, Any]:
     start = perf_counter()
     model = provider.effective_model(provider_request)
+    
+    # 1. Pre-provider hook
+    provider_request = ExecutionHooks.pre_provider_call(provider_request)
+    
     try:
         output = provider.generate_json(provider_request)
+        # 2. Schema validate hook
+        output = ExecutionHooks.post_schema_validate(output, provider_request.schema)
+        # 3. Post-provider hook
+        output = ExecutionHooks.post_provider_call(output, provider_request)
     except Exception as exc:
         telemetry = provider.retry_telemetry()
         append_provider_log(
@@ -259,6 +269,7 @@ def _generate_with_log(
         raise
 
     telemetry = provider.retry_telemetry()
+    usage = provider.last_usage()
     append_provider_log(
         run_dir=run_dir,
         task=provider_request.task,
@@ -270,6 +281,11 @@ def _generate_with_log(
         retry_count=_int(telemetry.get("retry_count")),
         retry_delay_seconds=_float(telemetry.get("retry_delay_seconds")),
         retry_statuses=_strings(telemetry.get("retry_statuses")),
+        input_tokens=_int(usage.get("input_tokens")),
+        output_tokens=_int(usage.get("output_tokens")),
+        total_tokens=_int(usage.get("total_tokens")),
+        cost_estimate=_float(usage.get("cost_estimate")),
+        schema_repair=telemetry.get("schema_repair", False),
     )
     return output
 

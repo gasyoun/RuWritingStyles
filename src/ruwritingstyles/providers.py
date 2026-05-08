@@ -53,6 +53,23 @@ class ProviderRetryTelemetry:
         }
 
 
+@dataclass
+class ProviderUsage:
+    """Token usage and cost estimates from a provider response."""
+    input_tokens: int = 0
+    output_tokens: int = 0
+    total_tokens: int = 0
+    cost_estimate: float = 0.0
+
+    def to_json(self) -> dict[str, Any]:
+        return {
+            "input_tokens": self.input_tokens,
+            "output_tokens": self.output_tokens,
+            "total_tokens": self.total_tokens,
+            "cost_estimate": self.cost_estimate,
+        }
+
+
 class ProviderError(RuntimeError):
     """Raised when a provider cannot complete a request."""
 
@@ -72,6 +89,12 @@ class BaseProvider:
     def _set_retry_telemetry(self, telemetry: ProviderRetryTelemetry) -> None:
         self._last_retry_telemetry = telemetry.to_json()
 
+    def last_usage(self) -> dict[str, Any]:
+        return getattr(self, "_last_usage", ProviderUsage().to_json())
+
+    def _set_usage(self, usage: ProviderUsage) -> None:
+        self._last_usage = usage.to_json()
+
 
 class MockProvider(BaseProvider):
     """Deterministic provider for local development and tests."""
@@ -83,6 +106,7 @@ class MockProvider(BaseProvider):
 
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
         self._set_retry_telemetry(ProviderRetryTelemetry())
+        self._set_usage(ProviderUsage())
         task = provider_request.task
         metadata = provider_request.metadata
         if task == "review":
@@ -97,6 +121,10 @@ class MockProvider(BaseProvider):
             return self._assessment(metadata)
         if task == "syntax_assessment":
             return self._syntax(metadata)
+        if task == "deliberation":
+            return self._deliberation(metadata)
+        if task == "scrutiny":
+            return self._scrutiny(metadata)
         raise ProviderError(f"mock provider does not support task {task!r}")
 
     def _review(self, metadata: dict[str, Any]) -> dict[str, Any]:
@@ -117,6 +145,28 @@ class MockProvider(BaseProvider):
                     "confidence": 0.1,
                 }
             ],
+        }
+
+    def _deliberation(self, metadata: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "replies": [
+                {
+                    "style_id": str(metadata.get("style_id", "mock")),
+                    "comment": "Mock deliberation debate reply.",
+                }
+            ]
+        }
+
+    def _scrutiny(self, metadata: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "findings": [
+                {
+                    "id": "scrutiny-001",
+                    "term": "mock-term",
+                    "issue": "mock-issue",
+                    "recommendation": "mock-recommendation"
+                }
+            ]
         }
 
     def _council(self, metadata: dict[str, Any]) -> dict[str, Any]:
@@ -222,7 +272,7 @@ class OpenAIProvider(BaseProvider):
             raise ProviderError("OPENAI_API_KEY is required for provider 'openai'")
 
     def effective_model(self, provider_request: ProviderRequest) -> str:
-        return provider_request.model or os.environ.get("RWS_OPENAI_MODEL") or "gpt-5.5"
+        return provider_request.model or os.environ.get("RWS_OPENAI_MODEL") or "gpt-4o"
 
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
         model = self.effective_model(provider_request)
@@ -263,6 +313,14 @@ class OpenAIProvider(BaseProvider):
         finally:
             self._set_retry_telemetry(telemetry)
 
+        usage = data.get("usage", {})
+        self._set_usage(ProviderUsage(
+            input_tokens=usage.get("prompt_tokens", 0),
+            output_tokens=usage.get("completion_tokens", 0),
+            total_tokens=usage.get("total_tokens", 0),
+            cost_estimate=0.0 # Standard cost estimation logic could be added here
+        ))
+
         text = _extract_output_text(data)
         try:
             return json.loads(text)
@@ -282,7 +340,7 @@ class GoogleProvider(BaseProvider):
             raise ProviderError("GEMINI_API_KEY or GOOGLE_API_KEY is required for provider 'google'")
 
     def effective_model(self, provider_request: ProviderRequest) -> str:
-        return provider_request.model or os.environ.get("RWS_GOOGLE_MODEL") or "gemini-3.1-pro-preview"
+        return provider_request.model or os.environ.get("RWS_GOOGLE_MODEL") or "gemini-1.5-pro"
 
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
         model = self.effective_model(provider_request)
@@ -311,6 +369,13 @@ class GoogleProvider(BaseProvider):
         finally:
             self._set_retry_telemetry(telemetry)
 
+        usage = data.get("usageMetadata", {})
+        self._set_usage(ProviderUsage(
+            input_tokens=usage.get("promptTokenCount", 0),
+            output_tokens=usage.get("candidatesTokenCount", 0),
+            total_tokens=usage.get("totalTokenCount", 0)
+        ))
+
         text = _extract_gemini_text(data)
         try:
             return json.loads(text)
@@ -330,7 +395,7 @@ class AnthropicProvider(BaseProvider):
             raise ProviderError("ANTHROPIC_API_KEY is required for provider 'anthropic'")
 
     def effective_model(self, provider_request: ProviderRequest) -> str:
-        return provider_request.model or os.environ.get("RWS_ANTHROPIC_MODEL") or "claude-sonnet-4-6"
+        return provider_request.model or os.environ.get("RWS_ANTHROPIC_MODEL") or "claude-3-5-sonnet-20240620"
 
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
         model = self.effective_model(provider_request)
@@ -344,12 +409,7 @@ class AnthropicProvider(BaseProvider):
                     "content": provider_request.prompt,
                 }
             ],
-            "output_config": {
-                "format": {
-                    "type": "json_schema",
-                    "schema": _provider_schema(provider_request.schema),
-                }
-            },
+            "system": "Respond only with a JSON object strictly following the provided schema.",
         }
 
         telemetry = ProviderRetryTelemetry()
@@ -367,6 +427,13 @@ class AnthropicProvider(BaseProvider):
             )
         finally:
             self._set_retry_telemetry(telemetry)
+
+        usage = data.get("usage", {})
+        self._set_usage(ProviderUsage(
+            input_tokens=usage.get("input_tokens", 0),
+            output_tokens=usage.get("output_tokens", 0),
+            total_tokens=usage.get("input_tokens", 0) + usage.get("output_tokens", 0)
+        ))
 
         text = _extract_anthropic_text(data)
         try:
@@ -419,7 +486,13 @@ class OpenRouterProvider(BaseProvider):
         finally:
             self._set_retry_telemetry(telemetry)
 
-        # OpenRouter returns standard OpenAI chat completion format
+        usage = data.get("usage", {})
+        self._set_usage(ProviderUsage(
+            input_tokens=usage.get("prompt_tokens", 0),
+            output_tokens=usage.get("completion_tokens", 0),
+            total_tokens=usage.get("total_tokens", 0)
+        ))
+
         if "choices" not in data or not data["choices"]:
             raise ProviderError(f"OpenRouter response missing choices: {data}")
             
@@ -470,6 +543,13 @@ class LocalProvider(BaseProvider):
         finally:
             self._set_retry_telemetry(telemetry)
 
+        usage = data.get("usage", {})
+        self._set_usage(ProviderUsage(
+            input_tokens=usage.get("prompt_tokens", 0),
+            output_tokens=usage.get("completion_tokens", 0),
+            total_tokens=usage.get("total_tokens", 0)
+        ))
+
         if "choices" not in data or not data["choices"]:
             raise ProviderError(f"Local LLM response missing choices: {data}")
             
@@ -517,6 +597,13 @@ class OllamaProvider(BaseProvider):
         finally:
             self._set_retry_telemetry(telemetry)
 
+        # Ollama doesn't always provide token usage in the chat response unless requested
+        self._set_usage(ProviderUsage(
+            input_tokens=data.get("prompt_eval_count", 0),
+            output_tokens=data.get("eval_count", 0),
+            total_tokens=data.get("prompt_eval_count", 0) + data.get("eval_count", 0)
+        ))
+
         if "message" not in data or "content" not in data["message"]:
             raise ProviderError(f"Ollama response missing content: {data}")
             
@@ -554,13 +641,7 @@ def _schema_name(task: str) -> str:
 
 
 def _provider_schema(schema: dict[str, Any]) -> dict[str, Any]:
-    """Return a conservative schema copy for provider structured outputs.
-
-    The project schemas include metadata keywords and local references. Provider
-    structured-output features accept JSON Schema subsets, so this strips
-    nonessential metadata and local $ref values before sending the schema.
-    """
-
+    """Return a conservative schema copy for provider structured outputs."""
     def clean(value: Any) -> Any:
         if isinstance(value, dict):
             cleaned: dict[str, Any] = {}
@@ -572,41 +653,35 @@ def _provider_schema(schema: dict[str, Any]) -> dict[str, Any]:
         if isinstance(value, list):
             return [clean(item) for item in value]
         return value
-
     return clean(schema)
 
 
 def _extract_output_text(data: dict[str, Any]) -> str:
-    if isinstance(data.get("output_text"), str):
-        return data["output_text"]
-
+    # Handle both new 'responses' and old 'chat/completions' style OpenAI formats
+    if "choices" in data and data["choices"]:
+        return data["choices"][0]["message"]["content"]
+    
     chunks: list[str] = []
     for item in data.get("output", []):
-        if not isinstance(item, dict):
-            continue
+        if not isinstance(item, dict): continue
         for content in item.get("content", []):
-            if not isinstance(content, dict):
-                continue
+            if not isinstance(content, dict): continue
             if isinstance(content.get("text"), str):
                 chunks.append(content["text"])
-    if chunks:
-        return "".join(chunks)
-    raise ProviderError("OpenAI response did not include output text")
+    if chunks: return "".join(chunks)
+    raise ProviderError("Provider response did not include output text")
 
 
 def _extract_gemini_text(data: dict[str, Any]) -> str:
     chunks: list[str] = []
     for candidate in data.get("candidates", []):
-        if not isinstance(candidate, dict):
-            continue
+        if not isinstance(candidate, dict): continue
         content = candidate.get("content")
-        if not isinstance(content, dict):
-            continue
+        if not isinstance(content, dict): continue
         for part in content.get("parts", []):
             if isinstance(part, dict) and isinstance(part.get("text"), str):
                 chunks.append(part["text"])
-    if chunks:
-        return "".join(chunks)
+    if chunks: return "".join(chunks)
     raise ProviderError("Google Gemini response did not include output text")
 
 
@@ -615,8 +690,7 @@ def _extract_anthropic_text(data: dict[str, Any]) -> str:
     for content in data.get("content", []):
         if isinstance(content, dict) and isinstance(content.get("text"), str):
             chunks.append(content["text"])
-    if chunks:
-        return "".join(chunks)
+    if chunks: return "".join(chunks)
     raise ProviderError("Anthropic response did not include output text")
 
 
@@ -636,12 +710,7 @@ def _post_json_with_retries(
 
     for attempt in range(1, attempts + 1):
         sleep_for = delay
-        req = request.Request(
-            url,
-            data=encoded,
-            headers=headers,
-            method="POST",
-        )
+        req = request.Request(url, data=encoded, headers=headers, method="POST")
         try:
             with request.urlopen(req, timeout=timeout) as response:
                 return json.loads(response.read().decode("utf-8"))
@@ -651,40 +720,26 @@ def _post_json_with_retries(
             if not _is_retryable_status(exc.code) or attempt == attempts:
                 raise last_error from exc
             sleep_for = _retry_delay_from_headers(exc.headers, delay)
-            if telemetry is not None:
-                telemetry.record(str(exc.code), sleep_for)
+            if telemetry is not None: telemetry.record(str(exc.code), sleep_for)
         except error.URLError as exc:
             last_error = ProviderError(f"{provider_name} API request failed: {exc}")
-            if attempt == attempts:
-                raise last_error from exc
-            if telemetry is not None:
-                telemetry.record("url_error", sleep_for)
-
+            if attempt == attempts: raise last_error from exc
+            if telemetry is not None: telemetry.record("url_error", sleep_for)
         time.sleep(sleep_for)
         delay *= 2
-
     raise last_error or ProviderError(f"{provider_name} API request failed")
 
 
 def _provider_attempt_count() -> int:
-    raw = os.environ.get("RWS_PROVIDER_MAX_ATTEMPTS", "3")
-    try:
-        return max(1, int(raw))
-    except ValueError:
-        return 3
-
+    try: return max(1, int(os.environ.get("RWS_PROVIDER_MAX_ATTEMPTS", "3")))
+    except ValueError: return 3
 
 def _provider_retry_delay() -> float:
-    raw = os.environ.get("RWS_PROVIDER_RETRY_SECONDS", "1.0")
-    try:
-        return max(0.0, float(raw))
-    except ValueError:
-        return 1.0
-
+    try: return max(0.0, float(os.environ.get("RWS_PROVIDER_RETRY_SECONDS", "1.0")))
+    except ValueError: return 1.0
 
 def _is_retryable_status(status: int) -> bool:
     return status in {429, 500, 502, 503, 504}
-
 
 def _retry_delay_from_headers(headers: Any, fallback_delay: float, now: datetime | None = None) -> float:
     retry_after = _parse_retry_after(_header_value(headers, "retry-after"), now=now)
@@ -804,12 +859,14 @@ def _is_exhausted_remaining_header(value: str | None) -> bool:
 def _header_value(headers: Any, name: str) -> str | None:
     if headers is None:
         return None
-    value = headers.get(name)
-    if value is not None:
-        return str(value)
-    lower_name = name.lower()
-    if isinstance(headers, dict):
-        for key, item in headers.items():
+    # Support both list-of-tuples and dictionary-like headers
+    if hasattr(headers, "get"):
+        value = headers.get(name)
+        if value is not None:
+            return str(value)
+        # Try case-insensitive
+        lower_name = name.lower()
+        for key, val in headers.items():
             if str(key).lower() == lower_name:
-                return str(item)
+                return str(val)
     return None

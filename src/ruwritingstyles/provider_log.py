@@ -21,6 +21,11 @@ def append_provider_log(
     retry_delay_seconds: float = 0.0,
     retry_statuses: list[str] | None = None,
     error: str | None = None,
+    input_tokens: int = 0,
+    output_tokens: int = 0,
+    total_tokens: int = 0,
+    cost_estimate: float = 0.0,
+    schema_repair: bool = False,
 ) -> Path:
     """Append one JSONL entry to provider.log.jsonl."""
 
@@ -36,6 +41,11 @@ def append_provider_log(
         "retry_count": retry_count,
         "retry_delay_seconds": retry_delay_seconds,
         "retry_statuses": retry_statuses or [],
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "total_tokens": total_tokens,
+        "cost_estimate": cost_estimate,
+        "schema_repair": schema_repair,
     }
     if error:
         entry["error"] = error
