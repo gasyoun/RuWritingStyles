@@ -16,15 +16,17 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy backend requirements and install
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy backend source
+# Copy backend source and install the package
+COPY pyproject.toml README.md LICENSE ./
 COPY src/ ./src/
+RUN pip install --no-cache-dir .
+
+# Copy runtime project data
 COPY styles/ ./styles/
 COPY schemas/ ./schemas/
-COPY archetypes.yml .
+COPY knowledge/ ./knowledge/
+COPY evals/ ./evals/
+COPY model_policy.yml ./
 
 # Copy built frontend from Stage 1
 COPY --from=frontend-builder /web/dist ./web/dist

@@ -9,7 +9,7 @@
 1. Запустите Web Studio: `rws web`.
 2. Нажмите кнопку **"+ New Philological Audit"**.
 3. Укажите путь к вашему `.md` или `.txt` файлу.
-4. Выберите провайдера (рекомендуется `google` для Gemini 2.0 или `anthropic` для Claude 3.5).
+4. Выберите провайдера. Для безопасной проверки интерфейса используйте `mock`; для содержательного аудита выберите настроенный real provider (`openai`, `google`, `anthropic`, `openrouter`, `local` или `ollama`).
 5. Изучите результаты в секции **"Philological Revision"**.
 6. Обратите внимание на **"Philological Council Decisions"** — там объяснено, почему система предложила именно такую правку.
 
@@ -30,16 +30,18 @@
 2. Зарегистрируйте стиль в `styles/manifest.yml`.
 3. Опишите краткое резюме в `styles/passports/`.
 4. (Опционально) Добавьте правила разрешения конфликтов в `src/ruwritingstyles/council.py` (переменная `CONFLICT_MATRIX`).
-5. Проверьте работоспособность: `rws list-styles`.
+5. Обновите схемы, если меняется форма style/review/council artifacts.
+6. Проверьте работоспособность: `rws list-styles`, `python tools/validate_project.py`, `python -m unittest discover -s tests`.
 
 ## 4. Специалист по качеству (QA/Validator)
 **Задача**: Убедиться, что система не теряет "эпистемическую осторожность" и не допускает анахронизмов.
 
 **Workflow**:
-1. Запустите автоматический бенчмарк: `rws eval-suite --provider google`.
+1. Запустите автоматический smoke: `rws eval-suite --provider mock --suite-id qa-smoke`.
 2. Проверьте отчет `runs/<suite-id>/eval-suite-report.md`.
-3. Особое внимание уделите кейсам с тегом `adversarial` (например, `iesh-adversarial`).
-4. Если pass_rate упал, проверьте логи верификации (`verification.json`) на наличие новых предупреждений по правилу `PHONETIC_FIDELITY` или `HISTORICAL_DISTANCE`.
+3. Для содержательной проверки повторите тот же набор на real provider и сравните результат с mock/baseline через `rws eval-compare`.
+4. Особое внимание уделите кейсам с тегом `adversarial` (например, `iesh-adversarial`).
+5. Если pass_rate упал, проверьте логи верификации (`verification.json`) на наличие новых предупреждений по правилу `PHONETIC_FIDELITY` или `HISTORICAL_DISTANCE`.
 
 ## 5. CI/CD Интеграция
 **Задача**: Запретить деплой кода, который ломает филологическую логику.
@@ -47,6 +49,7 @@
 **Workflow**:
 1. Запустите `python scripts/ci-eval-gate.py` перед пушем.
 2. Скрипт проверит, что:
-   - Все 34 золотых кейса запускаются без ошибок.
+   - Текущий eval manifest из 33 кейсов запускается без инфраструктурных ошибок.
    - Базовая инфраструктура провайдеров готова.
    - Код соответствует схемам (JSON Schema).
+3. Для полного локального gate также выполните `python tools/validate_project.py`, `python -m unittest discover -s tests`, `npm run lint` и `npm run build` в `web/`.

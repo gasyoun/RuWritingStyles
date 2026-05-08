@@ -13,14 +13,36 @@
       "type": "array",
       "items": { "type": "string" }
     },
+    "clusters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "path", "name"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "path": { "type": "string" },
+          "name": { "type": "string" },
+          "domains": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "location": { "type": "string" }
+        }
+      }
+    },
     "passports": {
       "type": "array",
       "items": {
         "type": "object",
         "required": ["id", "path", "source_prompt"],
+        "additionalProperties": false,
         "properties": {
           "id": { "type": "string" },
           "path": { "type": "string" },
+          "level": { "type": "string" },
+          "cluster": { "type": "string" },
+          "extends": { "type": "string" },
           "source_prompt": { "type": "string" },
           "weight": { "type": "number" }
         }
@@ -28,6 +50,7 @@
     },
     "council": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "archetype": { "type": "string" },
         "conflict_resolution_strategy": { "type": "string" }
@@ -38,6 +61,7 @@
       "items": {
         "type": "object",
         "required": ["id", "name", "source_prompt"],
+        "additionalProperties": false,
         "properties": {
           "id": { "type": "string" },
           "name": { "type": "string" },

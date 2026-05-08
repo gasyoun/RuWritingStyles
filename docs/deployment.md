@@ -1,128 +1,142 @@
 # Инструкция по развертыванию RuWritingStyles
 
-Этот документ описывает, как запустить систему локально (для разработки и личного пользования) и на сервере (в режиме общего веб-сервиса).
+Этот документ описывает локальный запуск, Docker Compose и серверный режим для текущей версии проекта. Основная схема сейчас такая: FastAPI обслуживает API, а после сборки Web Studio также раздает готовый `web/dist` как статический SPA.
 
-## 1. Локальный запуск (Local Desktop)
+## 1. Предварительные условия
 
-### Предварительные условия
-- Python 3.9+
-- Node.js 18+ (для Web Studio)
-- Git
+- Python 3.10+.
+- Node.js 18+ для разработки Web Studio.
+- Git.
+- Docker и Docker Compose, если нужен контейнерный запуск.
 
-### Установка
+## 2. Локальная разработка
+
 ```bash
 git clone https://github.com/gasyoun/RuWritingStyles.git
 cd RuWritingStyles
 python -m venv venv
-source venv/bin/activate  # или venv\Scripts\activate на Windows
-pip install -e .
+source venv/bin/activate  # Windows: venv\Scripts\activate
+python -m pip install -e .
 ```
 
-### Настройка ключей (.env)
-Создайте файл `.env` в корне проекта:
-```env
-GOOGLE_API_KEY=your_key_here
-OPENROUTER_API_KEY=your_key_here
-RWS_OPENROUTER_MODEL=openai/gpt-oss-120b:free
-```
+Для Web Studio:
 
-### Запуск Web Studio
-Самый удобный режим для филологов:
-```bash
-rws web
-```
-Система автоматически запустит Backend (порт 8000) и Frontend (порт 5173). Откройте `http://localhost:5173`.
-
-### Запуск через CLI (примеры)
-1. **Простой аудит**:
-   ```bash
-   rws run my_article.md --execute --provider openrouter
-   ```
-2. **Аудит с выбором школы (Архетипа)**:
-   ```bash
-   # Выбор "Ленинградской школы" для разрешения конфликтов
-   rws run my_article.md --execute --provider google --archetype "Leningrad School"
-   ```
-3. **Проверка качества (Benchmark)**:
-   ```bash
-   # Запуск золотого набора тестов
-   rws eval-suite --provider openrouter --tags GOLD_ZALIZNYAK
-   ```
-
----
-
-## 2. Развертывание на сервере (Production)
-
-Для работы в режиме веб-сервиса (многопользовательский режим) рекомендуется следующая схема.
-
-### Архитектура
-- **Backend**: FastAPI под управлением `gunicorn` + `uvicorn`.
-- **Frontend**: Скомпилированный статический билд Vite, раздаваемый через `nginx`.
-- **Proxy**: Nginx как входная точка (SSL, порты).
-
-### Шаг 1: Сборка фронтенда
 ```bash
 cd web
 npm install
+cd ..
+rws web
+```
+
+`rws web` запускает FastAPI на `http://localhost:8000` и Vite frontend на `http://localhost:5173`.
+
+## 3. Настройка провайдеров
+
+Скопируйте `.env.example` в `.env` и заполните только те ключи, которые реально будете использовать:
+
+```env
+OPENAI_API_KEY=...
+GOOGLE_API_KEY=...
+GEMINI_API_KEY=...
+ANTHROPIC_API_KEY=...
+OPENROUTER_API_KEY=...
+```
+
+Проверка готовности не печатает секреты:
+
+```bash
+rws provider-status --strict
+rws provider-status --provider openai --strict
+```
+
+Для приватного локального режима можно использовать:
+
+```env
+RWS_OLLAMA_URL=http://localhost:11434/api/chat
+RWS_LOCAL_LLM_URL=http://localhost:8000/v1/chat/completions
+```
+
+После этого запускайте аудит с `--provider ollama` или `--provider local`.
+
+## 4. CLI smoke
+
+Без внешних ключей:
+
+```bash
+rws run examples/input/pseudo-etymology.md --run-id deployment-smoke --execute --provider mock
+rws validate-run runs/deployment-smoke
+```
+
+Eval suite:
+
+```bash
+rws eval-suite --provider mock --suite-id deployment-eval-smoke
+rws validate-eval-suite runs/deployment-eval-smoke
+```
+
+Текущий manifest содержит 33 eval-кейса. `mock` provider проверяет инфраструктуру и схемы, но не является содержательной филологической оценкой.
+
+## 5. Production через Docker Compose
+
+Контейнер собирает React frontend, устанавливает Python-пакет из `pyproject.toml`, копирует проектные данные и запускает `python -m ruwritingstyles.api`.
+
+```bash
+docker compose up --build
+```
+
+Сервис доступен на `http://localhost:8000`. Этот же порт отдает API и собранный frontend.
+
+`docker-compose.yml` монтирует:
+
+- `./rws.db:/app/rws.db` - SQLite index запусков и метрик;
+- `./runs:/app/runs` - переносимые run artifacts;
+- `./examples:/app/examples` - демонстрационные входные документы.
+
+Перед production-запуском проверьте, что `.env` не попадает в Git и что контейнер получает только нужные ключи провайдеров.
+
+## 6. Production без Docker
+
+Соберите frontend:
+
+```bash
+cd web
+npm ci
+npm run build
+cd ..
+```
+
+Установите backend и запустите FastAPI:
+
+```bash
+python -m pip install .
+python -m ruwritingstyles.api
+```
+
+Если `web/dist` существует, FastAPI автоматически раздает его вместе с API. Для публичного сервера можно поставить Nginx или другой reverse proxy перед портом `8000`; это опциональный внешний слой для TLS, домена и лимитов запросов, а не часть обязательного runtime проекта.
+
+## 7. Release checks
+
+Перед деплоем или PR:
+
+```bash
+python -m compileall -q src tools tests
+python tools/validate_project.py
+python -m unittest discover -s tests
+```
+
+Для frontend:
+
+```bash
+cd web
+npm run lint
 npm run build
 ```
-Результат будет в `web/dist/`. Эти файлы нужно скопировать в папку, которую обслуживает ваш веб-сервер (например, `/var/www/html`).
 
-### Шаг 2: Запуск бэкенда
-```bash
-# Установка зависимостей без режима редактирования
-pip install .
-# Запуск через gunicorn (4 воркера для параллельной обработки)
-gunicorn src.ruwritingstyles.api:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
-```
+GitHub Actions `CI` сейчас покрывает Python compile, `tools/validate_project.py` и unit tests. Manual workflow `Eval Smoke` запускает mock eval suite, сравнение, validation и export bundle.
 
-### Шаг 3: Настройка Nginx
-Пример конфигурации `/etc/nginx/sites-available/rws`:
-```nginx
-server {
-    listen 80;
-    server_name rws.yourdomain.com;
+## 8. Хранилище и приватность
 
-    # Frontend (Vite Build)
-    location / {
-        root /var/www/rws/web/dist;
-        try_files $uri $uri/ /index.html;
-    }
-
-    # Backend API
-    location /api/ {
-        proxy_pass http://localhost:8000/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-}
-```
-
-### Особенности серверного режима (Фаза F)
-1. **Очереди задач**: Для промышленного использования рекомендуется добавить Redis и Celery (см. `docs/project-v2-vision.md`), чтобы тяжелые аудиты выполнялись в фоновом режиме.
-2. **SQLite**: База данных `rws_index.db` будет создана автоматически в корне проекта для быстрого поиска по выполненным запускам (`runs/`).
-3. **Локальные модели**: Если сервер имеет GPU, вы можете запустить **Ollama** локально и указать её адрес в `.env`, чтобы не платить за внешние API и обеспечить полную приватность данных.
-
----
-
-## 3. Примеры использования в разных ситуациях
-
-### Сценарий: "Аудит сложной этимологической статьи"
-Исследователь хочет получить максимально строгий результат, опираясь на питерскую школу.
-```bash
-rws run article.md --execute --provider google --archetype "Leningrad School" --style ling_iesh
-```
-*Результат*: Система будет использовать паспорт Тронского и отдавать приоритет его правкам при спорах.
-
-### Сценарий: "Быстрая нормализация стиля"
-Редактору нужно привести текст к московскому академическому стандарту.
-```bash
-rws run draft.md --execute --provider openrouter --archetype "Moscow School" --style ling_nss
-```
-*Результат*: Акцент на соблюдении литературной нормы и системности определений.
-
-### Сценарий: "Приватный режим (No Cloud)"
-Для конфиденциальных текстов.
-1. Запустите Ollama с моделью `llama3:70b`.
-2. В `.env` установите: `RWS_PROVIDER=ollama`, `OLLAMA_URL=http://localhost:11434`.
-3. Запустите аудит: `rws run private.md --execute`.
+- `runs/` остается источником переносимых артефактов: prompts, JSON, Markdown, HTML, diff, LaTeX/BibTeX и ZIP.
+- `rws.db` ускоряет список запусков и хранит метрики, но не заменяет сами артефакты.
+- `provider.log.jsonl` пишет duration/retry/status telemetry без API-ключей и без полного request body.
+- Для конфиденциальных текстов используйте `mock`, `local` или `ollama`; внешние провайдеры всегда opt-in через явный `--provider`.

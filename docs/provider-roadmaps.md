@@ -109,13 +109,13 @@
 
 1. Добавить `anthropic` provider adapter. Стартовый HTTP-адаптер уже подключен к CLI как `--provider anthropic`.
 2. Поддержать `claude-sonnet-4-6` как balanced backend.
-3. Прогнать style review и council eval на трех MVP-стилях.
+3. Прогнать style review и council eval на текущем MVP-наборе из `styles/manifest.yml`.
 4. Использовать Claude как cross-provider verifier для документов, сгенерированных OpenAI или Gemini.
 5. Сравнить стоимость, latency и долю JSON repair.
 
 ## Cross-provider eval
 
-Каждый провайдер должен пройти один и тот же набор:
+Каждый провайдер должен пройти один и тот же набор. Базовый manifest сейчас содержит 33 eval-кейса; для дорогих real-provider проверок можно запускать меньший tagged subset, но promoted baseline должен быть сопоставим с полным набором.
 
 | Eval | Что проверяет |
 |---|---|

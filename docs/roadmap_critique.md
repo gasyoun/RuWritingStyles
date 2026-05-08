@@ -4,6 +4,8 @@
 > Статус: рабочий черновик для передачи следующей модели  
 > Целевой исполнитель: Gemini 2.5 Pro / Gemini 2.5 Flash (или эквивалент)
 
+> Обновление 2026-05-08: документ остается архитектурным черновиком. Текущая кодовая база уже использует 17 кластеров с ID вида `ling_*`/`lit_*` в `styles/manifest.yml`, 6 MVP-стилей, 33 eval-кейса и CLI `rws eval-suite --provider ... --suite-id ...`. Старые примеры с `cluster:<id>`, семью кластерами или отдельным `--suite` следует читать как исторические наброски, а не как актуальный интерфейс.
+
 ---
 
 ## Часть I. Критика текущего Roadmap
@@ -493,7 +495,7 @@ Eval case: текст по этимологии + finding от nss-агента 
 Использовать короткие (5–10 предложений) фрагменты из публичных статей авторов кластеров. Избегать целых страниц — только иллюстративные фрагменты.
 
 **Критерий проверки:**  
-`rws eval-suite --suite evals/cluster_baselines/` запускается и показывает результаты по кластерам.
+После переноса cluster baseline cases в `evals/manifest.json` команда `rws eval-suite --provider mock --suite-id cluster-baselines-smoke` запускается и показывает результаты по кластерам. Отдельный флаг `--suite` в текущем CLI не реализован.
 
 ---
 
@@ -605,7 +607,7 @@ G-09 (provider matrix)                [независимо, в любой мо�
 ```bash
 python tools/validate_project.py
 python -m unittest discover -s tests
-rws eval-suite --suite evals/cluster_baselines/
+rws eval-suite --provider mock --suite-id cluster-baselines-smoke
 ```
 
 **Важнейший принцип, который нельзя нарушать:**  

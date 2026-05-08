@@ -62,6 +62,16 @@ PROVIDER_CHOICES = ["mock", "openai", "google", "anthropic", "openrouter", "loca
 REAL_PROVIDER_CHOICES = ["openai", "google", "anthropic", "openrouter", "local", "ollama"]
 
 
+def _configure_stdio() -> None:
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            try:
+                reconfigure(encoding="utf-8")
+            except Exception:
+                pass
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="rws",
@@ -2181,6 +2191,7 @@ def cmd_eval_benchmark(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    _configure_stdio()
     parser = build_parser()
     args = parser.parse_args(argv)
     try:

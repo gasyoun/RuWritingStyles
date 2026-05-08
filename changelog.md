@@ -1,3 +1,15 @@
+### [2.2.1] - 2026-05-08
+#### Fixed
+- Synchronized JSON schemas with current runtime artifacts: `clusters`, `profile`, `bloom_level`, `primary_school`, `influence`, current council statuses, and underscore-style cluster IDs.
+- Fixed Docker build/runtime assumptions: install from `pyproject.toml`, copy runtime project data, build Web Studio in a Node stage, and serve `web/dist` from FastAPI.
+- Fixed Windows CLI UTF-8 output for Russian/diacritic text before argparse writes help or errors.
+- Fixed SQLite run registration cleanup and connection lifecycle around repeated deterministic run IDs.
+- Fixed frontend lint/build issues in Web Studio imports and CSS ordering.
+
+#### Changed
+- Updated tests and documentation for the current 6-style MVP set and 33 active eval cases.
+- Documented current deployment shape: local `rws web`, Docker Compose, FastAPI static frontend, `rws.db`, local/Ollama providers, and release checks.
+
 ## [2026-05-08] - Phase E: QA and Final Integration
 ### Added
 - Implemented **CI Gate** in `scripts/ci-eval-gate.py` with 100% infrastructure pass rate.
@@ -38,7 +50,7 @@
 - Implemented **Domain-Aware Verification Rules** in `verification.py` (e.g., PHONETIC_FIDELITY for dialectology).
 - Implemented **Philological Conflict Matrix** in `council.py`.
 - Enhanced `get_cluster_weights` with **Domain Match Boosts**.
-- Created 34 evaluation cases in `evals/manifest.json` (Milestone: 30+ cases).
+- Created the 30+ case evaluation layer in `evals/manifest.json`; the active manifest is now normalized to 33 cases.
 - Implemented **Adversarial Evals** for "epistemic caution".
 - Added `scripts/ci-eval-gate.py` for automated evaluation monitoring.
 - Updated `assess.py` to support `epistemic_caution` tags in impact assessment.

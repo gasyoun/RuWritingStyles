@@ -18,11 +18,13 @@ RuWritingStyles должен помогать автору или редакто
 - Локальный pipeline на артефактах в `runs/`.
 - Детерминированный `mock` provider для тестов.
 - Провайдерные адаптеры для OpenAI, Google, Anthropic и OpenRouter.
-- JSON Schema validation для run, eval suite, provider status и сравнений.
+- JSON Schema validation для run, eval suite, provider status и сравнений; схемы синхронизированы с полями `clusters`, `profile`, `bloom_level`, `primary_school`, `influence`.
 - HTML summary с findings, council, revision, verification, provider log и visual diff.
-- Web Studio на React/Vite с FastAPI backend.
-- Eval-наборы для регрессионной проверки.
-- Style passports, manifest и набор исходных ClaudeStyles.
+- Web Studio на React/Vite с FastAPI backend, multi-run comparison и production-раздачей `web/dist` из API.
+- Eval-наборы для регрессионной проверки: текущий manifest содержит 33 кейса.
+- Style passports, manifest и набор исходных ClaudeStyles; текущий MVP council set содержит 6 стилей.
+- SQLite index `rws.db` поверх переносимых artifacts в `runs/`.
+- Dockerfile и `docker-compose.yml` для контейнерного запуска.
 - Knowledge base и первые инструменты для scrutiny, migration, peer review, sentiment и project consistency.
 
 Последний стабильный checkpoint:
@@ -30,7 +32,8 @@ RuWritingStyles должен помогать автору или редакто
 ```bash
 python -m unittest discover -s tests
 python tools/validate_project.py
-python -m compileall src
+python -m compileall -q src tools tests
+cd web
 npm.cmd run lint
 npm.cmd run build
 ```
@@ -221,7 +224,7 @@ flowchart TD
 
 Развивать:
 
-- CI на Python tests, project validation, frontend lint/build;
+- CI на Python tests и project validation; frontend lint/build остаются обязательными локальными release checks и могут быть добавлены в GitHub CI отдельным шагом;
 - golden artifact tests;
 - schema versioning;
 - migration scripts для старых runs;
@@ -297,7 +300,7 @@ Definition of done:
 
 Задачи:
 
-- расширить eval manifest до 20-30 cases;
+- поддерживать текущий eval manifest из 33 cases и расширять его только с понятными gold annotations;
 - добавить gold annotations;
 - ввести provider/model leaderboard;
 - добавить style regression anchors;
@@ -373,23 +376,23 @@ Definition of done:
 
 ### Следующий день работы
 
-1. Обновить README и quickstart под текущий Web/API/pipeline.
-2. Добавить GitHub Actions CI: Python tests, validate_project, frontend lint/build.
+1. Держать README, quickstart и deployment docs синхронными с текущим Web/API/pipeline.
+2. Поддерживать GitHub Actions CI для Python tests и `validate_project`; добавить frontend lint/build в CI, если сборка Web Studio станет обязательным gate.
 3. Сделать API endpoint `/runs/{run_id}/status` или расширить `/runs/{run_id}` step-state.
-4. Добавить Web error/loading states.
+4. Доработать Web error/loading states и статусы долгих фоновых задач.
 5. Запустить один реальный provider smoke на коротком документе и сохранить заметки.
 
 ### Следующая неделя
 
 1. Реализовать resolution format.
 2. Сделать accept/reject в Web Studio или HTML summary не как download-only demo, а как вход в finalize.
-3. Расширить eval manifest минимум до 10 cases.
+3. Поддерживать текущие 33 eval cases и добавить targeted evals только для новых кластеров, провайдеров или prompt-изменений.
 4. Добавить style regression anchors для 2-3 ключевых стилей.
 5. Описать provider capability matrix.
 
 ### Следующий месяц
 
-1. Довести Web Studio до локального MVP.
+1. Довести Web Studio от локального MVP до устойчивого редакторского workbench.
 2. Добавить corpus import для docx и нормализованных txt/pdf outputs.
 3. Сделать project-run с наглядным project dashboard.
 4. Ввести baseline promotion workflow.
@@ -439,7 +442,7 @@ Definition of done:
 | Решение | Варианты | Рекомендация |
 |---|---|---|
 | Основной UX | CLI-first, Web-first, dual | Dual, но core pipeline first |
-| Storage | только файлы, SQLite index, full DB | Файлы плюс позже SQLite index |
+| Storage | только файлы, SQLite index, full DB | Файлы плюс текущий SQLite index `rws.db` |
 | Default mode | comments, revision, strict | comments для новых пользователей, revision для explicit run |
 | Real providers | один основной, несколько | несколько, качество через eval |
 | Human approval | optional, required | required для финального export |
@@ -455,7 +458,7 @@ MVP считается готовым, когда:
 - пользователь видит original, revised, findings, council decisions, verification warnings и diff;
 - можно запустить `mock` без ключей и real provider при наличии ключа;
 - можно валидировать run и экспортировать zip;
-- есть минимум 10 eval cases;
+- есть стабильный eval manifest с минимум 33 cases и понятным baseline workflow;
 - CI запускает основные проверки;
 - документация объясняет локальную установку, provider setup и безопасные ограничения;
 - ни один финальный документ не создается без traceable decisions.
@@ -542,4 +545,3 @@ MVP считается готовым, когда:
     - Использовать статьи с `philology.ru` для создания "золотых стандартов" (Golden Baselines) по каждой группе.
 
 **Критерий успеха для Gemini:** "Система автоматически определяет домен текста и предлагает подключить соответствующий набор стилевых агентов (напр. Описательный + Частный стиль автора)".
-

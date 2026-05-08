@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { 
-  Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer,
+  Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell, LineChart, Line
 } from 'recharts';
 import { 
-  Search, BookOpen, Activity, Layers, MessageSquare, AlertTriangle, 
-  CheckCircle, ChevronRight, Settings, Download, Plus, Info, Zap, Filter
+  Search, BookOpen, Activity, Layers, MessageSquare,
+  Settings, Download, Plus, Info, Zap
 } from 'lucide-react';
 
 function App() {

@@ -27,13 +27,6 @@
           },
           "scoring": {
             "type": "object",
-            "required": [
-              "required_finding_types",
-              "min_required_matches",
-              "allowed_verification_statuses",
-              "max_changed_line_ratio",
-              "max_char_delta_ratio"
-            ],
             "properties": {
               "required_finding_types": {
                 "type": "array",

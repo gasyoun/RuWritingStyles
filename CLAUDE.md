@@ -68,11 +68,11 @@ Env vars are loaded from `.env` via `python-dotenv` at CLI import time. The `pro
 
 ## Schemas as the contract
 
-Every JSON artifact has a schema in `schemas/`: `review.schema.json`, `council.schema.json`, `revision.schema.json`, `verification.schema.json`, `style.schema.json`, `model-policy.schema.json`, `provider-status.schema.json`, plus `eval-*` variants. `tools/validate_project.py` and `rws validate-run` apply these via the in-repo `schema_validation.py` (a lightweight subset, not jsonschema). When you change an artifact shape, change its schema and the validator together — CI runs both.
+Every JSON artifact has a schema in `schemas/`: `review.schema.json`, `council.schema.json`, `revision.schema.json`, `verification.schema.json`, `style.schema.json`, `model-policy.schema.json`, `provider-status.schema.json`, plus `eval-*` variants. `tools/validate_project.py` and `rws validate-run` apply these via the in-repo `schema_validation.py` (a lightweight subset, not jsonschema). Current schema-sensitive fields include style `clusters`, user `profile`, council `bloom_level`, `primary_school`, and `influence`. When you change an artifact shape, change its schema and the validator together — CI runs both.
 
 ## Eval suite
 
-`evals/manifest.json` defines comparison cases (`pseudo-etymology`, `register-shift`, `source-claim`, etc.) that map to documents under `examples/input/`. `rws eval-suite --provider mock --suite-id <id>` runs all cases and writes `eval-suite-result.json` + `eval-suite-report.md`. Use `rws eval-compare A B` to diff two suite runs; `--strict` makes regressions fail with exit 1. The `Eval Smoke` GitHub Actions workflow pins this for the mock provider.
+`evals/manifest.json` defines 33 comparison cases (`pseudo-etymology`, `register-shift`, `source-claim`, cluster/adversarial cases, etc.) that map to documents under `examples/input/`. `rws eval-suite --provider mock --suite-id <id>` runs all cases and writes `eval-suite-result.json` + `eval-suite-report.md`. Use `rws eval-compare A B` to diff two suite runs; `--strict` makes regressions fail with exit 1. The `Eval Smoke` GitHub Actions workflow pins this for the mock provider.
 
 ## Code organization in `src/ruwritingstyles/`
 

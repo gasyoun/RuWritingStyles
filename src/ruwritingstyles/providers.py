@@ -137,7 +137,7 @@ class MockProvider(BaseProvider):
             decisions.append({
                 "finding_id": finding_id,
                 "bloom_level": "Evaluate",
-                "status": "accepted",
+                "status": "informational",
                 "primary_school": "ling_iesh",
                 "influence": {"ling_iesh": 0.8, "ling_mss": 0.2},
                 "reason": "Mock council keeps placeholder findings informational.",
@@ -148,7 +148,11 @@ class MockProvider(BaseProvider):
             "replies": replies,
             "decisions": decisions,
             "stylistic_commitments": [
-                {"term": "Mock Term", "logic": "Keep it as is."}
+                {
+                    "term": "Mock Term",
+                    "decision": "Keep it as is.",
+                    "rationale": "Mock provider uses a stable placeholder commitment for schema validation.",
+                }
             ],
         }
 
