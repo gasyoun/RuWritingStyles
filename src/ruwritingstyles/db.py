@@ -31,10 +31,24 @@ class Database:
                     archetype TEXT,
                     status TEXT DEFAULT 'prepared',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    started_at TIMESTAMP,
+                    finished_at TIMESTAMP,
+                    duration_seconds REAL,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     summary TEXT
                 )
             """)
+            
+            # Migration for existing DBs
+            try:
+                conn.execute("ALTER TABLE runs ADD COLUMN started_at TIMESTAMP")
+            except sqlite3.OperationalError: pass
+            try:
+                conn.execute("ALTER TABLE runs ADD COLUMN finished_at TIMESTAMP")
+            except sqlite3.OperationalError: pass
+            try:
+                conn.execute("ALTER TABLE runs ADD COLUMN duration_seconds REAL")
+            except sqlite3.OperationalError: pass
             
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS run_metrics (
@@ -69,18 +83,47 @@ class Database:
             )
 
     def update_run_status(self, run_id: str, status: str, summary: str | None = None):
-        """Update the status of an existing run."""
+        """Update the status of an existing run and track timestamps."""
         with self._get_connection() as conn:
-            if summary:
+            now = datetime.now(timezone.utc).isoformat()
+            
+            if status == "executing":
                 conn.execute(
-                    "UPDATE runs SET status = ?, summary = ? WHERE run_id = ?",
-                    (status, summary, run_id)
+                    "UPDATE runs SET status = ?, started_at = ? WHERE run_id = ?",
+                    (status, now, run_id)
                 )
+            elif status in ("completed", "failed"):
+                # Fetch started_at to calculate duration
+                row = conn.execute("SELECT started_at FROM runs WHERE run_id = ?", (run_id,)).fetchone()
+                duration = None
+                if row and row["started_at"]:
+                    try:
+                        start_time = datetime.fromisoformat(row["started_at"])
+                        duration = (datetime.now(timezone.utc) - start_time).total_seconds()
+                    except ValueError:
+                        pass
+                
+                if summary:
+                    conn.execute(
+                        "UPDATE runs SET status = ?, finished_at = ?, duration_seconds = ?, summary = ? WHERE run_id = ?",
+                        (status, now, duration, summary, run_id)
+                    )
+                else:
+                    conn.execute(
+                        "UPDATE runs SET status = ?, finished_at = ?, duration_seconds = ? WHERE run_id = ?",
+                        (status, now, duration, run_id)
+                    )
             else:
-                conn.execute(
-                    "UPDATE runs SET status = ? WHERE run_id = ?",
-                    (status, run_id)
-                )
+                if summary:
+                    conn.execute(
+                        "UPDATE runs SET status = ?, summary = ? WHERE run_id = ?",
+                        (status, summary, run_id)
+                    )
+                else:
+                    conn.execute(
+                        "UPDATE runs SET status = ? WHERE run_id = ?",
+                        (status, run_id)
+                    )
 
     def save_metric(self, run_id: str, metric_type: str, data: Any):
         """Save a metric (e.g., bloom_stats, compass) as JSON."""

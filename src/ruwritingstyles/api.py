@@ -128,6 +128,28 @@ app.add_middleware(
 )
 
 
+@app.get("/api/compare")
+async def compare_runs(run_ids: str):
+    ids = run_ids.split(",")
+    from .db import Database
+    repo_root = repo_root_from()
+    db = Database(repo_root)
+    
+    comparison = []
+    for run_id in ids:
+        run_data = db.get_run(run_id)
+        if run_data:
+            comparison.append({
+                "run_id": run_id,
+                "profile": run_data.get("profile", {}),
+                "bloom_stats": run_data.get("bloom_stats", {}),
+                "duration": run_data.get("duration_seconds"),
+                "status": run_data.get("status")
+            })
+            
+    return comparison
+
+
 def _run_dir(repo_root: Path, run_id: str) -> Path:
     runs_dir = (repo_root / "runs").resolve()
     run_dir = (runs_dir / run_id).resolve()
@@ -142,7 +164,28 @@ def _read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+# Serve the built frontend if it exists
+frontend_path = Path("web/dist")
+if frontend_path.exists():
+    app.mount("/assets", StaticFiles(directory=frontend_path / "assets"), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def serve_frontend(full_path: str):
+        if full_path.startswith("api/") or full_path.startswith("runs/") or full_path == "status":
+            raise HTTPException(status_code=404)
+        
+        # Check if file exists
+        file_path = frontend_path / full_path
+        if file_path.is_file():
+            return FileResponse(file_path)
+            
+        # Fallback to index.html for SPA routing
+        return FileResponse(frontend_path / "index.html")
+
 if __name__ == "__main__":
     import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
