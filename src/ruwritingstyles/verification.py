@@ -119,6 +119,7 @@ The following rules were established in previous documents of this project. You 
         "semiotics": "Rule: TERMINOLOGICAL_RIGOR. Do not allow simplification of semiotic terms (code, signifier, interpretant) into generic words.",
         "dialectology": "Rule: PHONETIC_FIDELITY. Any change to phonetic transcription or dialectal forms must be flagged as a CRITICAL violation.",
         "history": "Rule: HISTORICAL_DISTANCE. Avoid anachronistic modern terminology in descriptions of past epochs.",
+        "literature": "Rule: SCHOLARLY_ETIQUETTE. Do not allow the removal of academic 'hedging' (it seems, apparently) unless it is redundant. Preserve the epistemic humility of the author.",
     }.get(text_domain, "Rule: GENERAL_FIDELITY. Preserve all nuanced scholarly phrasing.")
 
     return f"""# Verification Request

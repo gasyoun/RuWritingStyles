@@ -8,11 +8,19 @@ This quickstart runs the current RuWritingStyles pipeline without external API k
 python -m pip install -e .
 ```
 
-If the installed `rws` script is not on `PATH`, use:
-
 ```bash
 python -m ruwritingstyles.cli --help
 ```
+
+## 1.1 Launch Web Studio (Recommended)
+
+The easiest way to use RuWritingStyles is through the Web Studio:
+
+```bash
+rws web
+```
+
+This launches a visual workbench at `http://localhost:5173`.
 
 ## 2. Inspect styles
 

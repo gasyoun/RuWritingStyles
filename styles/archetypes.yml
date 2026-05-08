@@ -40,4 +40,25 @@ archetypes:
     weights:
       default: 1.0
       zalizniak-academic: 1.5
-      philological-scrutiny: 3.0
+  - id: "Moscow School"
+    name: "Moscow Systemic Arbiter"
+    description: "Prioritizes Moscow Semantic and Phonological schools (MFS). Values systemic consistency and morphological transparency."
+    instructions: |
+      - Favor Moscow-based clusters (MSS, TSH, KMSH).
+      - Resolve conflicts in favor of systemic regularity.
+    weights:
+      default: 1.0
+      ling_mss: 2.0
+      ling_tsh: 2.0
+      ling_kmsh: 2.0
+
+  - id: "Leningrad School"
+    name: "Leningrad Realist Arbiter"
+    description: "Prioritizes Leningrad/St. Petersburg schools (LFS). Values experimental reality and traditional phonetic norms."
+    instructions: |
+      - Favor Leningrad-based clusters (IESH, PFG).
+      - Resolve conflicts in favor of historical-etymological realism and 'Scherba' phonetics.
+    weights:
+      default: 1.0
+      ling_iesh: 2.0
+      ling_pfg: 2.0

@@ -33,6 +33,7 @@ class ClusterConfig:
     path: Path
     name: str
     domains: tuple[str, ...] = ()
+    location: str = ""
 
 
 @dataclass(frozen=True)
@@ -140,7 +141,7 @@ def load_manifest(repo_root: Path) -> Manifest:
     current_cluster: dict[str, str] = {}
     for line in clusters_block.splitlines():
         item_match = re.match(r"^\s*-\s+id:\s*['\"]?([^'\"\n]+?)['\"]?\s*$", line)
-        field_match = re.match(r"^\s+(path|name):\s*['\"]?([^'\"\n]+?)['\"]?\s*$", line)
+        field_match = re.match(r"^\s+(path|name|location):\s*['\"]?([^'\"\n]+?)['\"]?\s*$", line)
         if item_match:
             if current_cluster:
                 clusters.append(_cluster_config(repo_root, current_cluster))
@@ -204,6 +205,7 @@ def _cluster_config(repo_root: Path, data: dict[str, str]) -> ClusterConfig:
         path=path,
         name=data.get("name", data["id"]),
         domains=domains,
+        location=data.get("location", ""),
     )
 
 
