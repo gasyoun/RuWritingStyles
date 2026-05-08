@@ -31,6 +31,7 @@ def create_review_bundle(
     run_dir: Path,
     style_id: str,
     manifest: Manifest,
+    profile: str = "researcher",
 ) -> ReviewBundle:
     run_dir = run_dir.resolve()
     segments_path = run_dir / "segments.json"
@@ -61,6 +62,7 @@ def create_review_bundle(
             passport=passport,
             segments_json=segments_path.read_text(encoding="utf-8"),
             normalized_text=normalized_path.read_text(encoding="utf-8"),
+            profile=profile,
         ),
         encoding="utf-8",
     )
@@ -75,6 +77,7 @@ def create_review_bundle(
                 "expected_finding_schema": "schemas/finding.schema.json",
                 "segment_count": len(segments),
                 "findings": [],
+                "profile": profile,
             },
             ensure_ascii=False,
             indent=2,
@@ -100,6 +103,7 @@ def create_deliberation_bundle(
     run_dir: Path,
     style_id: str,
     manifest: Manifest,
+    profile: str = "researcher",
 ) -> DeliberationBundle:
     run_dir = run_dir.resolve()
     segments_path = run_dir / "segments.json"
@@ -138,6 +142,7 @@ def create_deliberation_bundle(
             passport=passport,
             other_reviews_json=other_reviews_json,
             segments_json=segments_path.read_text(encoding="utf-8"),
+            profile=profile,
         ),
         encoding="utf-8",
     )
@@ -150,6 +155,7 @@ def create_deliberation_bundle(
                 "status": "prompt_ready",
                 "prompt_path": _repo_relative(repo_root, prompt_path),
                 "replies": [],
+                "profile": profile,
             },
             ensure_ascii=False,
             indent=2,
@@ -169,8 +175,11 @@ def _render_delib_prompt(
     passport: StylePassportSummary,
     other_reviews_json: str,
     segments_json: str,
+    profile: str = "researcher",
 ) -> str:
     passport_text = passport.passport_path.read_text(encoding="utf-8")
+    from .profiles import get_profile_suffix
+    profile_suffix = get_profile_suffix(profile)
 
     return f"""# Style Deliberation Request
 
@@ -179,6 +188,9 @@ You are a RuWritingStyles `style_deliberator` representing style `{passport.styl
 ## Your Mission
 
 Review the style findings provided by OTHER agents. Compare them against your own style rules. For each finding, decide if you agree, disagree, or want to suggest a modification.
+
+## User Profile: {profile.capitalize()}
+{profile_suffix}
 
 ## Required Output
 
@@ -229,9 +241,12 @@ def _render_prompt(
     passport: StylePassportSummary,
     segments_json: str,
     normalized_text: str,
+    profile: str = "researcher",
 ) -> str:
     passport_text = passport.passport_path.read_text(encoding="utf-8")
     style_text = passport.source_prompt.read_text(encoding="utf-8")
+    from .profiles import get_profile_suffix
+    profile_suffix = get_profile_suffix(profile)
 
     return f"""# Style Review Request
 
@@ -246,6 +261,9 @@ Review the document segments for style `{passport.style_id}` and return only JSO
 - Style id: `{passport.style_id}`
 - Style name: `{passport.name}`
 - Role: `{passport.role}`
+
+## User Profile: {profile.capitalize()}
+{profile_suffix}
 
 ## Required Output
 

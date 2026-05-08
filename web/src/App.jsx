@@ -1,13 +1,23 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react';
+import { 
+  Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell
+} from 'recharts';
+import { 
+  Search, BookOpen, Activity, Layers, MessageSquare, AlertTriangle, 
+  CheckCircle, ChevronRight, Settings, Download, Plus, Info, Zap
+} from 'lucide-react';
 
 function App() {
   const [runs, setRuns] = useState([]);
   const [activeRunId, setActiveRunId] = useState(null);
   const [runData, setRunData] = useState(null);
+  const [concordance, setConcordance] = useState({});
   const [systemStatuses, setSystemStatuses] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState('google');
   const [isNewRunModalOpen, setIsNewRunModalOpen] = useState(false);
   const [newRunPath, setNewRunPath] = useState('C:\\Users\\user\\Documents\\GitHub\\RuWritingStyles\\article.md');
+  const [viewMode, setViewMode] = useState('audit'); // 'audit', 'profile', 'syntax'
 
   // 1. Fetch Runs List
   const fetchRuns = useCallback(() => {
@@ -33,7 +43,13 @@ function App() {
     if (activeRunId) {
       fetch(`http://localhost:8000/runs/${activeRunId}`)
         .then(res => res.json())
-        .then(data => setRunData(data));
+        .then(data => {
+          setRunData(data);
+          // Fetch concordance for this run
+          fetch(`http://localhost:8000/runs/${activeRunId}/concordance`)
+            .then(res => res.json())
+            .then(concData => setConcordance(concData));
+        });
     }
   }, [activeRunId]);
 
@@ -55,129 +71,283 @@ function App() {
 
   const currentStatus = systemStatuses.find(p => p.provider === selectedProvider) || { ready: false };
 
+  // Prepare Compass Data
+  const compassData = runData?.profile ? Object.entries(runData.profile).map(([name, value]) => ({
+    subject: name,
+    A: value * 100,
+    fullMark: 100
+  })) : [];
+
+  // Prepare Bloom Data
+  const bloomData = runData?.bloom_stats ? Object.entries(runData.bloom_stats).map(([name, value]) => ({
+    name,
+    count: value
+  })) : [];
+
+  const BLOOM_COLORS = {
+    'Remembering': '#8b949e',
+    'Understanding': '#58a6ff',
+    'Applying': '#3fb950',
+    'Analyzing': '#d29922',
+    'Evaluating': '#f85149',
+    'Creating': '#bc8cff'
+  };
+
+  const getTensionColor = (score) => {
+    if (!score) return 'transparent';
+    const alpha = score * 0.3;
+    if (score > 0.8) return `rgba(248, 81, 73, ${alpha})`; // High tension: Red
+    if (score > 0.4) return `rgba(210, 153, 34, ${alpha})`; // Medium tension: Orange
+    return `rgba(88, 166, 255, ${alpha})`; // Low tension: Blue
+  };
+
   return (
     <div className="studio-container">
       <aside className="sidebar">
-        <div className="sidebar-header">RuWritingStyles</div>
+        <div className="sidebar-header">
+          <Layers size={24} />
+          <span>RuWritingStyles</span>
+        </div>
         
-        <div style={{marginBottom: '1rem'}}>
-          <button 
-            onClick={() => setIsNewRunModalOpen(true)}
-            style={{width: '100%', padding: '0.75rem', background: '#3fb950', border: 'none', color: 'white', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', marginBottom: '1rem'}}
-          >
-            + New Philological Audit
-          </button>
+        <button 
+          className="new-audit-btn"
+          onClick={() => setIsNewRunModalOpen(true)}
+        >
+          <Plus size={18} />
+          New Philological Audit
+        </button>
 
-          <label style={{fontSize: '0.7rem', color: '#8b949e', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block'}}>Active Provider</label>
+        <div className="provider-selector">
+          <label>Active Intelligence</label>
           <select 
             value={selectedProvider} 
             onChange={(e) => setSelectedProvider(e.target.value)}
-            style={{width: '100%', padding: '0.5rem', background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', color: 'white', borderRadius: '4px'}}
           >
-            <option value="google">Google Gemini</option>
-            <option value="openrouter">OpenRouter (Free)</option>
-            <option value="anthropic">Anthropic Claude</option>
+            <option value="google">Google Gemini 1.5</option>
+            <option value="anthropic">Claude 3.5 Sonnet</option>
+            <option value="openrouter">OpenRouter (Balanced)</option>
           </select>
         </div>
 
-        <ul className="run-list">
-          {runs.map(runId => (
-            <li 
-              key={runId} 
-              className={`run-item ${activeRunId === runId ? 'active' : ''}`}
-              onClick={() => setActiveRunId(runId)}
-            >
-              <div>{runId}</div>
-            </li>
-          ))}
-        </ul>
+        <nav className="run-list-container">
+          <div className="section-label">Audit History</div>
+          <ul className="run-list">
+            {runs.map(runId => (
+              <li 
+                key={runId} 
+                className={`run-item ${activeRunId === runId ? 'active' : ''}`}
+                onClick={() => setActiveRunId(runId)}
+              >
+                < chevronRight size={14} />
+                <span className="run-id-text">{runId}</span>
+              </li>
+            ))}
+          </ul>
+        </nav>
         
-        <div style={{marginTop: 'auto', padding: '1rem', borderTop: '1px solid var(--border-color)', fontSize: '0.8rem'}}>
-          <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem'}}>
-            <div style={{width: 8, height: 8, borderRadius: '50%', background: currentStatus.ready ? '#3fb950' : '#f85149'}}></div>
+        <div className="sidebar-footer">
+          <div className={`status-pill ${currentStatus.ready ? 'ready' : 'offline'}`}>
+            <div className="status-dot"></div>
             <span>{selectedProvider.toUpperCase()}: {currentStatus.ready ? 'READY' : 'OFFLINE'}</span>
           </div>
+          <Settings size={18} className="settings-icon" />
         </div>
       </aside>
 
       <main className="workbench">
         <header className="workbench-header">
-          <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
-            <div style={{fontWeight: 600}}>Workbench: {activeRunId || 'No Run Selected'}</div>
-            {currentStatus.ready && <span style={{fontSize: '0.7rem', background: 'rgba(63, 185, 80, 0.15)', color: '#3fb950', padding: '2px 8px', borderRadius: '12px', border: '1px solid rgba(63, 185, 80, 0.4)'}}>High Assurance Mode</span>}
+          <div className="header-left">
+            <h2 className="run-title">Workbench: {activeRunId || 'No Run Selected'}</h2>
+            {currentStatus.ready && <span className="badge">v2.0 Scholarly Harness</span>}
           </div>
-          <div style={{display: 'flex', gap: '1rem'}}>
-             <button style={{padding: '0.5rem 1rem', borderRadius: '6px', background: '#58a6ff', border: 'none', color: 'white', fontWeight: 600, cursor: 'pointer'}}>Finalize & Export</button>
+          
+          <div className="view-switcher">
+            <button className={viewMode === 'audit' ? 'active' : ''} onClick={() => setViewMode('audit')}>
+              <BookOpen size={16} /> Audit
+            </button>
+            <button className={viewMode === 'profile' ? 'active' : ''} onClick={() => setViewMode('profile')}>
+              <Activity size={16} /> Profile
+            </button>
+            <button className={viewMode === 'syntax' ? 'active' : ''} onClick={() => setViewMode('syntax')}>
+              <Layers size={16} /> Syntax
+            </button>
+          </div>
+
+          <div className="header-actions">
+             <button className="export-btn">
+               <Download size={16} /> Export
+             </button>
           </div>
         </header>
 
         {runData ? (
-          <>
-            <section className="council-chamber">
-              <div className="agent-card">
-                <div className="agent-name">Council Coordinator</div>
-                <div className="agent-status" style={{color: '#58a6ff'}}>Deliberation Completed</div>
-                <div style={{marginTop: 'auto', fontSize: '0.7rem', color: '#8b949e'}}>Matches Found: {runData.revision?.applied_changes?.length || 0}</div>
-              </div>
-              <div className="agent-card">
-                <div className="agent-name">Scholarly Sentiment</div>
-                <div className="agent-status">Distance: {runData.sentiment?.deltas?.distance || 0}</div>
-                <div style={{marginTop: 'auto', fontSize: '0.7rem', color: '#8b949e'}}>Tone shift verified</div>
-              </div>
-            </section>
-
-            <section className="editor-grid">
-              <div className="editor-pane">
-                <div className="pane-label">Original Manuscript</div>
-                <div className="pane-content">{runData.original_text || 'Loading text...'}</div>
-              </div>
-              <div className="editor-pane">
-                <div className="pane-label">Philological Revision</div>
-                <div className="pane-content" style={{color: '#c9d1d9'}}>{runData.revised_text || 'No revision data found.'}</div>
-              </div>
-            </section>
-
-            {runData.council?.decisions && runData.council.decisions.length > 0 && (
-              <section className="decisions-log" style={{marginTop: '2rem'}}>
-                <div style={{fontSize: '0.9rem', fontWeight: 600, color: '#8b949e', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
-                  Philological Council Decisions
+          <div className="workbench-content">
+            <section className="stats-row">
+              <div className="stat-card glass">
+                <div className="stat-header">
+                  <Activity size={16} />
+                  <span>Methodological Compass</span>
                 </div>
-                <div style={{display: 'grid', gap: '1rem'}}>
-                  {runData.council.decisions.map((decision, idx) => (
-                    <div key={idx} style={{padding: '1rem', background: 'var(--bg-secondary)', borderLeft: '4px solid #58a6ff', borderRadius: '4px'}}>
-                      <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
-                         <span style={{fontSize: '0.7rem', color: '#58a6ff', fontWeight: 600}}>{decision.finding_id}</span>
-                         <span style={{fontSize: '0.7rem', background: 'rgba(88, 166, 255, 0.1)', padding: '2px 6px', borderRadius: '4px'}}>{decision.status}</span>
+                <div className="chart-container">
+                  <ResponsiveContainer width="100%" height={150}>
+                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={compassData}>
+                      <PolarGrid stroke="#30363d" />
+                      <PolarAngleAxis dataKey="subject" tick={{fontSize: 10, fill: '#8b949e'}} />
+                      <Radar name="Alignment" dataKey="A" stroke="#58a6ff" fill="#58a6ff" fillOpacity={0.6} />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="stat-card glass">
+                <div className="stat-header">
+                  <Zap size={16} />
+                  <span>Cognitive Depth (Bloom)</span>
+                </div>
+                <div className="chart-container">
+                  <ResponsiveContainer width="100%" height={150}>
+                    <BarChart data={bloomData} layout="vertical">
+                      <XAxis type="number" hide />
+                      <YAxis type="category" dataKey="name" tick={{fontSize: 10, fill: '#8b949e'}} width={80} />
+                      <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                        {bloomData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={BLOOM_COLORS[entry.name] || '#58a6ff'} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="stat-card glass">
+                <div className="stat-header">
+                  <Layers size={16} />
+                  <span>Syntax Complexity</span>
+                </div>
+                <div className="stat-value">{runData.syntax?.shifts?.length || 0}</div>
+                <div className="stat-label">Significant shifts detected</div>
+              </div>
+            </section>
+
+            <section className="main-grid">
+              <div className="editor-section">
+                <div className="dual-editor glass">
+                  <div className="pane">
+                    <div className="pane-header">Manuscript & Tension Map</div>
+                    <div className="pane-scroll">
+                      <div className="text-content">
+                        {runData.segments?.segments?.map((seg, i) => (
+                          <span 
+                            key={i} 
+                            className="text-segment"
+                            style={{ 
+                              background: getTensionColor(runData.tension?.[seg.span_id]),
+                              borderBottom: runData.tension?.[seg.span_id] > 0.5 ? '1px dashed #f85149' : 'none'
+                            }}
+                            title={runData.tension?.[seg.span_id] ? `Tension Score: ${runData.tension[seg.span_id]}` : ''}
+                          >
+                            {seg.text}
+                          </span>
+                        ))}
                       </div>
-                      <div style={{fontSize: '0.85rem', color: '#c9d1d9'}}>{decision.reason}</div>
                     </div>
-                  ))}
+                  </div>
+                  <div className="pane">
+                    <div className="pane-header">Philological Revision</div>
+                    <div className="pane-scroll">
+                      <div className="text-content revised">
+                        {runData.revised_text}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </section>
-            )}
-          </>
+
+                <div className="decisions-panel glass">
+                   <div className="panel-header">
+                     <MessageSquare size={16} />
+                     Council Deliberations
+                   </div>
+                   <div className="decisions-list">
+                     {runData.council?.decisions?.map((d, i) => (
+                       <div key={i} className="decision-item">
+                         <div className="decision-meta">
+                           <span className="span-tag">{d.finding_id}</span>
+                           <span className={`status-tag ${d.status}`}>{d.status}</span>
+                           <span className="bloom-tag" style={{background: BLOOM_COLORS[d.bloom_level]}}>{d.bloom_level}</span>
+                         </div>
+                         <div className="decision-text">{d.reason}</div>
+                         {d.influence && (
+                           <div className="school-tags">
+                             {Object.entries(d.influence).map(([school, weight]) => (
+                               <span key={school} className="school-tag">{school}: {Math.round(weight*100)}%</span>
+                             ))}
+                           </div>
+                         )}
+                       </div>
+                     ))}
+                   </div>
+                </div>
+              </div>
+
+              <aside className="concordance-sidebar glass">
+                <div className="panel-header">
+                  <BookOpen size={16} />
+                  Interactive Concordance
+                </div>
+                <div className="concordance-content">
+                  {Object.keys(concordance).length > 0 ? (
+                    Object.entries(concordance).map(([term, matches]) => (
+                      <div key={term} className="concordance-group">
+                        <div className="term-label">{term}</div>
+                        {matches.map((m, i) => (
+                          <div key={i} className="concordance-match">
+                            <div className="match-source">{m.source}</div>
+                            <div className="match-text">«{m.text}»</div>
+                          </div>
+                        ))}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="empty-concordance">
+                      <Info size={24} />
+                      <p>No academic precedents found for this passage.</p>
+                    </div>
+                  )}
+                </div>
+              </aside>
+            </section>
+          </div>
         ) : (
-          <div style={{display: 'flex', alignItems: 'center', justifySelf: 'center', height: '100%', color: '#8b949e'}}>
-            Select a run from the sidebar to view details
+          <div className="empty-state">
+            <Search size={48} />
+            <h2>Select an Audit to begin</h2>
+            <p>Or start a new philological investigation using the sidebar.</p>
           </div>
         )}
       </main>
 
       {isNewRunModalOpen && (
-        <div style={{position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000}}>
-          <div style={{background: 'var(--bg-secondary)', padding: '2rem', borderRadius: '12px', width: '400px', border: '1px solid var(--border-color)'}}>
-            <h3>New Philological Audit</h3>
-            <p style={{fontSize: '0.8rem', color: '#8b949e', margin: '1rem 0'}}>Enter the path to your article (.md or .txt):</p>
-            <input 
-              type="text" 
-              placeholder="C:/path/to/my-article.md"
-              value={newRunPath}
-              onChange={(e) => setNewRunPath(e.target.value)}
-              style={{width: '100%', padding: '0.75rem', background: 'var(--bg-primary)', border: '1px solid var(--border-color)', color: 'white', borderRadius: '6px', marginBottom: '1.5rem'}}
-            />
-            <div style={{display: 'flex', gap: '1rem', justifyContent: 'flex-end'}}>
-              <button onClick={() => setIsNewRunModalOpen(false)} style={{background: 'none', border: 'none', color: '#8b949e', cursor: 'pointer'}}>Cancel</button>
-              <button onClick={handleStartRun} style={{padding: '0.5rem 1.5rem', background: '#58a6ff', border: 'none', color: 'white', borderRadius: '6px', fontWeight: 600, cursor: 'pointer'}}>Start Audit</button>
+        <div className="modal-overlay">
+          <div className="modal glass">
+            <div className="modal-header">
+              <Plus size={20} />
+              <h3>New Philological Audit</h3>
+            </div>
+            <div className="modal-body">
+              <p>Initialize a new automated stylistic audit. Specify the absolute path to your source manuscript (.md, .txt).</p>
+              <div className="input-group">
+                <label>Manuscript Path</label>
+                <input 
+                  type="text" 
+                  value={newRunPath}
+                  onChange={(e) => setNewRunPath(e.target.value)}
+                  placeholder="C:/Users/Research/draft.md"
+                />
+              </div>
+              <div className="modal-actions">
+                <button className="cancel-btn" onClick={() => setIsNewRunModalOpen(false)}>Cancel</button>
+                <button className="start-btn" onClick={handleStartRun}>Execute Audit</button>
+              </div>
             </div>
           </div>
         </div>

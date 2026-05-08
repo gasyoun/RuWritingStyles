@@ -196,7 +196,7 @@ def execute_impact_artifact(*, repo_root: Path, impact_path: Path, provider: Bas
     _write_json(impact_path, impact)
 
 
-def execute_syntax_artifact(*, repo_root: Path, syntax_path: Path, provider: BaseProvider, model: str | None = None) -> None:
+def execute_syntax_artifact(repo_root: Path, syntax_path: Path, provider: BaseProvider, model: str | None = None) -> None:
     syntax = _load_json(syntax_path)
     if syntax.get("status") != "prompt_ready":
         return

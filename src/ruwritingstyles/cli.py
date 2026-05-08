@@ -58,8 +58,8 @@ from .validation import (
 )
 from .verification import create_verification_bundle
 
-PROVIDER_CHOICES = ["mock", "openai", "google", "anthropic", "openrouter"]
-REAL_PROVIDER_CHOICES = ["openai", "google", "anthropic", "openrouter"]
+PROVIDER_CHOICES = ["mock", "openai", "google", "anthropic", "openrouter", "local", "ollama"]
+REAL_PROVIDER_CHOICES = ["openai", "google", "anthropic", "openrouter", "local", "ollama"]
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -84,6 +84,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--run-id",
         help="Optional deterministic run id. The target runs/<run-id> must not already exist.",
     )
+    _add_provider_args(prepare)
     prepare.set_defaults(func=cmd_prepare)
 
     run = subparsers.add_parser(
@@ -130,6 +131,8 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Interactively review and override Council decisions before revision.",
     )
+    run.add_argument("--archetype", help="Council archetype ID")
+    run.add_argument("--profile", default="researcher", choices=["researcher", "editor", "student"], help="User profile for tailored advice.")
     _add_execute_args(run)
     run.set_defaults(func=cmd_run)
 
@@ -722,6 +725,7 @@ def cmd_prepare(args: argparse.Namespace) -> int:
         manifest=manifest,
         model_policy=model_policy,
         run_id=args.run_id,
+        provider=args.provider,
     )
 
     print(f"created {run_dir.relative_to(repo_root)}")
@@ -879,6 +883,8 @@ def cmd_run(args: argparse.Namespace) -> int:
         manifest=manifest,
         model_policy=model_policy,
         run_id=run_id,
+        provider=args.provider,
+        archetype=getattr(args, "archetype", None),
     )
 
     if project_dir:
@@ -897,6 +903,7 @@ def cmd_run(args: argparse.Namespace) -> int:
             run_dir=run_dir,
             style_id=style_id,
             manifest=manifest,
+            profile=args.profile,
         )
         print(f"created {bundle.review_json.relative_to(repo_root)}")
         if args.execute:
@@ -916,6 +923,7 @@ def cmd_run(args: argparse.Namespace) -> int:
                 run_dir=run_dir,
                 style_id=style_id,
                 manifest=manifest,
+                profile=args.profile,
             )
             print(f"created {bundle.deliberation_json.relative_to(repo_root)}")
             if args.execute:
@@ -955,6 +963,8 @@ def cmd_run(args: argparse.Namespace) -> int:
             run_dir=run_dir,
             manifest=manifest,
             verification_feedback=verification_feedback,
+            archetype_id=getattr(args, "archetype", None),
+            profile=args.profile,
         )
         print(f"created {council.council_json.relative_to(repo_root)}")
         if args.execute:
@@ -1005,6 +1015,34 @@ def cmd_run(args: argparse.Namespace) -> int:
                 model=args.model or model_policy.resolve_model("verification", args.provider),
             )
             print(f"completed {impact.impact_json.relative_to(repo_root)}")
+            # Phase F: Syntax Assessment
+            from .syntax import create_syntax_bundle
+            from .execution import execute_syntax_artifact
+            syntax_bundle = create_syntax_bundle(repo_root=repo_root, run_dir=run_dir)
+            if syntax_bundle:
+                s_path = Path(syntax_bundle["syntax_path"])
+                print(f"created {s_path.relative_to(repo_root)}")
+                execute_syntax_artifact(
+                    repo_root=repo_root,
+                    syntax_path=s_path,
+                    provider=provider_from_name(args.provider),
+                    model=(args.model or model_policy.resolve_model("verification", args.provider))
+                )
+                print(f"completed {s_path.relative_to(repo_root)}")
+
+
+            # Phase F: Syntax Assessment
+            from .syntax import create_syntax_bundle
+            from .execution import execute_syntax_artifact
+            syntax_bundle = create_syntax_bundle(repo_root=repo_root, run_dir=run_dir)
+            print(f"created {Path(syntax_bundle['syntax_path']).relative_to(repo_root)}")
+            execute_syntax_artifact(
+                repo_root=repo_root,
+                syntax_path=Path(syntax_bundle["syntax_path"]),
+                provider=provider_from_name(args.provider),
+                model=args.model or model_policy.resolve_model("verification", args.provider),
+            )
+            print(f"completed {Path(syntax_bundle['syntax_path']).relative_to(repo_root)}")
 
             # Check if we should loop
             v_doc = json.loads(verification.verification_json.read_text(encoding="utf-8"))

@@ -9,12 +9,21 @@
 - Expanded Documentation: Added [`docs/scenarios.md`](docs/scenarios.md), [`docs/deployment.md`](docs/deployment.md), and [`docs/project-v2-vision.md`](docs/project-v2-vision.md).
 - Enhanced Web Studio: Integrated visual display of Council reasoning and conflict resolution logs.
 
-## [2026-05-08] - Phase F: Interactive Scholarly Workbench (v2.0)
-### Added
-- Implemented **Bloom's Taxonomy Labeling** in Council deliberations (Remember, Analyze, Create, etc.).
-- Created **Methodological Compass** (Profiling) engine to calculate school alignment scores.
-- Implemented **Significant Syntax Shift Assessor** for detecting Active/Passive swaps and inversions.
-- Updated API to expose profiling, syntax, and Bloom stats for Web Studio.
+### [2.1.0] - 2026-05-08
+#### Added (Phase G: Production Infrastructure)
+- **SQLite Indexing**: Migrated run tracking from filesystem scans to a structured `rws.db`.
+- **Async Audits**: Implemented `BackgroundTasks` in API for non-blocking audit execution.
+- **Privacy Mode**: Added `LocalProvider` and `OllamaProvider` for local LLM execution.
+- **User Profiles**: Implemented "Researcher", "Editor", and "Student" profiles with tailored instructions.
+- **Database Layer**: New `src/ruwritingstyles/db.py` for persistent metrics and status tracking.
+
+### [2.0.0] - 2026-05-08
+#### Added (Phase F: Scholarly Workbench)
+- **Methodological Compass**: School alignment profiling (Moscow vs Leningrad).
+- **Tension Heatmap**: Interactive text overlays for inter-agent conflicts.
+- **Interactive Concordance**: Real-time academic citations (Zaliznyak, Tronsky).
+- **Bloom Taxonomy**: Cognitive labeling of Socratic Council decisions.
+- **Web Studio v2.0**: Premium glassmorphic UI with Recharts integration.
 
 ## [2026-05-08] - Phase D: Golden Dataset Expansion
 ### Added

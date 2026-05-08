@@ -31,10 +31,22 @@ def create_prepare_run(
     model_policy: ModelPolicy,
     run_id: str | None = None,
     metadata: dict[str, Any] | None = None,
+    provider: str = "google",
+    archetype: str | None = None,
 ) -> Path:
     actual_run_id = run_id or make_run_id(input_path)
     run_dir = repo_root / "runs" / actual_run_id
     run_dir.mkdir(parents=True, exist_ok=False)
+
+    # Register in DB
+    from .db import Database
+    db = Database(repo_root)
+    db.register_run(
+        run_id=actual_run_id, 
+        input_path=str(input_path),
+        provider=provider,
+        archetype=archetype
+    )
 
     if metadata:
         (run_dir / "metadata.json").write_text(
