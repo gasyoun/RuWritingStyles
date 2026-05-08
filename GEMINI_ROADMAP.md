@@ -51,9 +51,15 @@
 - [x] Поддержка локальных LLM (Ollama/vLLM) для режима Privacy Mode.
 - [x] Реализация профилей «Исследователь», «Редактор», «Студент» с профильными инструкциями.
 
+### Фаза H: Филологическое Масштабирование (В процессе)
+- [x] Промышленная контейнеризация (Docker + Docker Compose).
+- [x] Интеграция специализированных корпусов (Тронский, Гаспаров).
+- [x] Multi-Document Workbench: API для сравнения профилей нескольких запусков.
+- [x] Scholarly Apparatus: Автоматическая генерация LaTeX-отчетов.
+
 ## Следующее действие
-1. Развертывание системы в промышленном контуре (Production Deployment).
-2. Расширение филологических коллекций (Фаза H).
+1. Визуализация сравнительных диаграмм в Web Studio.
+2. Интеграция внешних библиографических менеджеров (Zotero).
 
 ---
-*Math: Total Phases (7) - Phase G Production Infrastructure Complete. Platform ready for scale.*
+*Math: Total Phases (8) - Phase H Philological Scale in progress. Platform scaled for scholarly synthesis.*

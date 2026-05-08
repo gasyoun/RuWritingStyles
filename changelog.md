@@ -9,7 +9,15 @@
 - Expanded Documentation: Added [`docs/scenarios.md`](docs/scenarios.md), [`docs/deployment.md`](docs/deployment.md), and [`docs/project-v2-vision.md`](docs/project-v2-vision.md).
 - Enhanced Web Studio: Integrated visual display of Council reasoning and conflict resolution logs.
 
-### [2.1.0] - 2026-05-08
+### [2.2.0] - 2026-05-08 19:40:00
+#### Added (Phase H: Philological Scale)
+- **Docker Orchestration**: Added `Dockerfile` and `docker-compose.yml` for industrial deployment.
+- **Academic Corpora**: Integrated **Tronsky** (Classical Philology) and **Gasparov** (Verse Metrics).
+- **Comparison Engine**: New `/api/compare` endpoint for multi-run stylistic analysis.
+- **LaTeX Reporting**: Automated generation of `report.tex` with scholarly apparatus.
+- **Unified Service**: API now serves built Web Studio static files in production.
+
+### [2.1.0] - 2026-05-08 19:37:20
 #### Added (Phase G: Production Infrastructure)
 - **SQLite Indexing**: Migrated run tracking from filesystem scans to a structured `rws.db`.
 - **Async Audits**: Implemented `BackgroundTasks` in API for non-blocking audit execution.
@@ -17,7 +25,7 @@
 - **User Profiles**: Implemented "Researcher", "Editor", and "Student" profiles with tailored instructions.
 - **Database Layer**: New `src/ruwritingstyles/db.py` for persistent metrics and status tracking.
 
-### [2.0.0] - 2026-05-08
+### [2.0.0] - 2026-05-08 16:30:00
 #### Added (Phase F: Scholarly Workbench)
 - **Methodological Compass**: School alignment profiling (Moscow vs Leningrad).
 - **Tension Heatmap**: Interactive text overlays for inter-agent conflicts.
@@ -25,7 +33,7 @@
 - **Bloom Taxonomy**: Cognitive labeling of Socratic Council decisions.
 - **Web Studio v2.0**: Premium glassmorphic UI with Recharts integration.
 
-## [2026-05-08] - Phase D: Golden Dataset Expansion
+## [2026-05-08 14:20:00] - Phase D: Golden Dataset Expansion
 ### Added
 - Implemented **Domain-Aware Verification Rules** in `verification.py` (e.g., PHONETIC_FIDELITY for dialectology).
 - Implemented **Philological Conflict Matrix** in `council.py`.
