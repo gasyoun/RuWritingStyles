@@ -86,6 +86,26 @@ This repo is developed primarily on Windows; assume Windows by default.
 - All Python scripts that emit text should use UTF-8: `sys.stdout.reconfigure(encoding='utf-8')`. The `.txt` extractions under `PDFtoTXT/` and Russian-language style files require this.
 - Never commit `.env` (already gitignored). `.env.example` is the canonical template.
 
+## Session state protocol (`.ai_state.md`)
+
+This repo uses a single tracked file, `.ai_state.md`, as a session journal between Claude Code runs. Maintain it actively — do not let it go stale.
+
+**During execution (micro-milestones).** Each time you finish a logical sub-task (a function fixed, a test passing), check it off in `.ai_state.md`. If you hit a persistent bug or change architectural approach, write the problem and your new hypothesis under `## 🧠 Dev Notes & Hypotheses`.
+
+**Micro-commits.** When you have git access, commit after logical milestones with the prefix `ai-wip:` — don't wait for the whole feature.
+
+**On session end / handoff (when asked to stop).** Tidy `.ai_state.md`: move finished items to `## ✅ Completed`, state blockers explicitly, and write concrete `## ➡️ Next Steps` for the next agent.
+
+Maintain this exact section structure in `.ai_state.md`:
+
+```
+# Project Objective: [Global Goal]
+## ➡️ Next Steps (Queue)
+## 🚧 Current Work-In-Progress (WIP)
+## 🧠 Dev Notes & Hypotheses (Bugs, ideas, context)
+## ✅ Completed (Recent only)
+```
+
 ## What not to touch casually
 
 - `ClaudeStyles/*-style.md` — these are the human-facing product. Don't edit prose without a review reason; they are referenced from `README.md` and from passports.
