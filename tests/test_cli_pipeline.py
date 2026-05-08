@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import shutil
 import sys
+import tempfile
 import unittest
 from unittest.mock import patch
 from zipfile import ZipFile
@@ -18,6 +19,7 @@ if str(SRC) not in sys.path:
 from ruwritingstyles.cli import main
 from ruwritingstyles.config import load_manifest, load_model_routes
 from ruwritingstyles.council_summary import load_council_summary, render_council_summary
+from ruwritingstyles.document import DocumentInputError
 from ruwritingstyles.evals import load_eval_cases
 from ruwritingstyles.findings import load_finding_summaries, render_finding_summaries
 from ruwritingstyles.providers import (
@@ -30,7 +32,7 @@ from ruwritingstyles.providers import (
 from ruwritingstyles.provider_log import load_provider_log, render_provider_log
 from ruwritingstyles.provider_status import provider_statuses, provider_statuses_json, render_provider_statuses
 from ruwritingstyles.schema_validation import validate_json_schema
-from ruwritingstyles.segment import normalize_document, segment_markdown
+from ruwritingstyles.segment import SegmentOptions, normalize_document, read_document, segment_markdown
 from ruwritingstyles.validation import _load_schema_store, validate_provider_status_file
 
 CORE_EVAL_CASE_IDS = {"pseudo-etymology", "source-claim", "register-shift"}
@@ -55,6 +57,45 @@ Second paragraph.
         segments = segment_markdown(text)
         self.assertEqual([segment.segment_type for segment in segments], ["heading", "paragraph", "code", "heading", "paragraph"])
         self.assertEqual([segment.span_id for segment in segments], ["h001", "p002", "c003", "h004", "p005"])
+        self.assertEqual(segments[1].metrics["sentence_count"], 1)
+
+    def test_normalization_preserves_russian_philological_marks(self) -> None:
+        text = normalize_document("Ёлка и сло\u0301во ѣсть.\r\n\r\n\r\nСледующая строка.\t \n")
+        self.assertIn("Ёлка", text)
+        self.assertIn("сло\u0301во", text)
+        self.assertIn("ѣсть", text)
+        self.assertNotIn("\r", text)
+        self.assertNotIn("\t \n", text)
+
+    def test_segment_metrics_count_cyrillic_and_historical_letters(self) -> None:
+        text = normalize_document("Сло\u0301во, ёлка и ѣсть. Latin test.")
+        segment = segment_markdown(text)[0]
+        self.assertEqual(segment.metrics["word_count"], 6)
+        self.assertEqual(segment.metrics["cyrillic_word_count"], 4)
+        self.assertEqual(segment.metrics["latin_word_count"], 2)
+        self.assertEqual(segment.metrics["yo_count"], 1)
+        self.assertEqual(segment.metrics["historical_cyrillic_count"], 1)
+        self.assertEqual(segment.metrics["accent_mark_count"], 1)
+
+    def test_long_paragraphs_split_on_sentence_boundaries(self) -> None:
+        text = normalize_document("Первое предложение достаточно длинное. Второе предложение тоже достаточно длинное.")
+        segments = segment_markdown(text, SegmentOptions(max_segment_chars=45))
+        self.assertEqual([segment.segment_type for segment in segments], ["paragraph", "paragraph"])
+        self.assertEqual([segment.span_id for segment in segments], ["p001", "p002"])
+        self.assertTrue(all(len(segment.text) <= 45 for segment in segments))
+
+    def test_read_document_accepts_cp1251_sources(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "legacy.txt"
+            path.write_bytes("Простой русский текст.".encode("cp1251"))
+            self.assertEqual(read_document(path), "Простой русский текст.")
+
+    def test_read_document_rejects_binary_input(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "binary.txt"
+            path.write_bytes(b"\x00\x01\x02\x03" * 16)
+            with self.assertRaises(DocumentInputError):
+                read_document(path)
 
 
 class ProviderParsingTests(unittest.TestCase):
