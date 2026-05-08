@@ -1,0 +1,93 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project nature
+
+RuWritingStyles is two layered things in one repo:
+
+1. A **catalog of Russian-language Custom Style prompts** (`ClaudeStyles/*-style.md`) modeled on philological writers (Зализняк, Тронский, Казанский, Лидова, Альбедиль). Each `.md` is a self-contained instruction meant to be pasted into Claude Custom Style.
+2. An **agentic review pipeline** (`src/ruwritingstyles/`) that loads those styles as machine-readable passports and runs a multi-agent "Council" over a Markdown document: segment → independent style reviews → council deliberation → revision synthesis → verification.
+
+Adding a new style requires updating both layers: the `.md` in `ClaudeStyles/`, a passport in `styles/passports/`, the `passports:` and `available_style_sources:` blocks of `styles/manifest.yml`, and the navigation/source tables in `README.md` (`README.md` documents this multi-place rule explicitly).
+
+## Common commands
+
+Install for development:
+
+```powershell
+python -m pip install -e .
+```
+
+Without install, prefix every command with `$env:PYTHONPATH='src'` (PowerShell) or `PYTHONPATH=src` (bash). After install the `rws` script is on PATH.
+
+Tests, validation, compile (mirror of `.github/workflows/ci.yml`):
+
+```powershell
+python -m compileall -q src tools tests
+python tools/validate_project.py
+python -m unittest discover -s tests
+```
+
+Run a single test method:
+
+```powershell
+python -m unittest tests.test_cli_pipeline.SegmentTests.test_segment_markdown_headings_paragraphs_and_code
+```
+
+Frontend (in `web/`): `npm run dev`, `npm run build`, `npm run lint`. The CLI command `rws web` orchestrates both API (`ruwritingstyles.api` on port 8000) and Vite dev server (port 5173) together.
+
+## Pipeline mental model
+
+The `rws run` command is a chain over a single `runs/<run-id>/` directory. Each stage reads earlier artifacts and writes the next:
+
+```
+prepare   → original.md, normalized.md, segments.json
+review    → reviews/<style>.prompt.md + .review.json (one per style)
+council   → council.prompt.md, council.json
+revise    → revision.prompt.md, revision.json, revised.md, revision.diff
+verify    → verification.prompt.md, verification.json
+report    → report.md, summary.html
+```
+
+Without `--execute`, every stage produces a prompt and a JSON shell with `status: prompt_ready`. With `--execute --provider <name>`, the provider adapter fills the JSON and updates `status: completed`. This split — prompt building is deterministic, model calls are opt-in — is load-bearing: it keeps the pipeline testable offline with `--provider mock` and lets `tests/` run without API keys or network.
+
+`runs/` and `exports/` are gitignored; treat them as scratch.
+
+## Span IDs are the anchor
+
+Every segment in `segments.json` has a stable `span_id` (`p002`, `h004`, `c003` — type prefix + position). Every finding, council reply, applied revision change, and verifier warning references a `span_id`. When debugging cross-stage issues, follow span IDs through the JSON artifacts. `rws findings <run> --span p002` and `rws validate-run <run>` (which checks that findings reference known span IDs) are the right tools for this.
+
+## Provider adapters
+
+Four real providers plus `mock` (`PROVIDER_CHOICES` in `cli.py`): `openai`, `google`, `anthropic`, `openrouter`. The `mock` provider is deterministic and is what tests use; never assume a real key is available.
+
+Env vars are loaded from `.env` via `python-dotenv` at CLI import time. The `provider_status` module reports readiness without exposing keys; use `rws provider-status --provider <p> --strict` in scripts. Retry/backoff is centralized — `RWS_PROVIDER_MAX_ATTEMPTS`, `RWS_PROVIDER_RETRY_SECONDS`, and rate-limit headers (`Retry-After`, OpenAI `x-ratelimit-reset-*`, Anthropic `anthropic-ratelimit-*-reset`) feed the same retry layer; provider log entries record `retry_count`, `retry_delay_seconds`, `retry_statuses`.
+
+`model_policy.yml` is the routing table — `task → (model, reasoning/thinking)` per provider. Adapters must not bake one vendor's parameter names into the style protocol; route lookups go through `load_model_routes`.
+
+## Schemas as the contract
+
+Every JSON artifact has a schema in `schemas/`: `review.schema.json`, `council.schema.json`, `revision.schema.json`, `verification.schema.json`, `style.schema.json`, `model-policy.schema.json`, `provider-status.schema.json`, plus `eval-*` variants. `tools/validate_project.py` and `rws validate-run` apply these via the in-repo `schema_validation.py` (a lightweight subset, not jsonschema). When you change an artifact shape, change its schema and the validator together — CI runs both.
+
+## Eval suite
+
+`evals/manifest.json` defines comparison cases (`pseudo-etymology`, `register-shift`, `source-claim`, etc.) that map to documents under `examples/input/`. `rws eval-suite --provider mock --suite-id <id>` runs all cases and writes `eval-suite-result.json` + `eval-suite-report.md`. Use `rws eval-compare A B` to diff two suite runs; `--strict` makes regressions fail with exit 1. The `Eval Smoke` GitHub Actions workflow pins this for the mock provider.
+
+## Code organization in `src/ruwritingstyles/`
+
+Roughly one module per pipeline stage: `segment`, `review`, `council`, `revision`, `verification`, plus orchestration (`pipeline`, `runs`, `execution`), reporting (`report`, `html_summary`, `findings`, `council_summary`, `provider_log`), eval (`evals`, `assess`, `scrutiny`, `peer_review`), tooling (`migration`, `dashboard`, `generation`, `styleguide`, `repl`), provider plumbing (`providers`, `provider_status`, `provider_log`, `config`), and a FastAPI surface (`api`) that the React frontend in `web/` consumes. The CLI `cli.py` is a thin argparse layer wiring those modules together (~80 subcommands).
+
+## Windows / encoding notes
+
+This repo is developed primarily on Windows; assume Windows by default.
+
+- PowerShell is the default shell. Use native command parameters, not script blocks `{}` or subexpressions `$()`. Use `$env:VAR='value'` not `export VAR=value`. The `rws web` command shells out with `shell=True` for npm specifically because of this.
+- All Python scripts that emit text should use UTF-8: `sys.stdout.reconfigure(encoding='utf-8')`. The `.txt` extractions under `PDFtoTXT/` and Russian-language style files require this.
+- Never commit `.env` (already gitignored). `.env.example` is the canonical template.
+
+## What not to touch casually
+
+- `ClaudeStyles/*-style.md` — these are the human-facing product. Don't edit prose without a review reason; they are referenced from `README.md` and from passports.
+- `PDFtoTXT/` — source PDFs and one-off extraction scripts. `PDFtoTXT/update.py` is *not* a generic converter (it serves `AAZ_Zametki_2025` indices specifically), per `README.md`.
+- The `mvp_style_ids` list in `styles/manifest.yml` — `rws list-styles --mvp` and the default council set depend on it.
