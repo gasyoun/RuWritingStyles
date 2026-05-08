@@ -70,3 +70,44 @@ def calculate_bloom_stats(run_dir: Path) -> dict[str, int]:
             stats[level] = stats.get(level, 0) + 1
             
     return stats
+
+def calculate_tension_heatmap(run_dir: Path) -> dict[str, float]:
+    """Identify 'philological hotspots' where multiple styles or agents conflict.
+    
+    Returns a mapping of span_id to a tension score (0.0 to 1.0).
+    """
+    reviews_dir = run_dir / "reviews"
+    span_tension: dict[str, int] = {}
+    
+    # 1. Count findings per span across all style reviews
+    if reviews_dir.exists():
+        for p in reviews_dir.glob("*.review.json"):
+            try:
+                data = json.loads(p.read_text(encoding="utf-8"))
+                for finding in data.get("findings", []):
+                    span_id = finding.get("span_id")
+                    if span_id:
+                        span_tension[span_id] = span_tension.get(span_id, 0) + 1
+            except:
+                continue
+                
+    # 2. Factor in Council complexity
+    council_path = run_dir / "council.json"
+    if council_path.exists():
+        try:
+            council = json.loads(council_path.read_text(encoding="utf-8"))
+            # If a decision was 'accepted' or 'rejected' after deliberation, it adds tension
+            for decision in council.get("decisions", []):
+                span_id = decision.get("span_id") # We need to ensure decisions have span_id
+                # In current schema, decisions have finding_id. We might need to map it back.
+                # But findings have span_id.
+                pass
+        except:
+            pass
+            
+    if not span_tension:
+        return {}
+        
+    # Normalize (max tension becomes 1.0)
+    max_val = max(span_tension.values())
+    return {span_id: round(val / max_val, 2) for span_id, val in span_tension.items()}

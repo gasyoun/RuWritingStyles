@@ -19,7 +19,14 @@ from .execution import (
 from .report import write_run_report
 from .html_summary import write_html_report
 
-def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model: str | None = None) -> None:
+def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model: str | None = None, profile: str = "researcher") -> None:
+    from .db import Database
+    from .profiling import calculate_bloom_stats, calculate_methodological_compass, calculate_tension_heatmap
+    
+    db = Database(repo_root)
+    run_id = run_dir.name
+    db.update_run_status(run_id, "executing")
+    
     manifest = load_manifest(repo_root)
     model_policy = load_model_policy(repo_root)
     provider = provider_from_name(provider_name)
@@ -28,7 +35,7 @@ def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model:
     
     # 1. Review
     for style_id in style_ids:
-        bundle = create_review_bundle(repo_root=repo_root, run_dir=run_dir, style_id=style_id, manifest=manifest)
+        bundle = create_review_bundle(repo_root=repo_root, run_dir=run_dir, style_id=style_id, manifest=manifest, profile=profile)
         execute_review_artifact(
             repo_root=repo_root,
             review_path=bundle.review_json,
@@ -37,13 +44,16 @@ def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model:
         )
 
     # 2. Council
-    council = create_council_bundle(repo_root=repo_root, run_dir=run_dir, manifest=manifest)
+    council = create_council_bundle(repo_root=repo_root, run_dir=run_dir, manifest=manifest, profile=profile)
     execute_council_artifact(
         repo_root=repo_root,
         council_path=council.council_json,
         provider=provider,
         model=model or model_policy.resolve_model("council", provider_name),
     )
+    # Save Council metrics
+    db.save_metric(run_id, "bloom_stats", calculate_bloom_stats(run_dir))
+    db.save_metric(run_id, "profile", calculate_methodological_compass(run_dir, manifest))
 
     # 3. Revision
     revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
@@ -72,6 +82,7 @@ def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model:
         provider=provider,
         model=model or model_policy.resolve_model("verification", provider_name),
     )
+    db.save_metric(run_id, "tension", calculate_tension_heatmap(run_dir))
 
     # 6. Syntax
     syntax_bundle = create_syntax_bundle(repo_root=repo_root, run_dir=run_dir)
@@ -86,3 +97,5 @@ def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model:
     # 7. Reports
     write_run_report(run_dir)
     write_html_report(run_dir)
+    
+    db.update_run_status(run_id, "completed")

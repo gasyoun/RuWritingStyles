@@ -95,6 +95,8 @@ class MockProvider(BaseProvider):
             return self._verification(metadata)
         if task == "assessment":
             return self._assessment(metadata)
+        if task == "syntax_assessment":
+            return self._syntax(metadata)
         raise ProviderError(f"mock provider does not support task {task!r}")
 
     def _review(self, metadata: dict[str, Any]) -> dict[str, Any]:
@@ -119,19 +121,35 @@ class MockProvider(BaseProvider):
 
     def _council(self, metadata: dict[str, Any]) -> dict[str, Any]:
         decisions = []
-        for finding_id in metadata.get("finding_ids", []):
-            decisions.append(
-                {
-                    "finding_id": finding_id,
-                    "status": "informational",
-                    "reason": "Mock council keeps placeholder findings informational.",
-                }
-            )
+        replies = []
+        finding_ids = metadata.get("finding_ids", [])
+        if not finding_ids:
+            finding_ids = ["finding-001"]
+            
+        for finding_id in finding_ids:
+            replies.append({
+                "reply_to": finding_id,
+                "style_id": "mock-style",
+                "bloom_level": "Analyze",
+                "position": "agree",
+                "comment": "Mock analysis of finding.",
+            })
+            decisions.append({
+                "finding_id": finding_id,
+                "bloom_level": "Evaluate",
+                "status": "accepted",
+                "primary_school": "ling_iesh",
+                "influence": {"ling_iesh": 0.8, "ling_mss": 0.2},
+                "reason": "Mock council keeps placeholder findings informational.",
+            })
         return {
             "run_id": str(metadata["run_id"]),
             "status": "completed",
-            "replies": [],
+            "replies": replies,
             "decisions": decisions,
+            "stylistic_commitments": [
+                {"term": "Mock Term", "logic": "Keep it as is."}
+            ],
         }
 
     def _revision(self, metadata: dict[str, Any]) -> dict[str, Any]:
@@ -163,7 +181,28 @@ class MockProvider(BaseProvider):
         return {
             "run_id": str(metadata["run_id"]),
             "status": "completed",
-            "assessments": [],
+            "assessments": [
+                {
+                    "span_id": "p001",
+                    "tag": "mock-tag",
+                    "impact": "positive",
+                    "passed": True,
+                    "comment": "Mock assessment.",
+                }
+            ],
+        }
+
+    def _syntax(self, metadata: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "run_id": str(metadata["run_id"]),
+            "shifts": [
+                {
+                    "type": "passive_to_active",
+                    "original_span": "The text was written by mock.",
+                    "revised_span": "Mock wrote the text.",
+                    "comment": "Mock syntax shift.",
+                }
+            ],
         }
 
 
@@ -387,6 +426,103 @@ class OpenRouterProvider(BaseProvider):
             raise ProviderError(f"OpenRouter response did not contain parseable JSON: {text[:500]}") from exc
 
 
+class LocalProvider(BaseProvider):
+    """Local LLM provider (Ollama, vLLM, etc.) using OpenAI-compatible API."""
+
+    name = "local"
+
+    def __init__(self, endpoint: str | None = None, api_key: str = "no-key") -> None:
+        self.endpoint = endpoint or os.environ.get("RWS_LOCAL_LLM_URL") or "http://localhost:8000/v1/chat/completions"
+        self.api_key = api_key
+
+    def effective_model(self, provider_request: ProviderRequest) -> str:
+        return provider_request.model or os.environ.get("RWS_LOCAL_LLM_MODEL") or "local-model"
+
+    def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
+        model = self.effective_model(provider_request)
+        body = {
+            "model": model,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": provider_request.prompt,
+                }
+            ],
+            "response_format": {"type": "json_object"},
+        }
+
+        telemetry = ProviderRetryTelemetry()
+        try:
+            data = _post_json_with_retries(
+                provider_name="Local LLM",
+                url=self.endpoint,
+                body=body,
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json",
+                },
+                telemetry=telemetry,
+            )
+        finally:
+            self._set_retry_telemetry(telemetry)
+
+        if "choices" not in data or not data["choices"]:
+            raise ProviderError(f"Local LLM response missing choices: {data}")
+            
+        text = data["choices"][0]["message"]["content"]
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise ProviderError(f"Local LLM response did not contain parseable JSON: {text[:500]}") from exc
+
+
+class OllamaProvider(BaseProvider):
+    """Specific Ollama API provider."""
+
+    name = "ollama"
+
+    def __init__(self, endpoint: str | None = None) -> None:
+        self.endpoint = endpoint or os.environ.get("RWS_OLLAMA_URL") or "http://localhost:11434/api/chat"
+
+    def effective_model(self, provider_request: ProviderRequest) -> str:
+        return provider_request.model or os.environ.get("RWS_OLLAMA_MODEL") or "llama3"
+
+    def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
+        model = self.effective_model(provider_request)
+        body = {
+            "model": model,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": provider_request.prompt,
+                }
+            ],
+            "stream": False,
+            "format": "json",
+        }
+
+        telemetry = ProviderRetryTelemetry()
+        try:
+            data = _post_json_with_retries(
+                provider_name="Ollama",
+                url=self.endpoint,
+                body=body,
+                headers={"Content-Type": "application/json"},
+                telemetry=telemetry,
+            )
+        finally:
+            self._set_retry_telemetry(telemetry)
+
+        if "message" not in data or "content" not in data["message"]:
+            raise ProviderError(f"Ollama response missing content: {data}")
+            
+        text = data["message"]["content"]
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise ProviderError(f"Ollama response did not contain parseable JSON: {text[:500]}") from exc
+
+
 def provider_from_name(name: str) -> BaseProvider:
     if name == "mock":
         return MockProvider()
@@ -398,6 +534,10 @@ def provider_from_name(name: str) -> BaseProvider:
         return AnthropicProvider()
     if name == "openrouter":
         return OpenRouterProvider()
+    if name == "local":
+        return LocalProvider()
+    if name == "ollama":
+        return OllamaProvider()
     raise ProviderError(f"unknown provider {name!r}")
 
 

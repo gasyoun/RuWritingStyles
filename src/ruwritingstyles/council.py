@@ -35,6 +35,8 @@ def create_council_bundle(
     run_dir: Path,
     manifest: Manifest,
     verification_feedback: dict[str, Any] | None = None,
+    archetype_id: str | None = None,
+    profile: str = "researcher",
 ) -> CouncilBundle:
     run_dir = run_dir.resolve()
     segments_path = run_dir / "segments.json"
@@ -55,7 +57,10 @@ def create_council_bundle(
 
     archetypes = load_archetypes(repo_root)
     archetype_map = {a.id: a for a in archetypes}
-    chosen_archetype = archetype_map.get(manifest.council.archetype) if manifest.council else None
+    
+    # Priority: 1. explicit archetype_id, 2. manifest.council.archetype, 3. None
+    selected_id = archetype_id or (manifest.council.archetype if manifest.council else None)
+    chosen_archetype = archetype_map.get(selected_id) if selected_id else None
 
     scrutiny_path = run_dir / "scrutiny" / "scrutiny.json"
     scrutiny_doc = None
@@ -97,6 +102,7 @@ def create_council_bundle(
             archetype=chosen_archetype,
             text_domain=text_domain,
             verification_feedback=verification_feedback,
+            profile=profile,
         ),
         encoding="utf-8",
     )
@@ -110,6 +116,7 @@ def create_council_bundle(
                 "review_files": [_repo_relative(repo_root, path) for path in review_paths],
                 "replies": [],
                 "decisions": [],
+                "profile": profile,
             },
             ensure_ascii=False,
             indent=2,
@@ -186,9 +193,12 @@ def _render_prompt(
     archetype: CouncilArchetype | None,
     text_domain: str = "unknown",
     verification_feedback: dict[str, Any] | None = None,
+    profile: str = "researcher",
 ) -> str:
     weights = get_cluster_weights(manifest, text_domain, archetype)
     council_config = manifest.council or CouncilConfig("Coordinator", "Neutral deliberation.")
+    from .profiles import get_profile_suffix
+    profile_suffix = get_profile_suffix(profile)
 
     # Group findings by span for the prompt
     by_span: dict[str, list[dict[str, Any]]] = {}
@@ -286,6 +296,9 @@ You are the RuWritingStyles council: `{archetype.name if archetype else manifest
 ## Your Mission
 
 {mission_instructions}
+
+## User Profile: {profile.capitalize()}
+{profile_suffix}
 
 **Council Weights (Style Authority):**
 The following weights represent the authority of each style agent. Use these when resolving conflicts.

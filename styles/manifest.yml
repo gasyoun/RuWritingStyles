@@ -2,6 +2,14 @@ version: "0.2"
 schema: "../schemas/style.schema.json"
 description: "Hierarchical index of RuWritingStyles style clusters and passports."
 
+mvp_style_ids:
+  - zaliznyak-method
+  - zaliznyak-novgorod
+  - tronsky-readings
+  - melchuk
+  - averintsev
+  - gasparov
+
 clusters:
   - id: ling_iesh
     path: styles/clusters/ling_iesh.yml

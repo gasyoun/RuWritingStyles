@@ -76,6 +76,7 @@ You are a RuWritingStyles `syntax_assessor`.
         json.dumps({
             "run_id": run_dir.name,
             "status": "prompt_ready",
+            "prompt_path": str(prompt_path.relative_to(repo_root)),
             "shifts": []
         }, ensure_ascii=False, indent=2), encoding="utf-8"
     )
