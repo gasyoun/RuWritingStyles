@@ -1,435 +1,477 @@
-# Roadmap разработки RuWritingStyles
+# Roadmap RuWritingStyles
 
-Этот документ описывает развитие RuWritingStyles от каталога пользовательских стилей к системе автоматической стилевой редакции. Главная цель: один загруженный документ должен проверяться несколькими стилями, получать независимые замечания, проходить обсуждение между стилями и возвращаться пользователю как улучшенная версия с прозрачным diff и отчетом.
+Обновлено: 2026-05-08.
 
-## Видение
+Этот документ описывает, как развивать RuWritingStyles из набора стилевых инструкций и CLI-прототипа в воспроизводимую лабораторию филологической редакции: загрузка текста, разметка, несколько стилевых рецензентов, совет, правка, проверка, отчет, экспорт и накопление качества через eval-наборы.
 
-RuWritingStyles должен стать не только набором `.md`-инструкций для Claude, но и воспроизводимой лабораторией письма:
+## Северная звезда
 
-- стиль остается читаемой инструкцией для человека;
-- стиль получает машинно-читаемый паспорт;
-- документ разбивается на адресуемые фрагменты;
-- каждый стиль работает как экспертная линза;
-- замечания стилей собираются в общую доску;
-- стили могут соглашаться, возражать и уточнять замечания друг друга;
-- итоговый редактор применяет только объяснимые изменения;
-- проверяющий сверяет новую версию с исходником.
+RuWritingStyles должен помогать автору или редактору улучшать научный текст без потери фактической осторожности, источниковедческой дисциплины и авторского замысла.
 
-Ключевой принцип: стили не должны соревноваться за право переписать весь текст. Они сначала проверяют, затем спорят о конкретных местах, и только после этого отдельный синтезатор собирает итоговую редакцию.
+Ключевой продуктовый принцип: система не должна просто переписывать текст "красиво". Она должна показывать, где именно текст слаб, какие стили или школы видят проблему, почему правка допустима, что осталось нерешенным и какие изменения нельзя делать без человека.
 
-## Целевой пользовательский сценарий
+## Текущее состояние
 
-Пользователь загружает документ и выбирает режим:
+На 2026-05-08 уже есть рабочий каркас:
+
+- CLI с командами `prepare`, `run`, `review`, `council`, `deliberate`, `revise`, `verify`, `assess`, `scrutiny`, `eval-suite`, `eval-compare`, `export` и другими.
+- Локальный pipeline на артефактах в `runs/`.
+- Детерминированный `mock` provider для тестов.
+- Провайдерные адаптеры для OpenAI, Google, Anthropic и OpenRouter.
+- JSON Schema validation для run, eval suite, provider status и сравнений.
+- HTML summary с findings, council, revision, verification, provider log и visual diff.
+- Web Studio на React/Vite с FastAPI backend.
+- Eval-наборы для регрессионной проверки.
+- Style passports, manifest и набор исходных ClaudeStyles.
+- Knowledge base и первые инструменты для scrutiny, migration, peer review, sentiment и project consistency.
+
+Последний стабильный checkpoint:
 
 ```bash
-rws run article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readings --mode council
+python -m unittest discover -s tests
+python tools/validate_project.py
+python -m compileall src
+npm.cmd run lint
+npm.cmd run build
 ```
 
-На выходе создается воспроизводимый запуск:
+## Архитектурная рамка
 
-```text
-runs/2026-05-06-demo/
-  original.md
-  normalized.md
-  segments.json
-  reviews/
-    zalizniak-ocherk.json
-    zalizniak-zametki.json
-    tronsky-readings.json
-  council.json
-  revised.md
-  revised.diff.md
-  report.md
-```
-
-Пользователь видит исходный документ, замечания каждого стиля, места согласия и расхождения между стилями, итоговую улучшенную версию, diff с объяснением правок и список нерешенных вопросов, которые требуют человека.
-
-## Архитектура
+Источник истины должен оставаться в core pipeline и файловых артефактах. CLI и API не должны расходиться по логике.
 
 ```mermaid
 flowchart TD
-  A["Загруженный документ"] --> B["Нормализация"]
-  B --> C["Сегментация"]
-  C --> D["Карта документа"]
-  D --> E["Роутер стилей"]
-  E --> F1["Стиль-агент 1"]
-  E --> F2["Стиль-агент 2"]
-  E --> F3["Стиль-агент 3"]
-  F1 --> G["Доска замечаний"]
-  F2 --> G
-  F3 --> G
-  G --> H["Раунд ответов"]
-  H --> I["Синтезатор"]
-  I --> J["Проверяющий"]
-  J --> K["Итоговый документ и отчет"]
+  A["Input: md, txt, later docx/pdf"] --> B["Normalize"]
+  B --> C["Segment with stable span_id"]
+  C --> D["Style reviews"]
+  D --> E["Optional deliberation"]
+  E --> F["Council decisions"]
+  F --> G["Revision synthesis"]
+  G --> H["Verification and impact assessment"]
+  H --> I["Reports, export, eval scoring"]
+  I --> J["Human review and accepted changes"]
 ```
 
-## Этап 0. Укрепление текущего каталога
+Архитектурные правила:
 
-Цель: привести существующие стили к виду, удобному для дальнейшей автоматизации.
+- Core pipeline first: `src/ruwritingstyles/*` содержит бизнес-логику.
+- CLI thin: CLI собирает аргументы и вызывает core.
+- API thin: FastAPI вызывает те же core-функции, что CLI.
+- Web thin: Web Studio не принимает филологических решений, а отображает состояние run и отправляет команды.
+- Artifacts first: каждый запуск можно открыть, проверить, экспортировать и повторить.
+- Schemas first: все LLM-ответы проходят через явные JSON-контракты.
+- Human-in-the-loop: спорные решения не замалчиваются, а выносятся как unresolved/deferred.
+
+## Основные продуктовые треки
+
+### 1. Web Studio
+
+Цель: сделать первый экран реальным рабочим местом редактора.
+
+Развивать:
+
+- список run с фильтрами по статусу, провайдеру, дате, входному файлу и ошибкам;
+- создание нового run с выбором файла, провайдера, модели, стилей, режима `mock` или real API;
+- отображение прогресса pipeline по шагам;
+- side-by-side original/revised с подсветкой изменений;
+- панель findings по `span_id`, severity, style_id и type;
+- council view: решения, причины, disagreements, deferred items;
+- ручное принятие или отклонение отдельных правок;
+- экспорт markdown/html/zip из UI;
+- просмотр provider log и retry telemetry;
+- безопасную обработку ошибок API без молчаливых fail-state.
+
+Критерий готовности: пользователь может через Web Studio запустить `mock` pipeline на `.md` файле, увидеть все артефакты, принять или отклонить изменения и экспортировать результат.
+
+### 2. Human-in-the-loop редактура
+
+Цель: не давать модели финально менять текст без понятного редакторского контроля.
+
+Развивать:
+
+- формат `resolution.json` для ручных решений;
+- команды `rws apply-resolution` и `rws finalize`;
+- UI для accept/reject по каждому diff hunk или applied_change;
+- журнал ручных решений;
+- повторную генерацию revision с учетом ручных запретов;
+- сохранение author intent notes;
+- режим "только комментарии", где система не пишет revised.md.
+
+Критерий готовности: финальная версия документа всегда объяснима через цепочку source segment -> finding -> council decision -> applied change -> human resolution.
+
+### 3. Качество филологической проверки
+
+Цель: перейти от технически работающего pipeline к содержательно полезному.
+
+Развивать:
+
+- больше eval cases для этимологии, источников, перевода, комментария, датировки, терминологии и регистра;
+- gold baselines для разных типов задач;
+- scoring по hallucination, source preservation, diff magnitude, factual caution и style fidelity;
+- negative tests, где модель не должна менять текст;
+- adversarial cases: псевдоэтимология, ложные источники, сверхобобщения, неверные параллели;
+- cross-provider comparison reports;
+- ручную разметку expected findings для эталонных документов.
+
+Критерий готовности: перед добавлением нового провайдера, стиля или prompt-изменения можно запустить eval suite и увидеть, где качество выросло или просело.
+
+### 4. Стили и паспорта
+
+Цель: сделать стили управляемыми, тестируемыми и расширяемыми.
+
+Развивать:
+
+- версионирование style passports;
+- anchors для каждого стиля;
+- style regression tests;
+- карту компетенций стилей;
+- веса стилей по типам задач;
+- генератор паспорта из ClaudeStyles с обязательной ручной проверкой;
+- stylebook, который объясняет не только "как писать", но и "когда этот стиль не применять";
+- конфликтные пары стилей: где они должны спорить, а где один имеет приоритет.
+
+Критерий готовности: новый стиль можно добавить через паспорт, anchors, schema validation и минимальный eval-run, не меняя core pipeline.
+
+### 5. Совет, deliberation и peer review
+
+Цель: превратить multi-agent часть из декоративной в проверяемую.
+
+Развивать:
+
+- явный формат disagreement clusters;
+- deduplication findings по смыслу и `span_id`;
+- council archetypes с измеримыми стратегиями;
+- multi-turn deliberation только там, где есть реальный конфликт;
+- peer review второго совета после revision;
+- A/B comparison council archetypes;
+- правила, когда совет обязан вернуть `deferred`;
+- объяснение, почему finding принят, отклонен или превращен в informational.
+
+Критерий готовности: council не просто суммирует findings, а надежно снижает шум, объединяет дубли, сохраняет важные разногласия и не пропускает risky edits.
+
+### 6. Verification, scrutiny и fact-checking loop
+
+Цель: отделить хорошую стилистическую правку от опасной фактической правки.
+
+Развивать:
+
+- более строгий verifier для claims, citations, dates, names, terms;
+- scrutiny mode для анахронизмов, псевдоисторических выводов и ложных параллелей;
+- knowledge base retrieval с указанием источника;
+- unresolved claims с требованием человеческой проверки;
+- повторный council pass после verification warnings;
+- impact assessment для protected qualities: meter, rhyme, tone, quotation integrity, source wording;
+- запрет на добавление новых фактов без evidence trail.
+
+Критерий готовности: если revision добавляет неподтвержденный факт, verifier должен поймать это до финального экспорта.
+
+### 7. Корпус, knowledge base и источники
+
+Цель: дать системе память о корпусе, но не смешивать retrieval с доказательством.
+
+Развивать:
+
+- нормализацию PDFtoTXT и docx extraction;
+- corpus index с метаданными: автор, год, жанр, источник, язык, надежность;
+- поиск по knowledge base с цитируемыми passage ids;
+- ручное подтверждение источников;
+- режим "обнаружить, но не утверждать";
+- import pipeline для новых книг и статей;
+- отдельный слой для пользовательских проектов и project-context.
+
+Критерий готовности: finding может ссылаться на corpus evidence, но система явно различает "найдено похожее место" и "доказано".
+
+### 8. Провайдеры, модели и стоимость
+
+Цель: не зависеть от одного LLM и иметь контроль качества/стоимости.
+
+Развивать:
+
+- provider capability matrix;
+- model policy с task routes и budget modes;
+- provider-specific structured output quirks;
+- retries, backoff, timeout и partial failure recovery;
+- cost logging и token accounting, если провайдер дает данные;
+- benchmark по моделям через `eval-benchmark`;
+- "cheap first pass, strong final verifier" режим;
+- регулярное обновление model ids после проверки официальных provider docs.
+
+Критерий готовности: пользователь может выбрать быстрый/дешевый/строгий режим и увидеть, чем он рискует.
+
+### 9. Отчеты, экспорт и публикационный workflow
+
+Цель: результат должен быть удобен для автора, редактора и ревьюера.
+
+Развивать:
+
+- clean `revised.md`;
+- `report.md` для ревью;
+- `summary.html` для интерактивного просмотра;
+- zip export с manifest;
+- docx export;
+- GitHub issue/PR export для обсуждения;
+- changelog по ручным решениям;
+- public/private mode для удаления чувствительных путей и ключей из отчетов.
+
+Критерий готовности: результат можно отправить человеку, который не запускал проект локально, и он поймет, что изменено и почему.
+
+### 10. DevEx, CI и надежность
+
+Цель: каждое изменение в pipeline должно быть проверяемым.
+
+Развивать:
+
+- CI на Python tests, project validation, frontend lint/build;
+- golden artifact tests;
+- schema versioning;
+- migration scripts для старых runs;
+- typed boundaries между core/API/UI;
+- fixtures для API и Web Studio;
+- smoke workflow на GitHub Actions;
+- pre-commit checks для encoding, line endings и diff sanity;
+- release checklist.
+
+Критерий готовности: pull request не может случайно сломать run artifacts, schema validation или Web Studio build.
+
+## Фазы развития
+
+### Фаза 0. Стабилизация каркаса
+
+Статус: почти завершена.
+
+Готово:
+
+- CLI pipeline работает с `mock`.
+- Eval suite и validation проходят.
+- API routes не дублируются.
+- Web build/lint проходят.
+- OpenRouter включен в provider policy.
+
+Осталось:
+
+- добавить CI, который запускает те же проверки;
+- обновить README/quickstart после последних изменений;
+- убрать или оформить scratch scripts;
+- зафиксировать policy по работе через branch/PR или direct main.
+
+### Фаза 1. Надежный локальный продукт
+
+Цель: один пользователь запускает проект локально и получает полезный результат.
 
 Задачи:
 
-- сохранить все текущие `.md`-стили в `ClaudeStyles/`;
-- добавить единый индекс стилей в машинно-читаемом формате;
-- описать для каждого стиля роль, область применения, сильные проверки и ограничения;
-- проверить, что README ссылается на все стили и источники;
-- отделить пользовательскую документацию от внутренней документации разработки.
-
-Ожидаемый результат:
-
-```text
-styles/
-  manifest.yml
-docs/
-  roadmap.md
-  style-contract.md
-  agent-protocol.md
-```
-
-## Этап 1. Машинный паспорт стиля
-
-Цель: дать каждому стилю формальный контракт, который оркестратор сможет читать без ручной интерпретации README.
+- Web Studio: robust new run modal, provider readiness, progress, error states;
+- API: job status endpoint и run step state;
+- CLI: единый `rws run --mode comments|revision|strict`;
+- docs: clear local setup для Windows/PowerShell;
+- export: stable zip и human-readable report.
 
-Минимальный паспорт:
+Definition of done:
 
-```yaml
-id: zalizniak-zametki
-name: Зализняк-заметки
-source_prompt: ClaudeStyles/zalizniak-zametki-style.md
-role: polemical_linguistic_reviewer
-best_for:
-  - псевдоэтимологии
-  - внешнее сходство слов
-  - произвольные звуковые замены
-checks:
-  - unsupported_etymology
-  - arbitrary_sound_change
-  - weak_historical_inference
-limits:
-  - не заменяет источниковедческий аппарат
-  - не должен превращать нейтральный текст в публицистику
-```
+- новый пользователь может пройти quickstart без правок кода;
+- `mock` run работает через CLI и Web;
+- real provider readiness понятен до запуска;
+- ошибки не оставляют полусломанный run без статуса.
 
-Ожидаемый результат:
+### Фаза 2. Редакторский контроль
 
-- `styles/manifest.yml`;
-- один `.yml`-паспорт на каждый стиль;
-- валидация паспортов простой схемой.
+Цель: пользователь принимает решения, а не просто получает revised.md.
 
-## Этап 2. Нормализация и сегментация документов
+Задачи:
 
-Цель: любой входной документ превращается в Markdown с устойчивыми идентификаторами фрагментов.
+- resolution format;
+- accept/reject in HTML summary and Web Studio;
+- apply/finalize commands;
+- regenerate after human feedback;
+- unresolved queue.
 
-Поддержать сначала:
+Definition of done:
 
-- `.md`;
-- `.txt`;
-- позже `.docx`;
-- позже `.pdf` через отдельный конвертер.
+- можно отклонить отдельную правку;
+- финальный документ строится из выбранных решений;
+- отчет сохраняет историю human decisions.
 
-Формат сегментов:
+### Фаза 3. Качество и eval discipline
 
-```json
-{
-  "document_id": "article",
-  "segments": [
-    {
-      "span_id": "p001",
-      "type": "paragraph",
-      "text": "..."
-    }
-  ]
-}
-```
+Цель: начать измерять содержательное качество.
 
-Почему это важно: агенты должны спорить не о тексте вообще, а о конкретном абзаце, заголовке, примере или тезисе.
+Задачи:
 
-Текущее состояние: добавлен первый CLI-слой `rws prepare`, который поддерживает `.md` и `.txt`, создает `runs/<run-id>/original.md`, `normalized.md`, `segments.json` и `report.md`. Подробности описаны в [`cli.md`](cli.md).
+- расширить eval manifest до 20-30 cases;
+- добавить gold annotations;
+- ввести provider/model leaderboard;
+- добавить style regression anchors;
+- хранить baseline snapshots;
+- сделать `eval-regression` частью CI.
 
-Также добавлен `rws run`, который выполняет весь текущий offline pipeline одной командой: `prepare`, `review`, `council`, `revise`, `verify`.
+Definition of done:
 
-Текущий smoke test для этого слоя находится в `tests/test_cli_pipeline.py` и запускается стандартным `python -m unittest discover -s tests`.
+- изменение prompt, schema или provider adapter сопровождается eval diff;
+- regression visible before merge;
+- есть список "known weak cases".
 
-Для проверки артефактов добавлен `rws validate-run runs/<run-id>`. Он проверяет наличие файлов, JSON-структуру и привязку findings к существующим `span_id`.
+### Фаза 4. Корпус и источники
 
-Добавлен provider layer: `--execute --provider mock` заполняет артефакты детерминированно для тестов. Opt-in provider adapters также подготовлены для OpenAI (`OPENAI_API_KEY`), Google Gemini (`GEMINI_API_KEY` или `GOOGLE_API_KEY`) и Anthropic Claude (`ANTHROPIC_API_KEY`).
+Цель: подключить реальные источники и сделать retrieval полезным, но осторожным.
 
-## Этап 3. Одиночная проверка стилем
+Задачи:
 
-Цель: один стиль проверяет документ и выдает структурированные замечания, а не свободный пересказ.
+- corpus metadata;
+- import docx/pdf;
+- passage ids;
+- knowledge search report;
+- source confidence;
+- manual source approval.
 
-Команда:
+Definition of done:
 
-```bash
-rws review article.md --style zalizniak-zametki
-```
+- finding может ссылаться на source passage;
+- verifier различает supported, unsupported и needs_source;
+- пользователь видит, какие источники использованы.
 
-Выход:
+### Фаза 5. Расширение стилей и жанров
 
-```json
-{
-  "style_id": "zalizniak-zametki",
-  "findings": [
-    {
-      "span_id": "p014",
-      "severity": "major",
-      "type": "unsupported_etymology",
-      "finding": "Тезис строится на внешнем сходстве без исторических форм.",
-      "suggestion": "Добавить ранние формы и проверку регулярных соответствий.",
-      "confidence": 0.82
-    }
-  ]
-}
-```
+Цель: покрыть больше задач без расползания качества.
 
-Критерий готовности: один и тот же запуск можно повторить и получить сопоставимый JSON-отчет.
+Задачи:
 
-Текущее состояние: добавлен режим `rws review runs/<run-id> --style <style-id>`, `--styles a,b` и `--mvp`. Без `--execute` он создает prompt bundle и стартовые `.review.json` со статусом `prompt_ready`; с `--execute` выбранный provider заполняет `summary` и `findings`.
+- новые style passports;
+- anchors per style;
+- style conflict map;
+- genre profiles: article, commentary, review, translation note, popular essay;
+- migration flow между стилями;
+- project consistency для набора документов.
 
-## Этап 4. Параллельная проверка несколькими стилями
+Definition of done:
 
-Цель: документ проверяется сразу несколькими стилями, а результаты складываются в общую доску.
+- стиль нельзя добавить без anchors и минимального eval;
+- project-run поддерживает consistency across files;
+- migration produces traceable changes.
 
-Команда:
+### Фаза 6. Productization
 
-```bash
-rws review article.md --styles zalizniak-ocherk,zalizniak-zametki,tronsky-readings
-```
+Цель: сделать инструмент устойчивым для долгой работы.
 
-Оркестратор должен:
+Задачи:
 
-- загрузить выбранные паспорта стилей;
-- раздать одинаковые сегменты всем стилям;
-- получить JSON-замечания;
-- объединить замечания по `span_id`, `type` и близости смысла;
-- показать конфликты и совпадения.
-
-## Этап 5. Совет стилей
-
-Цель: стили не только пишут независимые замечания, но и отвечают на замечания друг друга.
-
-Пример ответа:
-
-```json
-{
-  "reply_to": "finding-17",
-  "style_id": "zalizniak-shkolnikov_1",
-  "position": "agree_with_modification",
-  "comment": "Проверку нужно оставить, но объяснить ее проще, иначе абзац станет непонятен неспециалисту."
-}
-```
-
-Разрешенные позиции:
-
-- `agree`;
-- `agree_with_modification`;
-- `disagree`;
-- `needs_human_decision`;
-- `out_of_scope`.
-
-Критерий готовности: итоговый `council.json` показывает, какие правки согласованы, какие спорны и какие требуют человека.
-
-Текущее состояние: добавлен offline-режим `rws council runs/<run-id>`, который собирает `reviews/*.review.json` и `segments.json` в `council.prompt.md` и стартовый `council.json` со статусом `prompt_ready`.
-
-## Этап 6. Синтезатор редакции
-
-Цель: отдельный редактор применяет согласованные улучшения к исходному документу.
-
-Синтезатор не должен:
-
-- переписывать документ в чужой манере целиком;
-- добавлять новые факты без основания;
-- стирать индивидуальный голос автора;
-- скрывать спорные места.
-
-Синтезатор должен:
-
-- применять правки по конкретным `span_id`;
-- сохранять исходные тезисы, если они не опровергнуты;
-- усиливать доказательство;
-- улучшать композицию;
-- делать текст понятнее;
-- помечать места, где нужен человек.
-
-Текущее состояние: добавлен offline-режим `rws revise runs/<run-id>`, который собирает `normalized.md` и `council.json` в `revision.prompt.md` и стартовый `revision.json` со статусом `prompt_ready`.
-
-## Этап 7. Проверяющий
-
-Цель: финальная версия сверяется с исходником и замечаниями.
-
-Проверяющий отвечает на вопросы:
-
-- не потеряны ли важные утверждения исходника;
-- не добавлены ли неподтвержденные факты;
-- не нарушена ли логика ссылок и примеров;
-- не стал ли текст чрезмерно стилизованным;
-- выполнены ли согласованные замечания;
-- остались ли нерешенные конфликты.
-
-Выход:
-
-```json
-{
-  "status": "needs_human_review",
-  "passed": [
-    "facts_preserved",
-    "agreed_findings_applied"
-  ],
-  "warnings": [
-    {
-      "span_id": "p022",
-      "message": "Синтезатор усилил вывод; нужна проверка источника."
-    }
-  ]
-}
-```
-
-Текущее состояние: добавлен offline-режим `rws verify runs/<run-id>`, который собирает исходник, нормализованный документ и `revision.json` в `verification.prompt.md` и стартовый `verification.json` со статусом `prompt_ready`.
-
-## Этап 8. Интерфейс
-
-После CLI можно добавить простой веб-интерфейс:
-
-- загрузка документа;
-- выбор стилей;
-- режимы `review`, `council`, `revise`;
-- просмотр замечаний по абзацам;
-- просмотр diff;
-- экспорт `revised.md` и `report.md`.
-
-Интерфейс не должен появляться раньше воспроизводимого CLI, иначе проект быстро станет красивой оболочкой без надежного ядра.
-
-Текущее состояние: до полноценного веб-интерфейса добавлен переносимый `summary.html`. Его можно создать командой `rws html-report runs/<run-id>` или получить автоматически через `rws run`, `rws report` и `rws export`. Он показывает метрики запуска, находки по `span_id`, решения совета, статус редакции, verifier warnings, eval scoring и provider log.
-
-## Приоритеты стилей для первого MVP
-
-Для первого агентного прототипа достаточно трех стилей:
-
-| Стиль | Роль в MVP |
-|---|---|
-| Зализняк-очерк | Проверяет определения, классификации, порядок объяснения. |
-| Зализняк-заметки | Ловит псевдологику, произвольные этимологии, слабые доказательства. |
-| Tronsky-Readings | Требует источников, аппарата, осторожной филологической формулировки. |
-
-После этого добавить:
-
-| Стиль | Что добавляет |
-|---|---|
-| Зализняк-школьников_1 | Понятность без потери строгости. |
-| Казанский | Семантический и комментаторский нюанс. |
-| Лидова | История традиции, жанра и комментария. |
-| Albedil-Sbornik | Культурный контекст и гуманитарная интонация. |
-
-## Модельная матрица
-
-Для первого MVP лучше начать с одной сильной модели, чтобы не смешивать ошибки архитектуры с ошибками маршрутизации между моделями. Базовая рекомендация: использовать `gpt-5.5` для всех критических шагов, а после появления eval-набора постепенно переносить дешевые и массовые операции на `gpt-5.4-mini`.
-
-Стартовая политика маршрутизации вынесена в [`../model_policy.yml`](../model_policy.yml). Провайдерные версии roadmap для OpenAI, Google Gemini 3.1 Pro и Anthropic Claude Sonnet 4.6 описаны в [`provider-roadmaps.md`](provider-roadmaps.md).
-
-| Часть системы | Основная модель | Reasoning | Когда можно удешевить |
-|---|---|---|---|
-| Проектирование архитектуры, схем, CLI и протоколов | `gpt-5.5` | `high` или `xhigh` | Не удешевлять до стабилизации архитектуры. |
-| Реализация кода, refactor, исправление тестов | `gpt-5.5` | `medium` или `high` | Простые механические задачи можно отдавать `gpt-5.4-mini`. |
-| Генерация паспортов стилей из `.md` | `gpt-5.5` | `medium` | После проверки формата можно использовать `gpt-5.4-mini`. |
-| Нормализация и сегментация Markdown/TXT | `gpt-5.4-mini` | `low` или `medium` | Это почти детерминированная задача; часть логики лучше делать обычным кодом без LLM. |
-| Роутинг стилей по задаче пользователя | `gpt-5.4-mini` | `low` или `medium` | Для спорных документов поднимать до `gpt-5.5 medium`. |
-| Одиночная проверка стилем | `gpt-5.5` | `medium` | Массовые предварительные проверки можно переносить на `gpt-5.4-mini medium`. |
-| Параллельная проверка несколькими стилями | `gpt-5.5` для MVP | `medium` | После eval-ов часть style reviewers можно запускать на `gpt-5.4-mini`. |
-| Совет стилей и ответы на замечания | `gpt-5.5` | `high` | Не удешевлять, пока не накоплены примеры конфликтов и правильных решений. |
-| Синтезатор итоговой редакции | `gpt-5.5` | `high` или `xhigh` | Не удешевлять для пользовательского финала. |
-| Проверяющий сохранность смысла и фактов | `gpt-5.5` | `high` или `xhigh` | Не удешевлять для длинных или научно рискованных документов. |
-| JSON-валидация, grouping, deduplication, отчеты | `gpt-5.4-mini` или обычный код | `low` | Предпочтительно делать обычным кодом там, где правила формальны. |
-| Быстрые smoke-tests промптов | `gpt-5.4-mini` | `low` | Для финального качества прогонять контрольный набор на `gpt-5.5`. |
-
-## Режимы для разработки
-
-Если работа идет в Codex над самим репозиторием, рекомендуемые режимы такие:
-
-| Задача в Codex | Модель и режим |
-|---|---|
-| Обсуждение архитектуры, roadmap, протоколов и схем | `gpt-5.5`, reasoning `xhigh`, скорость стандартная. |
-| Реализация сложного пайплайна агентов | `gpt-5.5`, reasoning `high` или `xhigh`, скорость стандартная. |
-| Обычные правки документации и небольшие README-изменения | `gpt-5.5`, reasoning `medium` или `high`. |
-| Массовые однотипные правки после утвержденного шаблона | `gpt-5.4-mini`, reasoning `medium`. |
-| Проверка гипотез, где важна цена и скорость, а не финальное качество | `gpt-5.4-mini`, reasoning `low` или `medium`. |
-
-Текущий режим разработки проекта можно оставить как `gpt-5.5` с очень высоким reasoning и стандартной скоростью, пока формируется архитектура и первые PR. Когда появятся стабильные схемы, тесты и eval-набор, стоит перейти к гибридной схеме: `gpt-5.5` только для архитектуры, синтеза и verifier, а дешевые повторяемые шаги выполнять на `gpt-5.4-mini`.
-
-## Политика GitHub
-
-Все внедренческие изменения должны уходить в GitHub:
-
-- работа ведется в отдельной ветке;
-- изменения коммитятся небольшими логическими порциями;
-- ветка пушится после каждого завершенного блока;
-- открытый draft PR остается главным местом обсуждения;
-- `main` не меняется напрямую, пока PR не просмотрен и не готов к merge.
-
-Текущий внедренческий PR: `codex/agent-roadmap-docs`.
-
-## Риски
-
-Главные риски:
-
-- стили начнут переписывать текст вместо проверки;
-- совет стилей превратится в длинный свободный диалог;
-- синтезатор добавит красивые, но неподтвержденные утверждения;
-- формат замечаний будет слишком рыхлым;
-- проект станет зависимым от одного провайдера LLM;
-- большие документы выйдут за бюджет контекста.
-
-Снижение рисков:
-
-- все агентные ответы только в JSON-формате;
-- все замечания привязаны к `span_id`;
-- синтезатор работает после совета, а не вместо него;
-- финальная проверка обязательна;
-- каждый запуск сохраняет артефакты;
-- провайдер LLM должен быть заменяемым через адаптер.
-
-## Ближайшие задачи
-
-1. Расширить `tools/validate_project.py` до полноценной YAML/JSON Schema validation для `model_policy.yml`, manifest и паспортов стилей.
-2. Проверить OpenAI, Google и Anthropic provider adapters на реальных API keys и малом демонстрационном документе.
-3. Расширить встроенный JSON Schema subset validator в `rws validate-run` или заменить его зависимостью `jsonschema` после стабилизации форматов.
-4. Расширить scoring rules: запрет hallucinated facts, минимальная сохранность смысла, более строгая оценка diff magnitude по смысловым фрагментам.
-5. Улучшить HTML summary: добавить side-by-side diff, фильтры по стилям и severity, компактный режим для длинных документов.
-6. Протестировать provider-specific retry/backoff на реальных API keys и сравнить telemetry по числу повторов между провайдерами.
-
-## Определение готовности MVP
-
-MVP готов, когда можно взять один Markdown-документ, запустить три стиля, получить:
-
-- структурированные замечания;
-- раунд согласования между стилями;
-- улучшенную версию документа;
-- diff;
-- отчет с нерешенными вопросами;
-- все артефакты в папке `runs/`.
-
-Такой MVP уже будет отличаться от обычного набора промптов: он покажет, что RuWritingStyles умеет не только задавать стиль ответа, но и организовывать коллективную редактуру документа.
-## Implementation status 2026-05-07
-
-The current prototype already contains the executable spine for the multi-style agent workflow:
-
-- `rws run` creates a full local pipeline: prepare, review, council, revise, verify, report, and HTML summary.
-- `--execute --provider mock` fills artifacts deterministically for tests.
-- Opt-in real provider adapters exist for OpenAI, Google Gemini, and Anthropic Claude.
-- `rws provider-status`, `--strict`, `--json`, `schemas/provider-status.schema.json`, and `rws validate-provider-status` provide safe readiness checks without exposing keys.
-- `.env.example` documents local real-provider setup while `.env*` is ignored by Git.
-- Provider execution telemetry records retry counts, retry delays, retry statuses, duration, artifact path, provider, and model.
-- `rws provider-log` exposes provider telemetry for a run.
-- `rws council-summary` exposes council replies and decisions for a run.
-- `rws eval-suite` runs all manifest cases and writes a suite report.
-- `rws eval-suite --compare-to` writes `comparison.md` and `comparison.json` against a baseline immediately after a candidate run.
-- `rws eval-compare`, `--json-output`, `--strict`, `rws validate-eval-suite`, `rws validate-eval-comparison`, and `rws eval-status` support regression tracking.
-- `rws export-eval-suite` packages suite reports and referenced case-run artifacts into a portable ZIP.
-- Manual GitHub Actions workflow `Eval Smoke` runs baseline and candidate mock suites, validates the comparison, prints statuses, exports the candidate bundle, and uploads it as an artifact.
-
-Current validation checkpoint:
-
-- `python -m compileall -q src tools tests`
-- `python tools/validate_project.py`
-- `python -m unittest discover -s tests` with 17 tests
-- `git diff --check`
+- persistent job queue;
+- optional database index поверх файловых runs;
+- auth only if needed;
+- packaging;
+- release artifacts;
+- privacy modes;
+- cost controls;
+- documentation site.
+
+Definition of done:
+
+- проект можно установить, обновить и использовать без знания внутренней структуры репозитория;
+- runs остаются переносимыми;
+- пользователю понятно, что отправляется внешним провайдерам.
+
+## Приоритетный план на ближайшие шаги
+
+### Следующий день работы
+
+1. Обновить README и quickstart под текущий Web/API/pipeline.
+2. Добавить GitHub Actions CI: Python tests, validate_project, frontend lint/build.
+3. Сделать API endpoint `/runs/{run_id}/status` или расширить `/runs/{run_id}` step-state.
+4. Добавить Web error/loading states.
+5. Запустить один реальный provider smoke на коротком документе и сохранить заметки.
+
+### Следующая неделя
+
+1. Реализовать resolution format.
+2. Сделать accept/reject в Web Studio или HTML summary не как download-only demo, а как вход в finalize.
+3. Расширить eval manifest минимум до 10 cases.
+4. Добавить style regression anchors для 2-3 ключевых стилей.
+5. Описать provider capability matrix.
+
+### Следующий месяц
+
+1. Довести Web Studio до локального MVP.
+2. Добавить corpus import для docx и нормализованных txt/pdf outputs.
+3. Сделать project-run с наглядным project dashboard.
+4. Ввести baseline promotion workflow.
+5. Подготовить первый tagged release.
+
+## Вопросы к владельцу проекта
+
+Продуктовые вопросы:
+
+1. Главный пользователь кто: ты как исследователь, внешний филолог, редактор журнала, студент, автор статьи?
+2. Главный результат какой: исправленный текст, подробный отчет, учебная критика, проверка гипотез или все сразу?
+3. Нужно ли по умолчанию менять текст, или безопаснее сначала давать только комментарии?
+4. Какой формат входа важнее всего после `.md` и `.txt`: `.docx`, `.pdf`, Google Docs, HTML?
+5. Для каких языков проект должен быть первым: русский научный текст, английский academic prose, санскрит/древние языки в комментариях, смешанные тексты?
+6. Какие стили являются ядром продукта, а какие экспериментальные?
+7. Какие 5 документов должны стать золотым тестовым набором?
+8. Нужно ли сохранять авторский голос даже ценой меньшей "идеальности" текста?
+9. Должен ли Web Studio быть только локальным инструментом или в будущем веб-сервисом?
+10. Нужен ли режим для конфиденциальных текстов, где запрещены внешние API?
+
+Инженерные вопросы:
+
+1. Оставляем `runs/` как главный storage или вводим SQLite/Postgres индекс поверх файлов?
+2. API должен выполнять pipeline синхронно или через job queue?
+3. Нужно ли делать branch/PR workflow обязательным для всех изменений в репозитории?
+4. Какие real providers реально доступны ключами и бюджетом?
+5. Нужен ли token/cost accounting уже сейчас?
+6. Какой минимальный CI gate обязателен перед push в `main`?
+7. Старые run artifacts можно ломать schema migration, или нужна backward compatibility?
+8. Нужно ли сохранять все prompts целиком, если в них могут быть приватные тексты?
+9. Какой формат release: Python package, desktop/local web app, Docker, просто GitHub repo?
+10. Какие данные можно использовать для eval baselines без юридических и приватных рисков?
+
+Филологические вопросы:
+
+1. Где граница между стилистической правкой и содержательной научной рецензией?
+2. Когда совет стилей имеет право сказать "правку делать нельзя"?
+3. Какие источники считаются авторитетными для каждого домена?
+4. Нужно ли ранжировать стили по научному весу, или совет должен быть равноправным?
+5. Как фиксировать спорные, но допустимые интерпретации?
+6. Какие типы ошибок самые дорогие: ложная этимология, неверный источник, регистр, чрезмерная уверенность, потеря нюанса?
+7. Нужно ли отдельно проверять цитаты, транслитерацию, имена, даты и библиографию?
+8. Какие жанры нельзя править теми же правилами, что научную статью?
+
+## Решения, которые нужно принять
+
+| Решение | Варианты | Рекомендация |
+|---|---|---|
+| Основной UX | CLI-first, Web-first, dual | Dual, но core pipeline first |
+| Storage | только файлы, SQLite index, full DB | Файлы плюс позже SQLite index |
+| Default mode | comments, revision, strict | comments для новых пользователей, revision для explicit run |
+| Real providers | один основной, несколько | несколько, качество через eval |
+| Human approval | optional, required | required для финального export |
+| CI policy | advisory, required | required для main |
+| Style expansion | быстро много, медленно с anchors | медленно с anchors |
+| Corpus retrieval | автоматическое доверие, осторожная подсказка | осторожная подсказка |
+
+## Definition of done для MVP
+
+MVP считается готовым, когда:
+
+- `rws run` и Web Studio создают один и тот же тип run artifacts;
+- пользователь видит original, revised, findings, council decisions, verification warnings и diff;
+- можно запустить `mock` без ключей и real provider при наличии ключа;
+- можно валидировать run и экспортировать zip;
+- есть минимум 10 eval cases;
+- CI запускает основные проверки;
+- документация объясняет локальную установку, provider setup и безопасные ограничения;
+- ни один финальный документ не создается без traceable decisions.
+
+## Антицели
+
+Не развивать проект в эти стороны:
+
+- генератор красивого текста без объяснения правок;
+- чат без артефактов;
+- один гигантский prompt вместо pipeline;
+- скрытая отправка приватных текстов внешним API;
+- стили без anchors и проверок;
+- совет агентов как декоративный диалог без schema validation;
+- автоматическое принятие рискованных фактических изменений.
+
+## Короткий ориентир
+
+Сначала надо сделать RuWritingStyles надежным локальным инструментом для одного пользователя. Потом добавить редакторский контроль. Затем расширять качество через evals и corpus. И только после этого превращать его в более широкий продукт.
