@@ -58,10 +58,48 @@
 - [x] Scholarly Apparatus: Автоматическая генерация LaTeX-отчетов.
 - [x] Начальный BibTeX export (`references.bib`) для scholarly artifacts.
 
+## Дельта после agent-roadmap-2026 audit
+
+Аудит от 2026-05-08 показывает, что RuWritingStyles уже прошел этапы "first agent" и "multi-agent prototype". Следующий слой не в том, чтобы переписать проект на LangGraph, а в том, чтобы превратить текущий pipeline в измеримый, возобновляемый и наблюдаемый production harness.
+
+### Приоритет 0: привести eval-gate в рабочее состояние
+- [ ] Исправить `scripts/ci-eval-gate.py`: сейчас он вызывает устаревший интерфейс `eval-suite --mode mock`, тогда как актуальный CLI использует `eval-suite --provider mock`.
+- [ ] Подключить `rws eval-regression` к CI после появления promoted baseline.
+- [ ] Добавить `web/` lint/build в обязательный CI gate, если Web Studio считается release-critical.
+- [ ] Зафиксировать baseline promotion workflow: `eval-suite` -> `eval-promote` -> `eval-regression` -> comparison artifact.
+
+### Приоритет 1: human finalization вместо демонстрационного accept/reject
+- [ ] Ввести `resolution.json` как переносимый артефакт ручных решений.
+- [ ] Добавить CLI-команды `rws apply-resolution` и `rws finalize`.
+- [ ] Сделать Web Studio/HTML accept-reject входом в финализацию, а не только визуальным действием.
+- [ ] Гарантировать трассировку: source segment -> finding -> council decision -> applied change -> human resolution.
+
+### Приоритет 2: durable execution и resume
+- [ ] Добавить таблицу `run_steps` в SQLite: step id, status, started/finished, artifact path, error, retry count.
+- [ ] Чекпойнтить pipeline после каждого этапа: review, council, revision, verification, impact, syntax, reports.
+- [ ] Реализовать `rws resume <run_id>` для продолжения failed/interrupted run.
+- [ ] Расширить `/runs/{run_id}` или добавить `/runs/{run_id}/status` с пошаговым состоянием.
+
+### Приоритет 3: observability, cost и context discipline
+- [ ] Расширить `provider.log.jsonl` до trace events: task, model, artifact, duration, retry, schema repair, token/cost estimate.
+- [ ] Добавить budget modes в `model_policy.yml`: smoke, standard, expensive, verifier-only.
+- [ ] Создать единый context builder: style passport, selected knowledge passages, previews for long artifacts, source passage ids.
+- [ ] Не добавлять vector DB до тех пор, пока evals не покажут реальную проблему recall.
+
+### Приоритет 4: hooks и sandbox boundaries
+- [ ] Добавить hook-points: `pre_provider_call`, `post_provider_call`, `pre_write_artifact`, `post_schema_validate`, `stop_on_risk`.
+- [ ] Использовать hooks для JSON repair, secret redaction, file path guardrails, budget stops и human approval.
+- [ ] Сандбоксировать будущие code execution/PDF tooling/external MCP calls; модель не должна видеть credentials.
+
+### Приоритет 5: scholarly apparatus depth
+- [ ] Динамическая интеграция библиографии: Zotero/BibTeX ingestion, source mapping и проверка ссылок вместо статического `references.bib`.
+- [ ] Расширить коллекции "Гаспаров" и "Тронский" с passage ids и reliability metadata.
+- [ ] Добавить citation verifier: имена, даты, библиографические ссылки, прямые цитаты, transliteration.
+
 ## Следующее действие
-1. Динамическая интеграция библиографии: Zotero/BibTeX ingestion, source mapping и проверка ссылок вместо статического `references.bib`.
-2. Расширение коллекции "Гаспаров" до 50+ примеров.
-3. Добавить frontend lint/build в GitHub CI, если Web Studio становится обязательным release gate.
+1. Исправить `scripts/ci-eval-gate.py`, чтобы он вызывал `rws eval-suite --provider mock` через актуальный CLI.
+2. Добавить `web/` lint/build в GitHub CI, если Web Studio становится обязательным release gate.
+3. Затем вернуться к динамической библиографии: Zotero/BibTeX ingestion, source mapping и проверка ссылок вместо статического `references.bib`.
 
 ---
-*Math: Total Phases (8) - Phase H infrastructure complete; next work is quality, bibliography depth, and release hardening.*
+*Math: Total Phases (8) - Phase H infrastructure complete; agent-roadmap-2026 delta adds 5 production-harness priorities: eval gate, human finalization, durable resume, observability/context discipline, and sandboxed hardening.*
