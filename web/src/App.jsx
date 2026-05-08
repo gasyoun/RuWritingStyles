@@ -1,23 +1,25 @@
 import { useCallback, useEffect, useState } from 'react';
 import { 
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell, LineChart, Line
 } from 'recharts';
 import { 
   Search, BookOpen, Activity, Layers, MessageSquare, AlertTriangle, 
-  CheckCircle, ChevronRight, Settings, Download, Plus, Info, Zap
+  CheckCircle, ChevronRight, Settings, Download, Plus, Info, Zap, Filter
 } from 'lucide-react';
 
 function App() {
   const [runs, setRuns] = useState([]);
   const [activeRunId, setActiveRunId] = useState(null);
   const [runData, setRunData] = useState(null);
+  const [selectedRunIds, setSelectedRunIds] = useState([]);
   const [concordance, setConcordance] = useState({});
   const [systemStatuses, setSystemStatuses] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState('google');
   const [isNewRunModalOpen, setIsNewRunModalOpen] = useState(false);
   const [newRunPath, setNewRunPath] = useState('C:\\Users\\user\\Documents\\GitHub\\RuWritingStyles\\article.md');
-  const [viewMode, setViewMode] = useState('audit'); // 'audit', 'profile', 'syntax'
+  const [viewMode, setViewMode] = useState('audit'); // 'audit', 'profile', 'syntax', 'compare'
+  const [comparisonData, setComparisonData] = useState([]);
 
   // 1. Fetch Runs List
   const fetchRuns = useCallback(() => {
@@ -40,18 +42,26 @@ function App() {
 
   // 2. Fetch Active Run Data
   useEffect(() => {
-    if (activeRunId) {
+    if (activeRunId && viewMode !== 'compare') {
       fetch(`http://localhost:8000/runs/${activeRunId}`)
         .then(res => res.json())
         .then(data => {
           setRunData(data);
-          // Fetch concordance for this run
           fetch(`http://localhost:8000/runs/${activeRunId}/concordance`)
             .then(res => res.json())
             .then(concData => setConcordance(concData));
         });
     }
-  }, [activeRunId]);
+  }, [activeRunId, viewMode]);
+
+  // 3. Fetch Comparison Data
+  useEffect(() => {
+    if (viewMode === 'compare' && selectedRunIds.length > 1) {
+      fetch(`http://localhost:8000/api/compare?run_ids=${selectedRunIds.join(',')}`)
+        .then(res => res.json())
+        .then(data => setComparisonData(data));
+    }
+  }, [viewMode, selectedRunIds]);
 
   const handleStartRun = () => {
     if (!newRunPath) return;
@@ -67,6 +77,14 @@ function App() {
       setIsNewRunModalOpen(false);
       fetchRuns();
     });
+  };
+
+  const toggleRunSelection = (runId) => {
+    setSelectedRunIds(prev => 
+      prev.includes(runId) 
+        ? prev.filter(id => id !== runId) 
+        : [...prev, runId]
+    );
   };
 
   const currentStatus = systemStatuses.find(p => p.provider === selectedProvider) || { ready: false };
@@ -85,20 +103,16 @@ function App() {
   })) : [];
 
   const BLOOM_COLORS = {
-    'Remembering': '#8b949e',
-    'Understanding': '#58a6ff',
-    'Applying': '#3fb950',
-    'Analyzing': '#d29922',
-    'Evaluating': '#f85149',
-    'Creating': '#bc8cff'
+    'Remembering': '#8b949e', 'Understanding': '#58a6ff', 'Applying': '#3fb950',
+    'Analyzing': '#d29922', 'Evaluating': '#f85149', 'Creating': '#bc8cff'
   };
 
   const getTensionColor = (score) => {
     if (!score) return 'transparent';
     const alpha = score * 0.3;
-    if (score > 0.8) return `rgba(248, 81, 73, ${alpha})`; // High tension: Red
-    if (score > 0.4) return `rgba(210, 153, 34, ${alpha})`; // Medium tension: Orange
-    return `rgba(88, 166, 255, ${alpha})`; // Low tension: Blue
+    if (score > 0.8) return `rgba(248, 81, 73, ${alpha})`;
+    if (score > 0.4) return `rgba(210, 153, 34, ${alpha})`;
+    return `rgba(88, 166, 255, ${alpha})`;
   };
 
   return (
@@ -109,36 +123,33 @@ function App() {
           <span>RuWritingStyles</span>
         </div>
         
-        <button 
-          className="new-audit-btn"
-          onClick={() => setIsNewRunModalOpen(true)}
-        >
-          <Plus size={18} />
-          New Philological Audit
+        <button className="new-audit-btn" onClick={() => setIsNewRunModalOpen(true)}>
+          <Plus size={18} /> New Philological Audit
         </button>
 
         <div className="provider-selector">
           <label>Active Intelligence</label>
-          <select 
-            value={selectedProvider} 
-            onChange={(e) => setSelectedProvider(e.target.value)}
-          >
+          <select value={selectedProvider} onChange={(e) => setSelectedProvider(e.target.value)}>
             <option value="google">Google Gemini 1.5</option>
             <option value="anthropic">Claude 3.5 Sonnet</option>
             <option value="openrouter">OpenRouter (Balanced)</option>
+            <option value="ollama">Local: Ollama (Llama-3)</option>
           </select>
         </div>
 
         <nav className="run-list-container">
-          <div className="section-label">Audit History</div>
+          <div className="section-label">
+            Audit History
+            {selectedRunIds.length > 1 && (
+              <button className={`compare-mini-btn ${viewMode === 'compare' ? 'active' : ''}`} onClick={() => setViewMode('compare')}>
+                Compare ({selectedRunIds.length})
+              </button>
+            )}
+          </div>
           <ul className="run-list">
             {runs.map(runId => (
-              <li 
-                key={runId} 
-                className={`run-item ${activeRunId === runId ? 'active' : ''}`}
-                onClick={() => setActiveRunId(runId)}
-              >
-                < chevronRight size={14} />
+              <li key={runId} className={`run-item ${activeRunId === runId ? 'active' : ''} ${selectedRunIds.includes(runId) ? 'selected' : ''}`} onClick={() => setActiveRunId(runId)}>
+                <input type="checkbox" checked={selectedRunIds.includes(runId)} onChange={(e) => { e.stopPropagation(); toggleRunSelection(runId); }} />
                 <span className="run-id-text">{runId}</span>
               </li>
             ))}
@@ -157,8 +168,10 @@ function App() {
       <main className="workbench">
         <header className="workbench-header">
           <div className="header-left">
-            <h2 className="run-title">Workbench: {activeRunId || 'No Run Selected'}</h2>
-            {currentStatus.ready && <span className="badge">v2.0 Scholarly Harness</span>}
+            <h2 className="run-title">
+              {viewMode === 'compare' ? `Comparison: ${selectedRunIds.length} runs` : `Workbench: ${activeRunId || 'No Run Selected'}`}
+            </h2>
+            {currentStatus.ready && <span className="badge">v2.2 Philological Scale</span>}
           </div>
           
           <div className="view-switcher">
@@ -180,14 +193,43 @@ function App() {
           </div>
         </header>
 
-        {runData ? (
+        {viewMode === 'compare' ? (
+          <div className="workbench-content compare-view">
+             <section className="stats-row">
+               <div className="stat-card glass full-width">
+                 <div className="stat-header"><Activity size={16} /><span>Stylistic Evolution (Compass Shift)</span></div>
+                 <div className="chart-container large">
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={comparisonData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#30363d" />
+                        <XAxis dataKey="run_id" tick={{fontSize: 10, fill: '#8b949e'}} />
+                        <YAxis tick={{fontSize: 10, fill: '#8b949e'}} />
+                        <Tooltip contentStyle={{backgroundColor: '#161b22', border: '1px solid #30363d'}} />
+                        <Legend />
+                        {/* Dynamically create lines for each school */}
+                        {comparisonData.length > 0 && Object.keys(comparisonData[0].profile).map((school, i) => (
+                          <Line key={school} type="monotone" dataKey={`profile.${school}`} stroke={['#58a6ff', '#3fb950', '#d29922', '#f85149', '#bc8cff'][i % 5]} />
+                        ))}
+                      </LineChart>
+                    </ResponsiveContainer>
+                 </div>
+               </div>
+             </section>
+             <div className="compare-grid">
+               {comparisonData.map(run => (
+                 <div key={run.run_id} className="run-summary-card glass">
+                   <h3>{run.run_id}</h3>
+                   <div className="small-stat">Bloom: {Object.values(run.bloom_stats).reduce((a,b)=>a+b, 0)} decisions</div>
+                   <div className="small-stat">Duration: {run.duration ? run.duration.toFixed(1) : 'N/A'}s</div>
+                 </div>
+               ))}
+             </div>
+          </div>
+        ) : runData ? (
           <div className="workbench-content">
             <section className="stats-row">
               <div className="stat-card glass">
-                <div className="stat-header">
-                  <Activity size={16} />
-                  <span>Methodological Compass</span>
-                </div>
+                <div className="stat-header"><Activity size={16} /><span>Methodological Compass</span></div>
                 <div className="chart-container">
                   <ResponsiveContainer width="100%" height={150}>
                     <RadarChart cx="50%" cy="50%" outerRadius="80%" data={compassData}>
@@ -200,10 +242,7 @@ function App() {
               </div>
 
               <div className="stat-card glass">
-                <div className="stat-header">
-                  <Zap size={16} />
-                  <span>Cognitive Depth (Bloom)</span>
-                </div>
+                <div className="stat-header"><Zap size={16} /><span>Cognitive Depth (Bloom)</span></div>
                 <div className="chart-container">
                   <ResponsiveContainer width="100%" height={150}>
                     <BarChart data={bloomData} layout="vertical">
@@ -220,10 +259,7 @@ function App() {
               </div>
 
               <div className="stat-card glass">
-                <div className="stat-header">
-                  <Layers size={16} />
-                  <span>Syntax Complexity</span>
-                </div>
+                <div className="stat-header"><Layers size={16} /><span>Syntax Complexity</span></div>
                 <div className="stat-value">{runData.syntax?.shifts?.length || 0}</div>
                 <div className="stat-label">Significant shifts detected</div>
               </div>
@@ -237,36 +273,19 @@ function App() {
                     <div className="pane-scroll">
                       <div className="text-content">
                         {runData.segments?.segments?.map((seg, i) => (
-                          <span 
-                            key={i} 
-                            className="text-segment"
-                            style={{ 
-                              background: getTensionColor(runData.tension?.[seg.span_id]),
-                              borderBottom: runData.tension?.[seg.span_id] > 0.5 ? '1px dashed #f85149' : 'none'
-                            }}
-                            title={runData.tension?.[seg.span_id] ? `Tension Score: ${runData.tension[seg.span_id]}` : ''}
-                          >
-                            {seg.text}
-                          </span>
+                          <span key={i} className="text-segment" style={{ background: getTensionColor(runData.tension?.[seg.span_id]), borderBottom: runData.tension?.[seg.span_id] > 0.5 ? '1px dashed #f85149' : 'none' }}>{seg.text}</span>
                         ))}
                       </div>
                     </div>
                   </div>
                   <div className="pane">
                     <div className="pane-header">Philological Revision</div>
-                    <div className="pane-scroll">
-                      <div className="text-content revised">
-                        {runData.revised_text}
-                      </div>
-                    </div>
+                    <div className="pane-scroll"><div className="text-content revised">{runData.revised_text}</div></div>
                   </div>
                 </div>
 
                 <div className="decisions-panel glass">
-                   <div className="panel-header">
-                     <MessageSquare size={16} />
-                     Council Deliberations
-                   </div>
+                   <div className="panel-header"><MessageSquare size={16} />Council Deliberations</div>
                    <div className="decisions-list">
                      {runData.council?.decisions?.map((d, i) => (
                        <div key={i} className="decision-item">
@@ -290,10 +309,7 @@ function App() {
               </div>
 
               <aside className="concordance-sidebar glass">
-                <div className="panel-header">
-                  <BookOpen size={16} />
-                  Interactive Concordance
-                </div>
+                <div className="panel-header"><BookOpen size={16} />Interactive Concordance</div>
                 <div className="concordance-content">
                   {Object.keys(concordance).length > 0 ? (
                     Object.entries(concordance).map(([term, matches]) => (
@@ -308,10 +324,7 @@ function App() {
                       </div>
                     ))
                   ) : (
-                    <div className="empty-concordance">
-                      <Info size={24} />
-                      <p>No academic precedents found for this passage.</p>
-                    </div>
+                    <div className="empty-concordance"><Info size={24} /><p>No academic precedents found.</p></div>
                   )}
                 </div>
               </aside>
@@ -321,7 +334,7 @@ function App() {
           <div className="empty-state">
             <Search size={48} />
             <h2>Select an Audit to begin</h2>
-            <p>Or start a new philological investigation using the sidebar.</p>
+            <p>Or start a new investigation using the sidebar.</p>
           </div>
         )}
       </main>
@@ -329,20 +342,12 @@ function App() {
       {isNewRunModalOpen && (
         <div className="modal-overlay">
           <div className="modal glass">
-            <div className="modal-header">
-              <Plus size={20} />
-              <h3>New Philological Audit</h3>
-            </div>
+            <div className="modal-header"><Plus size={20} /><h3>New Philological Audit</h3></div>
             <div className="modal-body">
               <p>Initialize a new automated stylistic audit. Specify the absolute path to your source manuscript (.md, .txt).</p>
               <div className="input-group">
                 <label>Manuscript Path</label>
-                <input 
-                  type="text" 
-                  value={newRunPath}
-                  onChange={(e) => setNewRunPath(e.target.value)}
-                  placeholder="C:/Users/Research/draft.md"
-                />
+                <input type="text" value={newRunPath} onChange={(e) => setNewRunPath(e.target.value)} />
               </div>
               <div className="modal-actions">
                 <button className="cancel-btn" onClick={() => setIsNewRunModalOpen(false)}>Cancel</button>
