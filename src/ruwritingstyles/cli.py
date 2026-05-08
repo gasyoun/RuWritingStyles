@@ -57,6 +57,7 @@ from .validation import (
     validate_run_dir,
 )
 from .verification import create_verification_bundle
+from .db import Database
 
 PROVIDER_CHOICES = ["mock", "openai", "google", "anthropic", "openrouter", "local", "ollama"]
 REAL_PROVIDER_CHOICES = ["openai", "google", "anthropic", "openrouter", "local", "ollama"]
@@ -95,6 +96,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Optional deterministic run id. The target runs/<run-id> must not already exist.",
     )
     _add_provider_args(prepare)
+    prepare.add_argument(
+        "--profile",
+        default="researcher",
+        help="Researcher profile name (e.g., 'Editor', 'Student'). Default: 'researcher'.",
+    )
     prepare.set_defaults(func=cmd_prepare)
 
     run = subparsers.add_parser(
@@ -142,9 +148,9 @@ def build_parser() -> argparse.ArgumentParser:
         help="Interactively review and override Council decisions before revision.",
     )
     run.add_argument("--archetype", help="Council archetype ID")
-    run.add_argument("--profile", default="researcher", choices=["researcher", "editor", "student"], help="User profile for tailored advice.")
     _add_execute_args(run)
     run.set_defaults(func=cmd_run)
+ 
 
     ab_test = subparsers.add_parser(
         "ab-test",
@@ -596,6 +602,29 @@ def build_parser() -> argparse.ArgumentParser:
     report.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
     report.set_defaults(func=cmd_report)
 
+    apply_res = subparsers.add_parser(
+        "apply-resolution",
+        help="Apply human stylistic overrides from resolution.json to council decisions.",
+    )
+    apply_res.add_argument("run_dir", type=Path, help="Prepared run directory.")
+    apply_res.add_argument("--resolution", type=Path, help="Path to resolution.json (defaults to <run_dir>/resolution.json).")
+    apply_res.set_defaults(func=cmd_apply_resolution)
+
+    finalize = subparsers.add_parser(
+        "finalize",
+        help="Produce the final philological manuscript by merging revisions and resolutions.",
+    )
+    finalize.add_argument("run_dir", type=Path, help="Prepared run directory.")
+    finalize.set_defaults(func=cmd_finalize)
+
+    resume = subparsers.add_parser(
+        "resume",
+        help="Resume a failed or interrupted run from the last completed step.",
+    )
+    resume.add_argument("run_dir", type=Path, help="Run directory to resume.")
+    _add_execute_args(resume)
+    resume.set_defaults(func=cmd_resume)
+
     html_report = subparsers.add_parser(
         "html-report",
         help="Render or refresh the static HTML summary for a run directory.",
@@ -695,6 +724,11 @@ def _add_execute_args(parser: argparse.ArgumentParser) -> None:
         action="store_true",
         help="With --execute, fail before writing artifacts if the selected provider is not configured.",
     )
+    parser.add_argument(
+        "--profile",
+        default="researcher",
+        help="Researcher profile name (e.g., 'Editor', 'Student'). Default: 'researcher'.",
+    )
 
 
 def _add_provider_args(parser: argparse.ArgumentParser) -> None:
@@ -736,6 +770,7 @@ def cmd_prepare(args: argparse.Namespace) -> int:
         model_policy=model_policy,
         run_id=args.run_id,
         provider=args.provider,
+        profile=args.profile,
     )
 
     print(f"created {run_dir.relative_to(repo_root)}")
@@ -813,9 +848,27 @@ def _execute_ab_run(repo_root: Path, args: argparse.Namespace, manifest: Any) ->
     from .revision import create_revision_bundle
     from .config import load_model_policy, provider_from_name
     
-    run_dir = create_prepare_run(repo_root, args.input_file, args.run_id)
-    style_ids = args.styles or manifest.mvp_style_ids
+    from .document import read_document, normalize_document, segment_markdown
+    original_text = read_document(args.input_file)
+    normalized_text = normalize_document(original_text)
+    segments = segment_markdown(normalized_text)
     model_policy = load_model_policy(repo_root)
+
+    run_dir = create_prepare_run(
+        repo_root=repo_root,
+        input_path=args.input_file,
+        original_text=original_text,
+        normalized_text=normalized_text,
+        segments=segments,
+        manifest=manifest,
+        model_policy=model_policy,
+        run_id=args.run_id,
+        provider=args.provider,
+        archetype=manifest.council.archetype if manifest.council else None,
+        profile="ab-tester",
+    )
+
+    style_ids = args.styles or manifest.mvp_style_ids
     
     if args.execute:
         # 1. Review
@@ -895,6 +948,8 @@ def cmd_run(args: argparse.Namespace) -> int:
         run_id=run_id,
         provider=args.provider,
         archetype=getattr(args, "archetype", None),
+        profile=args.profile,
+        config={k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items() if k != "func"},
     )
 
     if project_dir:
@@ -903,184 +958,224 @@ def cmd_run(args: argparse.Namespace) -> int:
         if context_path.exists():
             (run_dir / "project-context.json").write_text(context_path.read_text(encoding="utf-8"), encoding="utf-8")
 
+    return _execute_run_pipeline(repo_root, run_dir, args, manifest, model_policy)
+
+
+def _execute_run_pipeline(repo_root: Path, run_dir: Path, args: argparse.Namespace, manifest: Any, model_policy: Any) -> int:
+    db = Database(repo_root)
+    run_id = run_dir.name
+    db.update_run_status(run_id, "executing")
+    
     style_ids = _selected_style_ids(args, manifest)
-    print(f"created {run_dir.relative_to(repo_root)}")
-    print(f"segments: {len(segments)}")
+    project_dir = getattr(args, "project_dir", None)
+    if project_dir:
+        project_dir = project_dir if project_dir.is_absolute() else (Path.cwd() / project_dir)
 
-    for style_id in style_ids:
-        bundle = create_review_bundle(
-            repo_root=repo_root,
-            run_dir=run_dir,
-            style_id=style_id,
-            manifest=manifest,
-            profile=args.profile,
-        )
-        print(f"created {bundle.review_json.relative_to(repo_root)}")
-        if args.execute:
-            execute_review_artifact(
-                repo_root=repo_root,
-                review_path=bundle.review_json,
-                provider=provider_from_name(args.provider),
-                model=args.model or model_policy.resolve_model("style_review", args.provider),
-            )
-            print(f"completed {bundle.review_json.relative_to(repo_root)}")
+    def step(step_id: str, func: callable):
+        steps = db.get_run_steps(run_id)
+        if any(s["step_id"] == step_id and s["status"] == "completed" for s in steps):
+             print(f"skipping completed step: {step_id}")
+             return
+             
+        db.update_step_status(run_id, step_id, "executing")
+        try:
+            func()
+            db.update_step_status(run_id, step_id, "completed")
+        except Exception as e:
+            db.update_step_status(run_id, step_id, "failed", error=str(e))
+            raise
 
-    if args.deliberate:
-        print("\n--- Cross-Style Deliberation (Debate) ---")
-        for style_id in style_ids:
-            bundle = create_deliberation_bundle(
-                repo_root=repo_root,
-                run_dir=run_dir,
-                style_id=style_id,
-                manifest=manifest,
-                profile=args.profile,
-            )
-            print(f"created {bundle.deliberation_json.relative_to(repo_root)}")
+    try:
+        # 1. Review
+        def do_review():
+            for style_id in style_ids:
+                bundle = create_review_bundle(
+                    repo_root=repo_root,
+                    run_dir=run_dir,
+                    style_id=style_id,
+                    manifest=manifest,
+                    profile=args.profile,
+                )
+                print(f"created {bundle.review_json.relative_to(repo_root)}")
+                if args.execute:
+                    execute_review_artifact(
+                        repo_root=repo_root,
+                        review_path=bundle.review_json,
+                        provider=provider_from_name(args.provider),
+                        model=args.model or model_policy.resolve_model("style_review", args.provider),
+                    )
+                    print(f"completed {bundle.review_json.relative_to(repo_root)}")
+        step("review", do_review)
+
+        # 2. Deliberation
+        if getattr(args, "deliberate", False):
+            def do_deliberation():
+                print("\n--- Cross-Style Deliberation (Debate) ---")
+                for style_id in style_ids:
+                    bundle = create_deliberation_bundle(
+                        repo_root=repo_root,
+                        run_dir=run_dir,
+                        style_id=style_id,
+                        manifest=manifest,
+                        profile=args.profile,
+                    )
+                    print(f"created {bundle.deliberation_json.relative_to(repo_root)}")
+                    if args.execute:
+                        execute_deliberation_artifact(
+                            repo_root=repo_root,
+                            delib_path=bundle.deliberation_json,
+                            provider=provider_from_name(args.provider),
+                            model=args.model or model_policy.resolve_model("style_review", args.provider),
+                        )
+                        print(f"completed {bundle.deliberation_json.relative_to(repo_root)}")
+            step("deliberation", do_deliberation)
+
+        # 3. Scrutiny
+        if getattr(args, "scrutiny", False):
+            def do_scrutiny():
+                print("\n--- Linguistic Scrutiny (Expert Audit) ---")
+                bundle = create_scrutiny_bundle(repo_root=repo_root, run_dir=run_dir)
+                print(f"created {bundle.scrutiny_json.relative_to(repo_root)}")
+                if args.execute:
+                    execute_scrutiny_artifact(
+                        repo_root=repo_root,
+                        scrutiny_path=bundle.scrutiny_json,
+                        provider=provider_from_name(args.provider),
+                        model=args.model or model_policy.resolve_model("verification", args.provider),
+                    )
+                    print(f"completed {bundle.scrutiny_json.relative_to(repo_root)}")
+            step("scrutiny", do_scrutiny)
+
+        # 4. Iterations
+        max_iterations = getattr(args, "max_iterations", 1)
+        for iteration in range(1, max_iterations + 1):
+            iter_suffix = f"_iter{iteration}" if max_iterations > 1 else ""
+            
+            if iteration > 1:
+                print(f"\n--- Fact-Checking Iteration {iteration} ---")
+
+            def do_council_step():
+                verification_feedback = None
+                if iteration > 1:
+                    prev_verification = run_dir / "verification.json"
+                    if prev_verification.exists():
+                        verification_feedback = json.loads(prev_verification.read_text(encoding="utf-8"))
+
+                council = create_council_bundle(
+                    repo_root=repo_root,
+                    run_dir=run_dir,
+                    manifest=manifest,
+                    verification_feedback=verification_feedback,
+                    archetype_id=getattr(args, "archetype", None),
+                    profile=args.profile,
+                )
+                print(f"created {council.council_json.relative_to(repo_root)}")
+                if args.execute:
+                    execute_council_artifact(
+                        repo_root=repo_root,
+                        council_path=council.council_json,
+                        provider=provider_from_name(args.provider),
+                        model=args.model or model_policy.resolve_model("council", args.provider),
+                    )
+                    print(f"completed {council.council_json.relative_to(repo_root)}")
+                    if getattr(args, "interactive", False):
+                        _interactive_council_review(repo_root, council.council_json)
+            step(f"council{iter_suffix}", do_council_step)
+
+            def do_revision_step():
+                revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
+                print(f"created {revision.revision_json.relative_to(repo_root)}")
+                if args.execute:
+                    execute_revision_artifact(
+                        repo_root=repo_root,
+                        revision_path=revision.revision_json,
+                        provider=provider_from_name(args.provider),
+                        model=args.model or model_policy.resolve_model("synthesis", args.provider),
+                    )
+                    print(f"completed {revision.revision_json.relative_to(repo_root)}")
+                    diff_path = write_revision_diff(run_dir)
+                    print(f"updated {diff_path.relative_to(repo_root)}")
+            step(f"revision{iter_suffix}", do_revision_step)
+
+            def do_verification_step():
+                verification = create_verification_bundle(repo_root=repo_root, run_dir=run_dir)
+                print(f"created {verification.verification_json.relative_to(repo_root)}")
+                if args.execute:
+                    execute_verification_artifact(
+                        repo_root=repo_root,
+                        verification_path=verification.verification_json,
+                        provider=provider_from_name(args.provider),
+                        model=args.model or model_policy.resolve_model("verification", args.provider),
+                    )
+                    print(f"completed {verification.verification_json.relative_to(repo_root)}")
+            step(f"verification{iter_suffix}", do_verification_step)
+
             if args.execute:
-                execute_deliberation_artifact(
-                    repo_root=repo_root,
-                    delib_path=bundle.deliberation_json,
-                    provider=provider_from_name(args.provider),
-                    model=args.model or model_policy.resolve_model("style_review", args.provider),
-                )
-                print(f"completed {bundle.deliberation_json.relative_to(repo_root)}")
+                def do_impact_step():
+                    impact = create_impact_bundle(repo_root=repo_root, run_dir=run_dir)
+                    print(f"created {impact.impact_json.relative_to(repo_root)}")
+                    execute_impact_artifact(
+                        repo_root=repo_root,
+                        impact_path=impact.impact_json,
+                        provider=provider_from_name(args.provider),
+                        model=args.model or model_policy.resolve_model("verification", args.provider),
+                    )
+                    print(f"completed {impact.impact_json.relative_to(repo_root)}")
+                step(f"impact{iter_suffix}", do_impact_step)
 
-    if args.scrutiny:
-        print("\n--- Linguistic Scrutiny (Expert Audit) ---")
-        bundle = create_scrutiny_bundle(repo_root=repo_root, run_dir=run_dir)
-        print(f"created {bundle.scrutiny_json.relative_to(repo_root)}")
-        if args.execute:
-            execute_scrutiny_artifact(
-                repo_root=repo_root,
-                scrutiny_path=bundle.scrutiny_json,
-                provider=provider_from_name(args.provider),
-                model=args.model or model_policy.resolve_model("verification", args.provider),
-            )
-            print(f"completed {bundle.scrutiny_json.relative_to(repo_root)}")
+                def do_syntax_step():
+                    from .syntax import create_syntax_bundle
+                    from .execution import execute_syntax_artifact
+                    syntax_bundle = create_syntax_bundle(repo_root=repo_root, run_dir=run_dir)
+                    if syntax_bundle:
+                        s_path = Path(syntax_bundle["syntax_path"])
+                        print(f"created {s_path.relative_to(repo_root)}")
+                        execute_syntax_artifact(
+                            repo_root=repo_root,
+                            syntax_path=s_path,
+                            provider=provider_from_name(args.provider),
+                            model=(args.model or model_policy.resolve_model("verification", args.provider))
+                        )
+                        print(f"completed {s_path.relative_to(repo_root)}")
+                step(f"syntax{iter_suffix}", do_syntax_step)
 
-    for iteration in range(1, args.max_iterations + 1):
-        if iteration > 1:
-            print(f"\n--- Fact-Checking Iteration {iteration} ---")
-
-        verification_feedback = None
-        if iteration > 1:
-            prev_verification = run_dir / "verification.json"
-            if prev_verification.exists():
-                verification_feedback = json.loads(prev_verification.read_text(encoding="utf-8"))
-
-        council = create_council_bundle(
-            repo_root=repo_root,
-            run_dir=run_dir,
-            manifest=manifest,
-            verification_feedback=verification_feedback,
-            archetype_id=getattr(args, "archetype", None),
-            profile=args.profile,
-        )
-        print(f"created {council.council_json.relative_to(repo_root)}")
-        if args.execute:
-            execute_council_artifact(
-                repo_root=repo_root,
-                council_path=council.council_json,
-                provider=provider_from_name(args.provider),
-                model=args.model or model_policy.resolve_model("council", args.provider),
-            )
-            print(f"completed {council.council_json.relative_to(repo_root)}")
-
-            if args.interactive:
-                _interactive_council_review(repo_root, council.council_json)
-
-        revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
-        print(f"created {revision.revision_json.relative_to(repo_root)}")
-        if args.execute:
-            execute_revision_artifact(
-                repo_root=repo_root,
-                revision_path=revision.revision_json,
-                provider=provider_from_name(args.provider),
-                model=args.model or model_policy.resolve_model("synthesis", args.provider),
-            )
-            print(f"completed {revision.revision_json.relative_to(repo_root)}")
-            diff_path = write_revision_diff(run_dir)
-            print(f"updated {diff_path.relative_to(repo_root)}")
-
-        verification = create_verification_bundle(repo_root=repo_root, run_dir=run_dir)
-        print(f"created {verification.verification_json.relative_to(repo_root)}")
-        if args.execute:
-            execute_verification_artifact(
-                repo_root=repo_root,
-                verification_path=verification.verification_json,
-                provider=provider_from_name(args.provider),
-                model=args.model or model_policy.resolve_model("verification", args.provider),
-            )
-            print(f"completed {verification.verification_json.relative_to(repo_root)}")
-
-        if args.execute:
-            # Impact assessment needs a revised document, so it only runs in
-            # the executable pipeline.
-            impact = create_impact_bundle(repo_root=repo_root, run_dir=run_dir)
-            print(f"created {impact.impact_json.relative_to(repo_root)}")
-            execute_impact_artifact(
-                repo_root=repo_root,
-                impact_path=impact.impact_json,
-                provider=provider_from_name(args.provider),
-                model=args.model or model_policy.resolve_model("verification", args.provider),
-            )
-            print(f"completed {impact.impact_json.relative_to(repo_root)}")
-            # Phase F: Syntax Assessment
-            from .syntax import create_syntax_bundle
-            from .execution import execute_syntax_artifact
-            syntax_bundle = create_syntax_bundle(repo_root=repo_root, run_dir=run_dir)
-            if syntax_bundle:
-                s_path = Path(syntax_bundle["syntax_path"])
-                print(f"created {s_path.relative_to(repo_root)}")
-                execute_syntax_artifact(
-                    repo_root=repo_root,
-                    syntax_path=s_path,
-                    provider=provider_from_name(args.provider),
-                    model=(args.model or model_policy.resolve_model("verification", args.provider))
-                )
-                print(f"completed {s_path.relative_to(repo_root)}")
-
-
-            # Phase F: Syntax Assessment
-            from .syntax import create_syntax_bundle
-            from .execution import execute_syntax_artifact
-            syntax_bundle = create_syntax_bundle(repo_root=repo_root, run_dir=run_dir)
-            print(f"created {Path(syntax_bundle['syntax_path']).relative_to(repo_root)}")
-            execute_syntax_artifact(
-                repo_root=repo_root,
-                syntax_path=Path(syntax_bundle["syntax_path"]),
-                provider=provider_from_name(args.provider),
-                model=args.model or model_policy.resolve_model("verification", args.provider),
-            )
-            print(f"completed {Path(syntax_bundle['syntax_path']).relative_to(repo_root)}")
-
-            # Check if we should loop
-            v_doc = json.loads(verification.verification_json.read_text(encoding="utf-8"))
-            i_doc = json.loads(impact.impact_json.read_text(encoding="utf-8"))
-            
-            v_warnings = v_doc.get("warnings", [])
-            i_warnings = [
-                f"Impact failure in {a['span_id']} ({a['tag']}): {a['comment']}"
-                for a in i_doc.get("assessments", []) if not a.get("passed")
-            ]
-            
-            combined_warnings = v_warnings + i_warnings
-            
-            if not combined_warnings or iteration == args.max_iterations:
-                break
+                # Check if we should loop (not a formal step, just logic)
+                verification_json = run_dir / "verification.json"
+                impact_json = run_dir / "impact.json"
+                if verification_json.exists() and impact_json.exists():
+                    v_doc = json.loads(verification_json.read_text(encoding="utf-8"))
+                    i_doc = json.loads(impact_json.read_text(encoding="utf-8"))
+                    
+                    v_warnings = v_doc.get("warnings", [])
+                    i_warnings = [
+                        f"Impact failure in {a['span_id']} ({a['tag']}): {a['comment']}"
+                        for a in i_doc.get("assessments", []) if not a.get("passed")
+                    ]
+                    
+                    combined_warnings = v_warnings + i_warnings
+                    if not combined_warnings or iteration == max_iterations:
+                        break
+                    else:
+                        merged_feedback = {"warnings": combined_warnings}
+                        (run_dir / "verification.json").write_text(json.dumps(merged_feedback, ensure_ascii=False, indent=2), encoding="utf-8")
+                        print(f"Verification/Impact failed with {len(combined_warnings)} warnings. Retrying...")
+                else:
+                    break
             else:
-                # Merge impact warnings into a dummy verification structure for the next council iteration
-                merged_feedback = {"warnings": combined_warnings}
-                (run_dir / "verification.json").write_text(json.dumps(merged_feedback, ensure_ascii=False, indent=2), encoding="utf-8")
-                print(f"Verification/Impact failed with {len(combined_warnings)} warnings. Retrying...")
-        else:
-            # If not executing, we only do one iteration
-            break
+                break
 
-    _write_reports(repo_root, run_dir)
+        # 5. Reports
+        def do_reports_step():
+            _write_reports(repo_root, run_dir)
+        step("reports", do_reports_step)
 
-    if project_dir and args.execute:
-        update_project_context(project_dir, run_dir)
+        if project_dir and args.execute:
+            update_project_context(project_dir, run_dir)
+
+        db.update_run_status(run_id, "completed")
+    except Exception as exc:
+        db.update_run_status(run_id, "failed", summary=str(exc))
+        raise
 
     return 0
 
@@ -1141,6 +1236,7 @@ def cmd_project_run(args: argparse.Namespace) -> int:
             max_iterations=args.max_iterations,
             interactive=args.interactive,
             project_dir=project_dir,
+            profile=args.profile,
         )
         cmd_run(run_args)
     
@@ -1197,7 +1293,6 @@ def cmd_repl(args: argparse.Namespace) -> int:
     return 0
 
 
-
 def cmd_migrate_corpus(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     input_dir = args.input_dir if args.input_dir.is_absolute() else (Path.cwd() / args.input_dir)
@@ -1240,7 +1335,6 @@ def cmd_migrate_corpus(args: argparse.Namespace) -> int:
     return 0 if success_count == len(md_files) else 1
 
 
-
 def cmd_sentiment(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
@@ -1266,7 +1360,6 @@ def cmd_sentiment(args: argparse.Namespace) -> int:
     except Exception as e:
         print(f"error: sentiment analysis failed: {e}")
         return 1
-
 
 
 def cmd_peer_review(args: argparse.Namespace) -> int:
@@ -1300,7 +1393,6 @@ def cmd_peer_review(args: argparse.Namespace) -> int:
         return 1
 
 
-
 def cmd_style_regression(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     style_id = args.style
@@ -1332,7 +1424,6 @@ def cmd_style_regression(args: argparse.Namespace) -> int:
     except Exception as e:
         print(f"error: style regression failed: {e}")
         return 1
-
 
 
 def cmd_peer_review_ab(args: argparse.Namespace) -> int:
@@ -1408,13 +1499,11 @@ def _write_peer_review_ab_report(repo_root: Path, run_dir: Path, results: list[d
     return report_path
 
 
-
 def cmd_dashboard(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     print("Generating Interactive Project Dashboard...")
     try:
         from .dashboard import generate_project_dashboard
-        from .api import app as web_app
         output_path = args.output if args.output else repo_root / "DASHBOARD.html"
         path = generate_project_dashboard(repo_root, output_path)
         print(f"Success! Dashboard saved to: {path.relative_to(repo_root)}")
@@ -1422,7 +1511,6 @@ def cmd_dashboard(args: argparse.Namespace) -> int:
     except Exception as e:
         print(f"error: dashboard generation failed: {e}")
         return 1
-
 
 
 def _warn_if_port_busy(port: int) -> None:
@@ -1457,6 +1545,7 @@ def cmd_web(args: argparse.Namespace) -> int:
     
     # 2. Start Vite Frontend (if in dev mode)
     web_dir = repo_root / "web"
+    frontend_process = None
     if web_dir.exists():
         print("Starting Vite development server...")
         frontend_process = subprocess.Popen(
@@ -1580,6 +1669,111 @@ def cmd_generate_passport(args: argparse.Namespace) -> int:
     except Exception as e:
         print(f"error: failed to generate style: {e}")
         return 1
+
+
+def cmd_apply_resolution(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    council_path = run_dir / "council.json"
+    
+    if not council_path.exists():
+        print(f"error: council.json not found in {run_dir}")
+        return 1
+        
+    res_path = args.resolution or (run_dir / "resolution.json")
+    if not res_path.exists():
+        print(f"error: resolution.json not found at {res_path}")
+        return 1
+        
+    council = json.loads(council_path.read_text(encoding="utf-8"))
+    resolution = json.loads(res_path.read_text(encoding="utf-8"))
+    
+    overrides = {o["finding_id"]: o for o in resolution.get("overrides", [])}
+    decisions = council.get("decisions", [])
+    
+    updated_count = 0
+    for d in decisions:
+        fid = d["finding_id"]
+        if fid in overrides:
+            override = overrides[fid]
+            d["status"] = override["status"]
+            if "human_comment" in override:
+                d["human_resolution"] = override["human_comment"]
+            updated_count += 1
+            
+    council["decisions"] = decisions
+    council_path.write_text(json.dumps(council, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    
+    print(f"Success: Applied {updated_count} human resolution(s) to council decisions.")
+    return 0
+
+
+def cmd_finalize(args: argparse.Namespace) -> int:
+    """Produce the final philological manuscript by merging revisions and resolutions."""
+    repo_root = repo_root_from()
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    revision_path = run_dir / "revision.json"
+    
+    if not revision_path.exists():
+        print(f"error: revision.json not found in {run_dir}. Run `rws revise --execute` first.")
+        return 1
+        
+    rev_data = json.loads(revision_path.read_text(encoding="utf-8"))
+    if rev_data.get("status") != "completed":
+        print("error: revision is not completed. Execute the revision first.")
+        return 1
+        
+    revised_text = rev_data.get("revised_document")
+    if not revised_text:
+        print("error: no revised document found in revision.json")
+        return 1
+        
+    final_path = run_dir / "final.md"
+    final_path.write_text(revised_text, encoding="utf-8")
+    print(f"Success: Final manuscript written to {final_path.relative_to(repo_root)}")
+    return 0
+
+
+def cmd_resume(args: argparse.Namespace) -> int:
+    """Resume a failed or interrupted run from the last completed step."""
+    repo_root = repo_root_from()
+    run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
+    
+    if not run_dir.exists():
+        print(f"error: run directory {run_dir} not found")
+        return 1
+        
+    db = Database(repo_root)
+    run_id = run_dir.name
+    run_data = db.get_run(run_id)
+    
+    if not run_data:
+        print(f"error: run {run_id} not found in database. Cannot resume.")
+        return 1
+        
+    print(f"Resuming run {run_id}...")
+    
+    # Reconstruct args from config_json
+    config = json.loads(run_data.get("config_json", "{}"))
+    if not config:
+        print("warning: no config_json found in database. Reconstructing minimal args.")
+        config = {
+            "provider": run_data["provider"],
+            "model": run_data.get("model"),
+            "profile": run_data.get("profile", "researcher"),
+            "execute": True, # Resuming usually implies execution
+        }
+    
+    # Override with CLI args if provided (though resume has few args)
+    if getattr(args, "execute", False):
+        config["execute"] = True
+    
+    resumed_args = argparse.Namespace(**config)
+    
+    manifest = load_manifest(repo_root)
+    model_policy = load_model_policy(repo_root)
+    
+    return _execute_run_pipeline(repo_root, run_dir, resumed_args, manifest, model_policy)
 
 
 def cmd_generate_styleguide(args: argparse.Namespace) -> int:
@@ -1847,6 +2041,7 @@ def cmd_review(args: argparse.Namespace) -> int:
             run_dir=run_dir,
             style_id=style_id,
             manifest=manifest,
+            profile=args.profile,
         )
         print(f"created {bundle.review_json.relative_to(repo_root)}")
         print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
@@ -1903,6 +2098,7 @@ def cmd_council(args: argparse.Namespace) -> int:
         run_dir=run_dir,
         manifest=manifest,
         verification_feedback=feedback,
+        profile=args.profile,
     )
     print(f"created {bundle.council_json.relative_to(repo_root)}")
     print(f"prompt {bundle.prompt_md.relative_to(repo_root)}")
@@ -1932,6 +2128,7 @@ def cmd_deliberate(args: argparse.Namespace) -> int:
             run_dir=run_dir,
             style_id=style_id,
             manifest=manifest,
+            profile=args.profile,
         )
         print(f"created {bundle.deliberation_json.relative_to(repo_root)}")
         if args.execute:

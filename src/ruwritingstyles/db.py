@@ -39,13 +39,15 @@ class Database:
                     provider TEXT,
                     model TEXT,
                     archetype TEXT,
+                    profile TEXT,
                     status TEXT DEFAULT 'prepared',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     started_at TIMESTAMP,
                     finished_at TIMESTAMP,
                     duration_seconds REAL,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    summary TEXT
+                    summary TEXT,
+                    config_json TEXT
                 )
             """)
             
@@ -58,6 +60,12 @@ class Database:
             except sqlite3.OperationalError: pass
             try:
                 conn.execute("ALTER TABLE runs ADD COLUMN duration_seconds REAL")
+            except sqlite3.OperationalError: pass
+            try:
+                conn.execute("ALTER TABLE runs ADD COLUMN profile TEXT")
+            except sqlite3.OperationalError: pass
+            try:
+                conn.execute("ALTER TABLE runs ADD COLUMN config_json TEXT")
             except sqlite3.OperationalError: pass
             
             conn.execute("""
@@ -74,6 +82,26 @@ class Database:
                 CREATE INDEX IF NOT EXISTS idx_metrics_run_id ON run_metrics(run_id)
             """)
             
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS run_steps (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    run_id TEXT,
+                    step_id TEXT,
+                    status TEXT DEFAULT 'pending',
+                    started_at TIMESTAMP,
+                    finished_at TIMESTAMP,
+                    artifact_path TEXT,
+                    error TEXT,
+                    retry_count INTEGER DEFAULT 0,
+                    FOREIGN KEY (run_id) REFERENCES runs(run_id) ON DELETE CASCADE,
+                    UNIQUE(run_id, step_id)
+                )
+            """)
+
+            conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_steps_run_id ON run_steps(run_id)
+            """)
+            
             # Add updated_at trigger logic
             conn.execute("""
                 CREATE TRIGGER IF NOT EXISTS update_run_timestamp 
@@ -84,15 +112,51 @@ class Database:
                 END
             """)
 
-    def register_run(self, run_id: str, input_path: str, provider: str, model: str | None = None, archetype: str | None = None):
+    def register_run(self, run_id: str, input_path: str, provider: str, model: str | None = None, archetype: str | None = None, profile: str | None = None, config: dict | None = None):
         """Create a new run entry."""
         with self._connection() as conn:
+            conn.execute("DELETE FROM run_steps WHERE run_id = ?", (run_id,))
             conn.execute("DELETE FROM run_metrics WHERE run_id = ?", (run_id,))
             conn.execute("DELETE FROM runs WHERE run_id = ?", (run_id,))
             conn.execute(
-                "INSERT INTO runs (run_id, input_path, provider, model, archetype) VALUES (?, ?, ?, ?, ?)",
-                (run_id, input_path, provider, model, archetype)
+                "INSERT INTO runs (run_id, input_path, provider, model, archetype, profile, config_json) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (run_id, input_path, provider, model, archetype, profile, json.dumps(config) if config else None)
             )
+
+    def update_step_status(self, run_id: str, step_id: str, status: str, artifact_path: str | None = None, error: str | None = None):
+        """Update the status of a specific step in a run."""
+        with self._connection() as conn:
+            now = datetime.now(timezone.utc).isoformat()
+            
+            row = conn.execute("SELECT id FROM run_steps WHERE run_id = ? AND step_id = ?", (run_id, step_id)).fetchone()
+            
+            if not row:
+                conn.execute(
+                    "INSERT INTO run_steps (run_id, step_id, status, started_at) VALUES (?, ?, ?, ?)",
+                    (run_id, step_id, status, now if status == "executing" else None)
+                )
+            else:
+                if status == "executing":
+                    conn.execute(
+                        "UPDATE run_steps SET status = ?, started_at = ?, error = NULL WHERE id = ?",
+                        (status, now, row["id"])
+                    )
+                elif status in ("completed", "failed"):
+                    conn.execute(
+                        "UPDATE run_steps SET status = ?, finished_at = ?, artifact_path = ?, error = ? WHERE id = ?",
+                        (status, now, artifact_path, error, row["id"])
+                    )
+                else:
+                    conn.execute(
+                        "UPDATE run_steps SET status = ? WHERE id = ?",
+                        (status, row["id"])
+                    )
+
+    def get_run_steps(self, run_id: str) -> list[dict[str, Any]]:
+        """Retrieve all steps for a run."""
+        with self._connection() as conn:
+            rows = conn.execute("SELECT * FROM run_steps WHERE run_id = ? ORDER BY id ASC", (run_id,)).fetchall()
+            return [dict(row) for row in rows]
 
     def update_run_status(self, run_id: str, status: str, summary: str | None = None):
         """Update the status of an existing run and track timestamps."""

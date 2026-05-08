@@ -14,7 +14,9 @@ from .pipeline import run_full_pipeline
 from .profiling import calculate_bloom_stats, calculate_methodological_compass, calculate_tension_heatmap
 from .provider_status import provider_statuses, provider_statuses_json
 from .runs import create_prepare_run, list_runs as list_run_ids, load_run_artifact
-from .segment import normalize_document, read_document, segment_markdown
+import argparse
+import json
+
 
 app = FastAPI(title="RuWritingStyles API")
 
@@ -65,6 +67,23 @@ async def get_run_details(run_id: str):
     }
 
 
+@app.get("/runs/{run_id}/status")
+async def get_run_step_status(run_id: str):
+    from .db import Database
+    repo_root = repo_root_from()
+    db = Database(repo_root)
+    run_entry = db.get_run(run_id)
+    if not run_entry:
+        raise HTTPException(status_code=404, detail="Run not found in database")
+        
+    steps = db.get_run_steps(run_id)
+    return {
+        "run_id": run_id,
+        "overall_status": run_entry.get("status"),
+        "steps": steps
+    }
+
+
 @app.get("/runs/{run_id}/concordance")
 async def get_run_concordance(run_id: str):
     from .concordance import get_concordance_data
@@ -112,12 +131,85 @@ async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
         manifest=manifest,
         model_policy=model_policy,
         provider=req.provider,
+        profile=req.profile,
     )
 
     if req.execute:
         background_tasks.add_task(run_full_pipeline, repo_root, run_dir, provider_name=req.provider, model=req.model, profile=req.profile)
 
     return {"run_id": run_dir.name}
+
+
+class ResolutionOverride(BaseModel):
+    finding_id: str
+    status: str
+    human_comment: str
+
+class ResolutionRequest(BaseModel):
+    overrides: list[ResolutionOverride]
+
+@app.post("/runs/{run_id}/resolve")
+async def resolve_run(run_id: str, req: ResolutionRequest, background_tasks: BackgroundTasks):
+    repo_root = repo_root_from()
+    run_dir = _run_dir(repo_root, run_id)
+    if not run_dir.exists():
+        raise HTTPException(status_code=404, detail="Run not found")
+        
+    resolution_path = run_dir / "resolution.json"
+    resolution_data = {
+        "overrides": [dict(o) for o in req.overrides]
+    }
+    resolution_path.write_text(json.dumps(resolution_data, ensure_ascii=False, indent=2), encoding="utf-8")
+    
+    args = argparse.Namespace(run_dir=run_dir, resolution=resolution_path)
+    from .cli import cmd_apply_resolution
+    if cmd_apply_resolution(args) != 0:
+        raise HTTPException(status_code=500, detail="Failed to apply resolutions")
+        
+    # Re-run revision in background
+    from .db import Database
+    db = Database(repo_root)
+    run_entry = db.get_run(run_id)
+    provider = run_entry.get("provider", "google")
+    model = run_entry.get("model")
+    
+    from .execution import execute_revision_artifact
+    from .revision import create_revision_bundle
+    from .diff import write_revision_diff
+    
+    def background_revision():
+        db.update_step_status(run_id, "revision", "executing")
+        try:
+            revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
+            model_policy = load_model_policy(repo_root)
+            execute_revision_artifact(
+                repo_root=repo_root,
+                revision_path=revision.revision_json,
+                provider=provider_from_name(provider),
+                model=model or model_policy.resolve_model("synthesis", provider),
+            )
+            write_revision_diff(run_dir)
+            db.update_step_status(run_id, "revision", "completed")
+        except Exception as e:
+            db.update_step_status(run_id, "revision", "failed", error=str(e))
+            
+    background_tasks.add_task(background_revision)
+    return {"status": "resolutions applied, revision re-run queued"}
+
+@app.post("/runs/{run_id}/finalize")
+async def finalize_run(run_id: str):
+    repo_root = repo_root_from()
+    run_dir = _run_dir(repo_root, run_id)
+    if not run_dir.exists():
+        raise HTTPException(status_code=404, detail="Run not found")
+        
+    args = argparse.Namespace(run_dir=run_dir)
+    from .cli import cmd_finalize
+    if cmd_finalize(args) != 0:
+        raise HTTPException(status_code=500, detail="Failed to finalize manuscript. Ensure revision is complete.")
+        
+    final_path = run_dir / "final.md"
+    return {"status": "finalized", "final_text": _read_text(final_path)}
 
 
 # Enable CORS for the Vite frontend

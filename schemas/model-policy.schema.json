@@ -41,6 +41,16 @@
     "policy_notes": {
       "type": "array",
       "items": { "type": "string" }
+    },
+    "budget_modes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "description": { "type": "string" },
+          "fallback_model": { "type": "string" }
+        }
+      }
     }
   }
 }

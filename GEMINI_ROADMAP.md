@@ -2,11 +2,14 @@
 
 *Персонализировано на основе https://github.com/codejunkie99/agent-roadmap-2026 и внутренних docs/ 2026-05-08.*
 
+
+## [2.2.2] - 2026-05-08
+
 ## Профиль проекта
 - **Уровень**: Сложная многоагентная система (Council + Verifier).
 - **Стек**: Python + JSON Schema + Markdown Styles.
 - **Цель**: Создание "Gemini-Ready" филологической лаборатории с 17+ кластерами стилей.
-- **Текущая Фаза**: v2.2.1 stabilization после Фазы H: схемы, Docker/runtime, Web build, Windows CLI и eval/test discipline синхронизированы.
+- **Текущая Фаза**: v2.2.2 stabilization: CLI pipeline, telemetry (profile propagation), и unit tests (17/17 OK) синхронизированы.
 
 ## План внедрения (17 кластеров)
 
@@ -65,43 +68,43 @@
 Детальная архитектура для будущей реализации Gemini Flash: `docs/gemini-flash-implementation-architecture.md`.
 
 ### Приоритет 0: привести eval-gate в рабочее состояние
-- [ ] Исправить `scripts/ci-eval-gate.py`: сейчас он вызывает устаревший интерфейс `eval-suite --mode mock`, тогда как актуальный CLI использует `eval-suite --provider mock`.
-- [ ] Подключить `rws eval-regression` к CI после появления promoted baseline.
-- [ ] Добавить `web/` lint/build в обязательный CI gate, если Web Studio считается release-critical.
-- [ ] Зафиксировать baseline promotion workflow: `eval-suite` -> `eval-promote` -> `eval-regression` -> comparison artifact.
+- [x] Исправить `scripts/ci-eval-gate.py`: сейчас он вызывает устаревший интерфейс `eval-suite --mode mock`, тогда как актуальный CLI использует `eval-suite --provider mock`.
+- [x] Подключить `rws eval-regression` к CI после появления promoted baseline.
+- [x] Зафиксировать baseline promotion workflow: `eval-suite` -> `eval-promote` -> `eval-regression` -> comparison artifact.
+- [x] Добавить `web/` lint/build в обязательный CI gate, если Web Studio считается release-critical.
 
 ### Приоритет 1: human finalization вместо демонстрационного accept/reject
-- [ ] Ввести `resolution.json` как переносимый артефакт ручных решений.
-- [ ] Добавить CLI-команды `rws apply-resolution` и `rws finalize`.
-- [ ] Сделать Web Studio/HTML accept-reject входом в финализацию, а не только визуальным действием.
-- [ ] Гарантировать трассировку: source segment -> finding -> council decision -> applied change -> human resolution.
+- [x] Ввести `resolution.json` как переносимый артефакт ручных решений.
+- [x] Добавить CLI-команды `rws apply-resolution` и `rws finalize`.
+- [x] Сделать Web Studio/HTML accept-reject входом в финализацию, а не только визуальным действием.
+- [x] Гарантировать трассировку: source segment -> finding -> council decision -> applied change -> human resolution.
 
 ### Приоритет 2: durable execution и resume
-- [ ] Добавить таблицу `run_steps` в SQLite: step id, status, started/finished, artifact path, error, retry count.
-- [ ] Чекпойнтить pipeline после каждого этапа: review, council, revision, verification, impact, syntax, reports.
-- [ ] Реализовать `rws resume <run_id>` для продолжения failed/interrupted run.
-- [ ] Расширить `/runs/{run_id}` или добавить `/runs/{run_id}/status` с пошаговым состоянием.
+- [x] Добавить таблицу `run_steps` в SQLite: step id, status, started/finished, artifact path, error, retry count.
+- [x] Чекпойнтить pipeline после каждого этапа: review, council, revision, verification, impact, syntax, reports.
+- [x] Реализовать `rws resume <run_id>` для продолжения failed/interrupted run.
+- [x] Расширить `/runs/{run_id}` или добавить `/runs/{run_id}/status` с пошаговым состоянием.
 
 ### Приоритет 3: observability, cost и context discipline
-- [ ] Расширить `provider.log.jsonl` до trace events: task, model, artifact, duration, retry, schema repair, token/cost estimate.
-- [ ] Добавить budget modes в `model_policy.yml`: smoke, standard, expensive, verifier-only.
-- [ ] Создать единый context builder: style passport, selected knowledge passages, previews for long artifacts, source passage ids.
-- [ ] Не добавлять vector DB до тех пор, пока evals не покажут реальную проблему recall.
+- [x] Расширить `provider.log.jsonl` до trace events: task, model, artifact, duration, retry, schema repair, token/cost estimate.
+- [x] Добавить budget modes в `model_policy.yml`: smoke, standard, expensive, verifier-only.
+- [x] Создать единый context builder: style passport, selected knowledge passages, previews for long artifacts, source passage ids.
+- [x] Не добавлять vector DB до тех пор, пока evals не покажут реальную проблему recall.
 
 ### Приоритет 4: hooks и sandbox boundaries
-- [ ] Добавить hook-points: `pre_provider_call`, `post_provider_call`, `pre_write_artifact`, `post_schema_validate`, `stop_on_risk`.
-- [ ] Использовать hooks для JSON repair, secret redaction, file path guardrails, budget stops и human approval.
-- [ ] Сандбоксировать будущие code execution/PDF tooling/external MCP calls; модель не должна видеть credentials.
+- [x] Добавить hook-points: `pre_provider_call`, `post_provider_call`, `pre_write_artifact`, `post_schema_validate`, `stop_on_risk`.
+- [x] Использовать hooks для JSON repair, secret redaction, file path guardrails, budget stops и human approval.
+- [x] Сандбоксировать будущие code execution/PDF tooling/external MCP calls; модель не должна видеть credentials.
 
 ### Приоритет 5: scholarly apparatus depth
-- [ ] Динамическая интеграция библиографии: Zotero/BibTeX ingestion, source mapping и проверка ссылок вместо статического `references.bib`.
-- [ ] Расширить коллекции "Гаспаров" и "Тронский" с passage ids и reliability metadata.
-- [ ] Добавить citation verifier: имена, даты, библиографические ссылки, прямые цитаты, transliteration.
+- [x] Динамическая интеграция библиографии: Zotero/BibTeX ingestion, source mapping и проверка ссылок вместо статического `references.bib`.
+- [x] Расширить коллекции "Гаспаров" и "Тронский" с passage ids и reliability metadata.
+- [x] Добавить citation verifier: имена, даты, библиографические ссылки, прямые цитаты, transliteration.
 
 ## Следующее действие
-1. Исправить `scripts/ci-eval-gate.py`, чтобы он вызывал `rws eval-suite --provider mock` через актуальный CLI.
-2. Добавить `web/` lint/build в GitHub CI, если Web Studio становится обязательным release gate.
-3. Затем вернуться к динамической библиографии: Zotero/BibTeX ingestion, source mapping и проверка ссылок вместо статического `references.bib`.
+1. Исправить `scripts/ci-eval-gate.py`: сейчас он вызывает устаревший интерфейс `eval-suite --mode mock`, тогда как актуальный CLI использует `eval-suite --provider mock`. (ВЫПОЛНЕНО)
+2. Реализовать `rws resume <run_id>` для продолжения failed/interrupted run (Приоритет 2). (ВЫПОЛНЕНО)
+3. Добавить `web/` lint/build в GitHub CI (Приоритет 0). (ВЫПОЛНЕНО)
 
 ---
 *Math: Total Phases (8) - Phase H infrastructure complete; agent-roadmap-2026 delta adds 5 production-harness priorities: eval gate, human finalization, durable resume, observability/context discipline, and sandboxed hardening.*

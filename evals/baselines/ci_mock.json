@@ -1,0 +1,341 @@
+{
+  "suite_id": "20260508-205546-eval-suite-mock",
+  "provider": "mock",
+  "model": "",
+  "case_count": 33,
+  "passed_count": 0,
+  "failed_count": 33,
+  "pass_rate": 0.0,
+  "results": [
+    {
+      "case_id": "pseudo-etymology",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-pseudo-etymology",
+      "result_path": "runs/20260508-205546-eval-suite-mock-pseudo-etymology/eval-result.json",
+      "passed": false,
+      "finding_count": 3,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "source-claim",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-source-claim",
+      "result_path": "runs/20260508-205546-eval-suite-mock-source-claim/eval-result.json",
+      "passed": false,
+      "finding_count": 3,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "register-shift",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-register-shift",
+      "result_path": "runs/20260508-205546-eval-suite-mock-register-shift/eval-result.json",
+      "passed": false,
+      "finding_count": 3,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "averintsev-adversarial",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-averintsev-adversarial",
+      "result_path": "runs/20260508-205546-eval-suite-mock-averintsev-adversarial/eval-result.json",
+      "passed": false,
+      "finding_count": 2,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "gasparov-meter-check",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-gasparov-meter-check",
+      "result_path": "runs/20260508-205546-eval-suite-mock-gasparov-meter-check/eval-result.json",
+      "passed": false,
+      "finding_count": 2,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "melchuk-syntax-check",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-melchuk-syntax-check",
+      "result_path": "runs/20260508-205546-eval-suite-mock-melchuk-syntax-check/eval-result.json",
+      "passed": false,
+      "finding_count": 2,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "poststructural-term-check",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-poststructural-term-check",
+      "result_path": "runs/20260508-205546-eval-suite-mock-poststructural-term-check/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "bakhtin-polyphony-check",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-bakhtin-polyphony-check",
+      "result_path": "runs/20260508-205546-eval-suite-mock-bakhtin-polyphony-check/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "iesh-sound-law",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-iesh-sound-law",
+      "result_path": "runs/20260508-205546-eval-suite-mock-iesh-sound-law/eval-result.json",
+      "passed": false,
+      "finding_count": 2,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "tsh-universal-check",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-tsh-universal-check",
+      "result_path": "runs/20260508-205546-eval-suite-mock-tsh-universal-check/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "pfg-field-boundary",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-pfg-field-boundary",
+      "result_path": "runs/20260508-205546-eval-suite-mock-pfg-field-boundary/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "nss-cliche-check",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-nss-cliche-check",
+      "result_path": "runs/20260508-205546-eval-suite-mock-nss-cliche-check/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "opoyaz-structural-clash",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-opoyaz-structural-clash",
+      "result_path": "runs/20260508-205546-eval-suite-mock-opoyaz-structural-clash/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "mythopoetics-symbol-check",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-mythopoetics-symbol-check",
+      "result_path": "runs/20260508-205546-eval-suite-mock-mythopoetics-symbol-check/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "narratology-plot-hole",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-narratology-plot-hole",
+      "result_path": "runs/20260508-205546-eval-suite-mock-narratology-plot-hole/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "reception-audience-neglect",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-reception-audience-neglect",
+      "result_path": "runs/20260508-205546-eval-suite-mock-reception-audience-neglect/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "zaliznyak-evidence-hierarchy",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-zaliznyak-evidence-hierarchy",
+      "result_path": "runs/20260508-205546-eval-suite-mock-zaliznyak-evidence-hierarchy/eval-result.json",
+      "passed": false,
+      "finding_count": 2,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "mss-semantic-loop",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-mss-semantic-loop",
+      "result_path": "runs/20260508-205546-eval-suite-mock-mss-semantic-loop/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "kmsh-concept-mix",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-kmsh-concept-mix",
+      "result_path": "runs/20260508-205546-eval-suite-mock-kmsh-concept-mix/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "dss-dialect-norm",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-dss-dialect-norm",
+      "result_path": "runs/20260508-205546-eval-suite-mock-dss-dialect-norm/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "mts-semiotic-blur",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-mts-semiotic-blur",
+      "result_path": "runs/20260508-205546-eval-suite-mock-mts-semiotic-blur/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "textology-copyist-error",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-textology-copyist-error",
+      "result_path": "runs/20260508-205546-eval-suite-mock-textology-copyist-error/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "hist-cult-anachronism",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-hist-cult-anachronism",
+      "result_path": "runs/20260508-205546-eval-suite-mock-hist-cult-anachronism/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "poststruct-deconstruction-loop",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-poststruct-deconstruction-loop",
+      "result_path": "runs/20260508-205546-eval-suite-mock-poststruct-deconstruction-loop/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "averintsev-epistemic-caution",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-averintsev-epistemic-caution",
+      "result_path": "runs/20260508-205546-eval-suite-mock-averintsev-epistemic-caution/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "gasparov-fact-check",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-gasparov-fact-check",
+      "result_path": "runs/20260508-205546-eval-suite-mock-gasparov-fact-check/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "melchuk-formalism-check",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-melchuk-formalism-check",
+      "result_path": "runs/20260508-205546-eval-suite-mock-melchuk-formalism-check/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "iesh-vs-nss-conflict",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-iesh-vs-nss-conflict",
+      "result_path": "runs/20260508-205546-eval-suite-mock-iesh-vs-nss-conflict/eval-result.json",
+      "passed": false,
+      "finding_count": 2,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "opoyaz-vs-bakhtin-polyphony",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-opoyaz-vs-bakhtin-polyphony",
+      "result_path": "runs/20260508-205546-eval-suite-mock-opoyaz-vs-bakhtin-polyphony/eval-result.json",
+      "passed": false,
+      "finding_count": 2,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "struct-vs-poststruct-stability",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-struct-vs-poststruct-stability",
+      "result_path": "runs/20260508-205546-eval-suite-mock-struct-vs-poststruct-stability/eval-result.json",
+      "passed": false,
+      "finding_count": 2,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "iesh-adversarial",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-iesh-adversarial",
+      "result_path": "runs/20260508-205546-eval-suite-mock-iesh-adversarial/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "mts-adversarial",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-mts-adversarial",
+      "result_path": "runs/20260508-205546-eval-suite-mock-mts-adversarial/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    },
+    {
+      "case_id": "historico-cultural-adversarial",
+      "run_dir": "runs/20260508-205546-eval-suite-mock-historico-cultural-adversarial",
+      "result_path": "runs/20260508-205546-eval-suite-mock-historico-cultural-adversarial/eval-result.json",
+      "passed": false,
+      "finding_count": 1,
+      "verification_status": "needs_human_review",
+      "changed_line_ratio": 0.0,
+      "char_delta_ratio": 0.0
+    }
+  ]
+}

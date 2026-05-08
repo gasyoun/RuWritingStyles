@@ -13,6 +13,17 @@ default_development_mode:
     - schemas
     - first implementation PRs
 
+budget_modes:
+  smoke:
+    description: "Use fast/free models across all tasks for infrastructure testing."
+    fallback_model: "gemini-flash"
+  standard:
+    description: "Use default task-specific routes."
+  expensive:
+    description: "Upgrade all tasks to flagship models with maximum reasoning."
+  verifier-only:
+    description: "Use standard models for most tasks, but flagship for verification."
+
 providers:
   openai:
     docs:

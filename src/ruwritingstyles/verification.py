@@ -114,6 +114,26 @@ The following rules were established in previous documents of this project. You 
 ```
 """
 
+    bib_section = ""
+    bib_path = run_dir.parent / "references.bib"
+    if not bib_path.exists():
+        bib_path = repo_root / "references.bib"
+        
+    if bib_path.exists():
+        bib_content = bib_path.read_text(encoding="utf-8")
+        bib_section = f"""
+## Citation Verifier (Bibliography)
+The following BibTeX entries represent the dynamic bibliography for this document. You MUST strictly verify:
+1. All citations in the text must match these entries (names, dates, bibliographic references).
+2. Direct quotes must be accurately represented and cited.
+3. Transliteration of names must follow academic standards consistently.
+Flag any missing or incorrect citations as CRITICAL warnings.
+
+```bibtex
+{bib_content.strip()[:2000]} 
+```
+"""
+
     domain_rules = {
         "etymology": "Rule: EPISTEMIC_CAUTION. All etymological claims must use markers of uncertainty (perhaps, likely) if the source text used them.",
         "semiotics": "Rule: TERMINOLOGICAL_RIGOR. Do not allow simplification of semiotic terms (code, signifier, interpretant) into generic words.",
@@ -136,6 +156,7 @@ Check whether the revised document preserves the source document's facts, argume
 **Style Consistency Mission**:
 Verify that all "Stylistic Commitments" provided below are correctly implemented in the revised text.
 {project_context_section}
+{bib_section}
 ## Run
 
 - Run id: `{run_id}`

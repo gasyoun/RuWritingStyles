@@ -33,6 +33,8 @@ def create_prepare_run(
     metadata: dict[str, Any] | None = None,
     provider: str = "google",
     archetype: str | None = None,
+    profile: str | None = None,
+    config: dict | None = None,
 ) -> Path:
     actual_run_id = run_id or make_run_id(input_path)
     run_dir = repo_root / "runs" / actual_run_id
@@ -45,7 +47,9 @@ def create_prepare_run(
         run_id=actual_run_id, 
         input_path=str(input_path),
         provider=provider,
-        archetype=archetype
+        archetype=archetype,
+        profile=profile,
+        config=config
     )
 
     if metadata:

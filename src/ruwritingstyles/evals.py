@@ -109,6 +109,8 @@ def run_eval_case(
         model_policy=model_policy,
         run_id=run_id,
         metadata=case.metadata,
+        provider=provider_name,
+        profile="evaluator",
     )
 
     for style_id in case.default_styles:

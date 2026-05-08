@@ -29,14 +29,21 @@ def create_revision_bundle(*, repo_root: Path, run_dir: Path) -> RevisionBundle:
 
     prompt_path = run_dir / "revision.prompt.md"
     revision_path = run_dir / "revision.json"
+    normalized_text = normalized_path.read_text(encoding="utf-8")
+
+    resolution_path = run_dir / "resolution.json"
+    resolution_json = ""
+    if resolution_path.exists():
+        resolution_json = resolution_path.read_text(encoding="utf-8")
 
     prompt_path.write_text(
         _render_prompt(
             repo_root=repo_root,
             run_id=run_id,
             run_dir=run_dir,
-            normalized_text=normalized_path.read_text(encoding="utf-8"),
+            normalized_text=normalized_text,
             council_json=council_path.read_text(encoding="utf-8"),
+            resolution_json=resolution_json,
         ),
         encoding="utf-8",
     )
@@ -70,7 +77,20 @@ def _render_prompt(
     run_dir: Path,
     normalized_text: str,
     council_json: str,
+    resolution_json: str = "",
 ) -> str:
+    resolution_section = ""
+    if resolution_json:
+        resolution_section = f"""
+## Human Stylistic Resolutions (Overrides)
+
+The following resolutions represent final human decisions that override automated council outcomes. Prioritize these statuses:
+
+```json
+{resolution_json.strip()}
+```
+"""
+
     return f"""# Revision Request
 
 You are the RuWritingStyles synthesizer.
@@ -109,7 +129,7 @@ Return a JSON object with this shape:
 ```
 
 Only apply accepted or accepted-with-modification council decisions. Preserve the author's factual claims unless the council explicitly marks them as unsupported. If the council is still `prompt_ready` and has no decisions, return the original document unchanged and explain that no completed council decisions were available.
-
+{resolution_section}
 ## Council JSON
 
 ```json
