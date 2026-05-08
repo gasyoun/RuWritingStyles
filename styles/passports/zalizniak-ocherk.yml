@@ -3,6 +3,8 @@ name: Зализняк-очерк
 source_prompt: ClaudeStyles/zalizniak-ocherk-style.md
 role: systematic_grammar_reviewer
 language: ru
+level: private
+cluster: iesh
 
 best_for:
   - грамматические определения

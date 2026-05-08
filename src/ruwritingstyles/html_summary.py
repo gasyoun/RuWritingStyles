@@ -6,6 +6,7 @@ from html import escape
 import json
 from pathlib import Path
 from typing import Any
+import difflib
 
 from .provider_log import load_provider_log
 
@@ -38,6 +39,8 @@ def render_html_report(run_dir: Path) -> str:
         _hero(run_id, source, segments, reviews, findings, council, revision, verification, eval_result),
         _artifact_links(run_dir),
         _eval_section(eval_result),
+        _commitments_section(council),
+        _diff_section(run_dir, council),
         _finding_section(findings),
         _review_section(reviews),
         _council_section(council),
@@ -100,100 +103,245 @@ def _page(title: str, body: str) -> str:
     }}
     h3 {{
       margin-bottom: 8px;
-      font-size: 1rem;
-      letter-spacing: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
     }}
-    section {{ margin-top: 28px; }}
-    a {{ color: var(--accent); }}
+    section {{ margin-top: 48px; }}
+    a {{ 
+      color: var(--accent); 
+      text-decoration: none;
+      transition: color 0.2s;
+    }}
+    a:hover {{ color: var(--ink); }}
     code {{
-      padding: 0.1rem 0.25rem;
+      padding: 0.15rem 0.35rem;
       border-radius: 4px;
-      background: #ecebe4;
+      background: rgba(0,0,0,0.06);
+      font-size: 0.9em;
     }}
     .muted {{ color: var(--muted); }}
     .metrics {{
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 10px;
-      margin-top: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-top: 32px;
     }}
-    .metric, .finding, .panel {{
+    .metric, .finding, .panel, .decision-card {{
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }}
     .metric {{
-      padding: 12px;
-      min-height: 80px;
+      padding: 16px;
+      min-height: 90px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }}
+    .metric:hover {{
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }}
     .metric strong {{
       display: block;
-      font-size: 1.45rem;
+      font-size: 1.6rem;
       line-height: 1.2;
+      color: var(--accent);
     }}
     .metric span {{
       display: block;
       color: var(--muted);
-      font-size: 0.88rem;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
     }}
     .links {{
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
     }}
     .links a {{
       display: inline-flex;
       align-items: center;
-      min-height: 34px;
-      padding: 6px 10px;
+      min-height: 38px;
+      padding: 6px 14px;
       border: 1px solid var(--line);
-      border-radius: 6px;
+      border-radius: 8px;
       background: var(--panel);
-      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }}
+    .links a:hover {{
+      background: var(--accent-soft);
+      border-color: var(--accent);
     }}
     .finding {{
-      padding: 14px;
-      margin-top: 12px;
+      padding: 20px;
+      margin-top: 16px;
     }}
     .finding-head {{
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }}
     .tag {{
       display: inline-flex;
       align-items: center;
-      min-height: 24px;
-      padding: 2px 7px;
-      border-radius: 4px;
+      min-height: 26px;
+      padding: 2px 10px;
+      border-radius: 6px;
       background: var(--accent-soft);
       color: var(--accent);
-      font-size: 0.82rem;
-      font-weight: 650;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
     }}
     .tag.warn {{
       background: var(--warn-soft);
       color: var(--warn);
     }}
     .excerpt {{
-      margin: 8px 0 12px;
-      padding-left: 12px;
-      border-left: 3px solid var(--line);
+      margin: 12px 0 16px;
+      padding: 12px 16px;
+      border-left: 4px solid var(--line);
+      background: rgba(0,0,0,0.02);
       color: var(--muted);
+      font-style: italic;
+      border-radius: 0 8px 8px 0;
     }}
     .panel {{
-      padding: 14px;
+      padding: 20px;
       overflow-x: auto;
     }}
+    .diff-container {{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }}
+    .diff-box {{
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px;
+      font-size: 0.95rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }}
+    .diff-box h3 {{
+      margin-top: 0;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+    }}
+    .decision-grid {{
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }}
+    .decision-card {{
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }}
+    .decision-card.accepted {{ border-left: 4px solid #2e7d32; }}
+    .decision-card.rejected {{ border-left: 4px solid #c62828; }}
+    .decision-status {{
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+    }}
+    .accepted .decision-status {{ color: #2e7d32; }}
+    .rejected .decision-status {{ color: #c62828; }}
+    
+    .diff-table {{
+      display: flex;
+      flex-direction: column;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 13px;
+      line-height: 20px;
+    }}
+    .diff-line {{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }}
+    .diff-line:last-child {{ border-bottom: none; }}
+    .diff-line > div {{
+      padding: 4px 8px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }}
+    .diff-line .orig {{ border-right: 1px solid var(--line); background: rgba(0,0,0,0.01); }}
+    .diff-line.delete .orig {{ background: #ffeef0; }}
+    .diff-line.insert .rev {{ background: #e6ffed; }}
+    .diff-line.replace .orig {{ background: #fff5b1; }}
+    .diff-line.replace .rev {{ background: #e6ffed; }}
+    .del {{ background: #fdb8c0; text-decoration: line-through; }}
+    .ins {{ background: #acf2bd; font-weight: bold; cursor: pointer; transition: background 0.2s; position: relative; }}
+    .ins:hover {{ background: #96e0ab; }}
+    .ins:hover::after {{
+      content: "Click to Discard";
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      white-space: nowrap;
+      z-index: 10;
+    }}
+    .ins.discarded {{
+      background: #eee !important;
+      color: #aaa;
+      text-decoration: line-through;
+      font-weight: normal;
+    }}
+    .ins.discarded::after {{ content: "Click to Restore"; }}
+
+    .resolution-toolbar {{
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--panel);
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      width: 280px;
+    }}
+    .resolution-toolbar.active {{ display: flex; }}
+    .btn-save {{
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }}
+    .btn-save:hover {{ opacity: 0.9; }}
+
     table {{
       width: 100%;
       border-collapse: collapse;
       min-width: 560px;
     }}
     th, td {{
-      padding: 8px 10px;
+      padding: 12px 14px;
       border-bottom: 1px solid var(--line);
       text-align: left;
       vertical-align: top;
@@ -205,7 +353,7 @@ def _page(title: str, body: str) -> str:
     }}
     @media (max-width: 560px) {{
       main {{
-        width: min(100% - 20px, 1120px);
+        width: min(100%% - 20px, 1120px);
         padding-top: 20px;
       }}
       .metric strong {{ font-size: 1.25rem; }}
@@ -218,6 +366,57 @@ def _page(title: str, body: str) -> str:
   <main>
 {body}
   </main>
+  
+  <div id="resolution-toolbar" class="resolution-toolbar">
+    <h3 style="margin-bottom: 4px">Interactive Resolution</h3>
+    <p class="muted" style="font-size: 12px">You have <span id="discard-count">0</span> discarded changes.</p>
+    <button class="btn-save" onclick="exportResolution()">Download Resolution JSON</button>
+  </div>
+
+  <script>
+    let discarded = new Set();
+    
+    function toggleChange(el, id) {{
+      if (discarded.has(id)) {{
+        discarded.delete(id);
+        el.classList.remove('discarded');
+      }} else {{
+        discarded.add(id);
+        el.classList.add('discarded');
+      }}
+      
+      const toolbar = document.getElementById('resolution-toolbar');
+      const countEl = document.getElementById('discard-count');
+      
+      countEl.innerText = discarded.size;
+      if (discarded.size > 0) {{
+        toolbar.classList.add('active');
+      }} else {{
+        // Keep it active once started? Or hide? Let's keep active if > 0
+        toolbar.classList.add('active');
+      }}
+    }}
+    
+    function exportResolution() {{
+      const data = {{
+        run_id: document.querySelector('.muted code').innerText,
+        discarded_indices: Array.from(discarded),
+        timestamp: new Date().toISOString()
+      }};
+      const blob = new Blob([JSON.stringify(data, null, 2)], {{type: 'application/json'}});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `resolution-${{data.run_id}}.json`;
+      a.click();
+    }}
+
+    // Auto-assign IDs to insertion spans for tracking
+    document.querySelectorAll('.ins').forEach((el, index) => {{
+      const id = 'change-' + index;
+      el.onclick = () => toggleChange(el, id);
+    }});
+  </script>
 </body>
 </html>
 """
@@ -369,15 +568,123 @@ def _council_section(council: dict[str, Any]) -> str:
       <h2>Council</h2>
       <p class="muted">Status: <code>{_e(_status(council))}</code>; no decisions yet.</p>
     </section>"""
-    rows = [
-        (
-            str(decision.get("finding_id") or ""),
-            str(decision.get("status") or ""),
-            str(decision.get("reason") or ""),
-        )
-        for decision in decisions
-    ]
-    return _section_table("Council", ("Finding", "Decision", "Reason"), rows)
+    
+    cards = []
+    for decision in decisions:
+        status = str(decision.get("status") or "pending").lower()
+        cls = "accepted" if "accept" in status else "rejected" if "reject" in status else "pending"
+        cards.append(f"""
+        <div class="decision-card {cls}">
+          <div class="decision-status">{_e(status)}</div>
+          <h3>{_e(decision.get("finding_id") or "Finding")}</h3>
+          <p>{_e(decision.get("reason") or "No reason provided.")}</p>
+        </div>""")
+        
+    return f"""    <section>
+      <h2>Council Decisions</h2>
+      <div class="decision-grid">
+{''.join(cards)}
+      </div>
+    </section>"""
+
+
+def _diff_section(run_dir: Path, council: dict[str, Any]) -> str:
+    original_path = run_dir / "normalized.md"
+    revised_path = run_dir / "revised.md"
+    
+    if not revised_path.exists():
+        return ""
+        
+    original_text = original_path.read_text(encoding="utf-8") if original_path.exists() else ""
+    revised_text = revised_path.read_text(encoding="utf-8")
+    
+    # Simple line-by-line word-level diff
+    orig_lines = original_text.splitlines()
+    rev_lines = revised_text.splitlines()
+    
+    diff_html = []
+    
+    # We'll use a simple heuristic to align lines if they are mostly the same length
+    # For a real robust diff, we'd use difflib.HtmlDiff, but we want custom styling.
+    
+    matcher = difflib.SequenceMatcher(None, orig_lines, rev_lines)
+    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        if tag == 'equal':
+            for i in range(i1, i2):
+                diff_html.append(_diff_row(orig_lines[i], rev_lines[j1 + (i - i1)], "equal"))
+        elif tag == 'replace':
+            # Highlight changes within lines if counts match
+            if (i2 - i1) == (j2 - j1):
+                for k in range(i2 - i1):
+                    diff_html.append(_diff_row(orig_lines[i1 + k], rev_lines[j1 + k], "replace"))
+            else:
+                for i in range(i1, i2):
+                    diff_html.append(_diff_row(orig_lines[i], "", "delete"))
+                for j in range(j1, j2):
+                    diff_html.append(_diff_row("", rev_lines[j], "insert"))
+        elif tag == 'delete':
+            for i in range(i1, i2):
+                diff_html.append(_diff_row(orig_lines[i], "", "delete"))
+        elif tag == 'insert':
+            for j in range(j1, j2):
+                diff_html.append(_diff_row("", rev_lines[j], "insert"))
+
+    return f"""    <section>
+      <h2>Visual Review</h2>
+      <div class="panel">
+        <div class="diff-table">
+          {"".join(diff_html)}
+        </div>
+      </div>
+    </section>"""
+
+
+def _diff_row(orig: str, rev: str, tag: str) -> str:
+    if tag == "equal":
+        return f'<div class="diff-line equal"><div class="orig">{_e(orig)}</div><div class="rev">{_e(rev)}</div></div>'
+    
+    if tag == "replace":
+        # Word-level highlight
+        o_words = orig.split()
+        r_words = rev.split()
+        o_h, r_h = _word_diff(orig, rev)
+        return f'<div class="diff-line replace"><div class="orig">{o_h}</div><div class="rev">{r_h}</div></div>'
+        
+    if tag == "delete":
+        return f'<div class="diff-line delete"><div class="orig">{_e(orig)}</div><div class="rev"></div></div>'
+        
+    if tag == "insert":
+        return f'<div class="diff-line insert"><div class="orig"></div><div class="rev">{_e(rev)}</div></div>'
+    
+    return ""
+
+
+def _word_diff(orig: str, rev: str) -> tuple[str, str]:
+    o_html = []
+    r_html = []
+    
+    s = difflib.SequenceMatcher(None, orig, rev)
+    for tag, i1, i2, j1, j2 in s.get_opcodes():
+        if tag == 'equal':
+            o_html.append(_e(orig[i1:i2]))
+            r_html.append(_e(rev[j1:j2]))
+        elif tag == 'replace':
+            o_html.append(f'<span class="del">{_e(orig[i1:i2])}</span>')
+            r_html.append(f'<span class="ins">{_e(rev[j1:j2])}</span>')
+        elif tag == 'delete':
+            o_html.append(f'<span class="del">{_e(orig[i1:i2])}</span>')
+        elif tag == 'insert':
+            r_html.append(f'<span class="ins">{_e(rev[j1:j2])}</span>')
+            
+    return "".join(o_html), "".join(r_html)
+
+
+def _commitments_section(council: dict[str, Any]) -> str:
+    commitments = _dicts(council.get("stylistic_commitments"))
+    if not commitments:
+        return ""
+    rows = [(c.get("term", ""), c.get("decision", ""), c.get("rationale", "")) for c in commitments]
+    return _section_table("Stylistic Commitments", ("Term", "Decision", "Rationale"), rows)
 
 
 def _revision_section(revision: dict[str, Any]) -> str:

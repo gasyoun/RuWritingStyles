@@ -3,6 +3,8 @@ name: Зализняк-школьников_1
 source_prompt: ClaudeStyles/zalizniak-shkolnikov_1-style.md
 role: clarity_reviewer
 language: ru
+level: private
+cluster: nss
 
 best_for:
   - объяснение сложной лингвистики неспециалистам

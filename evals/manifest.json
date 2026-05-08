@@ -16,6 +16,7 @@
         "external_similarity_as_evidence",
         "missing_historical_forms"
       ],
+      "tags": ["GOLD_ZALIZNYAK"],
       "scoring": {
         "required_finding_types": [
           "unsupported_etymology",
@@ -28,7 +29,8 @@
           "needs_human_review"
         ],
         "max_changed_line_ratio": 0.75,
-        "max_char_delta_ratio": 0.5
+        "max_char_delta_ratio": 0.5,
+        "strict_fidelity": true
       }
     },
     {
@@ -45,6 +47,7 @@
         "overgeneralized_tradition_claim",
         "weak_evidence_for_dating"
       ],
+      "tags": ["GOLD_ZALIZNYAK"],
       "scoring": {
         "required_finding_types": [
           "missing_source_reference",
@@ -74,6 +77,7 @@
         "register_mismatch",
         "missing_parallel_evidence"
       ],
+      "tags": ["GOLD_ZALIZNYAK"],
       "scoring": {
         "required_finding_types": [
           "overconfident_conclusion",
@@ -87,6 +91,551 @@
         ],
         "max_changed_line_ratio": 0.75,
         "max_char_delta_ratio": 0.5
+      }
+    },
+    {
+      "id": "averintsev-adversarial",
+      "input": "examples/input/averintsev-adversarial.md",
+      "purpose": "Check if Averintsev agent protects epistemic markers and complex terminology against 'simplification' attempts.",
+      "default_styles": [
+        "averintsev",
+        "lit_historico_cultural"
+      ],
+      "expected_risks": [
+        "oversimplification",
+        "missing_epistemic_markers",
+        "loss_of_philological_depth"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "oversimplification"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": true
+      }
+    },
+    {
+      "id": "gasparov-meter-check",
+      "input": "examples/input/gasparov-meter-check.md",
+      "purpose": "Check if Gasparov agent catches a blatant factual error in verse theory (confusing iamb with trochee).",
+      "default_styles": [
+        "gasparov",
+        "lit_structural"
+      ],
+      "expected_risks": [
+        "factual_error_meter",
+        "terminological_imprecision"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "factual_error_meter"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "melchuk-syntax-check",
+      "input": "examples/input/melchuk-syntax-check.md",
+      "purpose": "Check if Melchuk agent catches a syntactic agreement error using dependency analysis.",
+      "default_styles": [
+        "melchuk",
+        "ling_mss"
+      ],
+      "expected_risks": [
+        "syntactic_agreement_error",
+        "morphological_mismatch"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "syntactic_agreement_error"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "poststructural-term-check",
+      "input": "examples/input/poststructural-term-check.md",
+      "purpose": "Check if Poststructuralist agent flags the simplification of 'différance' to 'difference'.",
+      "default_styles": [
+        "lit_poststructural"
+      ],
+      "expected_risks": [
+        "terminological_simplification",
+        "loss_of_conceptual_nuance"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "terminological_simplification"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "bakhtin-polyphony-check",
+      "input": "examples/input/bakhtin-polyphony-check.md",
+      "purpose": "Check if Bakhtin agent flags a monological interpretation of Dostoevsky.",
+      "default_styles": [
+        "lit_bakhtin"
+      ],
+      "expected_risks": [
+        "monologism",
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "monologism"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "iesh-sound-law",
+      "input": "examples/input/iesh-sound-law.md",
+      "purpose": "Check if IESH agent flags a violation of known Slavic sound laws (polnoglasie, palatalization).",
+      "default_styles": [
+        "ling_iesh",
+        "tronsky-readings"
+      ],
+      "expected_risks": [
+        "unsupported_etymology",
+        "missing_historical_forms"
+      ],
+      "tags": ["GOLD_ZALIZNYAK"],
+      "scoring": {
+        "required_finding_types": [
+          "unsupported_etymology"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "tsh-universal-check",
+      "input": "examples/input/tsh-universal-check.md",
+      "purpose": "Check if TSH agent flags a false claim about absolute language universals.",
+      "default_styles": [
+        "ling_tsh"
+      ],
+      "expected_risks": [
+        "overgeneralization"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "overgeneralization"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "pfg-field-boundary",
+      "input": "examples/input/pfg-field-boundary.md",
+      "purpose": "Check if PFG agent corrects a confusion between center and periphery in a functional field.",
+      "default_styles": [
+        "ling_pfg"
+      ],
+      "expected_risks": [
+        "weak_classification"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "weak_classification"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "nss-cliche-check",
+      "input": "examples/input/nss-cliche-check.md",
+      "purpose": "Check if NSS agent flags bureaucratic cliches in a scholarly text.",
+      "default_styles": [
+        "ling_nss"
+      ],
+      "expected_risks": [
+        "wordiness",
+        "style_mismatch"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "wordiness"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "opoyaz-structural-clash",
+      "input": "examples/input/opoyaz-structural-clash.md",
+      "purpose": "Check if OPOYAZ agent flags psychological substitution instead of formal analysis.",
+      "default_styles": [
+        "lit_opoyaz"
+      ],
+      "expected_risks": [
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "reductive_interpretation"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "mythopoetics-symbol-check",
+      "input": "examples/input/mythopoetics-symbol-check.md",
+      "purpose": "Check if Mythopoetics agent flags literalization of a cultural symbol.",
+      "default_styles": [
+        "lit_mythopoetics"
+      ],
+      "expected_risks": [
+        "loss_of_conceptual_nuance"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "loss_of_conceptual_nuance"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "narratology-plot-hole",
+      "input": "examples/input/narratology-plot-hole.md",
+      "purpose": "Check if Narratology agent flags confusion between diegetic and extra-diegetic levels.",
+      "default_styles": [
+        "lit_narratology"
+      ],
+      "expected_risks": [
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "reductive_interpretation"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "reception-audience-neglect",
+      "input": "examples/input/reception-audience-neglect.md",
+      "purpose": "Check if Reception agent flags negation of the reader's role in meaning construction.",
+      "default_styles": [
+        "lit_reception"
+      ],
+      "expected_risks": [
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "reductive_interpretation"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "zaliznyak-evidence-hierarchy",
+      "input": "examples/input/zaliznyak-evidence-hierarchy.md",
+      "purpose": "Check if Zaliznyak agent protects the hierarchy of evidence (primary source over late dictionary).",
+      "default_styles": [
+        "zaliznyak-method",
+        "ling_iesh"
+      ],
+      "expected_risks": [
+        "weak_evidence_for_dating",
+        "unsupported_etymology"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "weak_evidence_for_dating"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "mss-semantic-loop",
+      "input": "examples/input/mss-semantic-loop.md",
+      "purpose": "Check if MSS agent flags a circular definition (tautology).",
+      "default_styles": [
+        "ling_mss"
+      ],
+      "expected_risks": [
+        "unclear_definition"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "unclear_definition"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "kmsh-concept-mix",
+      "input": "examples/input/kmsh-concept-mix.md",
+      "purpose": "Check if KMSH agent flags reduction of a cultural concept to a logical notion.",
+      "default_styles": [
+        "ling_kmsh"
+      ],
+      "expected_risks": [
+        "concept_distortion"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "concept_distortion"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "dss-dialect-norm",
+      "input": "examples/input/dss-dialect-norm.md",
+      "purpose": "Check if DSS agent protects dialectal forms against 'normative' corrections.",
+      "default_styles": [
+        "ling_dss"
+      ],
+      "expected_risks": [
+        "field_data_distortion"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "field_data_distortion"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "mts-semiotic-blur",
+      "input": "examples/input/mts-semiotic-blur.md",
+      "purpose": "Check if MTS agent flags blurring of sign levels between primary and secondary systems.",
+      "default_styles": [
+        "ling_mts"
+      ],
+      "expected_risks": [
+        "semiotic_blurring",
+        "structural_inconsistency"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "semiotic_blurring"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "textology-copyist-error",
+      "input": "examples/input/textology-copyist-error.md",
+      "purpose": "Check if Textology agent flags anachronistic interpolations in ancient texts.",
+      "default_styles": [
+        "lit_textology"
+      ],
+      "expected_risks": [
+        "factual_error_meter",
+        "weak_historical_inference"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "weak_historical_inference"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "hist-cult-anachronism",
+      "input": "examples/input/hist-cult-anachronism.md",
+      "purpose": "Check if Historico-cultural agent flags modern sociological terms applied to antiquity.",
+      "default_styles": [
+        "lit_historico_cultural"
+      ],
+      "expected_risks": [
+        "loss_of_philological_depth",
+        "oversimplification"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "loss_of_philological_depth"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "poststruct-deconstruction-loop",
+      "input": "examples/input/poststruct-deconstruction-loop.md",
+      "purpose": "Check if Poststructuralist agent flags a claim about 'final/singular meaning'.",
+      "default_styles": [
+        "lit_poststructural"
+      ],
+      "expected_risks": [
+        "loss_of_conceptual_nuance",
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "reductive_interpretation"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "averintsev-epistemic-caution",
+      "input": "examples/input/averintsev-epistemic-caution.md",
+      "purpose": "Check if Averintsev agent flags dogmatic claims in cultural analysis.",
+      "default_styles": [
+        "averintsev"
+      ],
+      "expected_risks": [
+        "missing_epistemic_markers",
+        "loss_of_philological_depth"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "missing_epistemic_markers"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "gasparov-fact-check",
+      "input": "examples/input/gasparov-fact-check.md",
+      "purpose": "Check if Gasparov agent catches a factual error in metric/meter attribution.",
+      "default_styles": [
+        "gasparov"
+      ],
+      "expected_risks": [
+        "factual_error_meter"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "factual_error_meter"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "melchuk-formalism-check",
+      "input": "examples/input/melchuk-formalism-check.md",
+      "purpose": "Check if Melchuk agent flags 'fuzzy' non-formal descriptions of syntactic relations.",
+      "default_styles": [
+        "melchuk"
+      ],
+      "expected_risks": [
+        "terminological_imprecision",
+        "syntactic_agreement_error"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "terminological_imprecision"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "iesh-vs-nss-conflict",
+      "input": "examples/input/iesh-vs-nss-conflict.md",
+      "purpose": "Check Council resolution for conflict between etymological archaism and modern norm.",
+      "default_styles": [
+        "ling_iesh",
+        "ling_nss"
+      ],
+      "expected_risks": [
+        "norm_violation",
+        "missing_historical_forms"
+      ],
+      "scoring": {
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "opoyaz-vs-bakhtin-polyphony",
+      "input": "examples/input/opoyaz-vs-bakhtin-polyphony.md",
+      "purpose": "Check Council debate between plot structure (OPOYAZ) and dialogic voice (Bakhtin).",
+      "default_styles": [
+        "lit_opoyaz",
+        "lit_bakhtin"
+      ],
+      "expected_risks": [
+        "monologism",
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "struct-vs-poststruct-stability",
+      "input": "examples/input/struct-vs-poststruct-stability.md",
+      "purpose": "Check Council debate between structural stability and deconstructive fluidity.",
+      "default_styles": [
+        "lit_structural",
+        "lit_poststructural"
+      ],
+      "expected_risks": [
+        "loss_of_conceptual_nuance",
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "iesh-adversarial",
+      "input": "examples/input/iesh-adversarial.md",
+      "purpose": "Check if IESH agent protects etymological uncertainty and cautious wording.",
+      "default_styles": [
+        "ling_iesh"
+      ],
+      "expected_risks": [
+        "oversimplification",
+        "missing_epistemic_markers"
+      ],
+      "tags": ["GOLD_ZALIZNYAK"],
+      "scoring": {
+        "required_finding_types": [
+          "oversimplification"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": true
+      },
+      "metadata": {
+        "text_domain": "etymology"
+      }
+    },
+    {
+      "id": "mts-adversarial",
+      "input": "examples/input/mts-adversarial.md",
+      "purpose": "Check if MTS agent protects semiotic complexity and cautious wording.",
+      "default_styles": [
+        "ling_mts"
+      ],
+      "expected_risks": [
+        "oversimplification",
+        "missing_epistemic_markers"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "oversimplification"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": true
+      },
+      "metadata": {
+        "text_domain": "semiotics"
+      }
+    },
+    {
+      "id": "historico-cultural-adversarial",
+      "input": "examples/input/historico-cultural-adversarial.md",
+      "purpose": "Check if Historico-cultural agent protects historical distance and cautious wording.",
+      "default_styles": [
+        "lit_historico_cultural"
+      ],
+      "expected_risks": [
+        "oversimplification",
+        "missing_epistemic_markers"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "oversimplification"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": true
+      },
+      "metadata": {
+        "text_domain": "history"
       }
     }
   ]

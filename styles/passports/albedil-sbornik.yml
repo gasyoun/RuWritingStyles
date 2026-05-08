@@ -3,6 +3,8 @@ name: Albedil-Sbornik
 source_prompt: ClaudeStyles/albedil-sbornik-style.md
 role: cultural_context_reviewer
 language: ru
+level: private
+cluster: mts
 
 best_for:
   - культурный очерк

@@ -12,7 +12,12 @@ license = { file = "LICENSE" }
 authors = [
   { name = "RuWritingStyles contributors" }
 ]
-dependencies = []
+dependencies = [
+  "fastapi>=0.115",
+  "pydantic>=2",
+  "python-dotenv>=1",
+  "uvicorn>=0.30",
+]
 
 [project.scripts]
 rws = "ruwritingstyles.cli:main"

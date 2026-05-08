@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/eval-manifest.schema.json",
+  "title": "RuWritingStyles evaluation manifest",
+  "type": "object",
+  "required": ["version", "cases"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "string" },
+    "description": { "type": "string" },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "input", "purpose", "default_styles", "expected_risks", "scoring"],
+        "properties": {
+          "id": { "type": "string" },
+          "input": { "type": "string" },
+          "purpose": { "type": "string" },
+          "default_styles": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "expected_risks": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "scoring": {
+            "type": "object",
+            "properties": {
+              "required_finding_types": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "min_required_matches": { "type": "integer" },
+              "allowed_verification_statuses": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "max_changed_line_ratio": { "type": "number" },
+              "max_char_delta_ratio": { "type": "number" },
+              "strict_fidelity": { "type": "boolean" },
+              "max_finding_count": { "type": "integer" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

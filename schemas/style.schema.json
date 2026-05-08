@@ -11,7 +11,6 @@
     "language",
     "best_for",
     "checks",
-    "limits",
     "review_mode",
     "council"
   ],
@@ -19,7 +18,7 @@
   "properties": {
     "id": {
       "type": "string",
-      "pattern": "^[a-z0-9][a-z0-9-]*$"
+      "pattern": "^[a-z0-9][a-z0-9_:-]*$"
     },
     "name": {
       "type": "string",
@@ -42,7 +41,14 @@
     },
     "language": {
       "type": "string",
-      "enum": ["ru"]
+      "enum": ["ru", "en", "be", "uk"]
+    },
+    "supported_languages": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["ru", "en", "be", "uk"]
+      }
     },
     "best_for": {
       "type": "array",
@@ -62,6 +68,58 @@
       "minItems": 1,
       "items": { "type": "string", "minLength": 1 }
     },
+    "level": {
+      "type": "string",
+      "enum": ["core", "cluster", "private"]
+    },
+    "cluster": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_:-]*$"
+    },
+    "extends": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_:-]*$"
+    },
+    "domains": {
+      "type": ["array", "string"],
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9_]+$"
+      }
+    },
+    "markers": {
+      "type": "object",
+      "properties": {
+        "lexical": { "type": "array", "items": { "type": "string" } },
+        "syntactic": { "type": "array", "items": { "type": "string" } },
+        "epistemic": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "forbidden_edits": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "anchors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "signal", "expected"],
+        "properties": {
+          "id": { "type": "string" },
+          "description": { "type": "string" },
+          "signal": { "type": "string" },
+          "expected": { "type": "string" },
+          "cluster_override": { "type": "string" }
+        }
+      }
+    },
+    "conflict_priority": {
+      "type": "object",
+      "properties": {
+        "default": { "type": "string", "enum": ["low", "medium", "high", "extreme"] },
+        "when_domain": { "type": "array", "items": { "type": "string" } }
+      }
+    },
     "review_mode": {
       "type": "object",
       "required": ["rewrite_allowed", "requires_span_ids", "output_format"],
@@ -77,7 +135,7 @@
     },
     "council": {
       "type": "object",
-      "required": ["can_reply_to", "should_defer"],
+      "required": ["can_reply_to"],
       "additionalProperties": false,
       "properties": {
         "can_reply_to": {

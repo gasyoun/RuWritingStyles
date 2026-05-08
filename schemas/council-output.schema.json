@@ -47,6 +47,10 @@
             "type": "string",
             "minLength": 1
           },
+          "bloom_level": {
+            "type": "string",
+            "enum": ["Remember", "Understand", "Apply", "Analyze", "Evaluate", "Create"]
+          },
           "proposed_adjustment": {
             "type": "string"
           }
@@ -81,6 +85,32 @@
           "reason": {
             "type": "string",
             "minLength": 1
+          },
+          "bloom_level": {
+            "type": "string",
+            "enum": ["Remember", "Understand", "Apply", "Analyze", "Evaluate", "Create"]
+          },
+          "primary_school": {
+            "type": "string"
+          },
+          "influence": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "stylistic_commitments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["term", "decision", "rationale"],
+        "properties": {
+          "term": { "type": "string" },
+          "decision": { "type": "string" },
+          "rationale": { "type": "string" },
+          "translations": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
           }
         }
       }

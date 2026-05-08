@@ -43,6 +43,8 @@ class Segment:
     end_line: int
     metrics: dict[str, Any] | None = None
 
+    tags: tuple[str, ...] = ()
+
     def to_json(self) -> dict[str, object]:
         data: dict[str, object] = {
             "span_id": self.span_id,
@@ -50,6 +52,7 @@ class Segment:
             "text": self.text,
             "start_line": self.start_line,
             "end_line": self.end_line,
+            "tags": list(self.tags),
         }
         if self.metrics:
             data["metrics"] = self.metrics
@@ -92,21 +95,33 @@ def segment_markdown(text: str, options: SegmentOptions | None = None) -> list[S
     fence_marker = ""
     fence: list[str] = []
     fence_start = 1
+    pending_tags: list[str] = []
 
     def flush_paragraph(end_line: int) -> None:
-        nonlocal paragraph, paragraph_start
+        nonlocal paragraph, paragraph_start, pending_tags
         if not paragraph:
             return
         content = "\n".join(paragraph).strip()
         if content:
-            segments.extend(_paragraph_segments(content, paragraph, paragraph_start, end_line, actual_options))
+            segments.extend(
+                _paragraph_segments(
+                    content,
+                    paragraph,
+                    paragraph_start,
+                    end_line,
+                    tuple(pending_tags),
+                    actual_options,
+                )
+            )
         paragraph = []
+        pending_tags = []
 
     def flush_fence(end_line: int) -> None:
-        nonlocal fence, fence_start
+        nonlocal fence, fence_start, pending_tags
         if fence:
-            segments.append(_segment("code", "\n".join(fence), fence_start, end_line, actual_options))
+            segments.append(_segment("code", "\n".join(fence), fence_start, end_line, tuple(pending_tags), actual_options))
         fence = []
+        pending_tags = []
 
     for index, line in enumerate(lines, start=1):
         stripped = line.strip()
@@ -139,7 +154,15 @@ def segment_markdown(text: str, options: SegmentOptions | None = None) -> list[S
 
         if _HEADING_RE.match(line):
             flush_paragraph(index - 1)
-            segments.append(_segment("heading", stripped, index, index, actual_options))
+            segments.append(_segment("heading", stripped, index, index, tuple(pending_tags), actual_options))
+            pending_tags = []
+            continue
+
+        if stripped.startswith("<!--") and "rws:" in stripped:
+            tag_match = re.search(r"rws:([\w,:-]+)", stripped)
+            if tag_match:
+                tags = tag_match.group(1).split(",")
+                pending_tags.extend(t.strip() for t in tags)
             continue
 
         if not paragraph:
@@ -159,10 +182,11 @@ def _paragraph_segments(
     lines: list[str],
     start_line: int,
     end_line: int,
+    tags: tuple[str, ...],
     options: SegmentOptions,
 ) -> list[Segment]:
     if not options.split_long_paragraphs or options.max_segment_chars <= 0 or len(content) <= options.max_segment_chars:
-        return [_segment("paragraph", content, start_line, end_line, options)]
+        return [_segment("paragraph", content, start_line, end_line, tags, options)]
 
     line_starts = _line_starts(lines)
     chunks = _split_for_review(content, options.max_segment_chars)
@@ -172,6 +196,7 @@ def _paragraph_segments(
             chunk,
             start_line + _line_index(line_starts, chunk_start),
             start_line + _line_index(line_starts, max(chunk_start, chunk_end - 1)),
+            tags,
             options,
         )
         for chunk, chunk_start, chunk_end in chunks
@@ -245,7 +270,14 @@ def _hard_wrap(text: str, start: int, end: int, max_chars: int) -> list[tuple[st
     return wrapped
 
 
-def _segment(segment_type: str, text: str, start_line: int, end_line: int, options: SegmentOptions) -> Segment:
+def _segment(
+    segment_type: str,
+    text: str,
+    start_line: int,
+    end_line: int,
+    tags: tuple[str, ...],
+    options: SegmentOptions,
+) -> Segment:
     metrics = profile_text(text).to_json() if options.profile_segments else None
     return Segment(
         span_id="pending",
@@ -254,6 +286,7 @@ def _segment(segment_type: str, text: str, start_line: int, end_line: int, optio
         start_line=start_line,
         end_line=end_line,
         metrics=metrics,
+        tags=tags,
     )
 
 
@@ -271,6 +304,7 @@ def _renumber(segment: Segment, index: int) -> Segment:
         start_line=segment.start_line,
         end_line=segment.end_line,
         metrics=segment.metrics,
+        tags=segment.tags,
     )
 
 
