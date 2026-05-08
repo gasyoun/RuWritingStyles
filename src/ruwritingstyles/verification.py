@@ -95,7 +95,22 @@ def _render_prompt(
     revised_document_text: str,
     text_domain: str = "unknown",
 ) -> str:
+    from .context_builder import build_long_artifact_preview, build_unified_context
+    from .knowledge import search_knowledge_base
+
     revised_block = revised_document_text.strip() or "(No revised document has been produced yet.)"
+
+    # --- Knowledge context from philological collections ---
+    domain_keywords = [text_domain] if text_domain != "unknown" else []
+    knowledge_passages = search_knowledge_base(repo_root, domain_keywords)
+    unified_context_block = build_unified_context(
+        manifest={},
+        knowledge_results=knowledge_passages,
+        source_passage_id=None,
+    )
+
+    # --- Revision artifact preview (truncated to save context budget) ---
+    revision_preview = build_long_artifact_preview(run_dir / "revision.json", max_lines=60)
 
     project_context_path = run_dir.parent / "project-context.json"
     project_context_section = ""
@@ -157,6 +172,7 @@ Check whether the revised document preserves the source document's facts, argume
 Verify that all "Stylistic Commitments" provided below are correctly implemented in the revised text.
 {project_context_section}
 {bib_section}
+{unified_context_block}
 ## Run
 
 - Run id: `{run_id}`

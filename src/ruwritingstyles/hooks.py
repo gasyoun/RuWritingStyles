@@ -2,70 +2,112 @@
 
 from __future__ import annotations
 
-from typing import Any
-import logging
 import json
+import logging
+import re
+from typing import Any
 
 from .providers import ProviderRequest
 
 logger = logging.getLogger(__name__)
 
-class ExecutionHooks:
-    """Extension points for telemetry, security, and schema manipulation."""
+# Patterns for known credential shapes — anchored to avoid false positives on
+# legitimate Slavic/Russian text that may contain "sk-" as a morpheme prefix.
+_CREDENTIAL_PATTERNS = [
+    re.compile(r'sk-[A-Za-z0-9]{20,}'),          # OpenAI / Anthropic API keys
+    re.compile(r'AKIA[A-Z0-9]{16}'),              # AWS Access Key IDs
+    re.compile(r'AIza[0-9A-Za-z\\-_]{35}'),       # Google API keys
+    re.compile(r'ghp_[A-Za-z0-9]{36}'),           # GitHub Personal Access Tokens
+]
 
-    @classmethod
-    def pre_provider_call(cls, request: ProviderRequest) -> ProviderRequest:
-        """Called before the provider API is invoked. Allows prompt modification or risk checks."""
-        if cls.stop_on_risk(request):
-            raise RuntimeError(f"Execution blocked by risk guardrails for task: {request.task}")
-            
-        # File path guardrails (prevent traversal outside workspace)
-        if "../" in request.prompt or "..\\" in request.prompt:
-            logger.warning("Guardrail: Potential directory traversal blocked in prompt.")
-            request.prompt = request.prompt.replace("../", "[[REDACTED]]").replace("..\\", "[[REDACTED]]")
-            
-        return request
+_PROMPT_MAX_CHARS = 200_000
 
-    @classmethod
-    def post_provider_call(cls, output: dict[str, Any], request: ProviderRequest) -> dict[str, Any]:
-        """Called immediately after a successful provider response."""
-        return output
 
-    @classmethod
-    def post_schema_validate(cls, output: dict[str, Any], schema: dict[str, Any]) -> dict[str, Any]:
-        """Called after output is validated against the JSON schema. Useful for repair."""
-        # Simple schema repair hook: prune nulls or unknown keys if needed
-        # In a real system, you would apply Pydantic/Instructor here.
-        if isinstance(output, dict):
-            return {k: v for k, v in output.items() if v is not None}
-        return output
+def pre_provider_call(request: ProviderRequest) -> ProviderRequest:
+    """Called before the provider API is invoked.
 
-    @classmethod
-    def pre_write_artifact(cls, artifact: dict[str, Any]) -> dict[str, Any]:
-        """Called right before writing a final JSON artifact to disk."""
-        # Secret redaction
-        artifact_str = json.dumps(artifact)
-        if "sk-" in artifact_str or "AKIA" in artifact_str:
-            logger.error("Security hook: Redacting secrets from artifact before write.")
-            # Simplistic redaction
-            artifact_str = artifact_str.replace("sk-", "sk-[REDACTED]").replace("AKIA", "AKIA[REDACTED]")
-            artifact = json.loads(artifact_str)
-        return artifact
+    Checks for security risks and applies prompt sanitisation.
+    Raises RuntimeError if execution should be blocked.
+    """
+    if _stop_on_risk(request):
+        raise RuntimeError(
+            f"Execution blocked by risk guardrails for task '{request.task}'. "
+            "Check logs for details."
+        )
 
-    @classmethod
-    def stop_on_risk(cls, request: ProviderRequest) -> bool:
-        """
-        Evaluate if the request poses a security or budget risk.
-        Returns True if execution should be stopped.
-        """
-        # Example sandbox boundary: Check if prompt contains credentials
-        if "AWS_ACCESS_KEY_ID" in request.prompt or "sk-" in request.prompt:
-            logger.error("Security hook: Potential credential leak detected in prompt.")
+    # File path traversal guardrail
+    if re.search(r'\.\.[/\\]', request.prompt):
+        logger.warning("Guardrail: directory traversal sequence in prompt — sanitising.")
+        request.prompt = re.sub(r'\.\.[/\\]', '[[PATH_REDACTED]]', request.prompt)
+
+    return request
+
+
+def post_provider_call(output: dict[str, Any], request: ProviderRequest) -> dict[str, Any]:
+    """Called immediately after a successful provider response.
+
+    Can be used for output normalisation or logging enrichment.
+    Currently a pass-through; add task-specific transformations here.
+    """
+    return output
+
+
+def post_schema_validate(output: dict[str, Any], schema: dict[str, Any]) -> dict[str, Any]:
+    """Called after output is validated against the JSON schema.
+
+    NOTE: This hook intentionally does NOT prune null values, as `null` is a
+    legitimate state in many schemas (e.g., `human_resolution: null` means
+    "not yet resolved"). Only add repair logic here for specific, schema-level
+    documented issues verified through the eval suite.
+    """
+    return output
+
+
+def pre_write_artifact(artifact: dict[str, Any]) -> dict[str, Any]:
+    """Called right before a JSON artifact is written to disk.
+
+    Performs credential scanning and redaction on string-type leaf values only,
+    to avoid corrupting structured data.
+    """
+    return _redact_credentials_in_tree(artifact)
+
+
+def _stop_on_risk(request: ProviderRequest) -> bool:
+    """Return True if the request poses a security or budget risk."""
+    # Credential leak check — use anchored patterns to avoid morpheme false positives
+    for pattern in _CREDENTIAL_PATTERNS:
+        if pattern.search(request.prompt):
+            logger.error(
+                "Security hook: credential pattern '%s' detected in prompt for task '%s'.",
+                pattern.pattern[:20],
+                request.task,
+            )
             return True
-            
-        # Example budget stop
-        if len(request.prompt) > 200000:
-            logger.error("Budget hook: Prompt length exceeds safety limit.")
-            return True
-            
-        return False
+
+    # Budget guardrail
+    if len(request.prompt) > _PROMPT_MAX_CHARS:
+        logger.error(
+            "Budget hook: prompt length %d exceeds safety limit %d for task '%s'.",
+            len(request.prompt),
+            _PROMPT_MAX_CHARS,
+            request.task,
+        )
+        return True
+
+    return False
+
+
+def _redact_credentials_in_tree(obj: Any) -> Any:
+    """Recursively redact credential strings in a JSON-like structure."""
+    if isinstance(obj, dict):
+        return {k: _redact_credentials_in_tree(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_redact_credentials_in_tree(item) for item in obj]
+    if isinstance(obj, str):
+        redacted = obj
+        for pattern in _CREDENTIAL_PATTERNS:
+            if pattern.search(redacted):
+                logger.warning("pre_write_artifact: redacting credential pattern in leaf value.")
+                redacted = pattern.sub('[REDACTED]', redacted)
+        return redacted
+    return obj
