@@ -1,4 +1,4 @@
-"""Standalone repository validation for RuWritingStyles.
+﻿"""Standalone repository validation for RuWritingStyles.
 
 This script uses only the Python standard library. It implements a robust
 YAML parser and reuses the internal JSON Schema subset validator to ensure
@@ -35,6 +35,7 @@ REQUIRED_FILES = [
     "docs/style-contract.md",
     "docs/provider-roadmaps.md",
     "docs/quickstart.md",
+    "docs/refactoring-roadmap.md",
     "evals/manifest.json",
     "model_policy.yml",
     "styles/manifest.yml",
@@ -42,6 +43,8 @@ REQUIRED_FILES = [
     "schemas/manifest.schema.json",
     "schemas/model-policy.schema.json",
     "schemas/eval-manifest.schema.json",
+    "src/ruwritingstyles/document.py",
+    "src/ruwritingstyles/linguistics.py",
     "src/ruwritingstyles/schema_validation.py",
 ]
 
@@ -57,22 +60,22 @@ def ok(message: str) -> None:
 
 def parse_simple_yaml(text: str) -> Any:
     """A robust zero-dependency YAML parser for the RuWritingStyles subset."""
-    
+
     # 1. Lexing
     tokens = []
     for line in text.splitlines():
         if "#" in line: line = line[:line.find("#")]
         if not line.strip(): continue
-        
+
         indent = len(line) - len(line.lstrip())
         content = line.lstrip()
-        
+
         if content.startswith("- "):
             tokens.append((indent, "LIST_ITEM", None))
             content = content[2:].strip()
             indent += 1 # Virtual indent for same-line content
             if not content: continue
-        
+
         if ":" in content:
             key, val = content.split(":", 1)
             tokens.append((indent, "KEY", key.strip()))
@@ -86,16 +89,16 @@ def parse_simple_yaml(text: str) -> Any:
     def build_tree(start_idx: int, min_indent: int) -> tuple[Any, int]:
         if start_idx >= len(tokens):
             return None, 0
-        
+
         first_indent, first_type, _ = tokens[start_idx]
-        
+
         if first_type == "LIST_ITEM":
             res_list = []
             i = start_idx
             while i < len(tokens):
                 indent, type, val = tokens[i]
                 if indent < min_indent: break
-                
+
                 if type == "LIST_ITEM":
                     if i + 1 < len(tokens):
                         ni, nt, nv = tokens[i+1]
@@ -112,14 +115,14 @@ def parse_simple_yaml(text: str) -> Any:
                 else:
                     break
             return res_list, i - start_idx
-        
+
         elif first_type == "KEY":
             res_dict = {}
             i = start_idx
             while i < len(tokens):
                 indent, type, key = tokens[i]
                 if indent < min_indent: break
-                
+
                 if type == "KEY":
                     if i + 1 < len(tokens):
                         ni, nt, nv = tokens[i+1]
@@ -139,10 +142,10 @@ def parse_simple_yaml(text: str) -> Any:
                 else:
                     break
             return res_dict, i - start_idx
-        
+
         elif first_type == "VALUE":
             return tokens[start_idx][2], 1
-        
+
         else:
             return None, 1
 
@@ -185,17 +188,17 @@ def validate_file(rel_path: str, schema_name: str, store: dict[str, dict[str, An
     path = ROOT / rel_path
     if not path.exists():
         fail(f"file not found for validation: {rel_path}")
-    
+
     content = path.read_text(encoding="utf-8")
     if rel_path.endswith(".yml") or rel_path.endswith(".yaml"):
         data = parse_simple_yaml(content)
     else:
         data = json.loads(content)
-    
+
     schema = store.get(schema_name)
     if not schema:
         fail(f"schema not found in store: {schema_name}")
-    
+
     errors = validate_json_schema(data, schema, schema_store=store)
     if errors:
         print(f"Validation errors in {rel_path}:")
@@ -203,20 +206,20 @@ def validate_file(rel_path: str, schema_name: str, store: dict[str, dict[str, An
             print(f"  {err}")
         # print(f"  Parsed data: {json.dumps(data, indent=2, ensure_ascii=False)}")
         fail(f"validation failed for {rel_path} against {schema_name}")
-    
+
     return data
 
 
 def main() -> int:
     print(f"Validating RuWritingStyles repository at {ROOT}")
-    
+
     check_required_files()
     store = load_schema_store()
     ok("loaded JSON schemas")
-    
+
     manifest_data = validate_file("styles/manifest.yml", "manifest.schema.json", store)
     ok("styles/manifest.yml is valid")
-    
+
     for passport_ref in manifest_data.get("passports", []):
         path = passport_ref.get("path")
         if path:
@@ -225,16 +228,16 @@ def main() -> int:
             if source and not (ROOT / source).exists():
                 fail(f"passport {path} references missing source_prompt {source}")
     ok("all style passports are valid and resolve")
-    
+
     validate_file("model_policy.yml", "model-policy.schema.json", store)
     ok("model_policy.yml is valid")
-    
+
     validate_file("evals/manifest.json", "eval-manifest.schema.json", store)
     ok("evals/manifest.json is valid")
 
     claude_sources = {p.relative_to(ROOT).as_posix() for p in (ROOT / "ClaudeStyles").glob("*.md")}
     passport_sources = {p.get("source_prompt") for p in manifest_data.get("passports", [])}
-    
+
     if claude_sources != passport_sources:
         missing = sorted(claude_sources - passport_sources)
         extra = sorted(passport_sources - claude_sources)

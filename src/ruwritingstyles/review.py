@@ -61,7 +61,6 @@ def create_review_bundle(
             run_dir=run_dir,
             passport=passport,
             segments_json=segments_path.read_text(encoding="utf-8"),
-            normalized_text=normalized_path.read_text(encoding="utf-8"),
             profile=profile,
         ),
         encoding="utf-8",
@@ -240,7 +239,6 @@ def _render_prompt(
     run_dir: Path,
     passport: StylePassportSummary,
     segments_json: str,
-    normalized_text: str,
     profile: str = "researcher",
 ) -> str:
     passport_text = passport.passport_path.read_text(encoding="utf-8")
@@ -306,12 +304,6 @@ Use only `span_id` values from `segments.json`. Do not rewrite the whole documen
 
 ```json
 {segments_json.strip()}
-```
-
-## Normalized Document
-
-```markdown
-{normalized_text.strip()}
 ```
 """
 
