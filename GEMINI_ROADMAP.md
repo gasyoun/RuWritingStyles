@@ -62,6 +62,8 @@
 
 Аудит от 2026-05-08 показывает, что RuWritingStyles уже прошел этапы "first agent" и "multi-agent prototype". Следующий слой не в том, чтобы переписать проект на LangGraph, а в том, чтобы превратить текущий pipeline в измеримый, возобновляемый и наблюдаемый production harness.
 
+Детальная архитектура для будущей реализации Gemini Flash: `docs/gemini-flash-implementation-architecture.md`.
+
 ### Приоритет 0: привести eval-gate в рабочее состояние
 - [ ] Исправить `scripts/ci-eval-gate.py`: сейчас он вызывает устаревший интерфейс `eval-suite --mode mock`, тогда как актуальный CLI использует `eval-suite --provider mock`.
 - [ ] Подключить `rws eval-regression` к CI после появления promoted baseline.
