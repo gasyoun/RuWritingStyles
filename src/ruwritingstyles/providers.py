@@ -93,6 +93,8 @@ class MockProvider(BaseProvider):
             return self._revision(metadata)
         if task == "verification":
             return self._verification(metadata)
+        if task == "assessment":
+            return self._assessment(metadata)
         raise ProviderError(f"mock provider does not support task {task!r}")
 
     def _review(self, metadata: dict[str, Any]) -> dict[str, Any]:
@@ -155,6 +157,13 @@ class MockProvider(BaseProvider):
                     "message": "Mock provider cannot verify factual fidelity; run a real provider for substantive verification."
                 }
             ],
+        }
+
+    def _assessment(self, metadata: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "run_id": str(metadata["run_id"]),
+            "status": "completed",
+            "assessments": [],
         }
 
 

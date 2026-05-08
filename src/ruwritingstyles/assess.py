@@ -33,9 +33,27 @@ def create_impact_bundle(*, repo_root: Path, run_dir: Path) -> ImpactBundle:
     # Filter for segments with tags
     protected = [s for s in segments if s.get("tags")]
     if not protected:
-        # Return a "skip" bundle or similar. For simplicity, we'll still create a prompt
-        # but the LLM will have nothing to do.
-        pass
+        prompt_path = run_dir / "impact.prompt.md"
+        impact_path = run_dir / "impact.json"
+        prompt_path.write_text(
+            "# Impact Assessment\n\nNo protected segment tags were found; no provider assessment is required.\n",
+            encoding="utf-8",
+        )
+        impact_path.write_text(
+            json.dumps(
+                {
+                    "run_id": run_id,
+                    "status": "completed",
+                    "prompt_path": _repo_relative(repo_root, prompt_path),
+                    "assessments": [],
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        return ImpactBundle(impact_json=impact_path, prompt_md=prompt_path)
 
     prompt_path = run_dir / "impact.prompt.md"
     impact_path = run_dir / "impact.json"

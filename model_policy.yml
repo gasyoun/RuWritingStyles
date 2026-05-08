@@ -90,6 +90,35 @@ providers:
         model: gemini-3.1-pro-preview
         thinking: high
 
+  openrouter:
+    docs:
+      - https://openrouter.ai/docs/quickstart
+      - https://openrouter.ai/docs/features/structured-outputs
+    models:
+      balanced:
+        id: google/gemini-2.0-flash-exp:free
+        status: preview
+        note: "OpenAI-compatible route for free or low-cost smoke runs through OpenRouter/Nous Portal."
+    task_routes:
+      architecture:
+        model: google/gemini-2.0-flash-exp:free
+        reasoning: medium
+      implementation:
+        model: google/gemini-2.0-flash-exp:free
+        reasoning: medium
+      style_review:
+        model: google/gemini-2.0-flash-exp:free
+        reasoning: medium
+      council:
+        model: google/gemini-2.0-flash-exp:free
+        reasoning: medium
+      synthesis:
+        model: google/gemini-2.0-flash-exp:free
+        reasoning: medium
+      verification:
+        model: google/gemini-2.0-flash-exp:free
+        reasoning: medium
+
   anthropic:
     docs:
       - https://platform.claude.com/docs/en/about-claude/models/overview

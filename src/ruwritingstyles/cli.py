@@ -58,6 +58,9 @@ from .validation import (
 )
 from .verification import create_verification_bundle
 
+PROVIDER_CHOICES = ["mock", "openai", "google", "anthropic", "openrouter"]
+REAL_PROVIDER_CHOICES = ["openai", "google", "anthropic", "openrouter"]
+
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -300,7 +303,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     model_routes.add_argument(
         "--provider",
-        choices=["openai", "google", "anthropic"],
+        choices=REAL_PROVIDER_CHOICES,
         help="Filter routes to one provider.",
     )
     model_routes.add_argument("--task", help="Filter routes to one task, for example style_review.")
@@ -312,7 +315,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     provider_status.add_argument(
         "--provider",
-        choices=["mock", "openai", "google", "anthropic"],
+        choices=PROVIDER_CHOICES,
         help="Filter readiness to one provider.",
     )
     provider_status.add_argument(
@@ -411,6 +414,11 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="Optional path to write the full comparison JSON result.",
     )
+    eval_compare.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit with status 1 when the candidate suite regresses against the baseline.",
+    )
     eval_compare.set_defaults(func=cmd_eval_compare)
 
     eval_benchmark = subparsers.add_parser(
@@ -425,7 +433,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     eval_benchmark.add_argument(
         "--provider",
-        choices=["openai", "google", "anthropic"],
+        choices=REAL_PROVIDER_CHOICES,
         required=True,
         help="Provider to use for all models in this benchmark.",
     )
@@ -662,7 +670,7 @@ def _add_execute_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--provider",
         default="mock",
-        choices=["mock", "openai", "google", "anthropic"],
+        choices=PROVIDER_CHOICES,
         help="Provider used with --execute. Defaults to deterministic mock.",
     )
     parser.add_argument(
@@ -680,7 +688,7 @@ def _add_provider_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--provider",
         default="mock",
-        choices=["mock", "openai", "google", "anthropic"],
+        choices=PROVIDER_CHOICES,
         help="Provider used for execution. Defaults to deterministic mock.",
     )
     parser.add_argument(
@@ -985,10 +993,11 @@ def cmd_run(args: argparse.Namespace) -> int:
             )
             print(f"completed {verification.verification_json.relative_to(repo_root)}")
 
-        # Impact Assessment
-        impact = create_impact_bundle(repo_root=repo_root, run_dir=run_dir)
-        print(f"created {impact.impact_json.relative_to(repo_root)}")
         if args.execute:
+            # Impact assessment needs a revised document, so it only runs in
+            # the executable pipeline.
+            impact = create_impact_bundle(repo_root=repo_root, run_dir=run_dir)
+            print(f"created {impact.impact_json.relative_to(repo_root)}")
             execute_impact_artifact(
                 repo_root=repo_root,
                 impact_path=impact.impact_json,
@@ -1368,18 +1377,15 @@ def cmd_dashboard(args: argparse.Namespace) -> int:
 
 
 
-def _cleanup_port(port: int) -> None:
+def _warn_if_port_busy(port: int) -> None:
     import subprocess
     import re
     try:
-        # Find PID using netstat
         output = subprocess.check_output(f"netstat -ano | findstr :{port}", shell=True).decode()
         pids = set(re.findall(r"LISTENING\s+(\d+)", output))
         for pid in pids:
-            print(f"Port {port} is busy (PID: {pid}). Cleaning up...")
-            subprocess.run(f"taskkill /F /PID {pid}", shell=True, capture_output=True)
+            print(f"warning: port {port} is already busy (PID: {pid})")
     except subprocess.CalledProcessError:
-        # Port is likely free
         pass
 
 def cmd_web(args: argparse.Namespace) -> int:
@@ -1389,10 +1395,9 @@ def cmd_web(args: argparse.Namespace) -> int:
     
     repo_root = repo_root_from()
     
-    # Automatic cleanup before start
-    print("Pre-flight check: Cleaning up ports 8000 and 5173...")
-    _cleanup_port(8000)
-    _cleanup_port(5173)
+    print("Pre-flight check: inspecting ports 8000 and 5173...")
+    _warn_if_port_busy(8000)
+    _warn_if_port_busy(5173)
     
     print("Launching RuWritingStyles Web Studio...")
     

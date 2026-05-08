@@ -17,7 +17,7 @@
     "properties": {
       "provider": {
         "type": "string",
-        "enum": ["mock", "openai", "google", "anthropic"]
+        "enum": ["mock", "openai", "google", "anthropic", "openrouter"]
       },
       "ready": {
         "type": "boolean"

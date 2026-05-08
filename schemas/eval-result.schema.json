@@ -39,7 +39,7 @@
     },
     "provider": {
       "type": "string",
-      "enum": ["mock", "openai", "google", "anthropic"]
+      "enum": ["mock", "openai", "google", "anthropic", "openrouter"]
     },
     "model": {
       "type": "string"
@@ -159,7 +159,12 @@
         "allowed_verification_statuses",
         "diff_within_limits",
         "max_changed_line_ratio",
-        "max_char_delta_ratio"
+        "max_char_delta_ratio",
+        "strict_fidelity",
+        "fidelity_passed",
+        "max_finding_count",
+        "finding_count",
+        "finding_count_within_limits"
       ],
       "additionalProperties": false,
       "properties": {
@@ -205,6 +210,23 @@
         "max_char_delta_ratio": {
           "type": "number",
           "minimum": 0
+        },
+        "strict_fidelity": {
+          "type": "boolean"
+        },
+        "fidelity_passed": {
+          "type": "boolean"
+        },
+        "max_finding_count": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "finding_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "finding_count_within_limits": {
+          "type": "boolean"
         }
       }
     }

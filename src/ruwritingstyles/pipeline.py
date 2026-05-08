@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 from .config import load_manifest, load_model_policy
 from .providers import provider_from_name
@@ -18,7 +17,7 @@ from .execution import (
 from .report import write_run_report
 from .html_summary import write_html_report
 
-def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model: str = None):
+def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model: str | None = None) -> None:
     manifest = load_manifest(repo_root)
     model_policy = load_model_policy(repo_root)
     provider = provider_from_name(provider_name)
