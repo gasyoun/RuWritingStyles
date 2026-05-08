@@ -18,7 +18,21 @@ import argparse
 import json
 
 
+_CORS_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get("CORS_ORIGINS", "http://localhost:5173,http://localhost:3000").split(",")
+    if origin.strip()
+]
+
 app = FastAPI(title="RuWritingStyles API")
+
+# Middleware must be registered before routes
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_CORS_ORIGINS,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
+)
 
 
 @app.get("/status")
@@ -161,10 +175,11 @@ async def resolve_run(run_id: str, req: ResolutionRequest, background_tasks: Bac
     }
     resolution_path.write_text(json.dumps(resolution_data, ensure_ascii=False, indent=2), encoding="utf-8")
     
-    args = argparse.Namespace(run_dir=run_dir, resolution=resolution_path)
-    from .cli import cmd_apply_resolution
-    if cmd_apply_resolution(args) != 0:
-        raise HTTPException(status_code=500, detail="Failed to apply resolutions")
+    from .resolution import apply_resolution
+    try:
+        apply_resolution(run_dir, [dict(o) for o in req.overrides])
+    except (FileNotFoundError, ValueError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
         
     # Re-run revision in background
     from .db import Database
@@ -203,22 +218,12 @@ async def finalize_run(run_id: str):
     if not run_dir.exists():
         raise HTTPException(status_code=404, detail="Run not found")
         
-    args = argparse.Namespace(run_dir=run_dir)
-    from .cli import cmd_finalize
-    if cmd_finalize(args) != 0:
-        raise HTTPException(status_code=500, detail="Failed to finalize manuscript. Ensure revision is complete.")
-        
-    final_path = run_dir / "final.md"
+    from .resolution import write_final_manuscript
+    try:
+        final_path = write_final_manuscript(run_dir)
+    except (FileNotFoundError, ValueError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
     return {"status": "finalized", "final_text": _read_text(final_path)}
-
-
-# Enable CORS for the Vite frontend
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 @app.get("/api/compare")

@@ -102,9 +102,20 @@
 - [x] Добавить citation verifier: имена, даты, библиографические ссылки, прямые цитаты, transliteration.
 
 ## Следующее действие
-1. Исправить `scripts/ci-eval-gate.py`: сейчас он вызывает устаревший интерфейс `eval-suite --mode mock`, тогда как актуальный CLI использует `eval-suite --provider mock`. (ВЫПОЛНЕНО)
-2. Реализовать `rws resume <run_id>` для продолжения failed/interrupted run (Приоритет 2). (ВЫПОЛНЕНО)
-3. Добавить `web/` lint/build в GitHub CI (Приоритет 0). (ВЫПОЛНЕНО)
+
+Все 5 production-harness приоритетов из agent-roadmap-2026 выполнены и прошли CI gate.
+
+### Выполнено в сессии v2.2.3 → v2.3.0 (рефакторинг):
+1. Устранена архитектурная ошибка CLI↔API: создан `resolution.py` (сервисный слой для `apply_resolution` и `write_final_manuscript`).
+2. CLI-команды `cmd_apply_resolution` и `cmd_finalize` переведены на делегирование к сервисному слою.
+3. `api.py`: CORS ограничен до localhost, middleware перенесён выше routes, удалён `argparse.Namespace` из API-эндпоинтов.
+4. `hooks.py`: переписан как набор функций модуля (без класса); credential detection заменён на anchored regex по форматам OpenAI/AWS/GitHub/Google; устранён опасный null-prune из `post_schema_validate`.
+5. `context_builder.py`: подключён к `verification.py` — knowledge passages и artifact preview теперь реально встраиваются в verification prompt.
+
+### Оставшийся Sprint D (следующий шаг):
+1. **Сделать committed gold baseline**: выполнить `rws run` на реальном провайдере → `rws eval-promote ... --tag gold` → закоммитить `evals/baselines/gold.json`.
+2. **Обновить `ci-eval-gate.py`**: сравнивать с `gold.json`, не с `ci_mock` (устранить тавтологический тест).
+3. **Добавить unit-тесты** для `resolution.py`, `hooks.py`, `context_builder.py`.
 
 ---
-*Math: Total Phases (8) - Phase H infrastructure complete; agent-roadmap-2026 delta adds 5 production-harness priorities: eval gate, human finalization, durable resume, observability/context discipline, and sandboxed hardening.*
+*Math: Total Phases (8) — Phase H infrastructure complete; agent-roadmap-2026 delta (Priorities 0–5) complete; refactor v2.3.0 complete.*

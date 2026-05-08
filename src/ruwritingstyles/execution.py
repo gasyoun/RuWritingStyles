@@ -9,7 +9,7 @@ from typing import Any
 
 from .provider_log import append_provider_log
 from .providers import BaseProvider, ProviderRequest, load_schema
-from .hooks import ExecutionHooks
+from . import hooks
 
 
 def execute_review_artifact(*, repo_root: Path, review_path: Path, provider: BaseProvider, model: str | None = None) -> None:
@@ -227,8 +227,7 @@ def _load_json(path: Path) -> dict[str, Any]:
 
 
 def _write_json(path: Path, data: dict[str, Any]) -> None:
-    data = ExecutionHooks.pre_write_artifact(data)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(hooks.pre_write_artifact(data), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def _generate_with_log(
@@ -243,14 +242,14 @@ def _generate_with_log(
     model = provider.effective_model(provider_request)
     
     # 1. Pre-provider hook
-    provider_request = ExecutionHooks.pre_provider_call(provider_request)
+    provider_request = hooks.pre_provider_call(provider_request)
     
     try:
         output = provider.generate_json(provider_request)
         # 2. Schema validate hook
-        output = ExecutionHooks.post_schema_validate(output, provider_request.schema)
+        output = hooks.post_schema_validate(output, provider_request.schema)
         # 3. Post-provider hook
-        output = ExecutionHooks.post_provider_call(output, provider_request)
+        output = hooks.post_provider_call(output, provider_request)
     except Exception as exc:
         telemetry = provider.retry_telemetry()
         append_provider_log(

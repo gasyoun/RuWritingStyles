@@ -1672,66 +1672,40 @@ def cmd_generate_passport(args: argparse.Namespace) -> int:
 
 
 def cmd_apply_resolution(args: argparse.Namespace) -> int:
-    repo_root = repo_root_from()
+    """Apply human review overrides from resolution.json to council decisions."""
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
-    council_path = run_dir / "council.json"
-    
-    if not council_path.exists():
-        print(f"error: council.json not found in {run_dir}")
-        return 1
-        
-    res_path = args.resolution or (run_dir / "resolution.json")
+    res_path = getattr(args, "resolution", None) or (run_dir / "resolution.json")
+
     if not res_path.exists():
         print(f"error: resolution.json not found at {res_path}")
         return 1
-        
-    council = json.loads(council_path.read_text(encoding="utf-8"))
+
     resolution = json.loads(res_path.read_text(encoding="utf-8"))
-    
-    overrides = {o["finding_id"]: o for o in resolution.get("overrides", [])}
-    decisions = council.get("decisions", [])
-    
-    updated_count = 0
-    for d in decisions:
-        fid = d["finding_id"]
-        if fid in overrides:
-            override = overrides[fid]
-            d["status"] = override["status"]
-            if "human_comment" in override:
-                d["human_resolution"] = override["human_comment"]
-            updated_count += 1
-            
-    council["decisions"] = decisions
-    council_path.write_text(json.dumps(council, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    
-    print(f"Success: Applied {updated_count} human resolution(s) to council decisions.")
-    return 0
+    overrides = resolution.get("overrides", [])
+
+    from .resolution import apply_resolution
+    try:
+        updated_count = apply_resolution(run_dir, overrides)
+        print(f"Success: Applied {updated_count} human resolution(s) to council decisions.")
+        return 0
+    except (FileNotFoundError, ValueError) as exc:
+        print(f"error: {exc}")
+        return 1
 
 
 def cmd_finalize(args: argparse.Namespace) -> int:
     """Produce the final philological manuscript by merging revisions and resolutions."""
-    repo_root = repo_root_from()
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
-    revision_path = run_dir / "revision.json"
-    
-    if not revision_path.exists():
-        print(f"error: revision.json not found in {run_dir}. Run `rws revise --execute` first.")
+    repo_root = repo_root_from()
+
+    from .resolution import write_final_manuscript
+    try:
+        final_path = write_final_manuscript(run_dir)
+        print(f"Success: Final manuscript written to {final_path.relative_to(repo_root)}")
+        return 0
+    except (FileNotFoundError, ValueError) as exc:
+        print(f"error: {exc}")
         return 1
-        
-    rev_data = json.loads(revision_path.read_text(encoding="utf-8"))
-    if rev_data.get("status") != "completed":
-        print("error: revision is not completed. Execute the revision first.")
-        return 1
-        
-    revised_text = rev_data.get("revised_document")
-    if not revised_text:
-        print("error: no revised document found in revision.json")
-        return 1
-        
-    final_path = run_dir / "final.md"
-    final_path.write_text(revised_text, encoding="utf-8")
-    print(f"Success: Final manuscript written to {final_path.relative_to(repo_root)}")
-    return 0
 
 
 def cmd_resume(args: argparse.Namespace) -> int:
