@@ -31,9 +31,21 @@
 - [x] Внедрить Adversarial Evals (защита "эпистемической осторожности").
 - [x] Настроить CI gate на основе `rws eval-suite`.
 
+### Фаза E: QA и Финальная Интеграция (Завершена)
+- [x] Имплементировать `ci-eval-gate.py` и интегрировать в рабочий процесс.
+- [x] Обновить Web Studio для визуализации обоснований Совета.
+- [x] Внедрить региональные архетипы (Москва vs Ленинград) и Golden Zaliznyak Set.
+- [x] Создать руководства по сценариям и деплою (`docs/scenarios.md`, `docs/deployment.md`).
+
+### Фаза F: Интерактивный Схоластический Верстак (Планируется)
+- [ ] Внедрить когнитивную разметку дебатов по таксономии Блума (Socratic Council).
+- [ ] Реализовать Методологический Компас (Radar Chart) и Карту Напряжения.
+- [ ] Добавить визуализацию синтаксических сдвигов (Syntax Shift Map).
+- [ ] Интегрировать Интерактивный Конкорданс (НКРЯ, Корпус Зализняка).
+
 ## Следующее действие
-1. Перейти к Фазе E: QA и финальная интеграция (см. [Phase_E_Plan.md](file:///C:/Users/user/.gemini/antigravity/brain/1ad57f16-8ee7-4260-819c-287d2b74fee0/Phase_E_Plan.md)).
-2. Провести замеры качества на реальных API (Gemini 2.0 / Claude 3.5).
+1. Переход к проектированию Фазы F.
+2. Сбор ответов на вопросы из [`docs/phase-f-plan.md`](docs/phase-f-plan.md).
 
 ---
-*Math: Total Steps (17) * 0.5 weeks/step = 8.5 weeks total project alignment.*
+*Math: Total Phases (6) - Phase E Complete. Moving to v2.0 Architecture.*

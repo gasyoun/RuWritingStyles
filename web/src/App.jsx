@@ -136,6 +136,25 @@ function App() {
                 <div className="pane-content" style={{color: '#c9d1d9'}}>{runData.revised_text || 'No revision data found.'}</div>
               </div>
             </section>
+
+            {runData.council?.decisions && runData.council.decisions.length > 0 && (
+              <section className="decisions-log" style={{marginTop: '2rem'}}>
+                <div style={{fontSize: '0.9rem', fontWeight: 600, color: '#8b949e', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em'}}>
+                  Philological Council Decisions
+                </div>
+                <div style={{display: 'grid', gap: '1rem'}}>
+                  {runData.council.decisions.map((decision, idx) => (
+                    <div key={idx} style={{padding: '1rem', background: 'var(--bg-secondary)', borderLeft: '4px solid #58a6ff', borderRadius: '4px'}}>
+                      <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
+                         <span style={{fontSize: '0.7rem', color: '#58a6ff', fontWeight: 600}}>{decision.finding_id}</span>
+                         <span style={{fontSize: '0.7rem', background: 'rgba(88, 166, 255, 0.1)', padding: '2px 6px', borderRadius: '4px'}}>{decision.status}</span>
+                      </div>
+                      <div style={{fontSize: '0.85rem', color: '#c9d1d9'}}>{decision.reason}</div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
           </>
         ) : (
           <div style={{display: 'flex', alignItems: 'center', justifySelf: 'center', height: '100%', color: '#8b949e'}}>

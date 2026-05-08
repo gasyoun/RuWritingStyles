@@ -1,4 +1,20 @@
-# Changelog
+## [2026-05-08] - Phase E: QA and Final Integration
+### Added
+- Implemented **CI Gate** in `scripts/ci-eval-gate.py` with 100% infrastructure pass rate.
+- Mandated **Epistemic Transparency**: Council must now cite the Conflict Matrix resolution rules in decision reasoning.
+- Enhanced **Verification Protocol**: Added `SCHOLARLY_ETIQUETTE` rule for literature domain to preserve academic hedging.
+- Formalized **Conflict Resolution** logic in `docs/agent-protocol.md`.
+- Added **Regional Archetypes**: Introduced `Moscow School` and `Leningrad School` Council personalities in `styles/archetypes.yml`.
+- Implemented **Golden Zaliznyak Set**: Tagged 5 primary Zaliznyak-focused documents in `evals/manifest.json` for standardized benchmarking.
+- Expanded Documentation: Added [`docs/scenarios.md`](docs/scenarios.md), [`docs/deployment.md`](docs/deployment.md), and [`docs/project-v2-vision.md`](docs/project-v2-vision.md).
+- Enhanced Web Studio: Integrated visual display of Council reasoning and conflict resolution logs.
+
+## [2026-05-08] - Phase F: Interactive Scholarly Workbench (v2.0)
+### Added
+- Implemented **Bloom's Taxonomy Labeling** in Council deliberations (Remember, Analyze, Create, etc.).
+- Created **Methodological Compass** (Profiling) engine to calculate school alignment scores.
+- Implemented **Significant Syntax Shift Assessor** for detecting Active/Passive swaps and inversions.
+- Updated API to expose profiling, syntax, and Bloom stats for Web Studio.
 
 ## [2026-05-08] - Phase D: Golden Dataset Expansion
 ### Added

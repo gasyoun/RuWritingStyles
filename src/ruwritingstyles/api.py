@@ -8,8 +8,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from .config import load_manifest, load_model_policy, repo_root_from
+from .config import Manifest, load_manifest, load_model_policy, repo_root_from
 from .pipeline import run_full_pipeline
+from .profiling import calculate_bloom_stats, calculate_methodological_compass
 from .provider_status import provider_statuses, provider_statuses_json
 from .runs import create_prepare_run, list_runs as list_run_ids, load_run_artifact
 from .segment import normalize_document, read_document, segment_markdown
@@ -42,10 +43,14 @@ async def get_run_details(run_id: str):
         "normalized_text": _read_text(run_dir / "normalized.md"),
         "revised_text": _read_text(run_dir / "revised.md"),
         "segments": load_run_artifact(run_dir, "segments.json"),
+        "council": load_run_artifact(run_dir, "council.json"),
         "revision": load_run_artifact(run_dir, "revision.json"),
         "verification": load_run_artifact(run_dir, "verification.json"),
         "sentiment": load_run_artifact(run_dir, "sentiment.json"),
         "impact": load_run_artifact(run_dir, "impact.json"),
+        "syntax": load_run_artifact(run_dir, "syntax.json"),
+        "profile": calculate_methodological_compass(run_dir, load_manifest(repo_root_from())),
+        "bloom_stats": calculate_bloom_stats(run_dir),
     }
 
 

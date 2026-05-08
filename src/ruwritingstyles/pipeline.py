@@ -7,12 +7,14 @@ from .revision import create_revision_bundle
 from .diff import write_revision_diff
 from .verification import create_verification_bundle
 from .assess import create_impact_bundle
+from .syntax import create_syntax_bundle
 from .execution import (
     execute_review_artifact,
     execute_council_artifact,
     execute_revision_artifact,
     execute_verification_artifact,
-    execute_impact_artifact
+    execute_impact_artifact,
+    execute_syntax_artifact
 )
 from .report import write_run_report
 from .html_summary import write_html_report
@@ -71,6 +73,16 @@ def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model:
         model=model or model_policy.resolve_model("verification", provider_name),
     )
 
-    # 6. Reports
+    # 6. Syntax
+    syntax_bundle = create_syntax_bundle(repo_root=repo_root, run_dir=run_dir)
+    if syntax_bundle:
+        execute_syntax_artifact(
+            repo_root=repo_root,
+            syntax_path=Path(syntax_bundle["syntax_path"]),
+            provider=provider,
+            model=model or model_policy.resolve_model("verification", provider_name),
+        )
+
+    # 7. Reports
     write_run_report(run_dir)
     write_html_report(run_dir)

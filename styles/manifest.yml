@@ -6,27 +6,35 @@ clusters:
   - id: ling_iesh
     path: styles/clusters/ling_iesh.yml
     name: "Историко-этимологическая школа"
+    location: "Leningrad"
   - id: ling_mss
     path: styles/clusters/ling_mss.yml
     name: "Московская Семантическая Школа"
+    location: "Moscow"
   - id: ling_mts
     path: styles/clusters/ling_mts.yml
     name: "Московско-Тартуская школа"
+    location: "Moscow-Tartu"
   - id: ling_nss
     path: styles/clusters/ling_nss.yml
     name: "Нормативно-стилистическая школа"
+    location: "Petersburg"
   - id: ling_pfg
     path: styles/clusters/ling_pfg.yml
     name: "Петербургская Функциональная Грамматика"
+    location: "Petersburg"
   - id: ling_tsh
     path: styles/clusters/ling_tsh.yml
     name: "Типологическая Школа"
+    location: "Moscow"
   - id: ling_kmsh
     path: styles/clusters/ling_kmsh.yml
     name: "Когнитивно-Метафорическая Школа"
+    location: "Moscow"
   - id: ling_dss
     path: styles/clusters/ling_dss.yml
     name: "Диалектологическая Школа"
+    location: "Moscow"
   - id: lit_opoyaz
     path: styles/clusters/lit_opoyaz.yml
     name: "ОПОЯЗ"

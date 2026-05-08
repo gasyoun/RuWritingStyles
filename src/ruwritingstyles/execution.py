@@ -196,6 +196,31 @@ def execute_impact_artifact(*, repo_root: Path, impact_path: Path, provider: Bas
     _write_json(impact_path, impact)
 
 
+def execute_syntax_artifact(*, repo_root: Path, syntax_path: Path, provider: BaseProvider, model: str | None = None) -> None:
+    syntax = _load_json(syntax_path)
+    if syntax.get("status") != "prompt_ready":
+        return
+    prompt_path = repo_root / str(syntax["prompt_path"])
+    output = _generate_with_log(
+        repo_root=repo_root,
+        run_dir=syntax_path.parent,
+        artifact_path=syntax_path,
+        provider=provider,
+        provider_request=ProviderRequest(
+            task="syntax_assessment",
+            prompt=prompt_path.read_text(encoding="utf-8"),
+            schema=load_schema(repo_root, "schemas/syntax-output.schema.json"),
+            metadata={
+                "run_id": syntax["run_id"],
+            },
+            model=model,
+        ),
+    )
+    syntax["status"] = "completed"
+    syntax["shifts"] = output.get("shifts", [])
+    _write_json(syntax_path, syntax)
+
+
 def _load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 

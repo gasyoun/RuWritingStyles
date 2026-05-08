@@ -16,6 +16,7 @@
         "external_similarity_as_evidence",
         "missing_historical_forms"
       ],
+      "tags": ["GOLD_ZALIZNYAK"],
       "scoring": {
         "required_finding_types": [
           "unsupported_etymology",
@@ -46,6 +47,7 @@
         "overgeneralized_tradition_claim",
         "weak_evidence_for_dating"
       ],
+      "tags": ["GOLD_ZALIZNYAK"],
       "scoring": {
         "required_finding_types": [
           "missing_source_reference",
@@ -75,6 +77,7 @@
         "register_mismatch",
         "missing_parallel_evidence"
       ],
+      "tags": ["GOLD_ZALIZNYAK"],
       "scoring": {
         "required_finding_types": [
           "overconfident_conclusion",
@@ -197,6 +200,7 @@
         "unsupported_etymology",
         "missing_historical_forms"
       ],
+      "tags": ["GOLD_ZALIZNYAK"],
       "scoring": {
         "required_finding_types": [
           "unsupported_etymology"
@@ -578,6 +582,7 @@
         "oversimplification",
         "missing_epistemic_markers"
       ],
+      "tags": ["GOLD_ZALIZNYAK"],
       "scoring": {
         "required_finding_types": [
           "oversimplification"

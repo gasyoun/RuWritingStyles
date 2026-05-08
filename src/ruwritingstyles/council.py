@@ -127,29 +127,45 @@ def _load_review(path: Path) -> dict[str, object]:
     return data
 
 
-def get_cluster_weights(manifest: Manifest, text_domain: str) -> dict[str, float]:
+def get_cluster_weights(manifest: Manifest, text_domain: str, archetype: CouncilArchetype | None = None) -> dict[str, float]:
     """Calculate style weights based on cluster domain matching and methodological priority."""
-    base_weights = {ref.style_id: ref.weight for ref in manifest.passports}
-    
-    # Map cluster_id to domains
-    cluster_domains = {c.id: c.domains for c in manifest.clusters}
+    # Map cluster_id to domains and locations
+    cluster_meta = {c.id: (c.domains, c.location) for c in manifest.clusters}
     
     adjusted_weights = {}
     for ref in manifest.passports:
         weight = ref.weight
         
-        # 1. Domain Match Boost (Step L-03)
-        if text_domain != "unknown" and ref.cluster_id and text_domain in cluster_domains.get(ref.cluster_id, ()):
+        # 1. Archetype overrides (explicit weights from archetypes.yml)
+        if archetype and ref.style_id in archetype.weights:
+            weight = archetype.weights[ref.style_id]
+        elif archetype and ref.cluster_id in archetype.weights:
+            weight = archetype.weights[ref.cluster_id]
+        
+        domains, location = cluster_meta.get(ref.cluster_id, ((), ""))
+        
+        # 2. Domain Match Boost
+        if text_domain != "unknown" and text_domain in domains:
             weight *= 1.5
             
-        # 2. Methodological Authority (Specific clusters for specific domains)
+        # 3. Methodological Authority (Regional/School boosts)
         if text_domain == "etymology" and ref.cluster_id == "ling_iesh":
             weight *= 2.0
         elif text_domain == "semiotics" and ref.cluster_id == "ling_mts":
             weight *= 2.0
-        elif text_domain == "literature" and ref.cluster_id.startswith("lit_"):
+        elif text_domain == "literature" and ref.cluster_id and ref.cluster_id.startswith("lit_"):
             weight *= 1.2
             
+        # 4. Regional Archetype Boosts
+        if archetype:
+            is_moscow_arch = "Moscow" in archetype.name
+            is_leningrad_arch = "Leningrad" in archetype.name or "Petersburg" in archetype.name
+            
+            if is_moscow_arch and location == "Moscow":
+                weight *= 2.0
+            elif is_leningrad_arch and location in ("Leningrad", "Petersburg"):
+                weight *= 2.0
+
         adjusted_weights[ref.style_id] = weight
         
     return adjusted_weights
@@ -171,7 +187,7 @@ def _render_prompt(
     text_domain: str = "unknown",
     verification_feedback: dict[str, Any] | None = None,
 ) -> str:
-    weights = get_cluster_weights(manifest, text_domain)
+    weights = get_cluster_weights(manifest, text_domain, archetype)
     council_config = manifest.council or CouncilConfig("Coordinator", "Neutral deliberation.")
 
     # Group findings by span for the prompt
@@ -292,14 +308,20 @@ When specific schools disagree, follow these established philological resolution
 ## Instructions
 
 1. **Compare Advice**: For each document span, look at findings from all styles.
-2. **Resolve Conflicts**: If styles suggest different changes for the same span, use your strategy and the `_style_weight` (higher is more authoritative) to decide.
+2. **Resolve Conflicts**: If styles suggest different changes for the same span, use your strategy and the `_style_weight` (higher is more authoritative) to decide. **CRITICAL**: If a conflict is listed in the `Philological Conflict Matrix`, you MUST cite the specific resolution rule (e.g., 'Bakhtin > OPOYAZ') in your `reason` field.
 3. **Synthesis**: You can accept a finding exactly, reject it, or create a "modified" finding that combines advice from multiple styles.
 4. **Impact Assessment**: Pay close attention to `tags` in `segments.json`. 
    - If a segment has a `rhyme` tag, ensure proposed changes do not break the rhyme.
    - If it has a `meter` tag, preserve the rhythm.
    - If it has a `tone` tag, maintain the specified tone level.
    - REJECT advice that violates these protected qualities unless the advice is specifically fixing an error in that quality.
-5. **Informational**: Mark findings as informational if they are interesting observations that don't justify a text change.
+6. **Bloom's Taxonomy Labeling (Socratic Council)**: For every `reply` and `decision`, assign a `bloom_level` based on the cognitive depth of your reasoning:
+   - `Remember`: Citing a rule or source directly.
+   - `Understand`: Interpreting the meaning or context of the text.
+   - `Apply`: Standard application of a style rule.
+   - `Analyze`: Comparing multiple conflicting styles or linguistic patterns.
+   - `Evaluate`: Justifying a choice between schools or resolving a methodological conflict.
+   - `Create`: Synthesizing a new solution that reconciles different traditions.
 
 ## Required Output
 
@@ -313,6 +335,7 @@ Return a JSON object with this shape:
     {{
       "reply_to": "finding-001",
       "style_id": "zalizniak-shkolnikov-1",
+      "bloom_level": "Analyze",
       "position": "agree_with_modification",
       "comment": "Synthesis of Zalizniak and Tronsky advice.",
       "proposed_adjustment": "Synthesized revision text."
@@ -321,10 +344,17 @@ Return a JSON object with this shape:
   "decisions": [
     {{
       "finding_id": "finding-001",
+      "bloom_level": "Evaluate",
       "status": "accepted_with_modification",
+      "primary_school": "ling_iesh",
+      "influence": {{
+        "ling_iesh": 0.7,
+        "ling_mss": 0.3
+      }},
       "reason": "Why this decision follows from the council strategy."
     }}
   ],
+```
   "stylistic_commitments": [
     {{
       "term": "X",
