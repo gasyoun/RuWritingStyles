@@ -1,21 +1,23 @@
-# Changelog: RuWritingStyles Agent Engineering
+# Changelog
 
-Все изменения в архитектуре агентов, эвалах и системе стилей фиксируются здесь.
+## [2026-05-08] - Phase D: Golden Dataset Expansion
+### Added
+- Implemented **Domain-Aware Verification Rules** in `verification.py` (e.g., PHONETIC_FIDELITY for dialectology).
+- Implemented **Philological Conflict Matrix** in `council.py`.
+- Enhanced `get_cluster_weights` with **Domain Match Boosts**.
+- Created 34 evaluation cases in `evals/manifest.json` (Milestone: 30+ cases).
+- Implemented **Adversarial Evals** for "epistemic caution".
+- Added `scripts/ci-eval-gate.py` for automated evaluation monitoring.
+- Updated `assess.py` to support `epistemic_caution` tags in impact assessment.
+- Created 4 adversarial input files in `examples/input/` with RWS tags.
+- Implemented core instructions for all 9 literary clusters (`lit_` prefix) in `ClaudeStyles/`.
+- Implemented core instructions for all 8 linguistic clusters (`ling_` prefix) in `ClaudeStyles/`.
+- Added test cases for paradigmatic conflicts (e.g., OPOYAZ vs Bakhtin).
 
-## [2026-05-08] - Инициализация Gemini-Ready Plan
+### Changed
+- Standardized cluster infrastructure: all 17 clusters are now registered as top-level passports in `styles/manifest.yml`.
+- Updated `styles/manifest.yml` to include mandatory `source_prompt` for all entries, fixing a v0.2 parser regression.
+- Refactored all cluster filenames to use `ling_` and `lit_` prefixes consistently.
 
-### Добавлено
-- `GEMINI_ROADMAP.md`: Персонализированный план развития агентной системы на базе 17 филологических кластеров.
-- `AGENTS.md`: Инструкции для ИИ-ассистентов по работе с проектом.
-- **G-01/L-01**: Полностью завершено создание 17 кластеров (8 лингвистических + 9 литературоведческих).
-- **G-07**: Создана схема `schemas/run.schema.json` с поддержкой 17 доменов текста.
-- **G-04**: Реализован механизм динамических весов в `Council`. Теперь агенты стилей получают +50% к весу, если их научная школа совпадает с доменом текста (`text_domain`).
-- Обновлены `config.py` и `council.py` для поддержки новой иерархической модели и метаданных запуска.
-
-- **G-03**: Реализован механизм `Style Architect` в `generation.py`. Теперь система может генерировать паспорта на основе описания и примеров текста.
-- **L-04**: Сгенерированы и интегрированы 4 "Золотых стиля": Аверинцев, Гаспаров, Мельчук и Общий метод Зализняка.
-- **G-05**: Начат сбор `Golden Dataset`. Добавлено 5 новых кейсов (всего 8), включая проверку стихосложения (Гаспаров) и защиту эпистемической модальности (Аверинцев).
-
-### Запланировано
-- Доведение `Golden Dataset` до 30+ кейсов.
-- Реализация матрицы парадигматических конфликтов (напр. ОПОЯЗ vs Бахтин).
+### Fixed
+- Fixed "incomplete manifest passport entry" error in `eval-suite` by populating `source_prompt` fields.

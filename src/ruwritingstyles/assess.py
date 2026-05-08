@@ -111,8 +111,9 @@ Check if the revised document preserved the 'protected qualities' (tags) identif
 ## Instructions
 
 1. **Locate Segments**: Find the revised version of each protected segment in the provided document.
-2. **Evaluate Impact**: For each tag (rhyme, meter, tone, etc.), determine if the quality was preserved, improved, or damaged.
-3. **Pass/Fail**: Mark `passed: false` if a protected quality was broken (e.g., a rhyme was lost, a meter was disrupted).
+2. **Evaluate Impact**: For each tag (rhyme, meter, tone, epistemic_caution), determine if the quality was preserved, improved, or damaged.
+3. **Epistemic Caution**: If a segment has the `epistemic_caution` tag, you MUST ensure that cautious markers (e.g., "по-видимому", "вероятно", "как кажется", "можно предположить") were NOT removed or replaced by confident claims.
+4. **Pass/Fail**: Mark `passed: false` if a protected quality was broken (e.g., a rhyme was lost, a meter was disrupted, or cautious wording was simplified into a dogmatic statement).
 
 ## Required Output
 
