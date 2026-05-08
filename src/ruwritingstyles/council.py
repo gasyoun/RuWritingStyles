@@ -19,6 +19,16 @@ class CouncilBundle:
 from .config import CouncilArchetype, CouncilConfig, Manifest, load_archetypes, load_run_metadata
 from .knowledge import search_knowledge_base, extract_keywords_from_reviews
 
+# Philological Conflict Matrix (Step L-03)
+# (cluster_a, cluster_b) -> resolution_hint
+CONFLICT_MATRIX = {
+    ("lit_opoyaz", "lit_bakhtin"): "OPOYAZ focus: plot structure, technical device. Bakhtin focus: dialogism, character voice. Resolution: Prioritize polyphony in dialogues, but maintain formal unity in narrative structure.",
+    ("ling_iesh", "ling_nss"): "IESH focus: historical etymology. NSS focus: modern literary norm. Resolution: Use modern spelling by default, but retain etymological variants in citations or expert commentary.",
+    ("lit_structural", "lit_poststructural"): "Structuralist: stable deep structure. Poststructuralist: deconstruction of hierarchies. Resolution: Define a clear structure but add 'epistemic markers' to acknowledge alternative readings.",
+    ("ling_mss", "ling_kmsh"): "MSS: semantic decomposition. KMSH: cognitive metaphors. Resolution: Use precise formal definitions, but interpret cultural concepts through metaphorical frames.",
+    ("lit_textology", "lit_historico_cultural"): "Textology: manuscript evidence. Hist-Cult: epoch spirit. Resolution: Manuscript evidence is absolute for the text itself; historical context is for interpretation.",
+}
+
 def create_council_bundle(
     *,
     repo_root: Path,
@@ -118,10 +128,8 @@ def _load_review(path: Path) -> dict[str, object]:
 
 
 def get_cluster_weights(manifest: Manifest, text_domain: str) -> dict[str, float]:
-    """Calculate style weights based on cluster domain matching."""
+    """Calculate style weights based on cluster domain matching and methodological priority."""
     base_weights = {ref.style_id: ref.weight for ref in manifest.passports}
-    if text_domain == "unknown":
-        return base_weights
     
     # Map cluster_id to domains
     cluster_domains = {c.id: c.domains for c in manifest.clusters}
@@ -129,9 +137,19 @@ def get_cluster_weights(manifest: Manifest, text_domain: str) -> dict[str, float
     adjusted_weights = {}
     for ref in manifest.passports:
         weight = ref.weight
-        if ref.cluster_id and text_domain in cluster_domains.get(ref.cluster_id, ()):
-            # Boost weight by 1.5x if it matches the text domain
+        
+        # 1. Domain Match Boost (Step L-03)
+        if text_domain != "unknown" and ref.cluster_id and text_domain in cluster_domains.get(ref.cluster_id, ()):
             weight *= 1.5
+            
+        # 2. Methodological Authority (Specific clusters for specific domains)
+        if text_domain == "etymology" and ref.cluster_id == "ling_iesh":
+            weight *= 2.0
+        elif text_domain == "semiotics" and ref.cluster_id == "ling_mts":
+            weight *= 2.0
+        elif text_domain == "literature" and ref.cluster_id.startswith("lit_"):
+            weight *= 1.2
+            
         adjusted_weights[ref.style_id] = weight
         
     return adjusted_weights
@@ -176,6 +194,10 @@ def _render_prompt(
         replies = doc.get("replies")
         if isinstance(replies, list):
             all_replies.extend(replies)
+
+    # Prepare conflict matrix for JSON (convert tuple keys to strings)
+    serializable_matrix = {f"{k[0]} vs {k[1]}": v for k, v in CONFLICT_MATRIX.items()}
+    matrix_json = json.dumps(serializable_matrix, ensure_ascii=False, indent=2)
 
     grouped_findings_json = json.dumps(by_span, ensure_ascii=False, indent=2)
     replies_json = json.dumps(all_replies, ensure_ascii=False, indent=2)
@@ -257,6 +279,12 @@ The following weights represent the authority of each style agent. Use these whe
 
 **Conflict Resolution Strategy:**
 {council_config.conflict_resolution_strategy}
+
+**Philological Conflict Matrix (Methodological Resolution):**
+When specific schools disagree, follow these established philological resolution patterns:
+```json
+{matrix_json}
+```
 {context_section}
 {scrutiny_section}
 {research_section}

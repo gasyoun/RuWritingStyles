@@ -46,6 +46,7 @@ class EvalCase:
     max_char_delta_ratio: float
     strict_fidelity: bool
     max_finding_count: int | None
+    metadata: dict[str, Any]
 
 
 @dataclass(frozen=True)
@@ -107,6 +108,7 @@ def run_eval_case(
         manifest=manifest,
         model_policy=model_policy,
         run_id=run_id,
+        metadata=case.metadata,
     )
 
     for style_id in case.default_styles:
@@ -400,6 +402,7 @@ def _case(repo_root: Path, data: dict[str, Any]) -> EvalCase:
         max_char_delta_ratio=_scoring_float(data, "max_char_delta_ratio", 0.5),
         strict_fidelity=_scoring_bool(data, "strict_fidelity", False),
         max_finding_count=_scoring_int_or_none(data, "max_finding_count"),
+        metadata=dict(data.get("metadata", {})),
     )
 
 

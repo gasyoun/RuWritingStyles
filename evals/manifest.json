@@ -342,6 +342,296 @@
         ],
         "min_required_matches": 1
       }
+    },
+    {
+      "id": "mss-semantic-loop",
+      "input": "examples/input/mss-semantic-loop.md",
+      "purpose": "Check if MSS agent flags a circular definition (tautology).",
+      "default_styles": [
+        "ling_mss"
+      ],
+      "expected_risks": [
+        "unclear_definition"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "unclear_definition"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "kmsh-concept-mix",
+      "input": "examples/input/kmsh-concept-mix.md",
+      "purpose": "Check if KMSH agent flags reduction of a cultural concept to a logical notion.",
+      "default_styles": [
+        "ling_kmsh"
+      ],
+      "expected_risks": [
+        "concept_distortion"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "concept_distortion"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "dss-dialect-norm",
+      "input": "examples/input/dss-dialect-norm.md",
+      "purpose": "Check if DSS agent protects dialectal forms against 'normative' corrections.",
+      "default_styles": [
+        "ling_dss"
+      ],
+      "expected_risks": [
+        "field_data_distortion"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "field_data_distortion"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "mts-semiotic-blur",
+      "input": "examples/input/mts-semiotic-blur.md",
+      "purpose": "Check if MTS agent flags blurring of sign levels between primary and secondary systems.",
+      "default_styles": [
+        "ling_mts"
+      ],
+      "expected_risks": [
+        "semiotic_blurring",
+        "structural_inconsistency"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "semiotic_blurring"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "textology-copyist-error",
+      "input": "examples/input/textology-copyist-error.md",
+      "purpose": "Check if Textology agent flags anachronistic interpolations in ancient texts.",
+      "default_styles": [
+        "lit_textology"
+      ],
+      "expected_risks": [
+        "factual_error_meter",
+        "weak_historical_inference"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "weak_historical_inference"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "hist-cult-anachronism",
+      "input": "examples/input/hist-cult-anachronism.md",
+      "purpose": "Check if Historico-cultural agent flags modern sociological terms applied to antiquity.",
+      "default_styles": [
+        "lit_historico_cultural"
+      ],
+      "expected_risks": [
+        "loss_of_philological_depth",
+        "oversimplification"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "loss_of_philological_depth"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "poststruct-deconstruction-loop",
+      "input": "examples/input/poststruct-deconstruction-loop.md",
+      "purpose": "Check if Poststructuralist agent flags a claim about 'final/singular meaning'.",
+      "default_styles": [
+        "lit_poststructural"
+      ],
+      "expected_risks": [
+        "loss_of_conceptual_nuance",
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "reductive_interpretation"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "averintsev-epistemic-caution",
+      "input": "examples/input/averintsev-epistemic-caution.md",
+      "purpose": "Check if Averintsev agent flags dogmatic claims in cultural analysis.",
+      "default_styles": [
+        "averintsev"
+      ],
+      "expected_risks": [
+        "missing_epistemic_markers",
+        "loss_of_philological_depth"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "missing_epistemic_markers"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "gasparov-fact-check",
+      "input": "examples/input/gasparov-fact-check.md",
+      "purpose": "Check if Gasparov agent catches a factual error in metric/meter attribution.",
+      "default_styles": [
+        "gasparov"
+      ],
+      "expected_risks": [
+        "factual_error_meter"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "factual_error_meter"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "melchuk-formalism-check",
+      "input": "examples/input/melchuk-formalism-check.md",
+      "purpose": "Check if Melchuk agent flags 'fuzzy' non-formal descriptions of syntactic relations.",
+      "default_styles": [
+        "melchuk"
+      ],
+      "expected_risks": [
+        "terminological_imprecision",
+        "syntactic_agreement_error"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "terminological_imprecision"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "iesh-vs-nss-conflict",
+      "input": "examples/input/iesh-vs-nss-conflict.md",
+      "purpose": "Check Council resolution for conflict between etymological archaism and modern norm.",
+      "default_styles": [
+        "ling_iesh",
+        "ling_nss"
+      ],
+      "expected_risks": [
+        "norm_violation",
+        "missing_historical_forms"
+      ],
+      "scoring": {
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "opoyaz-vs-bakhtin-polyphony",
+      "input": "examples/input/opoyaz-vs-bakhtin-polyphony.md",
+      "purpose": "Check Council debate between plot structure (OPOYAZ) and dialogic voice (Bakhtin).",
+      "default_styles": [
+        "lit_opoyaz",
+        "lit_bakhtin"
+      ],
+      "expected_risks": [
+        "monologism",
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "struct-vs-poststruct-stability",
+      "input": "examples/input/struct-vs-poststruct-stability.md",
+      "purpose": "Check Council debate between structural stability and deconstructive fluidity.",
+      "default_styles": [
+        "lit_structural",
+        "lit_poststructural"
+      ],
+      "expected_risks": [
+        "loss_of_conceptual_nuance",
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "iesh-adversarial",
+      "input": "examples/input/iesh-adversarial.md",
+      "purpose": "Check if IESH agent protects etymological uncertainty and cautious wording.",
+      "default_styles": [
+        "ling_iesh"
+      ],
+      "expected_risks": [
+        "oversimplification",
+        "missing_epistemic_markers"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "oversimplification"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": true
+      },
+      "metadata": {
+        "text_domain": "etymology"
+      }
+    },
+    {
+      "id": "mts-adversarial",
+      "input": "examples/input/mts-adversarial.md",
+      "purpose": "Check if MTS agent protects semiotic complexity and cautious wording.",
+      "default_styles": [
+        "ling_mts"
+      ],
+      "expected_risks": [
+        "oversimplification",
+        "missing_epistemic_markers"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "oversimplification"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": true
+      },
+      "metadata": {
+        "text_domain": "semiotics"
+      }
+    },
+    {
+      "id": "historico-cultural-adversarial",
+      "input": "examples/input/historico-cultural-adversarial.md",
+      "purpose": "Check if Historico-cultural agent protects historical distance and cautious wording.",
+      "default_styles": [
+        "lit_historico_cultural"
+      ],
+      "expected_risks": [
+        "oversimplification",
+        "missing_epistemic_markers"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "oversimplification"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": true
+      },
+      "metadata": {
+        "text_domain": "history"
+      }
     }
   ]
 }

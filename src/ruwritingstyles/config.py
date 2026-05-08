@@ -156,7 +156,7 @@ def load_manifest(repo_root: Path) -> Manifest:
 
     for line in passports_block.splitlines():
         item_match = re.match(r"^\s*-\s+id:\s*['\"]?([^'\"\n]+?)['\"]?\s*$", line)
-        field_match = re.match(r"^\s+(path|source_prompt|cluster):\s*['\"]?([^'\"\n]+?)['\"]?\s*$", line)
+        field_match = re.match(r"^\s+(path|source_prompt|cluster|level):\s*['\"]?([^'\"\n]+?)['\"]?\s*$", line)
 
         if item_match:
             if current:
@@ -212,11 +212,17 @@ def _passport_ref(repo_root: Path, data: dict[str, str]) -> StylePassportRef:
     if missing:
         missing_str = ", ".join(sorted(missing))
         raise ValueError(f"incomplete manifest passport entry; missing {missing_str}")
+    path = repo_root / data["path"]
+    source_prompt = repo_root / data["source_prompt"]
+    cluster_id = data.get("cluster")
+    if not cluster_id and data.get("level") == "cluster":
+        cluster_id = data["id"]
+        
     return StylePassportRef(
         style_id=data["id"],
-        path=repo_root / data["path"],
-        source_prompt=repo_root / data["source_prompt"],
-        cluster_id=data.get("cluster"),
+        path=path,
+        source_prompt=source_prompt,
+        cluster_id=cluster_id,
         weight=float(data.get("weight", "1.0")),
     )
 
@@ -363,14 +369,15 @@ def load_passport_summaries(repo_root: Path, manifest: Manifest | None = None) -
 
 
 def load_run_metadata(run_dir: Path) -> dict[str, Any]:
-    """Load run metadata from run.json in the run directory."""
-    path = run_dir / "run.json"
-    if not path.exists():
-        return {"text_domain": "unknown"}
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except Exception:
-        return {"text_domain": "unknown"}
+    """Load run metadata from run.json or metadata.json in the run directory."""
+    for filename in ("run.json", "metadata.json"):
+        path = run_dir / filename
+        if path.exists():
+            try:
+                return json.loads(path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+    return {"text_domain": "unknown"}
 
 
 def repo_root_from(start: Path | None = None) -> Path:

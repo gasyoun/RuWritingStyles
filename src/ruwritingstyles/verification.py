@@ -15,8 +15,13 @@ class VerificationBundle:
     prompt_md: Path
 
 
+from .config import load_run_metadata
+
 def create_verification_bundle(*, repo_root: Path, run_dir: Path) -> VerificationBundle:
     run_dir = run_dir.resolve()
+    run_metadata = load_run_metadata(run_dir)
+    text_domain = run_metadata.get("text_domain", "unknown")
+
     original_path = run_dir / "original.md"
     normalized_path = run_dir / "normalized.md"
     revision_path = run_dir / "revision.json"
@@ -44,6 +49,7 @@ def create_verification_bundle(*, repo_root: Path, run_dir: Path) -> Verificatio
             normalized_text=normalized_path.read_text(encoding="utf-8"),
             revision_json=revision_path.read_text(encoding="utf-8"),
             revised_document_text=revised_document_text,
+            text_domain=text_domain,
         ),
         encoding="utf-8",
     )
@@ -87,6 +93,7 @@ def _render_prompt(
     normalized_text: str,
     revision_json: str,
     revised_document_text: str,
+    text_domain: str = "unknown",
 ) -> str:
     revised_block = revised_document_text.strip() or "(No revised document has been produced yet.)"
 
@@ -107,11 +114,23 @@ The following rules were established in previous documents of this project. You 
 ```
 """
 
+    domain_rules = {
+        "etymology": "Rule: EPISTEMIC_CAUTION. All etymological claims must use markers of uncertainty (perhaps, likely) if the source text used them.",
+        "semiotics": "Rule: TERMINOLOGICAL_RIGOR. Do not allow simplification of semiotic terms (code, signifier, interpretant) into generic words.",
+        "dialectology": "Rule: PHONETIC_FIDELITY. Any change to phonetic transcription or dialectal forms must be flagged as a CRITICAL violation.",
+        "history": "Rule: HISTORICAL_DISTANCE. Avoid anachronistic modern terminology in descriptions of past epochs.",
+    }.get(text_domain, "Rule: GENERAL_FIDELITY. Preserve all nuanced scholarly phrasing.")
+
     return f"""# Verification Request
 
 You are the RuWritingStyles verifier.
 
+## Your Mission
+
 Check whether the revised document preserves the source document's facts, argument structure, citations, examples, and unresolved questions. 
+
+**Philological Fidelity (Domain: {text_domain})**:
+{domain_rules}
 
 **Style Consistency Mission**:
 Verify that all "Stylistic Commitments" provided below are correctly implemented in the revised text.

@@ -30,10 +30,17 @@ def create_prepare_run(
     manifest: Manifest,
     model_policy: ModelPolicy,
     run_id: str | None = None,
+    metadata: dict[str, Any] | None = None,
 ) -> Path:
     actual_run_id = run_id or make_run_id(input_path)
     run_dir = repo_root / "runs" / actual_run_id
     run_dir.mkdir(parents=True, exist_ok=False)
+
+    if metadata:
+        (run_dir / "metadata.json").write_text(
+            json.dumps(metadata, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8"
+        )
 
     (run_dir / "original.md").write_text(original_text, encoding="utf-8")
     (run_dir / "normalized.md").write_text(normalized_text, encoding="utf-8")
