@@ -102,6 +102,9 @@ def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model:
         from .latex import write_latex_report
         write_latex_report(run_dir, db.get_run(run_id))
         
+        from .bibtex import write_bibtex
+        write_bibtex(run_dir)
+        
         db.update_run_status(run_id, "completed")
     except Exception as exc:
         db.update_run_status(run_id, "failed", summary=str(exc))
