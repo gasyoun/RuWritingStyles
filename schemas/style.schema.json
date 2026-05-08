@@ -69,6 +69,51 @@
       "minItems": 1,
       "items": { "type": "string", "minLength": 1 }
     },
+    "level": {
+      "type": "string",
+      "enum": ["core", "cluster", "private"]
+    },
+    "cluster": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "extends": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "markers": {
+      "type": "object",
+      "properties": {
+        "lexical": { "type": "array", "items": { "type": "string" } },
+        "syntactic": { "type": "array", "items": { "type": "string" } },
+        "epistemic": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "forbidden_edits": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "anchors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "signal", "expected"],
+        "properties": {
+          "id": { "type": "string" },
+          "description": { "type": "string" },
+          "signal": { "type": "string" },
+          "expected": { "type": "string" },
+          "cluster_override": { "type": "string" }
+        }
+      }
+    },
+    "conflict_priority": {
+      "type": "object",
+      "properties": {
+        "default": { "type": "string", "enum": ["low", "medium", "high"] },
+        "when_domain": { "type": "array", "items": { "type": "string" } }
+      }
+    },
     "review_mode": {
       "type": "object",
       "required": ["rewrite_allowed", "requires_span_ids", "output_format"],

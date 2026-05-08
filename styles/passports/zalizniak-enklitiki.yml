@@ -3,6 +3,8 @@ name: Зализняк-энклитики
 source_prompt: ClaudeStyles/zalizniak-enklitiki-style.md
 role: systematic_grammar_reviewer
 language: ru
+level: private
+cluster: mts
 
 best_for:
   - древнерусская фраза

@@ -89,6 +89,259 @@
         "max_changed_line_ratio": 0.75,
         "max_char_delta_ratio": 0.5
       }
+    },
+    {
+      "id": "averintsev-adversarial",
+      "input": "examples/input/averintsev-adversarial.md",
+      "purpose": "Check if Averintsev agent protects epistemic markers and complex terminology against 'simplification' attempts.",
+      "default_styles": [
+        "averintsev",
+        "lit_historico_cultural"
+      ],
+      "expected_risks": [
+        "oversimplification",
+        "missing_epistemic_markers",
+        "loss_of_philological_depth"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "oversimplification"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": true
+      }
+    },
+    {
+      "id": "gasparov-meter-check",
+      "input": "examples/input/gasparov-meter-check.md",
+      "purpose": "Check if Gasparov agent catches a blatant factual error in verse theory (confusing iamb with trochee).",
+      "default_styles": [
+        "gasparov",
+        "lit_structural"
+      ],
+      "expected_risks": [
+        "factual_error_meter",
+        "terminological_imprecision"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "factual_error_meter"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "melchuk-syntax-check",
+      "input": "examples/input/melchuk-syntax-check.md",
+      "purpose": "Check if Melchuk agent catches a syntactic agreement error using dependency analysis.",
+      "default_styles": [
+        "melchuk",
+        "ling_mss"
+      ],
+      "expected_risks": [
+        "syntactic_agreement_error",
+        "morphological_mismatch"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "syntactic_agreement_error"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "poststructural-term-check",
+      "input": "examples/input/poststructural-term-check.md",
+      "purpose": "Check if Poststructuralist agent flags the simplification of 'différance' to 'difference'.",
+      "default_styles": [
+        "lit_poststructural"
+      ],
+      "expected_risks": [
+        "terminological_simplification",
+        "loss_of_conceptual_nuance"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "terminological_simplification"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "bakhtin-polyphony-check",
+      "input": "examples/input/bakhtin-polyphony-check.md",
+      "purpose": "Check if Bakhtin agent flags a monological interpretation of Dostoevsky.",
+      "default_styles": [
+        "lit_bakhtin"
+      ],
+      "expected_risks": [
+        "monologism",
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "monologism"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "iesh-sound-law",
+      "input": "examples/input/iesh-sound-law.md",
+      "purpose": "Check if IESH agent flags a violation of known Slavic sound laws (polnoglasie, palatalization).",
+      "default_styles": [
+        "ling_iesh",
+        "tronsky-readings"
+      ],
+      "expected_risks": [
+        "unsupported_etymology",
+        "missing_historical_forms"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "unsupported_etymology"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "tsh-universal-check",
+      "input": "examples/input/tsh-universal-check.md",
+      "purpose": "Check if TSH agent flags a false claim about absolute language universals.",
+      "default_styles": [
+        "ling_tsh"
+      ],
+      "expected_risks": [
+        "overgeneralization"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "overgeneralization"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "pfg-field-boundary",
+      "input": "examples/input/pfg-field-boundary.md",
+      "purpose": "Check if PFG agent corrects a confusion between center and periphery in a functional field.",
+      "default_styles": [
+        "ling_pfg"
+      ],
+      "expected_risks": [
+        "weak_classification"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "weak_classification"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "nss-cliche-check",
+      "input": "examples/input/nss-cliche-check.md",
+      "purpose": "Check if NSS agent flags bureaucratic cliches in a scholarly text.",
+      "default_styles": [
+        "ling_nss"
+      ],
+      "expected_risks": [
+        "wordiness",
+        "style_mismatch"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "wordiness"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "opoyaz-structural-clash",
+      "input": "examples/input/opoyaz-structural-clash.md",
+      "purpose": "Check if OPOYAZ agent flags psychological substitution instead of formal analysis.",
+      "default_styles": [
+        "lit_opoyaz"
+      ],
+      "expected_risks": [
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "reductive_interpretation"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "mythopoetics-symbol-check",
+      "input": "examples/input/mythopoetics-symbol-check.md",
+      "purpose": "Check if Mythopoetics agent flags literalization of a cultural symbol.",
+      "default_styles": [
+        "lit_mythopoetics"
+      ],
+      "expected_risks": [
+        "loss_of_conceptual_nuance"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "loss_of_conceptual_nuance"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "narratology-plot-hole",
+      "input": "examples/input/narratology-plot-hole.md",
+      "purpose": "Check if Narratology agent flags confusion between diegetic and extra-diegetic levels.",
+      "default_styles": [
+        "lit_narratology"
+      ],
+      "expected_risks": [
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "reductive_interpretation"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "reception-audience-neglect",
+      "input": "examples/input/reception-audience-neglect.md",
+      "purpose": "Check if Reception agent flags negation of the reader's role in meaning construction.",
+      "default_styles": [
+        "lit_reception"
+      ],
+      "expected_risks": [
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "reductive_interpretation"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "zaliznyak-evidence-hierarchy",
+      "input": "examples/input/zaliznyak-evidence-hierarchy.md",
+      "purpose": "Check if Zaliznyak agent protects the hierarchy of evidence (primary source over late dictionary).",
+      "default_styles": [
+        "zaliznyak-method",
+        "ling_iesh"
+      ],
+      "expected_risks": [
+        "weak_evidence_for_dating",
+        "unsupported_etymology"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "weak_evidence_for_dating"
+        ],
+        "min_required_matches": 1
+      }
     }
   ]
 }

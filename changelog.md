@@ -1,37 +1,21 @@
-# Changelog
+# Changelog: RuWritingStyles Agent Engineering
 
-All notable changes to the RuWritingStyles project will be documented in this file.
+Все изменения в архитектуре агентов, эвалах и системе стилей фиксируются здесь.
 
-## [Unreleased] - 2026-05-07
+## [2026-05-08] - Инициализация Gemini-Ready Plan
 
-### Added
-- `schemas/manifest.schema.json`: New schema for the style manifest.
-- `schemas/eval-manifest.schema.json`: New schema for the evaluation suite manifest.
+### Добавлено
+- `GEMINI_ROADMAP.md`: Персонализированный план развития агентной системы на базе 17 филологических кластеров.
+- `AGENTS.md`: Инструкции для ИИ-ассистентов по работе с проектом.
+- **G-01/L-01**: Полностью завершено создание 17 кластеров (8 лингвистических + 9 литературоведческих).
+- **G-07**: Создана схема `schemas/run.schema.json` с поддержкой 17 доменов текста.
+- **G-04**: Реализован механизм динамических весов в `Council`. Теперь агенты стилей получают +50% к весу, если их научная школа совпадает с доменом текста (`text_domain`).
+- Обновлены `config.py` и `council.py` для поддержки новой иерархической модели и метаданных запуска.
 
-### Changed
-- `tools/validate_project.py`: Upgraded to a robust, zero-dependency validation script with a custom YAML parser and full JSON Schema support.
-- Expanded repository validation to include every style passport and model policy file.
+- **G-03**: Реализован механизм `Style Architect` в `generation.py`. Теперь система может генерировать паспорта на основе описания и примеров текста.
+- **L-04**: Сгенерированы и интегрированы 4 "Золотых стиля": Аверинцев, Гаспаров, Мельчук и Общий метод Зализняка.
+- **G-05**: Начат сбор `Golden Dataset`. Добавлено 5 новых кейсов (всего 8), включая проверку стихосложения (Гаспаров) и защиту эпистемической модальности (Аверинцев).
 
-## [Unreleased] - 2026-05-07
-
-### Added
-- HTML Report: Side-by-side document comparison view (Original vs Revised).
-- HTML Report: Council decisions now displayed as stylized status cards instead of a plain table.
-- HTML Report: Modernized UI with CSS Grid, improved typography, and interactive hover states.
-- Eval Scoring: Added `strict_fidelity` check to fail cases if verification produces warnings.
-- Eval Scoring: Added `max_finding_count` limit to catch hallucination/over-reporting.
-- Eval Manifest: Updated `pseudo-etymology` case to enforce strict factual fidelity.
-- Council Logic: Upgraded deliberation system with archetypes and conflict resolution strategies.
-- Council Logic: Findings are now grouped by `span_id` in the prompt for easier cross-style comparison.
-- Council Logic: Introduced `_style_weight` to help the council weigh different style authoritativeness.
-- Manifest Schema: Added `weight` to style passports and a `council` configuration block.
-- Fact-Checking Loop: Implemented iterative refinement loop in `rws run` and `eval-run`.
-- Fact-Checking Loop: Council prompt now accepts verification feedback to address factual regressions.
-- Fact-Checking Loop: Added `--max-iterations` argument to control the depth of recursive improvement.
-- Multi-turn Deliberation: Introduced a cross-style "debate" phase where agents critique each other's findings.
-- Multi-turn Deliberation: Council Coordinator now synthesizes both initial reviews and cross-agent deliberation replies.
-- Multi-turn Deliberation: Added `--deliberate` flag to all run commands and a standalone `rws deliberate` utility.
-
-### Task 3: Real-world provider validation
-- Blocked by: Missing API keys for OpenAI, Anthropic, and Google.
-- Readiness: All adapters (urllib-based) are implemented and passed code review.
+### Запланировано
+- Доведение `Golden Dataset` до 30+ кейсов.
+- Реализация матрицы парадигматических конфликтов (напр. ОПОЯЗ vs Бахтин).

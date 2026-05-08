@@ -3,6 +3,8 @@ name: Tronsky-Readings
 source_prompt: ClaudeStyles/tronsky-readings-style.md
 role: source_critical_reviewer
 language: ru
+level: private
+cluster: iesh
 
 best_for:
   - короткая специальная филологическая статья
