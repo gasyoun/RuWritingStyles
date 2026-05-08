@@ -103,6 +103,31 @@
           }
         }
       }
+    },
+    "stylistic_commitments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["term", "decision", "rationale"],
+        "additionalProperties": false,
+        "properties": {
+          "term": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string"
+          },
+          "rationale": {
+            "type": "string"
+          },
+          "translations": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      }
     }
   }
 }

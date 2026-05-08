@@ -1,31 +1,4 @@
-import React, { useState, useEffect } from 'react'
-
-const MOCK_RUNS = [
-  { id: 'etymology-check-1', source: 'pseudo-etymology.md', date: '2026-05-07' },
-  { id: 'scholarly-review-2', source: 'article-zaliznyak.md', date: '2026-05-07' },
-  { id: 'archival-migration-3', source: 'notes-19th-century.md', date: '2026-05-06' }
-];
-
-const MOCK_AGENTS = [
-  { id: 'coordinator', name: 'Council Coordinator', status: 'Deliberating...' },
-  { id: 'critic', name: 'The Rigorous Critic', status: 'Reviewing matches' },
-  { id: 'mentor', name: 'The Scholarly Mentor', status: 'Verifying tone' }
-];
-
-const MOCK_ORIGINAL = `
-Этимология слова "собака" в русском языке часто вызывает споры. 
-Некоторые считают, что оно заимствовано из иранских языков, 
-другие указывают на тюркские корни. 
-В любительской лингвистике популярна версия о связи со словом "собь".
-`;
-
-const MOCK_REVISED = `
-Этимология лексемы «собака» в русском языке остается предметом академической дискуссии. 
-Традиционная гипотеза возводит данную форму к иранским источникам (ср. авест. spaka), 
-в то время как тюркская версия признается менее обоснованной. 
-Версии любительской лингвистике, постулирующие связь с праславянским *sobь, 
-лишены системных филологических оснований.
-`;
+import { useCallback, useEffect, useState } from 'react'
 
 function App() {
   const [runs, setRuns] = useState([]);
@@ -37,21 +10,23 @@ function App() {
   const [newRunPath, setNewRunPath] = useState('C:\\Users\\user\\Documents\\GitHub\\RuWritingStyles\\article.md');
 
   // 1. Fetch Runs List
-  const fetchRuns = () => {
+  const fetchRuns = useCallback(() => {
     fetch('http://localhost:8000/runs')
       .then(res => res.json())
       .then(data => {
         setRuns(data);
-        if (data.length > 0 && !activeRunId) setActiveRunId(data[0]);
+        if (data.length > 0) {
+          setActiveRunId(current => current || data[0]);
+        }
       });
-  };
+  }, []);
 
   useEffect(() => {
     fetchRuns();
     fetch('http://localhost:8000/status')
       .then(res => res.json())
       .then(data => setSystemStatuses(data));
-  }, []);
+  }, [fetchRuns]);
 
   // 2. Fetch Active Run Data
   useEffect(() => {

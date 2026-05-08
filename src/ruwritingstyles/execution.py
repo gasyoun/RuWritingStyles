@@ -173,6 +173,8 @@ def execute_verification_artifact(*, repo_root: Path, verification_path: Path, p
 
 def execute_impact_artifact(*, repo_root: Path, impact_path: Path, provider: BaseProvider, model: str | None = None) -> None:
     impact = _load_json(impact_path)
+    if impact.get("status") != "prompt_ready":
+        return
     prompt_path = repo_root / str(impact["prompt_path"])
     output = _generate_with_log(
         repo_root=repo_root,

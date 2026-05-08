@@ -206,7 +206,7 @@ def load_model_routes(repo_root: Path) -> tuple[ModelRoute, ...]:
             )
 
     for line in _read(path).splitlines():
-        provider_match = re.match(r"^\s{2}(openai|google|anthropic):\s*$", line)
+        provider_match = re.match(r"^\s{2}(openai|google|anthropic|openrouter):\s*$", line)
         task_routes_match = re.match(r"^\s{4}task_routes:\s*$", line)
         task_match = re.match(r"^\s{6}([a-z_]+):\s*$", line)
         field_match = re.match(r"^\s{8}(model|reasoning|thinking):\s*['\"]?([^'\"\n]+?)['\"]?\s*$", line)

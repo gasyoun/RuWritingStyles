@@ -15,7 +15,7 @@ class CouncilBundle:
     prompt_md: Path
 
 
-from .config import CouncilArchetype, Manifest, load_archetypes
+from .config import CouncilArchetype, CouncilConfig, Manifest, load_archetypes
 from .knowledge import search_knowledge_base, extract_keywords_from_reviews
 
 def create_council_bundle(
@@ -209,16 +209,16 @@ The following data was retrieved from the project's philological knowledge base.
 {external_research}
 """
 
-    mission_instructions = chosen_archetype.instructions if chosen_archetype else "Read the style review findings, compare advice across styles, and return a structured council result."
-    personality_desc = f"Personality: {chosen_archetype.description}" if chosen_archetype else ""
+    mission_instructions = archetype.instructions if archetype else "Read the style review findings, compare advice across styles, and return a structured council result."
+    personality_desc = f"Personality: {archetype.description}" if archetype else ""
 
     weights_json = "{}"
-    if chosen_archetype and chosen_archetype.weights:
-        weights_json = json.dumps(chosen_archetype.weights, ensure_ascii=False, indent=2)
+    if archetype and archetype.weights:
+        weights_json = json.dumps(archetype.weights, ensure_ascii=False, indent=2)
 
     return f"""# Council Request
 
-You are the RuWritingStyles council: `{chosen_archetype.name if chosen_archetype else manifest.council.archetype if manifest.council else "The Coordinator"}`.
+You are the RuWritingStyles council: `{archetype.name if archetype else manifest.council.archetype if manifest.council else "The Coordinator"}`.
 {personality_desc}
 
 ## Your Mission

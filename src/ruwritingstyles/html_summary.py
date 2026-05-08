@@ -260,33 +260,33 @@ def _page(title: str, body: str) -> str:
     .accepted .decision-status {{ color: #2e7d32; }}
     .rejected .decision-status {{ color: #c62828; }}
     
-    .diff-table {
+    .diff-table {{
       display: flex;
       flex-direction: column;
       font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
       font-size: 13px;
       line-height: 20px;
-    }
-    .diff-line {
+    }}
+    .diff-line {{
       display: grid;
       grid-template-columns: 1fr 1fr;
       border-bottom: 1px solid rgba(0,0,0,0.05);
-    }
-    .diff-line:last-child { border-bottom: none; }
-    .diff-line > div {
+    }}
+    .diff-line:last-child {{ border-bottom: none; }}
+    .diff-line > div {{
       padding: 4px 8px;
       white-space: pre-wrap;
       word-break: break-all;
-    }
-    .diff-line .orig { border-right: 1px solid var(--line); background: rgba(0,0,0,0.01); }
-    .diff-line.delete .orig { background: #ffeef0; }
-    .diff-line.insert .rev { background: #e6ffed; }
-    .diff-line.replace .orig { background: #fff5b1; }
-    .diff-line.replace .rev { background: #e6ffed; }
-    .del { background: #fdb8c0; text-decoration: line-through; }
-    .ins { background: #acf2bd; font-weight: bold; cursor: pointer; transition: background 0.2s; position: relative; }
-    .ins:hover { background: #96e0ab; }
-    .ins:hover::after {
+    }}
+    .diff-line .orig {{ border-right: 1px solid var(--line); background: rgba(0,0,0,0.01); }}
+    .diff-line.delete .orig {{ background: #ffeef0; }}
+    .diff-line.insert .rev {{ background: #e6ffed; }}
+    .diff-line.replace .orig {{ background: #fff5b1; }}
+    .diff-line.replace .rev {{ background: #e6ffed; }}
+    .del {{ background: #fdb8c0; text-decoration: line-through; }}
+    .ins {{ background: #acf2bd; font-weight: bold; cursor: pointer; transition: background 0.2s; position: relative; }}
+    .ins:hover {{ background: #96e0ab; }}
+    .ins:hover::after {{
       content: "Click to Discard";
       position: absolute;
       bottom: 100%;
@@ -299,16 +299,16 @@ def _page(title: str, body: str) -> str:
       font-size: 10px;
       white-space: nowrap;
       z-index: 10;
-    }
-    .ins.discarded {
+    }}
+    .ins.discarded {{
       background: #eee !important;
       color: #aaa;
       text-decoration: line-through;
       font-weight: normal;
-    }
-    .ins.discarded::after { content: "Click to Restore"; }
+    }}
+    .ins.discarded::after {{ content: "Click to Restore"; }}
 
-    .resolution-toolbar {
+    .resolution-toolbar {{
       position: fixed;
       bottom: 24px;
       right: 24px;
@@ -322,9 +322,9 @@ def _page(title: str, body: str) -> str:
       flex-direction: column;
       gap: 12px;
       width: 280px;
-    }
-    .resolution-toolbar.active { display: flex; }
-    .btn-save {
+    }}
+    .resolution-toolbar.active {{ display: flex; }}
+    .btn-save {{
       background: var(--accent);
       color: #fff;
       border: none;
@@ -332,25 +332,25 @@ def _page(title: str, body: str) -> str:
       border-radius: 8px;
       font-weight: bold;
       cursor: pointer;
-    }
-    .btn-save:hover { opacity: 0.9; }
+    }}
+    .btn-save:hover {{ opacity: 0.9; }}
 
-    table {
+    table {{
       width: 100%;
       border-collapse: collapse;
       min-width: 560px;
-    }
-    th, td {
+    }}
+    th, td {{
       padding: 12px 14px;
       border-bottom: 1px solid var(--line);
       text-align: left;
       vertical-align: top;
-    }
-    th {
+    }}
+    th {{
       color: var(--muted);
       font-size: 0.8rem;
       text-transform: uppercase;
-    }
+    }}
     @media (max-width: 560px) {{
       main {{
         width: min(100%% - 20px, 1120px);
