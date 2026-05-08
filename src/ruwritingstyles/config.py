@@ -9,8 +9,10 @@ is planned in the roadmap.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 import re
 from pathlib import Path
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -20,7 +22,17 @@ class StylePassportRef:
     style_id: str
     path: Path
     source_prompt: Path
+    cluster_id: str | None = None
     weight: float = 1.0
+
+
+@dataclass(frozen=True)
+class ClusterConfig:
+    """A stylistic cluster (school)."""
+    id: str
+    path: Path
+    name: str
+    domains: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -47,6 +59,7 @@ class Manifest:
 
     path: Path
     mvp_style_ids: tuple[str, ...]
+    clusters: tuple[ClusterConfig, ...]
     passports: tuple[StylePassportRef, ...]
     council: CouncilConfig | None = None
 
@@ -121,13 +134,29 @@ def load_manifest(repo_root: Path) -> Manifest:
     text = _read(path)
 
     mvp_style_ids = _list_items(_block(text, "mvp_style_ids"))
+    
+    clusters_block = _block(text, "clusters")
+    clusters: list[ClusterConfig] = []
+    current_cluster: dict[str, str] = {}
+    for line in clusters_block.splitlines():
+        item_match = re.match(r"^\s*-\s+id:\s*['\"]?([^'\"\n]+?)['\"]?\s*$", line)
+        field_match = re.match(r"^\s+(path|name):\s*['\"]?([^'\"\n]+?)['\"]?\s*$", line)
+        if item_match:
+            if current_cluster:
+                clusters.append(_cluster_config(repo_root, current_cluster))
+            current_cluster = {"id": item_match.group(1).strip()}
+        elif field_match and current_cluster:
+            current_cluster[field_match.group(1)] = field_match.group(2).strip()
+    if current_cluster:
+        clusters.append(_cluster_config(repo_root, current_cluster))
+
     passports_block = _block(text, "passports")
     entries: list[StylePassportRef] = []
     current: dict[str, str] = {}
 
     for line in passports_block.splitlines():
         item_match = re.match(r"^\s*-\s+id:\s*['\"]?([^'\"\n]+?)['\"]?\s*$", line)
-        field_match = re.match(r"^\s+(path|source_prompt):\s*['\"]?([^'\"\n]+?)['\"]?\s*$", line)
+        field_match = re.match(r"^\s+(path|source_prompt|cluster):\s*['\"]?([^'\"\n]+?)['\"]?\s*$", line)
 
         if item_match:
             if current:
@@ -153,7 +182,29 @@ def load_manifest(repo_root: Path) -> Manifest:
             ),
         )
 
-    return Manifest(path=path, mvp_style_ids=mvp_style_ids, passports=tuple(entries), council=council)
+    return Manifest(
+        path=path, 
+        mvp_style_ids=mvp_style_ids, 
+        clusters=tuple(clusters),
+        passports=tuple(entries), 
+        council=council
+    )
+
+
+def _cluster_config(repo_root: Path, data: dict[str, str]) -> ClusterConfig:
+    path = repo_root / data["path"]
+    text = _read(path)
+    domains_match = re.search(r"^domains:\s*\[(.*?)\]", text, re.MULTILINE)
+    domains = ()
+    if domains_match:
+        domains = tuple(d.strip().strip("'\"") for d in domains_match.group(1).split(",") if d.strip())
+    
+    return ClusterConfig(
+        id=data["id"],
+        path=path,
+        name=data.get("name", data["id"]),
+        domains=domains,
+    )
 
 
 def _passport_ref(repo_root: Path, data: dict[str, str]) -> StylePassportRef:
@@ -165,6 +216,7 @@ def _passport_ref(repo_root: Path, data: dict[str, str]) -> StylePassportRef:
         style_id=data["id"],
         path=repo_root / data["path"],
         source_prompt=repo_root / data["source_prompt"],
+        cluster_id=data.get("cluster"),
         weight=float(data.get("weight", "1.0")),
     )
 
@@ -245,7 +297,7 @@ def load_archetypes(repo_root: Path) -> tuple[CouncilArchetype, ...]:
     archetypes: list[CouncilArchetype] = []
     # Simplified parser for the archetypes block
     lines = text.splitlines()
-    current: dict[str, Any] = {}
+    current: dict[Any, Any] = {}
     
     i = 0
     while i < len(lines):
@@ -308,6 +360,17 @@ def load_passport_summaries(repo_root: Path, manifest: Manifest | None = None) -
         )
 
     return tuple(summaries)
+
+
+def load_run_metadata(run_dir: Path) -> dict[str, Any]:
+    """Load run metadata from run.json in the run directory."""
+    path = run_dir / "run.json"
+    if not path.exists():
+        return {"text_domain": "unknown"}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"text_domain": "unknown"}
 
 
 def repo_root_from(start: Path | None = None) -> Path:

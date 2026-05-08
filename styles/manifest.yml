@@ -1,55 +1,131 @@
-version: "0.1"
+version: "0.2"
 schema: "../schemas/style.schema.json"
-description: "Machine-readable index of RuWritingStyles style passports."
+description: "Hierarchical index of RuWritingStyles style clusters and passports."
 
-mvp_style_ids:
-  - zalizniak-ocherk
-  - zalizniak-zametki
-  - tronsky-readings
-
-council:
-  archetype: "The Conciliator"
-  conflict_resolution_strategy: "Favor foundational linguistic accuracy (Zalizniak) for structure, and historical context (Tronsky) for semantic nuance."
+clusters:
+  - id: ling_iesh
+    path: styles/clusters/ling_iesh.yml
+    name: "Историко-этимологическая школа"
+  - id: ling_mss
+    path: styles/clusters/ling_mss.yml
+    name: "Московская Семантическая Школа"
+  - id: ling_mts
+    path: styles/clusters/ling_mts.yml
+    name: "Московско-Тартуская школа"
+  - id: ling_nss
+    path: styles/clusters/ling_nss.yml
+    name: "Нормативно-стилистическая школа"
+  - id: ling_pfg
+    path: styles/clusters/ling_pfg.yml
+    name: "Петербургская Функциональная Грамматика"
+  - id: ling_tsh
+    path: styles/clusters/ling_tsh.yml
+    name: "Типологическая Школа"
+  - id: ling_kmsh
+    path: styles/clusters/ling_kmsh.yml
+    name: "Когнитивно-Метафорическая Школа"
+  - id: ling_dss
+    path: styles/clusters/ling_dss.yml
+    name: "Диалектологическая Школа"
+  - id: lit_opoyaz
+    path: styles/clusters/lit_opoyaz.yml
+    name: "ОПОЯЗ"
+  - id: lit_structural
+    path: styles/clusters/lit_structural.yml
+    name: "Литературоведческий структурализм"
+  - id: lit_textology
+    path: styles/clusters/lit_textology.yml
+    name: "Текстология"
+  - id: lit_mythopoetics
+    path: styles/clusters/lit_mythopoetics.yml
+    name: "Мифопоэтика"
+  - id: lit_narratology
+    path: styles/clusters/lit_narratology.yml
+    name: "Нарратология"
+  - id: lit_bakhtin
+    path: styles/clusters/lit_bakhtin.yml
+    name: "Бахтинская школа"
+  - id: lit_historico_cultural
+    path: styles/clusters/lit_historico_cultural.yml
+    name: "Историко-культурная школа"
+  - id: lit_reception
+    path: styles/clusters/lit_reception.yml
+    name: "Рецептивная эстетика"
+  - id: lit_poststructural
+    path: styles/clusters/lit_poststructural.yml
+    name: "Постструктурализм"
 
 passports:
-  - id: albedil-sbornik
-    path: styles/passports/albedil-sbornik.yml
-    source_prompt: ClaudeStyles/albedil-sbornik-style.md
-  - id: kazanskiy-korpus
-    path: styles/passports/kazanskiy-korpus.yml
-    source_prompt: ClaudeStyles/kazanskiy-korpus-style.md
-  - id: lidova-commentary
-    path: styles/passports/lidova-commentary.yml
-    source_prompt: ClaudeStyles/lidova-commentary-style.md
-  - id: tronsky-readings
-    path: styles/passports/tronsky-readings.yml
-    source_prompt: ClaudeStyles/tronsky-readings-style.md
-    weight: 1.2
-  - id: zalizniak-enklitiki
-    path: styles/passports/zalizniak-enklitiki.yml
-    source_prompt: ClaudeStyles/zalizniak-enklitiki-style.md
-  - id: zalizniak-imennoe
-    path: styles/passports/zalizniak-imennoe.yml
-    source_prompt: ClaudeStyles/zalizniak-imennoe-style.md
   - id: zalizniak-ocherk
     path: styles/passports/zalizniak-ocherk.yml
-    source_prompt: ClaudeStyles/zalizniak-ocherk-style.md
+    level: private
+    cluster: ling_iesh
     weight: 1.5
-  - id: zalizniak-shkolnikov-1
-    path: styles/passports/zalizniak-shkolnikov-1.yml
-    source_prompt: ClaudeStyles/zalizniak-shkolnikov_1-style.md
-  - id: zalizniak-slovo
-    path: styles/passports/zalizniak-slovo.yml
-    source_prompt: ClaudeStyles/zalizniak-slovo-style.md
-  - id: zalizniak-udarenie
-    path: styles/passports/zalizniak-udarenie.yml
-    source_prompt: ClaudeStyles/zalizniak-udarenie-style.md
   - id: zalizniak-zametki
     path: styles/passports/zalizniak-zametki.yml
-    source_prompt: ClaudeStyles/zalizniak-zametki-style.md
+    level: private
+    cluster: ling_iesh
   - id: zaliznyak-novgorod
     path: styles/passports/zaliznyak-novgorod.yml
-    source_prompt: ClaudeStyles/zaliznyak-novgorod-style.md
+    level: private
+    cluster: ling_iesh
+  - id: zalizniak-udarenie
+    path: styles/passports/zalizniak-udarenie.yml
+    level: private
+    cluster: ling_mss
+  - id: zalizniak-enklitiki
+    path: styles/passports/zalizniak-enklitiki.yml
+    level: private
+    cluster: ling_mts
+  - id: zalizniak-imennoe
+    path: styles/passports/zalizniak-imennoe.yml
+    level: private
+    cluster: ling_mts
+  - id: zalizniak-slovo
+    path: styles/passports/zalizniak-slovo.yml
+    level: private
+    cluster: ling_iesh
+  - id: zalizniak-shkolnikov-1
+    path: styles/passports/zalizniak-shkolnikov-1.yml
+    level: private
+    cluster: ling_nss
+  - id: tronsky-readings
+    path: styles/passports/tronsky-readings.yml
+    level: private
+    cluster: ling_iesh
+    weight: 1.2
+  - id: albedil-sbornik
+    path: styles/passports/albedil-sbornik.yml
+    level: private
+    cluster: ling_mts
+  - id: kazanskiy-korpus
+    path: styles/passports/kazanskiy-korpus.yml
+    level: private
+    cluster: ling_mts
+  - id: averintsev
+    path: styles/passports/averintsev.yml
+    level: private
+    cluster: lit_historico_cultural
+    weight: 1.3
+  - id: gasparov
+    path: styles/passports/gasparov.yml
+    level: private
+    cluster: lit_structural
+    weight: 1.3
+  - id: melchuk
+    path: styles/passports/melchuk.yml
+    level: private
+    cluster: ling_mss
+    weight: 2.0
+  - id: zaliznyak-method
+    path: styles/passports/zaliznyak-method.yml
+    level: private
+    cluster: ling_iesh
+    weight: 2.0
+  - id: lidova-commentary
+    path: styles/passports/lidova-commentary.yml
+    level: private
+    cluster: ling_mts
 
 available_style_sources:
   - id: albedil-sbornik

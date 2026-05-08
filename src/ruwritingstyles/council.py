@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 from pathlib import Path
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -15,7 +16,7 @@ class CouncilBundle:
     prompt_md: Path
 
 
-from .config import CouncilArchetype, CouncilConfig, Manifest, load_archetypes
+from .config import CouncilArchetype, CouncilConfig, Manifest, load_archetypes, load_run_metadata
 from .knowledge import search_knowledge_base, extract_keywords_from_reviews
 
 def create_council_bundle(
@@ -62,6 +63,9 @@ def create_council_bundle(
 
     segments_doc = json.loads(segments_path.read_text(encoding="utf-8"))
     run_id = str(segments_doc.get("run_id") or run_dir.name)
+    
+    run_metadata = load_run_metadata(run_dir)
+    text_domain = run_metadata.get("text_domain", "unknown")
 
     prompt_path = run_dir / "council.prompt.md"
     council_path = run_dir / "council.json"
@@ -81,6 +85,7 @@ def create_council_bundle(
             external_research=external_research,
             manifest=manifest,
             archetype=chosen_archetype,
+            text_domain=text_domain,
             verification_feedback=verification_feedback,
         ),
         encoding="utf-8",
@@ -112,6 +117,26 @@ def _load_review(path: Path) -> dict[str, object]:
     return data
 
 
+def get_cluster_weights(manifest: Manifest, text_domain: str) -> dict[str, float]:
+    """Calculate style weights based on cluster domain matching."""
+    base_weights = {ref.style_id: ref.weight for ref in manifest.passports}
+    if text_domain == "unknown":
+        return base_weights
+    
+    # Map cluster_id to domains
+    cluster_domains = {c.id: c.domains for c in manifest.clusters}
+    
+    adjusted_weights = {}
+    for ref in manifest.passports:
+        weight = ref.weight
+        if ref.cluster_id and text_domain in cluster_domains.get(ref.cluster_id, ()):
+            # Boost weight by 1.5x if it matches the text domain
+            weight *= 1.5
+        adjusted_weights[ref.style_id] = weight
+        
+    return adjusted_weights
+
+
 def _render_prompt(
     *,
     repo_root: Path,
@@ -125,9 +150,10 @@ def _render_prompt(
     external_research: str,
     manifest: Manifest,
     archetype: CouncilArchetype | None,
+    text_domain: str = "unknown",
     verification_feedback: dict[str, Any] | None = None,
 ) -> str:
-    weights = {ref.style_id: ref.weight for ref in manifest.passports}
+    weights = get_cluster_weights(manifest, text_domain)
     council_config = manifest.council or CouncilConfig("Coordinator", "Neutral deliberation.")
 
     # Group findings by span for the prompt
@@ -212,9 +238,7 @@ The following data was retrieved from the project's philological knowledge base.
     mission_instructions = archetype.instructions if archetype else "Read the style review findings, compare advice across styles, and return a structured council result."
     personality_desc = f"Personality: {archetype.description}" if archetype else ""
 
-    weights_json = "{}"
-    if archetype and archetype.weights:
-        weights_json = json.dumps(archetype.weights, ensure_ascii=False, indent=2)
+    weights_json = json.dumps(weights, ensure_ascii=False, indent=2)
 
     return f"""# Council Request
 
@@ -300,15 +324,11 @@ Style agents have reviewed each other's findings. Use these replies to understan
 
 ## Findings Grouped By Span
 
-```json
 {grouped_findings_json}
-```
 
 ## Segments JSON
 
-```json
 {segments_json.strip()}
-```
 """
 
 
