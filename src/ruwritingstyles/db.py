@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -19,9 +20,18 @@ class Database:
         conn.row_factory = sqlite3.Row
         return conn
 
+    @contextmanager
+    def _connection(self):
+        conn = self._get_connection()
+        try:
+            with conn:
+                yield conn
+        finally:
+            conn.close()
+
     def _init_db(self):
         """Initialize the database schema."""
-        with self._get_connection() as conn:
+        with self._connection() as conn:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS runs (
                     run_id TEXT PRIMARY KEY,
@@ -76,7 +86,9 @@ class Database:
 
     def register_run(self, run_id: str, input_path: str, provider: str, model: str | None = None, archetype: str | None = None):
         """Create a new run entry."""
-        with self._get_connection() as conn:
+        with self._connection() as conn:
+            conn.execute("DELETE FROM run_metrics WHERE run_id = ?", (run_id,))
+            conn.execute("DELETE FROM runs WHERE run_id = ?", (run_id,))
             conn.execute(
                 "INSERT INTO runs (run_id, input_path, provider, model, archetype) VALUES (?, ?, ?, ?, ?)",
                 (run_id, input_path, provider, model, archetype)
@@ -84,7 +96,7 @@ class Database:
 
     def update_run_status(self, run_id: str, status: str, summary: str | None = None):
         """Update the status of an existing run and track timestamps."""
-        with self._get_connection() as conn:
+        with self._connection() as conn:
             now = datetime.now(timezone.utc).isoformat()
             
             if status == "executing":
@@ -127,7 +139,7 @@ class Database:
 
     def save_metric(self, run_id: str, metric_type: str, data: Any):
         """Save a metric (e.g., bloom_stats, compass) as JSON."""
-        with self._get_connection() as conn:
+        with self._connection() as conn:
             # Upsert logic for metrics of same type for same run
             conn.execute(
                 "DELETE FROM run_metrics WHERE run_id = ? AND metric_type = ?",
@@ -140,7 +152,7 @@ class Database:
 
     def get_run(self, run_id: str) -> dict[str, Any] | None:
         """Retrieve full run details including metrics."""
-        with self._get_connection() as conn:
+        with self._connection() as conn:
             row = conn.execute("SELECT * FROM runs WHERE run_id = ?", (run_id,)).fetchone()
             if not row:
                 return None
@@ -156,11 +168,11 @@ class Database:
 
     def list_runs(self, limit: int = 50) -> list[dict[str, Any]]:
         """List recent runs."""
-        with self._get_connection() as conn:
+        with self._connection() as conn:
             rows = conn.execute("SELECT * FROM runs ORDER BY created_at DESC LIMIT ?", (limit,)).fetchall()
             return [dict(row) for row in rows]
 
     def delete_run(self, run_id: str):
         """Delete a run and its associated metrics."""
-        with self._get_connection() as conn:
+        with self._connection() as conn:
             conn.execute("DELETE FROM runs WHERE run_id = ?", (run_id,))

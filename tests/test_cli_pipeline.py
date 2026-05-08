@@ -16,7 +16,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from ruwritingstyles.cli import main
-from ruwritingstyles.config import load_model_routes
+from ruwritingstyles.config import load_manifest, load_model_routes
 from ruwritingstyles.council_summary import load_council_summary, render_council_summary
 from ruwritingstyles.evals import load_eval_cases
 from ruwritingstyles.findings import load_finding_summaries, render_finding_summaries
@@ -32,6 +32,8 @@ from ruwritingstyles.provider_status import provider_statuses, provider_statuses
 from ruwritingstyles.schema_validation import validate_json_schema
 from ruwritingstyles.segment import normalize_document, segment_markdown
 from ruwritingstyles.validation import _load_schema_store, validate_provider_status_file
+
+CORE_EVAL_CASE_IDS = {"pseudo-etymology", "source-claim", "register-shift"}
 
 
 class SegmentTests(unittest.TestCase):
@@ -199,7 +201,7 @@ class SchemaValidationTests(unittest.TestCase):
 class EvalManifestTests(unittest.TestCase):
     def test_eval_manifest_loads_demo_case(self) -> None:
         cases = load_eval_cases(ROOT)
-        self.assertEqual({case.case_id for case in cases}, {"pseudo-etymology", "source-claim", "register-shift"})
+        self.assertTrue(CORE_EVAL_CASE_IDS.issubset({case.case_id for case in cases}))
         self.assertEqual(cases[0].case_id, "pseudo-etymology")
         self.assertTrue(cases[0].input_path.exists())
         self.assertIn("zalizniak-zametki", cases[0].default_styles)
@@ -225,33 +227,19 @@ class CliPipelineTests(unittest.TestCase):
     eval_suite_candidate_register_run_dir = ROOT / "runs" / "unittest-suite-candidate-register-shift"
     openai_missing_dir = ROOT / "runs" / "unittest-openai-missing"
 
+    def setUp(self) -> None:
+        self._remove_unittest_runs()
+
     def tearDown(self) -> None:
-        if self.run_dir.exists():
-            shutil.rmtree(self.run_dir)
-        if self.executed_run_dir.exists():
-            shutil.rmtree(self.executed_run_dir)
-        if self.demo_run_dir.exists():
-            shutil.rmtree(self.demo_run_dir)
-        if self.eval_run_dir.exists():
-            shutil.rmtree(self.eval_run_dir)
-        if self.eval_suite_dir.exists():
-            shutil.rmtree(self.eval_suite_dir)
-        if self.eval_suite_candidate_dir.exists():
-            shutil.rmtree(self.eval_suite_candidate_dir)
-        if self.eval_suite_case_run_dir.exists():
-            shutil.rmtree(self.eval_suite_case_run_dir)
-        if self.eval_suite_source_run_dir.exists():
-            shutil.rmtree(self.eval_suite_source_run_dir)
-        if self.eval_suite_register_run_dir.exists():
-            shutil.rmtree(self.eval_suite_register_run_dir)
-        if self.eval_suite_candidate_case_run_dir.exists():
-            shutil.rmtree(self.eval_suite_candidate_case_run_dir)
-        if self.eval_suite_candidate_source_run_dir.exists():
-            shutil.rmtree(self.eval_suite_candidate_source_run_dir)
-        if self.eval_suite_candidate_register_run_dir.exists():
-            shutil.rmtree(self.eval_suite_candidate_register_run_dir)
-        if self.openai_missing_dir.exists():
-            shutil.rmtree(self.openai_missing_dir)
+        self._remove_unittest_runs()
+
+    def _remove_unittest_runs(self) -> None:
+        runs_dir = ROOT / "runs"
+        if not runs_dir.exists():
+            return
+        for path in runs_dir.glob("unittest-*"):
+            if path.is_dir():
+                shutil.rmtree(path)
 
     def test_full_offline_run_creates_expected_artifacts(self) -> None:
         if self.run_dir.exists():
@@ -268,8 +256,8 @@ class CliPipelineTests(unittest.TestCase):
 
         reviews = sorted((self.run_dir / "reviews").glob("*.review.json"))
         prompts = sorted((self.run_dir / "reviews").glob("*.prompt.md"))
-        self.assertEqual(len(reviews), 3)
-        self.assertEqual(len(prompts), 3)
+        self.assertEqual(len(reviews), len(load_manifest(ROOT).mvp_style_ids))
+        self.assertEqual(len(prompts), len(load_manifest(ROOT).mvp_style_ids))
 
         segments = json.loads((self.run_dir / "segments.json").read_text(encoding="utf-8"))
         self.assertEqual(segments["segment_count"], len(segments["segments"]))
@@ -318,7 +306,7 @@ class CliPipelineTests(unittest.TestCase):
         self.assertEqual(exit_code, 0)
 
         reviews = sorted((self.executed_run_dir / "reviews").glob("*.review.json"))
-        self.assertEqual(len(reviews), 3)
+        self.assertEqual(len(reviews), len(load_manifest(ROOT).mvp_style_ids))
         for path in reviews:
             review = json.loads(path.read_text(encoding="utf-8"))
             self.assertEqual(review["status"], "completed")
@@ -327,13 +315,13 @@ class CliPipelineTests(unittest.TestCase):
 
         council = json.loads((self.executed_run_dir / "council.json").read_text(encoding="utf-8"))
         self.assertEqual(council["status"], "completed")
-        self.assertEqual(len(council["decisions"]), 3)
+        self.assertEqual(len(council["decisions"]), len(load_manifest(ROOT).mvp_style_ids))
         council_summary = render_council_summary(load_council_summary(self.executed_run_dir))
-        self.assertIn("decisions: 3", council_summary)
+        self.assertIn(f"decisions: {len(load_manifest(ROOT).mvp_style_ids)}", council_summary)
         self.assertIn("status=informational", council_summary)
         self.assertEqual(main(["council-summary", str(self.executed_run_dir)]), 0)
         provider_log_lines = (self.executed_run_dir / "provider.log.jsonl").read_text(encoding="utf-8").splitlines()
-        self.assertEqual(len(provider_log_lines), 6)
+        self.assertEqual(len(provider_log_lines), len(load_manifest(ROOT).mvp_style_ids) + 5)
         provider_log_entry = json.loads(provider_log_lines[0])
         self.assertEqual(provider_log_entry["provider"], "mock")
         self.assertEqual(provider_log_entry["status"], "completed")
@@ -341,11 +329,11 @@ class CliPipelineTests(unittest.TestCase):
         self.assertEqual(provider_log_entry["retry_delay_seconds"], 0.0)
         self.assertEqual(provider_log_entry["retry_statuses"], [])
         provider_log_summary = render_provider_log(load_provider_log(self.executed_run_dir))
-        self.assertIn("executions: 6", provider_log_summary)
+        self.assertIn(f"executions: {len(load_manifest(ROOT).mvp_style_ids) + 5}", provider_log_summary)
         self.assertIn("retries: 0", provider_log_summary)
         self.assertEqual(main(["provider-log", str(self.executed_run_dir)]), 0)
         summaries = load_finding_summaries(self.executed_run_dir, span_id="p002")
-        self.assertEqual(len(summaries), 3)
+        self.assertEqual(len(summaries), len(load_manifest(ROOT).mvp_style_ids))
         self.assertIn("Mock provider placeholder finding", render_finding_summaries(summaries))
         self.assertEqual(main(["findings", str(self.executed_run_dir), "--span", "p002"]), 0)
 
@@ -447,10 +435,12 @@ class CliPipelineTests(unittest.TestCase):
         )
         self.assertEqual(exit_code, 0)
         result = json.loads((self.eval_suite_dir / "eval-suite-result.json").read_text(encoding="utf-8"))
+        expected_cases = load_eval_cases(ROOT)
+        expected_case_ids = {case.case_id for case in expected_cases}
         self.assertEqual(result["suite_id"], "unittest-suite")
-        self.assertEqual(result["case_count"], 3)
-        self.assertEqual(result["failed_count"], 3)
-        self.assertEqual({row["case_id"] for row in result["results"]}, {"pseudo-etymology", "source-claim", "register-shift"})
+        self.assertEqual(result["case_count"], len(expected_cases))
+        self.assertEqual(result["failed_count"], len(expected_cases))
+        self.assertEqual({row["case_id"] for row in result["results"]}, expected_case_ids)
         report = (self.eval_suite_dir / "eval-suite-report.md").read_text(encoding="utf-8")
         self.assertIn("# Eval Suite: unittest-suite", report)
         self.assertIn("| pseudo-etymology | no |", report)
@@ -479,7 +469,7 @@ class CliPipelineTests(unittest.TestCase):
         )
         self.assertIn("# Eval Suite Comparison", comparison_path.read_text(encoding="utf-8"))
         comparison = json.loads(comparison_json_path.read_text(encoding="utf-8"))
-        self.assertEqual(comparison["case_count"], 3)
+        self.assertEqual(comparison["case_count"], len(load_eval_cases(ROOT)))
         self.assertEqual(comparison["pass_rate_delta"], 0.0)
         self.assertEqual(main(["eval-status", str(comparison_json_path)]), 0)
         schema_store = _load_schema_store(ROOT, [])

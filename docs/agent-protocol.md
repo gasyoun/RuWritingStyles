@@ -168,9 +168,11 @@
 
 - `original.md`;
 - `segments.json`;
-- минимум два файла `reviews/*.json`;
+- файлы `reviews/*.json` для выбранного набора стилей; текущий MVP-набор содержит 6 стилей;
 - `council.json`;
 - `revised.md`;
-- `report.md`.
+- `verification.json`;
+- `report.md`;
+- `summary.html`.
 
-Для первого MVP достаточно трех стилей и одного раунда ответов.
+При полном `rws run --execute` также ожидаются производные артефакты качества и академического аппарата: `impact.json`, `syntax.json`, `report.tex` и `references.bib`.

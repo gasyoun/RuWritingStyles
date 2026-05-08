@@ -28,6 +28,8 @@ This launches a visual workbench at `http://localhost:5173`.
 rws list-styles --mvp
 ```
 
+The MVP council set currently contains 6 style passports from `styles/manifest.yml`.
+
 ## 3. Run the demo document
 
 ```bash
@@ -50,7 +52,11 @@ runs/demo-pseudo-etymology/
   revised.md
   revision.diff
   verification.json
+  impact.json
+  syntax.json
 ```
+
+Runs launched through the Web/API full pipeline also write scholarly artifacts such as `report.tex` and `references.bib`.
 
 ## 4. Validate artifacts
 
@@ -79,9 +85,29 @@ To run the full eval manifest:
 rws eval-suite --provider mock --suite-id demo-suite
 ```
 
-The suite writes `eval-suite-result.json` and `eval-suite-report.md`. Add `--strict` when failed cases should make scripts return exit code `1`.
+The suite currently runs 33 cases and writes `eval-suite-result.json` and `eval-suite-report.md`. Add `--strict` when failed cases should make scripts return exit code `1`.
 
-The mock provider is deterministic and only proves that the pipeline works. Use a real provider for substantive findings:
+The mock provider is deterministic. It is useful for checking schemas, file outputs, reports and orchestration; it is not a substantive philological quality signal.
+
+## 5. Local verification checks
+
+Before committing infrastructure or schema changes, run:
+
+```bash
+python -m compileall -q src tools tests
+python tools/validate_project.py
+python -m unittest discover -s tests
+```
+
+For Web Studio changes:
+
+```bash
+cd web
+npm run lint
+npm run build
+```
+
+Use a real provider for substantive findings:
 
 ```bash
 cp .env.example .env

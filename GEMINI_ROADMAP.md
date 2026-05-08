@@ -6,7 +6,7 @@
 - **Уровень**: Сложная многоагентная система (Council + Verifier).
 - **Стек**: Python + JSON Schema + Markdown Styles.
 - **Цель**: Создание "Gemini-Ready" филологической лаборатории с 17+ кластерами стилей.
-- **Текущая Фаза**: Фаза 3 (Custom Harness) -> Фаза 4 (Evals).
+- **Текущая Фаза**: v2.2.1 stabilization после Фазы H: схемы, Docker/runtime, Web build, Windows CLI и eval/test discipline синхронизированы.
 
 ## План внедрения (17 кластеров)
 
@@ -27,7 +27,7 @@
 - [x] Верифицировать паспорта на реальных текстах (через `eval-suite`).
 
 ### Фаза D: Филологические Эвалы (Шаги G-05, G-06, L-05)
-- [x] Создать Golden Dataset (34/30+ кейсов готово).
+- [x] Создать Golden Dataset и расширенный eval manifest (33 кейса готово).
 - [x] Внедрить Adversarial Evals (защита "эпистемической осторожности").
 - [x] Настроить CI gate на основе `rws eval-suite`.
 
@@ -51,15 +51,17 @@
 - [x] Поддержка локальных LLM (Ollama/vLLM) для режима Privacy Mode.
 - [x] Реализация профилей «Исследователь», «Редактор», «Студент» с профильными инструкциями.
 
-### Фаза H: Филологическое Масштабирование (В процессе)
+### Фаза H: Филологическое Масштабирование (инфраструктура завершена)
 - [x] Промышленная контейнеризация (Docker + Docker Compose).
 - [x] Интеграция специализированных корпусов (Тронский, Гаспаров).
 - [x] Multi-Document Workbench: API и Визуализация сравнения профилей.
 - [x] Scholarly Apparatus: Автоматическая генерация LaTeX-отчетов.
+- [x] Начальный BibTeX export (`references.bib`) для scholarly artifacts.
 
 ## Следующее действие
-1. Интеграция внешних библиографических менеджеров (Zotero/BibTeX).
+1. Динамическая интеграция библиографии: Zotero/BibTeX ingestion, source mapping и проверка ссылок вместо статического `references.bib`.
 2. Расширение коллекции "Гаспаров" до 50+ примеров.
+3. Добавить frontend lint/build в GitHub CI, если Web Studio становится обязательным release gate.
 
 ---
-*Math: Total Phases (8) - Phase H Philological Scale in progress. Workbench now supports multi-run visual synthesis.*
+*Math: Total Phases (8) - Phase H infrastructure complete; next work is quality, bibliography depth, and release hardening.*

@@ -11,7 +11,6 @@
     "language",
     "best_for",
     "checks",
-    "limits",
     "review_mode",
     "council"
   ],
@@ -19,7 +18,7 @@
   "properties": {
     "id": {
       "type": "string",
-      "pattern": "^[a-z0-9][a-z0-9-]*$"
+      "pattern": "^[a-z0-9][a-z0-9_:-]*$"
     },
     "name": {
       "type": "string",
@@ -75,11 +74,18 @@
     },
     "cluster": {
       "type": "string",
-      "pattern": "^[a-z0-9][a-z0-9-]*$"
+      "pattern": "^[a-z0-9][a-z0-9_:-]*$"
     },
     "extends": {
       "type": "string",
-      "pattern": "^[a-z0-9][a-z0-9-]*$"
+      "pattern": "^[a-z0-9][a-z0-9_:-]*$"
+    },
+    "domains": {
+      "type": ["array", "string"],
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9_]+$"
+      }
     },
     "markers": {
       "type": "object",
@@ -110,7 +116,7 @@
     "conflict_priority": {
       "type": "object",
       "properties": {
-        "default": { "type": "string", "enum": ["low", "medium", "high"] },
+        "default": { "type": "string", "enum": ["low", "medium", "high", "extreme"] },
         "when_domain": { "type": "array", "items": { "type": "string" } }
       }
     },
@@ -129,7 +135,7 @@
     },
     "council": {
       "type": "object",
-      "required": ["can_reply_to", "should_defer"],
+      "required": ["can_reply_to"],
       "additionalProperties": false,
       "properties": {
         "can_reply_to": {

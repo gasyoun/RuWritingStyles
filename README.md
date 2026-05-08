@@ -4,7 +4,7 @@
 
 Файл стиля - это `.md`-инструкция для Claude. Ее можно использовать двумя способами: загрузить или вставить в настройку Custom Style, либо временно дать Claude в начале диалога и попросить писать по этому профилю. Сами стили не являются пересказами исходных книг и статей. Это рабочие модели письма: тон, композиция, способ доказательства, тип примеров, допустимая терминология и запреты.
 
-**Status**: v1.0 (Production Ready) — All phases (A-E) complete.
+**Status**: v2.2.1 (stabilized) — 17 кластеров, 6 MVP-стилей, 33 eval-кейса, Web Studio, FastAPI, SQLite `rws.db`, Docker/FastAPI static deployment, LaTeX-отчеты и начальный BibTeX export.
 
 ## Основные этапы (Roadmap)
 - [x] **Фаза A**: Базовая архитектура и CLI.
@@ -12,6 +12,10 @@
 - [x] **Фаза C**: Автоматизация 17 филологических кластеров.
 - [x] **Фаза D**: Adversarial Evals и Golden Dataset.
 - [x] **Фаза E**: QA, Web Studio и финальная интеграция.
+- [x] **Фаза F**: Scholarly Workbench: профили, методологический компас, syntax/impact artifacts.
+- [x] **Фаза G**: Production infrastructure: SQLite index, FastAPI BackgroundTasks, local providers.
+- [x] **Фаза H**: Philological scale: Docker, multi-run comparison, LaTeX/BibTeX scholarly apparatus.
+- [x] **v2.2.1**: Стабилизация схем, Docker-сборки, Windows UTF-8 CLI, frontend lint/build и тестов.
 
 ## Навигация
 
@@ -277,57 +281,31 @@
 
 Фрагмент ожидаемого хода:
 
-> Этот небольшой сюжет важен не только как описание обряда## RuWritingStyles Web Studio
+> Этот небольшой сюжет важен не только как описание обряда, но и как часть культурной памяти: предмет, жест, место и текст образуют один контекст, где значение поддерживается повторением и передачей.
 
-Для тех, кто предпочитает визуальное управление, проект включает **Web Studio** — интерактивную среду для аудита текстов, мониторинга работы агентов и сравнения редакций.
+### [Казанский][kazanskiy-korpus]
 
-### Основные функции Студии:
-*   **Workbench**: Двухпанельный редактор (Оригинал vs Редакция) с подсветкой изменений.
-*   **Council Monitor**: Визуализация процесса "обсуждения" текста Советом агентов в реальном времени.
-*   **System Health**: Индикаторы готовности провайдеров (Gemini, OpenRouter, Claude).
-*   **Provider Selector**: Мгновенное переключение между моделями (включая бесплатные модели OpenRouter/Nous Portal).
+Подходит для филологического комментария, сопоставления оригинала и перевода, уточнения семантики и культурного контекста.
 
-### Запуск Студии:
-```powershell
-# Автоматически очистит порты, запустит Backend и Frontend
-$env:PYTHONPATH="src"; python -m ruwritingstyles.cli web
-```
-После запуска Студия будет доступна по адресу: **http://localhost:5173**
+Примеры запросов:
 
----
+- «Сравни оригинал и перевод: где перевод точен грамматически, но теряет культурный нюанс».
+- «Составь комментарий к трудному слову: форма, контекст, параллели, возможные значения».
+- «Покажи, какие сведения нужно дать читателю, чтобы место стало понятно без произвольной интерпретации».
 
-## Конфигурация и API ключи
+Фрагмент ожидаемого хода:
 
-Система поддерживает работу через прямой API (Google, Anthropic) или через прокси-сервисы (OpenRouter, Nous Portal).
+> Формальное соответствие перевода еще не означает совпадения смысла. Нужно проверить, какие значения слово получает в данном контексте, какие параллели действительно близки и где комментарий должен не заменить текст, а открыть его условия понимания.
 
-1.  Создайте файл **`.env`** в корне проекта (используйте `.env.example` как образец).
-2.  Добавьте ваши ключи:
-    *   `GOOGLE_API_KEY` — для моделей Gemini.
-    *   `OPENROUTER_API_KEY` или `NOUS_PORTAL_API_KEY` — для доступа к 29+ бесплатным и платным моделям.
-3.  Проверьте статус подключения: `python -m ruwritingstyles.cli provider-status`.
+### [Лидова][lidova-commentary]
 
----
+Подходит для истории комментария, канона, школы, передачи текста и культурной функции толкования.
 
-## Быстрый старт (CLI)
+Примеры запросов:
 
-Если вы предпочитаете консоль, используйте следующие команды:
-
-```bash
-# Запуск Web Studio (рекомендуется)
-PYTHONPATH=src python -m ruwritingstyles.cli web
-
-# Полный цикл через CLI: сегментация, аудит и финальная правка
-PYTHONPATH=src python -m ruwritingstyles.cli run input.md --execute --provider openrouter
-
-# Проверка статуса готовности провайдеров
-PYTHONPATH=src python -m ruwritingstyles.cli provider-status
-```
-
-Для работы с локальными файлами в Web Studio используйте кнопку **"+ New Philological Audit"** и укажите путь к вашему `.md` или `.txt` файлу.
-
-
----
-екста».
+- «Объясни, какую функцию выполняет комментарий в данной традиции».
+- «Покажи, как меняется авторитет текста при переходе от устной передачи к письменной».
+- «Опиши, почему школа толкования становится частью самого канона».
 
 Фрагмент ожидаемого хода:
 
@@ -450,12 +428,38 @@ PYTHONPATH=src python -m ruwritingstyles.cli provider-status
 
 > Используй [`ClaudeStyles/albedil-sbornik-style.md`][albedil-sbornik]. Напиши очерк о `...`: конкретный предмет или ритуал, культурный контекст, источники, детали, осторожный вывод и теплая научная интонация.
 
+## Сценарии использования RuWritingStyles
+
+Для визуальной работы используйте **Web Studio**: она запускает аудит, показывает original/revised, findings, council decisions, verification warnings, profile/syntax views и сравнение нескольких runs.
+
+```bash
+PYTHONPATH=src python -m ruwritingstyles.cli web
+```
+
+После запуска локальная студия доступна на `http://localhost:5173`. Для работы с локальными файлами нажмите **"+ New Philological Audit"** и укажите абсолютный путь к `.md` или `.txt` файлу.
+
+Для консольного smoke без внешних ключей:
+
+```bash
+PYTHONPATH=src python -m ruwritingstyles.cli run examples/input/pseudo-etymology.md --run-id readme-smoke --execute --provider mock
+PYTHONPATH=src python -m ruwritingstyles.cli validate-run runs/readme-smoke
+```
+
+Для real-provider запуска скопируйте `.env.example` в `.env`, заполните нужный ключ и проверьте readiness:
+
+```bash
+PYTHONPATH=src python -m ruwritingstyles.cli provider-status --provider openai --strict
+PYTHONPATH=src python -m ruwritingstyles.cli run input.md --execute --provider openai --model gpt-5.5
+```
+
+Поддерживаемые реальные провайдеры: `openai`, `google`, `anthropic`, `openrouter`, `local`, `ollama`. Подробные сценарии лежат в [`docs/scenarios.md`](docs/scenarios.md), а короткий запуск - в [`docs/quickstart.md`](docs/quickstart.md).
+
 ## Документация разработки
 
 - [`docs/roadmap.md`](docs/roadmap.md) описывает развитие проекта от каталога стилей к агентной системе проверки и редакции документов.
 - [`docs/agent-protocol.md`](docs/agent-protocol.md) задает протокол, по которому разные стили проверяют документ, отвечают друг другу и участвуют в итоговой редакции.
-- [`docs/deployment.md`](docs/deployment.md) содержит инструкции по запуску системы локально и на сервере (Nginx, Gunicorn).
-- [`docs/project-v2-vision.md`](docs/project-v2-vision.md) суммирует стратегические решения по переходу к промышленному веб-сервису (SQLite, Очереди задач, Локальные LLM).
+- [`docs/deployment.md`](docs/deployment.md) содержит инструкции по локальному запуску, Docker Compose, FastAPI static deployment и smoke checks.
+- [`docs/project-v2-vision.md`](docs/project-v2-vision.md) суммирует стратегические решения по переходу к промышленному веб-сервису (SQLite, фоновые задачи, локальные LLM).
 - [`docs/scenarios.md`](docs/scenarios.md) содержит практические сценарии использования для филологов, редакторов и разработчиков.
 - [`docs/style-contract.md`](docs/style-contract.md) описывает машинный паспорт стиля: роль, проверки, ограничения и участие в совете стилей.
 - [`docs/provider-roadmaps.md`](docs/provider-roadmaps.md) описывает версии roadmap для OpenAI GPT-5.5, Google Gemini 3.1 Pro и Anthropic Claude Sonnet 4.6.
@@ -490,6 +494,7 @@ PYTHONPATH=src python -m ruwritingstyles.cli provider-status
 - Для зализняковских стилей держите единый принцип именования: в видимом тексте `Зализняк-...`, в файлах допускается существующая латинская транслитерация `zalizniak-...` или `zaliznyak-...`, если так уже назван файл.
 - [`PDFtoTXT/update.py`](PDFtoTXT/update.py) сейчас относится к служебной обработке указателей для `AAZ_Zametki_2025`; не считайте его универсальным конвертером всех PDF.
 - Перед коммитом полезно проверить README на старые имена файлов и затем выполнить `git diff --check`.
+- Перед релизом или большой правкой прогоните: `python tools/validate_project.py`, `python -m unittest discover -s tests`, `python -m compileall -q src tools tests`, а в `web/` - `npm run lint` и `npm run build`.
 
 ## Движок RuWritingStyles (CLI & Multi-Agent)
 
@@ -497,10 +502,13 @@ RuWritingStyles — это не просто набор промптов, а п�
 
 ### Основные возможности
 
-*   **Мультиагентный аудит**: Система запускает «Совет» (Council) из нескольких узкоспециализированных агентов-филологов, которые ведут дискуссию для достижения стилистического консенсуса.
+*   **Мультиагентный аудит**: Система запускает «Совет» (Council) из MVP-набора стилей и сохраняет цепочку `segment -> review -> council -> revision -> verification`.
 *   **Иерархическая таксономия (17 кластеров)**: Внедрена система из 8 лингвистических и 9 литературоведческих школ, позволяющая Совету учитывать методологический контекст (напр. Московская семантическая школа vs ОПОЯЗ).
 *   **Динамическое взвешивание**: Агенты автоматически получают приоритет, если их научный профиль совпадает с доменом анализируемого текста (`text_domain`).
-*   **Стилистическая миграция**: Инструменты для автоматического перевода целых корпусов документов из одного филологического регистра в другой.
+*   **Eval-дисциплина**: `evals/manifest.json` содержит 33 кейса; `mock` provider используется для инфраструктурного smoke, реальные провайдеры сравниваются через `eval-suite` и `eval-compare`.
+*   **Контракт артефактов**: JSON-схемы покрывают style/review/council/revision/verification/eval artifacts, включая `profile`, `clusters`, `bloom_level`, `primary_school` и `influence`.
+*   **Web/API слой**: FastAPI обслуживает API и, после `npm run build`, готовый `web/dist`; Web Studio умеет запускать аудит и сравнивать несколько runs.
+*   **Отчеты и экспорт**: CLI executable run генерирует `report.md`, `summary.html`, ZIP bundle, `impact.json` и `syntax.json`; Web/API full pipeline также пишет scholarly artifacts `report.tex` и `references.bib`.
 *   **Филологическая база знаний**: Агенты обращаются к локальному репозиторию исследований (`knowledge/`) для проверки терминологии и исключения анахронизмов.
 
 ### Филологические школы (Core Clusters)
@@ -537,6 +545,9 @@ PYTHONPATH=src python -m ruwritingstyles.cli eval-benchmark --models "gpt-5.5" "
 
 # Генерация общего интерактивного отчета по проекту
 PYTHONPATH=src python -m ruwritingstyles.cli dashboard
+
+# Инфраструктурный smoke без внешних ключей
+PYTHONPATH=src python -m ruwritingstyles.cli eval-suite --provider mock --suite-id local-smoke
 ```
 
 Для работы с реальными провайдерами проверьте готовность ключей: `rws provider-status --strict`.

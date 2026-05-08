@@ -6,6 +6,8 @@
 > Целевой исполнитель: Gemini 2.5 Pro / Gemini 2.5 Flash (или эквивалент)  
 > Связан с: `RuWritingStyles_critique_and_plan.md` (лингвистические кластеры)
 
+> Обновление 2026-05-08: литературоведческие кластеры уже заведены в текущем `styles/manifest.yml` как `lit_*`, а CLI работает через единый `evals/manifest.json`. Старые YAML-фрагменты с `cluster:lit_*` и отдельными baseline directories сохраняются как проектные наброски; актуальные проверки запускаются через `rws eval-suite --provider ... --suite-id ...`.
+
 ---
 
 ## Предисловие: Почему литературоведение сложнее лингвистики для pipeline
@@ -822,9 +824,11 @@ forbidden_edits:
 
 **Проверка готовности:**
 ```bash
-rws eval-suite --suite evals/literary_baselines/
+rws eval-suite --provider mock --suite-id literary-baselines-smoke
 # Ожидаемый результат: все adversarial-кейсы пройдены (система НЕ правит)
 ```
+
+Примечание: отдельный флаг `--suite` не реализован; литературные baseline-кейсы должны быть перенесены в `evals/manifest.json` или запускаться через текущий manifest/tag workflow.
 
 ---
 
