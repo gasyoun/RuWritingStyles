@@ -15,14 +15,30 @@ class KnowledgeManager:
         self.knowledge_dir = repo_root / "knowledge"
         self.bib_path = self.knowledge_dir / "bibliography.json"
         self.collections_dir = self.knowledge_dir / "collections"
-        
+        self._bibliography_cache = None
+        self._json_collections_cache = {}
+
     def _load_bibliography(self) -> list[dict[str, Any]]:
+        if self._bibliography_cache is not None:
+            return self._bibliography_cache
         if not self.bib_path.exists():
+            self._bibliography_cache = []
             return []
         try:
-            return json.loads(self.bib_path.read_text(encoding="utf-8"))
+            self._bibliography_cache = json.loads(self.bib_path.read_text(encoding="utf-8"))
+            return self._bibliography_cache
         except:
+            self._bibliography_cache = []
             return []
+            
+    def _load_json_collections(self) -> dict[str, list[dict]]:
+        if not self._json_collections_cache and self.collections_dir.exists():
+            for p in self.collections_dir.glob("*.json"):
+                try:
+                    self._json_collections_cache[p.name] = json.loads(p.read_text(encoding="utf-8"))
+                except:
+                    pass
+        return self._json_collections_cache
 
     def verify_citation(self, citation_id: str) -> dict[str, Any] | None:
         """Verify a citation against the structured bibliography."""
@@ -52,16 +68,13 @@ class KnowledgeManager:
         # 2. Search Collections (JSON and Markdown)
         if self.collections_dir.exists():
             # JSON Collections
-            for p in self.collections_dir.glob("*.json"):
-                try:
-                    data = json.loads(p.read_text(encoding="utf-8"))
-                    for entry in data:
-                        for term in query_terms:
-                            if term.lower() in str(entry).lower():
-                                results.append(f"Collection: {p.name} - {entry.get('id', 'item')}\n{entry.get('text_normalized', '')}")
-                                break
-                except: pass
-
+            json_cols = self._load_json_collections()
+            for col_name, data in json_cols.items():
+                for entry in data:
+                    for term in query_terms:
+                        if term.lower() in str(entry).lower():
+                            results.append(f"Collection: {col_name} - {entry.get('id', 'item')}\n{entry.get('text_normalized', '')}")
+                            break
             # Markdown Collections
             for p in self.collections_dir.glob("*.md"):
                 content = p.read_text(encoding="utf-8")
