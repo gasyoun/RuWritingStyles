@@ -125,8 +125,15 @@
 ---
 *Math: Total Phases (9) — Phase I implementation complete; v2.3.5 stabilization complete.*
 
-## Phase I: Philological Production (Next)
+### Phase I: Philological Production (Completed)
 - [x] Scholarly Apparatus: Динамическое извлечение цитат и генерация BibTeX.
-- [ ] Citation Verifier: Проверка цитат на соответствие корпусу знаний.
-- [ ] LaTeX Export: Генерация PDF-отчетов в академическом стиле.
-- [ ] Advanced Bias Detection: Анализ идеологических и методологических смещений.
+- [x] Citation Verifier: Проверка цитат на соответствие корпусу знаний.
+- [x] LaTeX Export: Генерация академических отчетов (`report.tex`).
+- [x] Methodological Bias Audit: Анализ идеологических и методологических смещений.
+- [x] Full Corpus Validation: Прогон на 35 файлах `examples/input`.
+
+### Phase II: Scale & Knowledge Integration (Next)
+- [ ] Knowledge Hub: Наполнение `knowledge/` реальными данными из НКРЯ и архива Зализняка.
+- [ ] Multi-Style Batch: Параллельный прогон корпуса через 17+ стилей (17x35 = 595 runs).
+- [ ] Web Studio V3: Визуализация верифицированных цитат и bias scores в UI.
+- [ ] Automated Style Evolution: Доработка паспортов на основе результатов "Full Corpus Audit".

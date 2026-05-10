@@ -22,6 +22,7 @@ function App() {
   const [comparisonData, setComparisonData] = useState([]);
   const [resolutions, setResolutions] = useState({});
   const [isFinalizing, setIsFinalizing] = useState(false);
+  const [showCitations, setShowCitations] = useState(false);
 
   // 1. Fetch Runs List
   const fetchRuns = useCallback(() => {
@@ -292,11 +293,28 @@ function App() {
               </div>
 
               <div className="stat-card glass">
-                <div className="stat-header"><Layers size={16} /><span>Syntax Complexity</span></div>
-                <div className="stat-value">{runData.syntax?.shifts?.length || 0}</div>
-                <div className="stat-label">Significant shifts detected</div>
+                <div className="stat-header"><Layers size={16} /><span>Syntax & Bias</span></div>
+                <div className="stat-value">{runData.syntax?.shifts?.length || 0} / {runData.bias_audit?.bias_score || 0}</div>
+                <div className="stat-label">Syntax Shifts / Bias Score (0-10)</div>
+              </div>
+
+              <div className="stat-card glass">
+                <div className="stat-header"><BookOpen size={16} /><span>Citation Grounding</span></div>
+                <div className="stat-value">{runData.citation_stats?.verified?.length || 0} / {runData.citation_stats?.hallucinations?.length || 0}</div>
+                <div className="stat-label">Verified / Hallucinations</div>
               </div>
             </section>
+
+            {runData.bias_audit?.methodological_critique && (
+              <section className="oversight-row" style={{marginBottom: '1.5rem'}}>
+                <div className="stat-card glass full-width" style={{background: 'rgba(248, 81, 73, 0.05)', border: '1px solid rgba(248, 81, 73, 0.2)'}}>
+                  <div className="stat-header" style={{color: '#f85149'}}><Info size={16} /><span>Methodological Audit Critique</span></div>
+                  <div className="critique-text" style={{fontSize: '0.9rem', color: '#c9d1d9', marginTop: '0.5rem', lineHeight: '1.5'}}>
+                    {runData.bias_audit.methodological_critique}
+                  </div>
+                </div>
+              </section>
+            )}
 
             <section className="main-grid">
               <div className="editor-section">
@@ -366,22 +384,44 @@ function App() {
               </div>
 
               <aside className="concordance-sidebar glass">
-                <div className="panel-header"><BookOpen size={16} />Interactive Concordance</div>
-                <div className="concordance-content">
-                  {Object.keys(concordance).length > 0 ? (
-                    Object.entries(concordance).map(([term, matches]) => (
-                      <div key={term} className="concordance-group">
-                        <div className="term-label">{term}</div>
-                        {matches.map((m, i) => (
-                          <div key={i} className="concordance-match">
-                            <div className="match-source">{m.source}</div>
-                            <div className="match-text">«{m.text}»</div>
-                          </div>
-                        ))}
-                      </div>
-                    ))
+                <div className="panel-header" style={{display: 'flex', gap: '1rem', borderBottom: '1px solid #30363d'}}>
+                  <button className={`tab-btn ${!showCitations ? 'active' : ''}`} onClick={() => setShowCitations(false)} style={{background: 'none', border: 'none', color: !showCitations ? '#58a6ff' : '#8b949e', cursor: 'pointer', fontSize: '0.9rem', paddingBottom: '0.5rem', borderBottom: !showCitations ? '2px solid #58a6ff' : 'none'}}>Concordance</button>
+                  <button className={`tab-btn ${showCitations ? 'active' : ''}`} onClick={() => setShowCitations(true)} style={{background: 'none', border: 'none', color: showCitations ? '#58a6ff' : '#8b949e', cursor: 'pointer', fontSize: '0.9rem', paddingBottom: '0.5rem', borderBottom: showCitations ? '2px solid #58a6ff' : 'none'}}>Citations</button>
+                </div>
+                <div className="concordance-content" style={{paddingTop: '1rem'}}>
+                  {!showCitations ? (
+                    Object.keys(concordance).length > 0 ? (
+                      Object.entries(concordance).map(([term, matches]) => (
+                        <div key={term} className="concordance-group">
+                          <div className="term-label">{term}</div>
+                          {matches.map((m, i) => (
+                            <div key={i} className="concordance-match">
+                              <div className="match-source">{m.source}</div>
+                              <div className="match-text">«{m.text}»</div>
+                            </div>
+                          ))}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="empty-concordance"><Info size={24} /><p>No academic precedents found.</p></div>
+                    )
                   ) : (
-                    <div className="empty-concordance"><Info size={24} /><p>No academic precedents found.</p></div>
+                    <div className="citations-list">
+                      <div className="section-label">Verified Grounding</div>
+                      {runData.citation_stats?.verified?.map((c, i) => (
+                        <div key={i} className="citation-item verified" style={{borderLeft: '2px solid #3fb950', paddingLeft: '8px', marginBottom: '8px'}}>
+                          <div className="cite-text" style={{fontWeight: 'bold'}}>{c.citation}</div>
+                          <div className="cite-source" style={{fontSize: '0.8rem', color: '#8b949e'}}>{c.entry?.title || c.source_file}</div>
+                        </div>
+                      ))}
+                      <div className="section-label" style={{marginTop: '1.5rem'}}>Hallucinations / Missing</div>
+                      {runData.citation_stats?.hallucinations?.map((c, i) => (
+                        <div key={i} className="citation-item failed" style={{borderLeft: '2px solid #f85149', paddingLeft: '8px', marginBottom: '8px'}}>
+                          <div className="cite-text" style={{fontWeight: 'bold', color: '#f85149'}}>{c.citation}</div>
+                          <div className="cite-reason" style={{fontSize: '0.8rem', color: '#8b949e'}}>{c.reason}</div>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
               </aside>

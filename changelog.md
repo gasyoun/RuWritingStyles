@@ -1,3 +1,16 @@
+### [2.3.5] - 2026-05-10
+#### Added (Phase I: Philological Production)
+- **Scholarly Grounding Engine**: Implemented `citations.py` for automated extraction and verification of academic references against the philological knowledge base.
+- **Methodological Bias Audit**: Integrated Stage 2.5 into the production pipeline; automated auditing of Council deliberations for ideological and methodological impartiality.
+- **Full Corpus Processing**: Successfully validated the high-throughput pipeline on the entire 35-file `examples/input` corpus (Indo-European linguistics, structuralism, and textology).
+- **Consolidated Dashboard**: Updated the Project Dashboard (`DASHBOARD.html`) with Bias Scores, Citation stats, and Methodological Compass metrics.
+- **LaTeX Scholarly Reports**: Hardened `latex.py` with robust `NoneType` formatting and academic apparatus (BibTeX, bias critique, grounding stats).
+- **BibTeX Synthesis**: Automated generation of `references.bib` for every production run.
+
+#### Synchronized
+- **CLI Pipeline**: Updated `cli.py` to parity with the central `pipeline.py`, ensuring all 7 production stages (Review to Reports) are available via command line.
+- **Metric Normalization**: Renamed internal metrics to `compass` to resolve database naming conflicts and improve reporting clarity.
+
 ### [2.3.0] - 2026-05-08
 #### Added
 - **CI Golden Gate**: Established `evals/baselines/gold.json` (33/33 cases) and updated `scripts/ci-eval-gate.py` to enforce strict regression testing against the gold baseline (GOLD MODE).
