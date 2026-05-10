@@ -7,6 +7,13 @@
 - **LaTeX Scholarly Reports**: Hardened `latex.py` with robust `NoneType` formatting and academic apparatus (BibTeX, bias critique, grounding stats).
 - **BibTeX Synthesis**: Automated generation of `references.bib` for every production run.
 
+#### Added (Phase II: Scale & Knowledge Integration)
+- **Knowledge Ingestion**: Expanded `bibliography.json` with foundational structuralist and philological works (Ivanov, Toporov, Trubetzkoy, Jakobson).
+- **Specialized Collections**: Created `novgorod_gramoty.json` to ground analysis of Birch Bark manuscripts with authentic textual precedents.
+- **Enhanced Concordance**: Upgraded `KnowledgeManager` to query JSON collections, significantly improving Interactive Concordance precision.
+- **Comparative Corpus Audit**: Implemented `batch_analyzer.py` to automatically execute a manuscript through all 17+ stylistic clusters, mapping out "structural tension" across academic schools.
+- **Automated Style Evolution**: Created `style_evolution.py` which dynamically reads SQLite `bias_audit` metrics to inject new constraints directly into stylistic passports, creating a self-correcting feedback loop.
+
 #### Synchronized
 - **CLI Pipeline**: Updated `cli.py` to parity with the central `pipeline.py`, ensuring all 7 production stages (Review to Reports) are available via command line.
 - **Metric Normalization**: Renamed internal metrics to `compass` to resolve database naming conflicts and improve reporting clarity.

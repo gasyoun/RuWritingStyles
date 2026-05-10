@@ -132,8 +132,14 @@
 - [x] Methodological Bias Audit: Анализ идеологических и методологических смещений.
 - [x] Full Corpus Validation: Прогон на 35 файлах `examples/input`.
 
-### Phase II: Scale & Knowledge Integration (Next)
-- [ ] Knowledge Hub: Наполнение `knowledge/` реальными данными из НКРЯ и архива Зализняка.
-- [ ] Multi-Style Batch: Параллельный прогон корпуса через 17+ стилей (17x35 = 595 runs).
-- [ ] Web Studio V3: Визуализация верифицированных цитат и bias scores в UI.
-- [ ] Automated Style Evolution: Доработка паспортов на основе результатов "Full Corpus Audit".
+### Phase II: Scale & Knowledge Integration (Completed)
+- [x] Knowledge Hub: Наполнение `knowledge/` реальными данными из НКРЯ и архива Зализняка.
+- [x] Multi-Style Batch: Параллельный прогон корпуса через 17+ стилей (17x35 = 595 runs).
+- [x] Web Studio V3: Визуализация верифицированных цитат и bias scores в UI.
+- [x] Automated Style Evolution: Доработка паспортов на основе результатов "Full Corpus Audit".
+
+### Phase III: External Agent Integration (Next)
+- [ ] Zotero MCP: Интеграция с Zotero через Model Context Protocol для живого извлечения библиографии.
+- [ ] Web Researcher: Агент для автоматического поиска академических прецедентов в открытых источниках (Google Scholar, eLibrary).
+- [ ] Agentic Orchestration: Переход на LangGraph/Smolagents для сложного многошагового роутинга между Советом и внешними тулами.
+- [ ] Real-time Multi-User Workbench: Совместная работа нескольких исследователей над одним прогоном с синхронизацией через WebSockets.
