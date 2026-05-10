@@ -6,8 +6,7 @@ from .cli import _execute_run_pipeline
 from .config import load_manifest, load_model_policy
 
 from .runs import create_prepare_run
-from .document import normalize_document
-from .segment import read_document, segment_markdown
+from .segment import read_document, normalize_document, segment_markdown
 
 def run_multi_style_batch(repo_root: Path, input_file: Path, clusters: list[str], provider: str):
     print(f"Batch Analysis: {input_file.name} against {len(clusters)} clusters")
@@ -24,18 +23,20 @@ def run_multi_style_batch(repo_root: Path, input_file: Path, clusters: list[str]
         run_id = f"batch-{input_file.stem}-{cluster_id}"
         run_dir = repo_root / "runs" / run_id
         
-        # Initialize run
-        create_prepare_run(
-            repo_root=repo_root,
-            input_path=input_file,
-            original_text=original_text,
-            normalized_text=normalized_text,
-            segments=segments,
-            manifest=manifest,
-            model_policy=model_policy,
-            provider=provider,
-            profile=cluster_id
-        )
+        # Initialize run if it doesn't exist
+        if not run_dir.exists():
+            create_prepare_run(
+                repo_root=repo_root,
+                input_path=input_file,
+                original_text=original_text,
+                normalized_text=normalized_text,
+                segments=segments,
+                manifest=manifest,
+                model_policy=model_policy,
+                provider=provider,
+                profile=cluster_id,
+                run_id=run_id
+            )
         
         # Mock args
         args = argparse.Namespace(
