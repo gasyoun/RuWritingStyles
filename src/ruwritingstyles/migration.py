@@ -68,17 +68,25 @@ Return a JSON object:
 }}
 """
 
-    response_text = provider.generate(
-        prompt=prompt,
-        model=model,
-        system_instructions=f"You are migrating text to the {to_style.name} style.",
-        json_mode=True
+    from .providers import ProviderRequest, load_schema
+    
+    schema = load_schema(repo_root, "schemas/migration-summary.schema.json")
+    
+    result = provider.generate_json(
+        ProviderRequest(
+            task="migration",
+            prompt=prompt,
+            schema=schema,
+            metadata={
+                "from_style_id": from_style_id,
+                "to_style_id": to_style_id,
+            },
+            model=model,
+        )
     )
     
-    result = json.loads(response_text)
-    
     # Save result
-    migration_run_id = f"migration-{from_style_id}-to-{to_style_id}"
+    migration_run_id = f"migration-{from_style_id}-to-{to_style_id}-{input_file.stem}"
     run_dir = repo_root / "runs" / migration_run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     

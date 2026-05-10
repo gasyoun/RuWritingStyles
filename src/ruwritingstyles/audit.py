@@ -77,11 +77,40 @@ Return a JSON object:
 }
 """
 
-    response_text = provider.generate(
-        prompt=prompt,
-        model=model,
-        system_instructions="You are a meticulous philological auditor.",
-        json_mode=True
-    )
+    from .providers import ProviderRequest
     
-    return json.loads(response_text)
+    schema = {
+        "type": "object",
+        "required": ["status", "audit_summary", "violations", "passed_commitments"],
+        "properties": {
+            "status": {"type": "string", "enum": ["completed", "failed"]},
+            "audit_summary": {"type": "string"},
+            "violations": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["document_id", "term", "issue", "severity"],
+                    "properties": {
+                        "document_id": {"type": "string"},
+                        "term": {"type": "string"},
+                        "issue": {"type": "string"},
+                        "severity": {"type": "string", "enum": ["critical", "warning", "note"]}
+                    }
+                }
+            },
+            "passed_commitments": {
+                "type": "array",
+                "items": {"type": "string"}
+            }
+        }
+    }
+    
+    return provider.generate_json(
+        ProviderRequest(
+            task="audit",
+            prompt=prompt,
+            schema=schema,
+            metadata={"project_dir": str(project_dir)},
+            model=model,
+        )
+    )

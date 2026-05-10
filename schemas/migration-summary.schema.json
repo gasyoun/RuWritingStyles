@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/migration-summary.schema.json",
+  "title": "RuWritingStyles style migration summary",
+  "type": "object",
+  "required": ["migration_summary", "revised_text"],
+  "additionalProperties": false,
+  "properties": {
+    "migration_summary": {
+      "type": "string",
+      "description": "Explanation of the stylistic transformation applied to the document."
+    },
+    "revised_text": {
+      "type": "string",
+      "description": "The full document text migrated to the target style."
+    }
+  }
+}
