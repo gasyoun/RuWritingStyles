@@ -111,6 +111,26 @@ class Database:
             """)
             
             conn.execute("""
+                CREATE TABLE IF NOT EXISTS corpus_metadata (
+                    file_path TEXT PRIMARY KEY,
+                    title TEXT,
+                    author TEXT,
+                    year INTEGER,
+                    last_indexed TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+
+            # FTS5 Virtual Table for Deep Document Retrieval (Phase VI)
+            conn.execute("""
+                CREATE VIRTUAL TABLE IF NOT EXISTS corpus_segments USING fts5(
+                    file_path,
+                    segment_index,
+                    content,
+                    tokenize="unicode61"
+                )
+            """)
+
+            conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_tool_calls_run_id ON run_tool_calls(run_id)
             """)
 

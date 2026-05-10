@@ -97,7 +97,34 @@ def execute_council_artifact(*, repo_root: Path, council_path: Path, provider: B
     _write_json(council_path, council)
 
 
-def execute_revision_artifact(*, repo_root: Path, revision_path: Path, provider: BaseProvider, model: str | None = None) -> None:
+def execute_revision_artifact(*, repo_root: Path, revision_path: Optional[Path], provider: BaseProvider, model: str | None = None, direct_input: Optional[dict] = None) -> str | None:
+    if direct_input:
+        # High-speed path for editor selections
+        text = direct_input["text"]
+        findings = direct_input["findings"]
+        
+        # Build an ephemeral prompt
+        prompt = f"""You are the RuWritingStyles `Revisionist`.
+Your task is to revise the following snippet based on the Socratic Council's findings.
+
+**Original Snippet:**
+{text}
+
+**Council Findings:**
+{json.dumps(findings, ensure_ascii=False, indent=2)}
+
+**Requirement:**
+- Return ONLY the revised Russian text.
+- Maintain the cluster's stylistic constraints (epistemic modality, philological depth).
+"""
+        revised = provider.generate(
+            prompt=prompt,
+            model=model,
+            system_instructions="You are a professional philological editor."
+        )
+        return revised.strip()
+
+    # Standard pipeline path
     revision = _load_json(revision_path)
     prompt_path = repo_root / str(revision["prompt_path"])
     source_path = repo_root / str(revision["source_document"])
@@ -119,12 +146,14 @@ def execute_revision_artifact(*, repo_root: Path, revision_path: Path, provider:
         ),
     )
     revised_path = revision_path.parent / "revised.md"
-    revised_path.write_text(str(output.get("revised_document", normalized_text)), encoding="utf-8")
+    revised_text = str(output.get("revised_document", normalized_text))
+    revised_path.write_text(revised_text, encoding="utf-8")
     revision["status"] = "completed"
     revision["revised_document_path"] = _repo_relative(repo_root, revised_path)
     revision["applied_changes"] = output.get("applied_changes", [])
     revision["unresolved"] = output.get("unresolved", [])
     _write_json(revision_path, revision)
+    return revised_text
 
 
 def execute_scrutiny_artifact(*, repo_root: Path, scrutiny_path: Path, provider: BaseProvider, model: str | None = None) -> None:
