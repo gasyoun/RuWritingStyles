@@ -52,3 +52,15 @@
    - Базовая инфраструктура и unit-тесты (44/44) проходят.
    - Код соответствует схемам (JSON Schema) и не имеет FrozenInstanceError в хуках.
 3. Для полного локального gate также выполните `python tools/validate_project.py`, `python -m unittest discover -s tests`, `npm run lint` и `npm run build` в `web/`.
+## 6. Автор-исследователь (Editor Integration)
+**Задача**: Мгновенно отредактировать абзац прямо в Obsidian или MS Word, используя "Совет" и внешние источники.
+
+**Workflow**:
+1. Убедитесь, что API запущено: `PYTHONPATH=src python -m ruwritingstyles.api`.
+2. В **Obsidian**:
+   - Выделите абзац в заметке.
+   - Запустите скрипт интеграции (см. `docs/obsidian-integration-poc.js`).
+   - Получите мгновенную правку с обоснованием от Совета и замените текст одним кликом.
+3. В **Web Studio**:
+   - Используйте панель **"Thinking Trace"** для мониторинга живых запросов агента в Zotero, OpenAlex или по локальному корпусу текстов.
+   - Если агент нашел цитату в Deep Retrieval (FTS5), она автоматически появится в обосновании правки.

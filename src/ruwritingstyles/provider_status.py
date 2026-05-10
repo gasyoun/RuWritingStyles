@@ -33,19 +33,19 @@ def provider_statuses(env: Mapping[str, str] | None = None) -> tuple[ProviderSta
         _status(
             provider="openai",
             api_key_env=("OPENAI_API_KEY",),
-            model=_env(actual_env, "RWS_OPENAI_MODEL") or "gpt-5.5",
+            model=_env(actual_env, "RWS_OPENAI_MODEL") or "gpt-5",
             env=actual_env,
         ),
         _status(
             provider="google",
             api_key_env=("GEMINI_API_KEY", "GOOGLE_API_KEY"),
-            model=_env(actual_env, "RWS_GOOGLE_MODEL") or "gemini-3.1-pro-preview",
+            model=_env(actual_env, "RWS_GOOGLE_MODEL") or "gemini-2.0-pro",
             env=actual_env,
         ),
         _status(
             provider="anthropic",
             api_key_env=("ANTHROPIC_API_KEY",),
-            model=_env(actual_env, "RWS_ANTHROPIC_MODEL") or "claude-sonnet-4-6",
+            model=_env(actual_env, "RWS_ANTHROPIC_MODEL") or "claude-4-sonnet",
             env=actual_env,
         ),
         _status(

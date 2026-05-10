@@ -63,7 +63,7 @@ def execute_deliberation_artifact(*, repo_root: Path, delib_path: Path, provider
     _write_json(delib_path, delib)
 
 
-def execute_council_artifact(*, repo_root: Path, council_path: Path, provider: BaseProvider, model: str | None = None) -> None:
+def execute_council_artifact(*, repo_root: Path, council_path: Path, provider: BaseProvider, model: str | None = None, injection_queue: Any | None = None) -> None:
     council = _load_json(council_path)
     prompt_path = repo_root / str(council["prompt_path"])
     finding_ids = []
@@ -87,7 +87,8 @@ def execute_council_artifact(*, repo_root: Path, council_path: Path, provider: B
                 "finding_ids": finding_ids,
             },
             model=model,
-            tools=mcp_client.get_tools()
+            tools=mcp_client.get_tools(),
+            injection_queue=injection_queue
         ),
     )
     council["status"] = "completed"

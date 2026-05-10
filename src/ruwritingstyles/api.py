@@ -34,7 +34,22 @@ class ConnectionManager:
                 except Exception:
                     pass
 
+import queue
+
+class SharedState:
+    def __init__(self):
+        self.injections: Dict[str, queue.Queue] = {}
+
+    def get_queue(self, run_id: str) -> queue.Queue:
+        if run_id not in self.injections:
+            self.injections[run_id] = queue.Queue()
+        return self.injections[run_id]
+
+    def add_injection(self, run_id: str, content: str):
+        self.get_queue(run_id).put(content)
+
 manager = ConnectionManager()
+shared_state = SharedState()
 
 from .config import Manifest, load_manifest, load_model_policy, repo_root_from
 from .pipeline import run_full_pipeline
@@ -115,9 +130,17 @@ async def websocket_endpoint(websocket: WebSocket, run_id: str):
     await manager.connect(run_id, websocket)
     try:
         while True:
-            # Keep connection alive, we primarily use this for broadcasting
-            data = await websocket.receive_text()
-            # If we want to support human injection here, we could handle it
+            # Handle incoming messages (e.g., Socratic Injection)
+            data = await websocket.receive_json()
+            if data.get("type") == "human_injection":
+                content = data.get("content")
+                if content:
+                    shared_state.add_injection(run_id, content)
+                    await manager.broadcast(run_id, {
+                        "type": "injection_received",
+                        "status": "queued",
+                        "content": content
+                    })
     except WebSocketDisconnect:
         manager.disconnect(run_id, websocket)
 
@@ -209,7 +232,8 @@ async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
             provider_name=req.provider, 
             model=req.model, 
             profile=req.profile,
-            on_update=on_update
+            on_update=on_update,
+            injection_queue=shared_state.get_queue(run_dir.name)
         )
 
     return {"run_id": run_dir.name}
