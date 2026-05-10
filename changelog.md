@@ -1,3 +1,14 @@
+### [2.4.0] - 2026-05-10
+#### Added (Phase III: External Agent Integration)
+- **Agentic Tool-Calling Loop**: Refactored `GoogleProvider` and `OpenAIProvider` to support a multi-turn (max 5) autonomous execution loop. Providers now automatically pause, execute requested tools, and resume generation with grounding data.
+- **MCP Stdio Client**: Implemented a production-grade Model Context Protocol (MCP) client. Supports stdio subprocess communication, JSON-RPC handshakes, and automatic tool discovery (handshake -> tools/list -> tools/call).
+- **Web Researcher (OpenAlex)**: Created a live scholarly discovery agent in `researcher.py` using the OpenAlex API. Replaced mock data with real-world academic metadata discovery (Author, Year, DOI).
+- **Zotero Integration**: Prepared the pipeline for live Zotero library interrogation via MCP server path configuration.
+
+#### Added (Phase IV: Advanced Agentic Orchestration)
+- **SQLite Native Orchestration**: Implemented a `run_tool_calls` table in `rws.db`. Every agentic interaction (MCP calls, Web searches) is now permanently logged with full arguments and results for absolute auditability.
+- **Dynamic Tool Injection**: Wired MCP tools into both the `Socratic Council` (deliberation) and `Verification` stages, allowing agents to fact-check during the debate process.
+
 ### [2.3.5] - 2026-05-10
 #### Added (Phase I: Philological Production)
 - **Scholarly Grounding Engine**: Implemented `citations.py` for automated extraction and verification of academic references against the philological knowledge base.

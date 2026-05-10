@@ -72,6 +72,7 @@ def execute_council_artifact(*, repo_root: Path, council_path: Path, provider: B
         for finding in review.get("findings", []):
             if isinstance(finding, dict) and finding.get("id"):
                 finding_ids.append(str(finding["id"]))
+    from .mcp_client import mcp_client
     output = _generate_with_log(
         repo_root=repo_root,
         run_dir=council_path.parent,
@@ -86,6 +87,7 @@ def execute_council_artifact(*, repo_root: Path, council_path: Path, provider: B
                 "finding_ids": finding_ids,
             },
             model=model,
+            tools=mcp_client.get_tools()
         ),
     )
     council["status"] = "completed"
