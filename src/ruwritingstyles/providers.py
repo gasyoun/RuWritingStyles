@@ -110,6 +110,16 @@ class MockProvider(BaseProvider):
         self._set_usage(ProviderUsage())
         task = provider_request.task
         metadata = provider_request.metadata
+        
+        # Simulate tool usage for verification if tools are present
+        if task == "verification" and provider_request.tools:
+            from .mcp_client import mcp_client
+            run_id = str(metadata.get("run_id", "mock-run"))
+            # Simulate a search for a common philological authority
+            mcp_client.execute_tool("search_bibliography", {"query": "Uspensky 1987"}, run_id=run_id, task=task)
+            # Simulate a fallback search for an unknown reference
+            mcp_client.execute_tool("search_scholar", {"query": "Unknown Author 2024 citation"}, run_id=run_id, task=task)
+
         if task == "review":
             return self._review(metadata)
         if task == "council":
@@ -321,7 +331,7 @@ class OpenAIProvider(BaseProvider):
     """Minimal OpenAI Responses API provider."""
 
     name = "openai"
-    endpoint = "https://api.openai.com/v1/responses"
+    endpoint = "https://api.openai.com/v1/chat/completions"
 
     def __init__(self, api_key: str | None = None) -> None:
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
@@ -333,56 +343,103 @@ class OpenAIProvider(BaseProvider):
 
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
         model = self.effective_model(provider_request)
-        body = {
-            "model": model,
-            "input": [
-                {
-                    "role": "user",
-                    "content": provider_request.prompt,
-                }
-            ],
-            "text": {
-                "format": {
-                    "type": "json_schema",
-                    "name": _schema_name(provider_request.task),
-                    "schema": _provider_schema(provider_request.schema),
-                    "strict": True,
-                }
-            },
-        }
-
-        effort = os.environ.get("RWS_OPENAI_REASONING")
-        if effort:
-            body["reasoning"] = {"effort": effort}
-
+        messages = [
+            {
+                "role": "user",
+                "content": provider_request.prompt,
+            }
+        ]
+        
+        max_turns = 5
+        total_input_tokens = 0
+        total_output_tokens = 0
         telemetry = ProviderRetryTelemetry()
-        try:
-            data = _post_json_with_retries(
-                provider_name="OpenAI",
-                url=self.endpoint,
-                body=body,
-                headers={
-                    "Authorization": f"Bearer {self.api_key}",
-                    "Content-Type": "application/json",
+        
+        for turn in range(max_turns):
+            body = {
+                "model": model,
+                "messages": messages,
+                "response_format": {
+                    "type": "json_schema",
+                    "json_schema": {
+                        "name": _schema_name(provider_request.task),
+                        "schema": _provider_schema(provider_request.schema),
+                        "strict": True,
+                    }
                 },
-                telemetry=telemetry,
-            )
-        finally:
-            self._set_retry_telemetry(telemetry)
+            }
+            
+            if provider_request.tools:
+                # OpenAI format: {"type": "function", "function": {"name": ..., "description": ..., "parameters": ...}}
+                body["tools"] = [{"type": "function", "function": t} for t in provider_request.tools]
+                
+            effort = os.environ.get("RWS_OPENAI_REASONING")
+            if effort and "o1" in model:
+                body["reasoning_effort"] = effort
 
-        usage = data.get("usage", {})
-        self._set_usage(ProviderUsage(
-            input_tokens=usage.get("prompt_tokens", 0),
-            output_tokens=usage.get("completion_tokens", 0),
-            total_tokens=usage.get("total_tokens", 0),
-            cost_estimate=0.0 # Standard cost estimation logic could be added here
-        ))
+            try:
+                data = _post_json_with_retries(
+                    provider_name="OpenAI",
+                    url=self.endpoint,
+                    body=body,
+                    headers={
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json",
+                    },
+                    telemetry=telemetry,
+                )
+            finally:
+                self._set_retry_telemetry(telemetry)
 
-        text = _extract_output_text(data)
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError as exc:
-            raise ProviderError(f"OpenAI response did not contain parseable JSON: {text[:500]}") from exc
+            usage = data.get("usage", {})
+            total_input_tokens += usage.get("prompt_tokens", 0)
+            total_output_tokens += usage.get("completion_tokens", 0)
+            self._set_usage(ProviderUsage(
+                input_tokens=total_input_tokens,
+                output_tokens=total_output_tokens,
+                total_tokens=total_input_tokens + total_output_tokens,
+                cost_estimate=0.0
+            ))
+
+            choice = data.get("choices", [{}])[0]
+            message = choice.get("message", {})
+            tool_calls = message.get("tool_calls", [])
+            
+            if not tool_calls:
+                text = message.get("content")
+                if not text:
+                    raise ProviderError("OpenAI response did not include output text")
+                try:
+                    return json.loads(text)
+                except json.JSONDecodeError as exc:
+                    raise ProviderError(f"OpenAI response did not contain parseable JSON: {text[:500]}") from exc
+
+            # Append assistant message with tool calls
+            messages.append(message)
+            
+            # Execute tools
+            from .mcp_client import mcp_client
+            run_id = str(provider_request.metadata.get("run_id", "unknown"))
+            task = provider_request.task
+            for tc in tool_calls:
+                func = tc.get("function", {})
+                tool_name = func.get("name")
+                args_str = func.get("arguments", "{}")
+                
+                try:
+                    args = json.loads(args_str)
+                    result = mcp_client.execute_tool(tool_name, args, run_id=run_id, task=task)
+                except Exception as e:
+                    result = {"error": str(e)}
+                    
+                messages.append({
+                    "role": "tool",
+                    "tool_call_id": tc.get("id"),
+                    "name": tool_name,
+                    "content": json.dumps(result)
+                })
+                
+        raise ProviderError(f"OpenAI exceeded {max_turns} tool call turns without producing final JSON.")
 
 
 class GoogleProvider(BaseProvider):
@@ -401,43 +458,100 @@ class GoogleProvider(BaseProvider):
 
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
         model = self.effective_model(provider_request)
-        body = {
-            "contents": [
-                {
-                    "role": "user",
-                    "parts": [{"text": provider_request.prompt}],
-                }
-            ],
-            "generationConfig": {
-                "responseMimeType": "application/json",
-                "responseJsonSchema": _provider_schema(provider_request.schema),
-            },
-        }
-
+        messages = [
+            {
+                "role": "user",
+                "parts": [{"text": provider_request.prompt}],
+            }
+        ]
+        
+        max_turns = 5
+        total_input_tokens = 0
+        total_output_tokens = 0
         telemetry = ProviderRetryTelemetry()
-        try:
-            data = _post_json_with_retries(
-                provider_name="Google Gemini",
-                url=self.endpoint_template.format(model=quote(model, safe=""), api_key=quote(self.api_key, safe="")),
-                body=body,
-                headers={"Content-Type": "application/json"},
-                telemetry=telemetry,
-            )
-        finally:
-            self._set_retry_telemetry(telemetry)
+        
+        for turn in range(max_turns):
+            body = {
+                "contents": messages,
+                "generationConfig": {
+                    "responseMimeType": "application/json",
+                    "responseJsonSchema": _provider_schema(provider_request.schema),
+                },
+            }
+            if provider_request.tools:
+                # Gemini format: {"functionDeclarations": [{"name": ..., "description": ..., "parameters": ...}]}
+                body["tools"] = [{"functionDeclarations": provider_request.tools}]
+                
+            try:
+                data = _post_json_with_retries(
+                    provider_name="Google Gemini",
+                    url=self.endpoint_template.format(model=quote(model, safe=""), api_key=quote(self.api_key, safe="")),
+                    body=body,
+                    headers={"Content-Type": "application/json"},
+                    telemetry=telemetry,
+                )
+            finally:
+                self._set_retry_telemetry(telemetry)
 
-        usage = data.get("usageMetadata", {})
-        self._set_usage(ProviderUsage(
-            input_tokens=usage.get("promptTokenCount", 0),
-            output_tokens=usage.get("candidatesTokenCount", 0),
-            total_tokens=usage.get("totalTokenCount", 0)
-        ))
+            usage = data.get("usageMetadata", {})
+            total_input_tokens += usage.get("promptTokenCount", 0)
+            total_output_tokens += usage.get("candidatesTokenCount", 0)
+            self._set_usage(ProviderUsage(
+                input_tokens=total_input_tokens,
+                output_tokens=total_output_tokens,
+                total_tokens=total_input_tokens + total_output_tokens
+            ))
 
-        text = _extract_gemini_text(data)
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError as exc:
-            raise ProviderError(f"Google Gemini response did not contain parseable JSON: {text[:500]}") from exc
+            if not data.get("candidates"):
+                raise ProviderError(f"Google Gemini returned no candidates: {data}")
+
+            candidate = data["candidates"][0]
+            content = candidate.get("content", {})
+            parts = content.get("parts", [])
+            
+            # Check for function calls
+            function_calls = [p["functionCall"] for p in parts if "functionCall" in p]
+            
+            if not function_calls:
+                # No tool calls, assume it's the final JSON response
+                text = _extract_gemini_text(data)
+                try:
+                    return json.loads(text)
+                except json.JSONDecodeError as exc:
+                    raise ProviderError(f"Google Gemini response did not contain parseable JSON: {text[:500]}") from exc
+            
+            # 1. Append the model's function call to history
+            messages.append({
+                "role": "model",
+                "parts": parts
+            })
+            
+            # 2. Execute tools and append function responses
+            from .mcp_client import mcp_client
+            run_id = str(provider_request.metadata.get("run_id", "unknown"))
+            task = provider_request.task
+            tool_responses = []
+            for fc in function_calls:
+                tool_name = fc.get("name")
+                args = fc.get("args", {})
+                try:
+                    result = mcp_client.execute_tool(tool_name, args, run_id=run_id, task=task)
+                except Exception as e:
+                    result = {"error": str(e)}
+                    
+                tool_responses.append({
+                    "functionResponse": {
+                        "name": tool_name,
+                        "response": result
+                    }
+                })
+                
+            messages.append({
+                "role": "user",
+                "parts": tool_responses
+            })
+            
+        raise ProviderError(f"Google Gemini exceeded {max_turns} tool call turns without producing final JSON.")
 
 
 class AnthropicProvider(BaseProvider):

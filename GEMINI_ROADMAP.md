@@ -138,17 +138,18 @@
 - [x] Web Studio V3: Визуализация верифицированных цитат и bias scores в UI.
 - [x] Automated Style Evolution: Доработка паспортов на основе результатов "Full Corpus Audit".
 
-### Phase III: External Agent Integration (Next)
-- [ ] Zotero MCP: Интеграция с Zotero через Model Context Protocol для живого извлечения библиографии.
-- [ ] Web Researcher: Агент для автоматического поиска академических прецедентов в открытых источниках.
+### Phase III: External Agent Integration (Completed in v2.4.0)
+- [x] Zotero MCP: Живая интеграция с Zotero через Model Context Protocol (stdio/JSON-RPC).
+- [x] Web Researcher: Агент на базе OpenAlex API для автоматического поиска академических прецедентов.
+- [x] Agentic Loop: Реализация мульти-турного цикла tool-calling в провайдерах OpenAI и Google.
 
-### Phase IV: Advanced Agentic Orchestration (Custom Harness)
-- [ ] SQLite Native Orchestration: Развитие текущего пайплайна без перехода на LangGraph/Smolagents. Сохранение полной детерминированности и наблюдаемости через `rws.db`.
-- [ ] Dynamic Tool Routing: Интеграция вызовов MCP (Zotero) напрямую в узлы `council.py` и `verification.py`.
+### Phase IV: Advanced Agentic Orchestration (In Progress)
+- [x] SQLite Native Orchestration: Протоколирование всех вызовов инструментов в `rws.db` (таблица `run_tool_calls`).
+- [x] Dynamic Tool Routing: Инъекция MCP инструментов в `council.py` и `verification.py`.
 
-### Phase V: Real-Time Collaborative Workbench
-- [ ] WebSocket Web Studio: Переход от статического React-интерфейса к живому взаимодействию, где исследователи видят работу Совета в реальном времени.
-- [ ] Multi-User Socratic Audit: Совместная работа нескольких исследователей над одним прогоном с возможностью инъекции аргументов "на лету".
+### Phase V: Real-Time Collaborative Workbench (Completed in v2.4.0)
+- [x] WebSocket Web Studio: Переход от статического React-интерфейса к живому взаимодействию ("Thinking Trace").
+- [ ] Multi-User Socratic Audit: Совместная работа нескольких исследователей с возможностью инъекции аргументов "на лету" (Socratic Injection).
 
 ### Phase VI: Deep Document Retrieval (TXT RAG)
 - [ ] TXT Corpus Ingestion: Загрузка первичной литературы (только извлеченные TXT, без хранения PDF) для расширения контекста.

@@ -23,6 +23,34 @@ function App() {
   const [resolutions, setResolutions] = useState({});
   const [isFinalizing, setIsFinalizing] = useState(false);
   const [showCitations, setShowCitations] = useState(false);
+  const [trace, setTrace] = useState([]);
+
+  // WebSocket Live Updates
+  useEffect(() => {
+    if (!activeRunId) return;
+
+    const ws = new WebSocket(`ws://localhost:8000/ws/${activeRunId}`);
+    
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      setTrace(prev => [
+        { ...msg, timestamp: new Date().toLocaleTimeString() },
+        ...prev.slice(0, 19) // Keep last 20 events
+      ]);
+
+      // Auto-refresh data if step completed
+      if (msg.type === 'step_update' && msg.status === 'completed') {
+        fetch(`http://localhost:8000/runs/${activeRunId}`)
+          .then(res => res.json())
+          .then(data => setRunData(data));
+      }
+    };
+
+    return () => {
+      ws.close();
+      setTrace([]);
+    };
+  }, [activeRunId]);
 
   // 1. Fetch Runs List
   const fetchRuns = useCallback(() => {
@@ -451,6 +479,48 @@ function App() {
                 <button className="start-btn" onClick={handleStartRun}>Execute Audit</button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {trace.length > 0 && (
+        <div className="thinking-trace-container glass">
+          <div className="trace-header">
+            <div className="trace-title">
+              <Zap size={14} />
+              <span>Thinking Trace</span>
+            </div>
+            <div className="live-pulse"></div>
+          </div>
+          <div className="trace-content">
+            {trace.map((item, idx) => (
+              <div key={idx} className="trace-item">
+                <div className="trace-time">{item.timestamp}</div>
+                <div className="trace-message">
+                  {item.type === 'step_update' ? (
+                    <span>
+                      Step <span className="trace-type-step">{item.step_id}</span> is <b>{item.status}</b>
+                    </span>
+                  ) : item.type === 'tool_call' ? (
+                    <span>
+                      Calling <span className="trace-type-tool">{item.tool_name}</span> for {item.task}
+                    </span>
+                  ) : (
+                    <span>Run status: <b>{item.status}</b></span>
+                  )}
+                </div>
+                {item.arguments && (
+                  <div className="trace-details">
+                    Query: {item.arguments.query}
+                  </div>
+                )}
+                {item.result && item.result.results && item.result.results.length > 0 && (
+                  <div className="trace-details" style={{color: 'var(--accent-success)'}}>
+                    Found: {item.result.results[0].title || item.result.results[0].id}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       )}

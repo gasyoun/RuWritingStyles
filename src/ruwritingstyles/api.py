@@ -5,9 +5,36 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import Dict, List, Set
+
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: Dict[str, Set[WebSocket]] = {}
+
+    async def connect(self, run_id: str, websocket: WebSocket):
+        await websocket.accept()
+        if run_id not in self.active_connections:
+            self.active_connections[run_id] = set()
+        self.active_connections[run_id].add(websocket)
+
+    def disconnect(self, run_id: str, websocket: WebSocket):
+        if run_id in self.active_connections:
+            self.active_connections[run_id].remove(websocket)
+            if not self.active_connections[run_id]:
+                del self.active_connections[run_id]
+
+    async def broadcast(self, run_id: str, message: dict):
+        if run_id in self.active_connections:
+            for connection in self.active_connections[run_id]:
+                try:
+                    await connection.send_json(message)
+                except Exception:
+                    pass
+
+manager = ConnectionManager()
 
 from .config import Manifest, load_manifest, load_model_policy, repo_root_from
 from .pipeline import run_full_pipeline
@@ -83,6 +110,18 @@ async def get_run_details(run_id: str):
     }
 
 
+@app.websocket("/ws/{run_id}")
+async def websocket_endpoint(websocket: WebSocket, run_id: str):
+    await manager.connect(run_id, websocket)
+    try:
+        while True:
+            # Keep connection alive, we primarily use this for broadcasting
+            data = await websocket.receive_text()
+            # If we want to support human injection here, we could handle it
+    except WebSocketDisconnect:
+        manager.disconnect(run_id, websocket)
+
+
 @app.get("/runs/{run_id}/status")
 async def get_run_step_status(run_id: str):
     from .db import Database
@@ -151,7 +190,27 @@ async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
     )
 
     if req.execute:
-        background_tasks.add_task(run_full_pipeline, repo_root, run_dir, provider_name=req.provider, model=req.model, profile=req.profile)
+        import asyncio
+        from .mcp_client import mcp_client
+        loop = asyncio.get_event_loop()
+        
+        def on_update(msg):
+            asyncio.run_coroutine_threadsafe(manager.broadcast(run_dir.name, msg), loop)
+            
+        def on_tool(run_id, msg):
+            asyncio.run_coroutine_threadsafe(manager.broadcast(run_id, msg), loop)
+            
+        mcp_client.on_tool_call = on_tool
+        
+        background_tasks.add_task(
+            run_full_pipeline, 
+            repo_root, 
+            run_dir, 
+            provider_name=req.provider, 
+            model=req.model, 
+            profile=req.profile,
+            on_update=on_update
+        )
 
     return {"run_id": run_dir.name}
 

@@ -97,6 +97,22 @@ class Database:
                     UNIQUE(run_id, step_id)
                 )
             """)
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS run_tool_calls (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    run_id TEXT,
+                    task TEXT,
+                    tool_name TEXT,
+                    arguments_json TEXT,
+                    response_json TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (run_id) REFERENCES runs(run_id) ON DELETE CASCADE
+                )
+            """)
+            
+            conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_tool_calls_run_id ON run_tool_calls(run_id)
+            """)
 
             conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_steps_run_id ON run_steps(run_id)
@@ -212,6 +228,20 @@ class Database:
             conn.execute(
                 "INSERT INTO run_metrics (run_id, metric_type, data_json) VALUES (?, ?, ?)",
                 (run_id, metric_type, json.dumps(data, ensure_ascii=False))
+            )
+
+    def save_tool_call(self, run_id: str, task: str, tool_name: str, arguments: dict, response: Any):
+        """Record an agentic tool call and its response."""
+        with self._connection() as conn:
+            conn.execute(
+                "INSERT INTO run_tool_calls (run_id, task, tool_name, arguments_json, response_json) VALUES (?, ?, ?, ?, ?)",
+                (
+                    run_id,
+                    task,
+                    tool_name,
+                    json.dumps(arguments, ensure_ascii=False),
+                    json.dumps(response, ensure_ascii=False) if response is not None else None,
+                )
             )
 
     def get_run(self, run_id: str) -> dict[str, Any] | None:

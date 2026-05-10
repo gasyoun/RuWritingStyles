@@ -21,13 +21,14 @@ from .html_summary import write_html_report
 from .citations import extract_citations, verify_citations_against_knowledge
 from .bias import run_bias_audit
 
-def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model: str | None = None, profile: str = "researcher") -> None:
+def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model: str | None = None, profile: str = "researcher", on_update: Any = None) -> None:
     from .db import Database
     from .profiling import calculate_bloom_stats, calculate_methodological_compass, calculate_tension_heatmap
     
     db = Database(repo_root)
     run_id = run_dir.name
     db.update_run_status(run_id, "executing")
+    if on_update: on_update({"type": "run_status", "status": "executing"})
     
     def step(step_id, func):
         steps = db.get_run_steps(run_id)
@@ -37,11 +38,14 @@ def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model:
             return
 
         db.update_step_status(run_id, step_id, "executing")
+        if on_update: on_update({"type": "step_update", "step_id": step_id, "status": "executing"})
         try:
             artifact_path = func()
             db.update_step_status(run_id, step_id, "completed", artifact_path=str(artifact_path) if artifact_path else None)
+            if on_update: on_update({"type": "step_update", "step_id": step_id, "status": "completed", "artifact_path": str(artifact_path) if artifact_path else None})
         except Exception as e:
             db.update_step_status(run_id, step_id, "failed", error=str(e))
+            if on_update: on_update({"type": "step_update", "step_id": step_id, "status": "failed", "error": str(e)})
             raise
 
     try:
