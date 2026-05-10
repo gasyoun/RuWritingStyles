@@ -57,6 +57,7 @@ from .validation import (
     validate_run_dir,
 )
 from .verification import create_verification_bundle
+from .gallery import generate_style_gallery
 from .db import Database
 
 PROVIDER_CHOICES = ["mock", "openai", "google", "anthropic", "openrouter", "local", "ollama"]
@@ -171,6 +172,26 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_execute_args(ab_test)
     ab_test.set_defaults(func=cmd_ab_test)
+
+    style_gallery = subparsers.add_parser(
+        "style-gallery",
+        help="Generate a Markdown gallery showcasing multiple styles on a sample text.",
+    )
+    style_gallery.add_argument("input_text", help="The sample text to transform.")
+    style_gallery.add_argument(
+        "--styles",
+        "-s",
+        nargs="+",
+        help="List of style IDs. Defaults to MVP set.",
+    )
+    style_gallery.add_argument(
+        "--output",
+        "-o",
+        type=Path,
+        help="Output Markdown path (e.g. docs/my-gallery.md).",
+    )
+    _add_provider_args(style_gallery)
+    style_gallery.set_defaults(func=cmd_style_gallery)
 
     project_run = subparsers.add_parser(
         "project-run",
@@ -775,6 +796,41 @@ def cmd_prepare(args: argparse.Namespace) -> int:
 
     print(f"created {run_dir.relative_to(repo_root)}")
     print(f"segments: {len(segments)}")
+    return 0
+
+
+def cmd_style_gallery(args: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    manifest = load_manifest(repo_root)
+    
+    style_ids = args.styles
+    if not style_ids:
+        style_ids = manifest.mvp_style_ids
+        
+    if not style_ids:
+        print("error: no styles specified and no MVP styles found in manifest.")
+        return 1
+        
+    print(f"Generating Style Gallery for {len(style_ids)} styles...")
+    
+    gallery_md = generate_style_gallery(
+        repo_root=repo_root,
+        input_text=args.input_text,
+        style_ids=style_ids,
+        provider=provider_from_name(args.provider),
+        model=args.model,
+    )
+    
+    output_path = args.output
+    if not output_path:
+        from datetime import datetime
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        output_path = repo_root / "docs" / f"style-gallery-{timestamp}.md"
+        
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(gallery_md, encoding="utf-8")
+    
+    print(f"\nGallery generated! Saved to: {output_path.relative_to(repo_root)}")
     return 0
 
 

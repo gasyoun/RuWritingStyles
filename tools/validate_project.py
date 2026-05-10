@@ -1,4 +1,4 @@
-﻿"""Standalone repository validation for RuWritingStyles.
+"""Standalone repository validation for RuWritingStyles.
 
 This script uses only the Python standard library. It implements a robust
 YAML parser and reuses the internal JSON Schema subset validator to ensure
@@ -43,6 +43,7 @@ REQUIRED_FILES = [
     "schemas/manifest.schema.json",
     "schemas/model-policy.schema.json",
     "schemas/eval-manifest.schema.json",
+    "schemas/migration-summary.schema.json",
     "src/ruwritingstyles/document.py",
     "src/ruwritingstyles/linguistics.py",
     "src/ruwritingstyles/schema_validation.py",

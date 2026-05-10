@@ -58,6 +58,10 @@
 - [x] Промышленная контейнеризация (Docker + Docker Compose).
 - [x] Интеграция специализированных корпусов (Тронский, Гаспаров).
 - [x] Multi-Document Workbench: API и Визуализация сравнения профилей.
+- [x] Style Migration: Поточное преобразование корпуса между регистрами.
+- [x] Project Consistency: Аудит набора документов на соблюдение общих обязательств.
+- [x] Peer Review A/B: Автоматизированное сравнение рецензий от разных архетипов.
+- [x] Style Gallery: Автоматическая генерация Markdown-галерей стилей.
 - [x] Scholarly Apparatus: Автоматическая генерация LaTeX-отчетов.
 - [x] Начальный BibTeX export (`references.bib`) для scholarly artifacts.
 
@@ -119,4 +123,9 @@
 4. [x] **Unit-тесты**: Unit-тесты для `hooks.py` и `resolution.py` добавлены в CI gate (44/44 OK).
 
 ---
-*Math: Total Phases (8) — Phase H infrastructure complete; agent-roadmap-2026 delta (Priorities 0–5) complete; refactor v2.3.0 complete.*
+*Math: Total Phases (9) — Phase I implementation complete; v2.3.5 stabilization complete.*
+
+## Phase I: Philological Production (Next)
+- [ ] Scholarly Apparatus: Автоматическая генерация BibTeX и сносок.
+- [ ] LaTeX Export: Генерация PDF-отчетов в академическом стиле.
+- [ ] Advanced Bias Detection: Анализ идеологических и методологических смещений.

@@ -125,6 +125,14 @@ class MockProvider(BaseProvider):
             return self._deliberation(metadata)
         if task == "scrutiny":
             return self._scrutiny(metadata)
+        if task == "migration":
+            return self._migration(metadata)
+        if task == "gallery":
+            return self._gallery(metadata)
+        if task == "peer_review":
+            return self._peer_review(metadata)
+        if task == "audit":
+            return self._audit(metadata)
         raise ProviderError(f"mock provider does not support task {task!r}")
 
     def _review(self, metadata: dict[str, Any]) -> dict[str, Any]:
@@ -257,6 +265,36 @@ class MockProvider(BaseProvider):
                     "comment": "Mock syntax shift.",
                 }
             ],
+        }
+
+    def _migration(self, metadata: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "migration_summary": "Mock migration summary.",
+            "revised_text": "Mock migrated text."
+        }
+
+    def _gallery(self, metadata: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "transformed_text": f"Mock transformed text for {metadata.get('style_id')}.",
+            "accent_description": "Mock accent description."
+        }
+
+    def _peer_review(self, metadata: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "reviewer_archetype": metadata.get("archetype", "mock"),
+            "overall_score": 8,
+            "comments": [
+                {"id": "pr001", "type": "praise", "text": "Mock peer review praise."}
+            ],
+            "recommendation": "accept"
+        }
+
+    def _audit(self, metadata: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "status": "completed",
+            "audit_summary": "Mock audit summary.",
+            "violations": [],
+            "passed_commitments": ["Mock Term"]
         }
 
 

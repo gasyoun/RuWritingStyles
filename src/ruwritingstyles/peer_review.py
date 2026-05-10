@@ -64,14 +64,39 @@ Return a JSON object:
 }}
 """
 
-    response_text = provider.generate(
-        prompt=prompt,
-        model=model,
-        system_instructions=f"You are acting as the {reviewer_archetype_id} persona.",
-        json_mode=True
-    )
+    from .providers import ProviderRequest
     
-    result = json.loads(response_text)
+    schema = {
+        "type": "object",
+        "required": ["reviewer_archetype", "overall_score", "comments", "recommendation"],
+        "properties": {
+            "reviewer_archetype": {"type": "string"},
+            "overall_score": {"type": "integer", "minimum": 1, "maximum": 10},
+            "comments": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": ["id", "type", "text"],
+                    "properties": {
+                        "id": {"type": "string"},
+                        "type": {"type": "string", "enum": ["criticism", "praise", "correction"]},
+                        "text": {"type": "string"}
+                    }
+                }
+            },
+            "recommendation": {"type": "string", "enum": ["accept", "minor_revision", "major_revision"]}
+        }
+    }
+    
+    result = provider.generate_json(
+        ProviderRequest(
+            task="peer_review",
+            prompt=prompt,
+            schema=schema,
+            metadata={"archetype": reviewer_archetype_id},
+            model=model,
+        )
+    )
     
     # Save to run dir
     peer_review_path = run_dir / "peer-review.json"
