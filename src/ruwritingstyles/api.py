@@ -78,6 +78,8 @@ async def get_run_details(run_id: str):
         "profile": run_entry.get("profile", {}),
         "bloom_stats": run_entry.get("bloom_stats", {}),
         "tension": run_entry.get("tension", {}),
+        "bias_audit": run_entry.get("bias_audit", {}),
+        "citation_stats": run_entry.get("citation_stats", {}),
     }
 
 
@@ -241,6 +243,8 @@ async def compare_runs(run_ids: str):
                 "run_id": run_id,
                 "profile": run_data.get("profile", {}),
                 "bloom_stats": run_data.get("bloom_stats", {}),
+                "bias_score": run_data.get("bias_score"),
+                "citation_stats": run_data.get("citation_stats"),
                 "duration": run_data.get("duration_seconds"),
                 "status": run_data.get("status")
             })

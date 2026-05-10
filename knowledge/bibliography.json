@@ -1,0 +1,66 @@
+[
+  {
+    "id": "Zaliznyak 2004",
+    "author": "Зализняк А. А.",
+    "year": 2004,
+    "title": "Древненовгородский диалект",
+    "publisher": "Языки славянской культуры",
+    "tags": ["лингвистика", "диалектология", "берестяные грамоты"]
+  },
+  {
+    "id": "Zaliznyak 2008",
+    "author": "Зализняк А. А.",
+    "year": 2008,
+    "title": "Из русского ударения",
+    "publisher": "Языки славянской культуры",
+    "tags": ["акцентология", "история языка"]
+  },
+  {
+    "id": "Gasparov 1984",
+    "author": "Гаспаров М. Л.",
+    "year": 1984,
+    "title": "Очерк истории русского стиха",
+    "publisher": "Наука",
+    "tags": ["стиховедение", "метрика"]
+  },
+  {
+    "id": "NKRYA",
+    "author": "НКРЯ",
+    "year": 2024,
+    "title": "Национальный корпус русского языка",
+    "url": "https://ruscorpora.ru",
+    "tags": ["корпус", "статистика", "узус"]
+  },
+  {
+    "id": "Ivanov 1974",
+    "author": "Иванов Вяч. Вс., Топоров В. Н.",
+    "year": 1974,
+    "title": "Исследования в области славянских древностей",
+    "publisher": "Наука",
+    "tags": ["семиотика", "мифология", "славистика"]
+  },
+  {
+    "id": "Trubetzkoy 1939",
+    "author": "Trubetzkoy N. S.",
+    "year": 1939,
+    "title": "Grundzüge der Phonologie",
+    "publisher": "Travaux du Cercle linguistique de Prague",
+    "tags": ["фонология", "структурализм"]
+  },
+  {
+    "id": "Jakobson 1958",
+    "author": "Jakobson R.",
+    "year": 1958,
+    "title": "Morfologičeskie nabljudenija nad slavjanskim skloneniem",
+    "publisher": "Mouton",
+    "tags": ["морфология", "типология"]
+  },
+  {
+    "id": "Uspensky 1987",
+    "author": "Успенский Б. А.",
+    "year": 1987,
+    "title": "История русского литературного языка",
+    "publisher": "МГУ",
+    "tags": ["история языка", "социолингвистика"]
+  }
+]

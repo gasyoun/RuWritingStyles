@@ -24,12 +24,12 @@ def extract_citations(text: str) -> list[str]:
         
     return sorted(list(set(results)))
 
+from .knowledge import KnowledgeManager
+
 def verify_citations_against_knowledge(repo_root: Path, citations: list[str]) -> dict[str, Any]:
     """Check if the extracted citations exist in the knowledge collections."""
-    collections_dir = repo_root / "knowledge" / "collections"
-    if not collections_dir.exists():
-        return {"status": "error", "message": "Knowledge collections not found."}
-        
+    km = KnowledgeManager(repo_root)
+    
     verification = {
         "status": "completed",
         "verified": [],
@@ -38,25 +38,18 @@ def verify_citations_against_knowledge(repo_root: Path, citations: list[str]) ->
     }
     
     for cite in citations:
-        found = False
-        # Search for Author or Key in filenames and headers
-        for p in collections_dir.glob("*.md"):
-            content = p.read_text(encoding="utf-8")
-            # If the filename (author) or a header contains the cite, consider it grounded
-            if cite.lower() in p.stem.lower() or cite.lower() in content.lower():
-                found = True
-                verification["verified"].append({
-                    "citation": cite,
-                    "source_file": p.name
-                })
-                break
-        
-        if not found:
+        entry = km.verify_citation(cite)
+        if entry:
+            verification["verified"].append({
+                "citation": cite,
+                "entry": entry
+            })
+        else:
             verification["missing"].append(cite)
-            # If it looks like a real citation but we don't have it, it might be a hallucination
+            # Verification logic for hallucinations
             verification["hallucinations"].append({
                 "citation": cite,
-                "reason": "Not found in project knowledge collections."
+                "reason": "Not found in structured bibliography."
             })
             
     return verification
