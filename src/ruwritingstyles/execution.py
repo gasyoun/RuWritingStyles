@@ -151,6 +151,7 @@ def execute_scrutiny_artifact(*, repo_root: Path, scrutiny_path: Path, provider:
 def execute_verification_artifact(*, repo_root: Path, verification_path: Path, provider: BaseProvider, model: str | None = None) -> None:
     verification = _load_json(verification_path)
     prompt_path = repo_root / str(verification["prompt_path"])
+    from .mcp_client import mcp_client
     output = _generate_with_log(
         repo_root=repo_root,
         run_dir=verification_path.parent,
@@ -164,6 +165,7 @@ def execute_verification_artifact(*, repo_root: Path, verification_path: Path, p
                 "run_id": verification["run_id"],
             },
             model=model,
+            tools=mcp_client.get_tools()
         ),
     )
     verification["status"] = output.get("status", "needs_human_review")

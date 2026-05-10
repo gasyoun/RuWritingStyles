@@ -140,6 +140,20 @@
 
 ### Phase III: External Agent Integration (Next)
 - [ ] Zotero MCP: Интеграция с Zotero через Model Context Protocol для живого извлечения библиографии.
-- [ ] Web Researcher: Агент для автоматического поиска академических прецедентов в открытых источниках (Google Scholar, eLibrary).
-- [ ] Agentic Orchestration: Переход на LangGraph/Smolagents для сложного многошагового роутинга между Советом и внешними тулами.
-- [ ] Real-time Multi-User Workbench: Совместная работа нескольких исследователей над одним прогоном с синхронизацией через WebSockets.
+- [ ] Web Researcher: Агент для автоматического поиска академических прецедентов в открытых источниках.
+
+### Phase IV: Advanced Agentic Orchestration (Custom Harness)
+- [ ] SQLite Native Orchestration: Развитие текущего пайплайна без перехода на LangGraph/Smolagents. Сохранение полной детерминированности и наблюдаемости через `rws.db`.
+- [ ] Dynamic Tool Routing: Интеграция вызовов MCP (Zotero) напрямую в узлы `council.py` и `verification.py`.
+
+### Phase V: Real-Time Collaborative Workbench
+- [ ] WebSocket Web Studio: Переход от статического React-интерфейса к живому взаимодействию, где исследователи видят работу Совета в реальном времени.
+- [ ] Multi-User Socratic Audit: Совместная работа нескольких исследователей над одним прогоном с возможностью инъекции аргументов "на лету".
+
+### Phase VI: Deep Document Retrieval (TXT RAG)
+- [ ] TXT Corpus Ingestion: Загрузка первичной литературы (только извлеченные TXT, без хранения PDF) для расширения контекста.
+- [ ] Citation Quote Extraction: Агенты не только подтверждают наличие источника, но и извлекают точные цитаты для обоснования стилистических правок.
+
+### Phase VII: Editor Integrations (The Final Mile)
+- [ ] Obsidian Plugin: Интеграция API RuWritingStyles в Obsidian (выделение абзаца -> Socratic Council rewrite -> мгновенная подмена).
+- [ ] MS Word Add-in: Академический плагин для Word, позволяющий применять паспорта (Bakhtin, Zaliznyak) к черновикам диссертаций.

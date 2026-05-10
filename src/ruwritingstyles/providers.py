@@ -28,6 +28,7 @@ class ProviderRequest:
     schema: dict[str, Any]
     metadata: dict[str, Any]
     model: str | None = None
+    tools: list[dict[str, Any]] | None = None
 
 
 @dataclass

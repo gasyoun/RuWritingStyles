@@ -44,10 +44,22 @@ def evolve_styles(repo_root: Path):
             
             content = passport.path.read_text(encoding="utf-8")
             if "PHILOLOGICAL CONSTRAINT" not in content:
-                # Add to instructions section
-                new_content = content.replace("instructions: |", f"instructions: |{constraint}")
-                passport.path.write_text(new_content, encoding="utf-8")
-                updates_made[passport.style_id] = True
+                import ruamel.yaml
+                yaml = ruamel.yaml.YAML()
+                yaml.preserve_quotes = True
+                
+                try:
+                    with open(passport.path, 'r', encoding='utf-8') as f:
+                        data = yaml.load(f)
+                    
+                    if 'instructions' in data:
+                        data['instructions'] = constraint + data['instructions']
+                        
+                        with open(passport.path, 'w', encoding='utf-8') as f:
+                            yaml.dump(data, f)
+                        updates_made[passport.style_id] = True
+                except Exception as e:
+                    print(f"Error updating YAML for {passport.style_id}: {e}")
                 
     return updates_made
 
