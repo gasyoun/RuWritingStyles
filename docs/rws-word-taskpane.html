@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <title>RuWritingStyles Auditor</title>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 15px; background: #0d1117; color: #c9d1d9; }
+        .header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #30363d; padding-bottom: 10px; }
+        .btn { background: #238636; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
+        .btn:disabled { background: #21262d; color: #8b949e; cursor: not-allowed; }
+        .result-area { margin-top: 20px; padding: 10px; background: #161b22; border: 1px solid #30363d; border-radius: 6px; display: none; }
+        .diff-add { color: #3fb950; background: rgba(46, 160, 67, 0.15); }
+        .loading { display: none; margin: 10px 0; color: #58a6ff; font-style: italic; }
+        select { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; padding: 5px; width: 100%; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://localhost:8000/static/icon-32.png" alt="RWS" width="24" />
+        <h3 style="margin:0">Philological Auditor</h3>
+    </div>
+
+    <div class="controls">
+        <label style="font-size: 0.8rem; display: block; margin-bottom: 5px;">Methodological Compass</label>
+        <select id="profile-select">
+            <option value="researcher">Academic Researcher (Standard)</option>
+            <option value="zaliznyak">Zaliznyak (Technical/History)</option>
+            <option value="bakhtin">Bakhtin (Dialogic/Literary)</option>
+        </select>
+
+        <button id="run-audit" class="btn">Audit Selection</button>
+    </div>
+
+    <div id="loading-spinner" class="loading">Agents are deliberating...</div>
+
+    <div id="result-pane" class="result-area">
+        <h4 style="margin-top: 0; color: #58a6ff;">Suggested Revision</h4>
+        <div id="revised-text" style="font-size: 0.9rem; line-height: 1.5; margin-bottom: 15px;"></div>
+        <button id="apply-change" class="btn" style="background: #1f6feb;">Apply Revision</button>
+    </div>
+
+    <script>
+        Office.onReady((info) => {
+            if (info.host === Office.HostType.Word) {
+                document.getElementById("run-audit").onclick = runAudit;
+                document.getElementById("apply-change").onclick = applyRevision;
+            }
+        });
+
+        let currentRevision = "";
+
+        async function runAudit() {
+            const loading = document.getElementById("loading-spinner");
+            const resultPane = document.getElementById("result-pane");
+            const runBtn = document.getElementById("run-audit");
+
+            try {
+                loading.style.display = "block";
+                resultPane.style.display = "none";
+                runBtn.disabled = true;
+
+                // 1. Get selection from Word
+                await Word.run(async (context) => {
+                    const selection = context.document.getSelection();
+                    selection.load("text");
+                    await context.sync();
+
+                    if (!selection.text || selection.text.trim().length < 5) {
+                        throw new Error("Please select a paragraph first.");
+                    }
+
+                    // 2. Call RWS API
+                    const response = await fetch("http://localhost:8000/api/audit/selection", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            text: selection.text,
+                            profile: document.getElementById("profile-select").value,
+                            provider: "google"
+                        })
+                    });
+
+                    const data = await response.json();
+                    currentRevision = data.revised_text;
+
+                    // 3. Display result
+                    document.getElementById("revised-text").innerText = currentRevision;
+                    resultPane.style.display = "block";
+                });
+            } catch (error) {
+                alert("Audit Error: " + error.message);
+            } finally {
+                loading.style.display = "none";
+                runBtn.disabled = false;
+            }
+        }
+
+        async function applyRevision() {
+            await Word.run(async (context) => {
+                const selection = context.document.getSelection();
+                selection.insertText(currentRevision, "Replace");
+                await context.sync();
+                document.getElementById("result-pane").style.display = "none";
+            });
+        }
+    </script>
+</body>
+</html>

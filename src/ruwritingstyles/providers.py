@@ -29,6 +29,7 @@ class ProviderRequest:
     metadata: dict[str, Any]
     model: str | None = None
     tools: list[dict[str, Any]] | None = None
+    injection_queue: Any | None = None
 
 
 @dataclass
@@ -377,6 +378,18 @@ class OpenAIProvider(BaseProvider):
             if effort and "o1" in model:
                 body["reasoning_effort"] = effort
 
+            # Check for human injections between turns
+            if provider_request.injection_queue:
+                while not provider_request.injection_queue.empty():
+                    try:
+                        injection = provider_request.injection_queue.get_nowait()
+                        messages.append({
+                            "role": "user",
+                            "content": f"RESEARCHER_INJECTION: {injection}"
+                        })
+                    except Exception:
+                        break
+
             try:
                 data = _post_json_with_retries(
                     provider_name="OpenAI",
@@ -482,6 +495,18 @@ class GoogleProvider(BaseProvider):
                 # Gemini format: {"functionDeclarations": [{"name": ..., "description": ..., "parameters": ...}]}
                 body["tools"] = [{"functionDeclarations": provider_request.tools}]
                 
+            # Check for human injections between turns
+            if provider_request.injection_queue:
+                while not provider_request.injection_queue.empty():
+                    try:
+                        injection = provider_request.injection_queue.get_nowait()
+                        messages.append({
+                            "role": "user",
+                            "parts": [{"text": f"RESEARCHER_INJECTION: {injection}"}]
+                        })
+                    except Exception:
+                        break
+
             try:
                 data = _post_json_with_retries(
                     provider_name="Google Gemini",

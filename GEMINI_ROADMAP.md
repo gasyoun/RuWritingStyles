@@ -143,18 +143,18 @@
 - [x] Web Researcher: Агент на базе OpenAlex API для автоматического поиска академических прецедентов.
 - [x] Agentic Loop: Реализация мульти-турного цикла tool-calling в провайдерах OpenAI и Google.
 
-### Phase IV: Advanced Agentic Orchestration (In Progress)
+### Phase IV: Advanced Agentic Orchestration (Completed in v2.4.0)
 - [x] SQLite Native Orchestration: Протоколирование всех вызовов инструментов в `rws.db` (таблица `run_tool_calls`).
 - [x] Dynamic Tool Routing: Инъекция MCP инструментов в `council.py` и `verification.py`.
 
 ### Phase V: Real-Time Collaborative Workbench (Completed in v2.4.0)
 - [x] WebSocket Web Studio: Переход от статического React-интерфейса к живому взаимодействию ("Thinking Trace").
-- [ ] Multi-User Socratic Audit: Совместная работа нескольких исследователей с возможностью инъекции аргументов "на лету" (Socratic Injection).
+- [x] Multi-User Socratic Audit: Совместная работа нескольких исследователей с возможностью инъекции аргументов "на лету" (Socratic Injection).
 
-### Phase VI: Deep Document Retrieval (TXT RAG)
-- [ ] TXT Corpus Ingestion: Загрузка первичной литературы (только извлеченные TXT, без хранения PDF) для расширения контекста.
-- [ ] Citation Quote Extraction: Агенты не только подтверждают наличие источника, но и извлекают точные цитаты для обоснования стилистических правок.
+### Phase VI: Deep Document Retrieval (TXT RAG) (Completed in v2.4.0)
+- [x] TXT Corpus Ingestion: Загрузка первичной литературы (FTS5) для расширения контекста.
+- [x] Citation Quote Extraction: Агенты извлекают точные цитаты для обоснования стилистических правок.
 
-### Phase VII: Editor Integrations (The Final Mile)
-- [ ] Obsidian Plugin: Интеграция API RuWritingStyles в Obsidian (выделение абзаца -> Socratic Council rewrite -> мгновенная подмена).
-- [ ] MS Word Add-in: Академический плагин для Word, позволяющий применять паспорта (Bakhtin, Zaliznyak) к черновикам диссертаций.
+### Phase VII: Editor Integrations (Foundation Ready)
+- [x] Obsidian Plugin: Интеграция через Selection API (PoC готов в `docs/obsidian-integration-poc.js`).
+- [x] MS Word Add-in: Академический плагин для Word на базе Selection API.

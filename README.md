@@ -4,19 +4,17 @@
 
 Файл стиля - это `.md`-инструкция для Claude. Ее можно использовать двумя способами: загрузить или вставить в настройку Custom Style, либо временно дать Claude в начале диалога и попросить писать по этому профилю. Сами стили не являются пересказами исходных книг и статей. Это рабочие модели письма: тон, композиция, способ доказательства, тип примеров, допустимая терминология и запреты.
 
-**Status**: v2.3.0 (production-ready) — 17 кластеров, 6 MVP-стилей, 33 eval-кейса, CI Golden Gate, Web Studio (interactive resolution), FastAPI, SQLite `rws.db`, Docker/FastAPI static deployment, LaTeX-отчеты и BibTeX export.
+**Status**: v2.4.0 (Agentic Evolution) — Живая интеграция через Model Context Protocol (MCP), автоматический поиск в Zotero и OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, WebSocket-трассировка ("Thinking Trace") и API для Obsidian/Word.
 
 ## Основные этапы (Roadmap)
-- [x] **Фаза A**: Базовая архитектура и CLI.
-- [x] **Фаза B**: Мультиагентная логика и Совет (Council).
-- [x] **Фаза C**: Автоматизация 17 филологических кластеров.
-- [x] **Фаза D**: Adversarial Evals и Golden Dataset.
-- [x] **Фаза E**: QA, Web Studio и финальная интеграция.
-- [x] **Фаза F**: Scholarly Workbench: профили, методологический компас, syntax/impact artifacts.
-- [x] **Фаза G**: Production infrastructure: SQLite index, FastAPI BackgroundTasks, local providers.
-- [x] **Фаза H**: Philological scale: Docker, multi-run comparison, LaTeX/BibTeX scholarly apparatus.
-- [x] **v2.2.1**: Стабилизация схем, Docker-сборки, Windows UTF-8 CLI, frontend lint/build и тестов.
-- [x] **v2.3.0**: CI Golden Gate (GOLD MODE), рефакторинг сервисного слоя (`resolution.py`), и стабилизация security hooks.
+- [x] **Фазы A-H**: Базовая инфраструктура, мультиагентный Совет и Web Studio v3.0.
+- [x] **v2.3.0**: CI Golden Gate, рефакторинг сервисного слоя и стабилизация security hooks.
+- [x] **v2.4.0**: **Agentic Leap**. Переход к автономным инструментам (MCP/Zotero), живому поиску (OpenAlex) и реальному времени (WebSockets).
+- [x] **Фаза III**: Интеграция MCP и внешних академических библиотек.
+- [x] **Фаза IV**: SQLite Native Orchestration (протоколирование всех вызовов инструментов).
+- [x] **Фаза V**: WebSocket Web Studio (Live Thinking Trace).
+- [x] **Фаза VI**: Deep Document Retrieval (FTS5 RAG по корпусу Зализняка).
+- [ ] **v2.5.0 (Next)**: Socratic Injection (инъекция аргументов исследователя "на лету") и финализация плагинов для Obsidian/Word.
 
 ## Навигация
 

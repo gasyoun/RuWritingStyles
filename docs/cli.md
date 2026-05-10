@@ -101,7 +101,7 @@ rws eval-run --case pseudo-etymology --provider mock
 This executes the case through the current pipeline and writes `eval-result.json` into the run directory. Use real providers the same way once API keys are configured:
 
 ```bash
-rws eval-run --case pseudo-etymology --provider openai --model gpt-5.5
+rws eval-run --case pseudo-etymology --provider openai --model gpt-5
 ```
 
 `eval-result.json` includes finding types, matched expected risks, verification status, diff magnitude metrics, and a minimal pass/fail scoring block from `evals/manifest.json`.
@@ -236,7 +236,7 @@ rws run README.md --run-id cli-smoke-readme --execute --provider mock
 To execute with OpenAI, set `OPENAI_API_KEY` and choose `openai`:
 
 ```bash
-rws run README.md --execute --provider openai --model gpt-5.5
+rws run README.md --execute --provider openai --model gpt-5
 ```
 
 OpenAI execution uses the Responses API with Structured Outputs. It is opt-in so local tests never require secrets or network access.
@@ -244,8 +244,8 @@ OpenAI execution uses the Responses API with Structured Outputs. It is opt-in so
 Other opt-in provider adapters use the same run artifacts:
 
 ```bash
-rws run README.md --execute --provider google --model gemini-3.1-pro-preview
-rws run README.md --execute --provider anthropic --model claude-sonnet-4-6
+rws run README.md --execute --provider google --model gemini-2.0-pro
+rws run README.md --execute --provider anthropic --model claude-4-sonnet
 ```
 
 Provider environment variables:

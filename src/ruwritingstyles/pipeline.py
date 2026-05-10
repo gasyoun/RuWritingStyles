@@ -21,7 +21,7 @@ from .html_summary import write_html_report
 from .citations import extract_citations, verify_citations_against_knowledge
 from .bias import run_bias_audit
 
-def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model: str | None = None, profile: str = "researcher", on_update: Any = None) -> None:
+def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model: str | None = None, profile: str = "researcher", on_update: Any = None, injection_queue: Optional[queue.Queue] = None) -> None:
     from .db import Database
     from .profiling import calculate_bloom_stats, calculate_methodological_compass, calculate_tension_heatmap
     
@@ -75,6 +75,7 @@ def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model:
                 council_path=council.council_json,
                 provider=provider,
                 model=model or model_policy.resolve_model("council", provider_name),
+                injection_queue=injection_queue
             )
             # Save Council metrics
             db.save_metric(run_id, "bloom_stats", calculate_bloom_stats(run_dir))

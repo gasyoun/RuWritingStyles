@@ -71,7 +71,7 @@ class ZoteroMCPClient:
             self._send_request(init_id, "initialize", {
                 "protocolVersion": "2024-11-05",
                 "capabilities": {},
-                "clientInfo": {"name": "RuWritingStyles", "version": "1.0.0"}
+                "clientInfo": {"name": "RuWritingStyles", "version": "2.4.0"}
             })
             
             # Wait for initialize response (timeout 5s)

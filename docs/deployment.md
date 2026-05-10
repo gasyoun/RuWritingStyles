@@ -94,25 +94,55 @@ docker compose up --build
 
 Перед production-запуском проверьте, что `.env` не попадает в Git и что контейнер получает только нужные ключи провайдеров.
 
-## 6. Production без Docker
+## 6. Production без Docker (Bare Metal)
 
-Соберите frontend:
+Для развертывания на обычном Linux-сервере (Ubuntu/Debian) без контейнеров:
 
-```bash
-cd web
-npm ci
-npm run build
-cd ..
-```
+1. **Соберите frontend**:
+   ```bash
+   cd web
+   npm install
+   npm run build
+   cd ..
+   ```
+   *FastAPI автоматически подхватит папку `web/dist`, если она существует.*
 
-Установите backend и запустите FastAPI:
+2. **Подготовьте окружение**:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
+   pip install -U pip setuptools
+   pip install -e .
+   pip install uvicorn gunicorn
+   ```
 
-```bash
-python -m pip install .
-python -m ruwritingstyles.api
-```
+3. **Запустите через Process Manager (PM2)**:
+   Рекомендуется использовать PM2 для автоматического перезапуска при сбоях:
+   ```bash
+   pm2 start "python -m ruwritingstyles.api" --name rws-api
+   ```
 
-Если `web/dist` существует, FastAPI автоматически раздает его вместе с API. Для публичного сервера можно поставить Nginx или другой reverse proxy перед портом `8000`; это опциональный внешний слой для TLS, домена и лимитов запросов, а не часть обязательного runtime проекта.
+4. **Или через Systemd (Рекомендуется для Linux)**:
+   Создайте файл `/etc/systemd/system/rws.service`:
+   ```ini
+   [Unit]
+   Description=RuWritingStyles API Service
+   After=network.target
+
+   [Service]
+   User=youruser
+   WorkingDirectory=/home/youruser/RuWritingStyles
+   Environment="PATH=/home/youruser/RuWritingStyles/venv/bin"
+   ExecStart=/home/youruser/RuWritingStyles/venv/bin/uvicorn ruwritingstyles.api:app --host 0.0.0.0 --port 8000
+   Restart=always
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+   Затем: `systemctl enable rws && systemctl start rws`.
+
+5. **Reverse Proxy (Nginx)**:
+   Поставьте Nginx перед портом 8000 для поддержки SSL (HTTPS) и доменного имени. FastAPI будет отдавать и API, и статику фронтенда на одном порту.
 
 ## 7. Release checks
 

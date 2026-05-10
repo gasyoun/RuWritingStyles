@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { 
   Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell, LineChart, Line
@@ -24,12 +24,16 @@ function App() {
   const [isFinalizing, setIsFinalizing] = useState(false);
   const [showCitations, setShowCitations] = useState(false);
   const [trace, setTrace] = useState([]);
+  const [injectionText, setInjectionText] = useState('');
+
+  const wsRef = useRef(null);
 
   // WebSocket Live Updates
   useEffect(() => {
     if (!activeRunId) return;
 
     const ws = new WebSocket(`ws://localhost:8000/ws/${activeRunId}`);
+    wsRef.current = ws;
     
     ws.onmessage = (event) => {
       const msg = JSON.parse(event.data);
@@ -48,9 +52,26 @@ function App() {
 
     return () => {
       ws.close();
+      wsRef.current = null;
       setTrace([]);
     };
   }, [activeRunId]);
+
+  const sendInjection = (content) => {
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({
+        type: 'human_injection',
+        content: content
+      }));
+    }
+  };
+
+  const handleInjectionSubmit = (e) => {
+    if (e.key === 'Enter' && injectionText.trim()) {
+      sendInjection(injectionText.trim());
+      setInjectionText('');
+    }
+  };
 
   // 1. Fetch Runs List
   const fetchRuns = useCallback(() => {
@@ -505,6 +526,10 @@ function App() {
                     <span>
                       Calling <span className="trace-type-tool">{item.tool_name}</span> for {item.task}
                     </span>
+                  ) : item.type === 'injection_received' ? (
+                    <span style={{color: 'var(--accent-primary)', fontWeight: 'bold'}}>
+                      Socratic Injection Queued: "{item.content}"
+                    </span>
                   ) : (
                     <span>Run status: <b>{item.status}</b></span>
                   )}
@@ -521,6 +546,16 @@ function App() {
                 )}
               </div>
             ))}
+          </div>
+          <div className="trace-input-container">
+            <input 
+              type="text" 
+              className="trace-input" 
+              placeholder="Inject scholarly argument..." 
+              value={injectionText}
+              onChange={(e) => setInjectionText(e.target.value)}
+              onKeyDown={handleInjectionSubmit}
+            />
           </div>
         </div>
       )}
