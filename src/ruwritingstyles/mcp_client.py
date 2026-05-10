@@ -165,6 +165,17 @@ class ZoteroMCPClient:
                     },
                     "required": ["query"]
                 }
+            },
+            {
+                "name": "search_corpus",
+                "description": "Deep Retrieval: Searches primary philological literature (Zaliznyak, etc.) for exact quotes or linguistic precedents.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "query": {"type": "string", "description": "Keywords or phrase to find in the literature."}
+                    },
+                    "required": ["query"]
+                }
             }
         ]
 
@@ -189,6 +200,12 @@ class ZoteroMCPClient:
             researcher = WebResearcher()
             web_results = researcher.search(arguments.get("query", ""))
             result = {"status": "success", "source": "Web Researcher (OpenAlex)", "results": web_results}
+            
+        elif tool_name == "search_corpus":
+            from .corpus import CorpusManager
+            cm = CorpusManager(self.repo_root or Path("."))
+            corpus_results = cm.search(arguments.get("query", ""))
+            result = {"status": "success", "source": "Deep Corpus Search (FTS5)", "results": corpus_results}
             
         # 2. Otherwise, route to external MCP process if connected to one
         elif self._process and self._process.poll() is None:

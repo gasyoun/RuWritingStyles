@@ -215,6 +215,53 @@ async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
     return {"run_id": run_dir.name}
 
 
+class SelectionRequest(BaseModel):
+    text: str
+    provider: str = "google"
+    profile: str = "researcher"
+
+@app.post("/api/audit/selection")
+async def audit_selection(req: SelectionRequest):
+    """Instant audit for editor selections (Obsidian/Word)."""
+    from .council import run_socratic_council
+    from .generation import execute_revision_artifact
+    from .providers import provider_from_name
+    from .config import load_model_policy
+    
+    repo_root = repo_root_from()
+    provider = provider_from_name(req.provider)
+    model_policy = load_model_policy(repo_root)
+    model = model_policy.resolve_model("council", req.provider)
+    
+    # 1. Council deliberation
+    findings = run_socratic_council(
+        repo_root=repo_root,
+        segments=[{"id": "selection", "content": req.text}],
+        provider=provider,
+        model=model,
+        profile=req.profile
+    )
+    
+    # 2. Immediate revision
+    revision_id = "selection_revision"
+    revision_prompt = f"Original: {req.text}\n\nCouncil Findings: {json.dumps(findings, ensure_ascii=False)}"
+    
+    # We mock a small revision artifact for the generator
+    revised_text = execute_revision_artifact(
+        repo_root=repo_root,
+        revision_path=None, # Special mode for direct text
+        provider=provider,
+        model=model_policy.resolve_model("synthesis", req.provider),
+        direct_input={"text": req.text, "findings": findings}
+    )
+    
+    return {
+        "original": req.text,
+        "revised": revised_text,
+        "findings": findings
+    }
+
+
 class ResolutionOverride(BaseModel):
     finding_id: str
     status: str
