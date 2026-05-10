@@ -43,8 +43,10 @@ def render_run_report(run_dir: Path) -> str:
         _findings_section(reviews),
         _provider_log_section(provider_log),
         _council_section(council),
+        _bias_audit_section(run_dir),
         _revision_section(run_dir, revision),
         _verification_section(verification),
+        _citation_section(run_dir),
     ]
     return "\n\n".join(section for section in sections if section.strip()) + "\n"
 
@@ -213,6 +215,32 @@ def _council_section(council: dict[str, Any]) -> str:
     return f"## Council\n\nStatus: `{_status(council)}`\n\n" + _table(("Finding", "Decision", "Reason"), rows)
 
 
+def _bias_audit_section(run_dir: Path) -> str:
+    bias_path = run_dir / "bias-audit.json"
+    if not bias_path.exists():
+        return ""
+    
+    data = json.loads(bias_path.read_text(encoding="utf-8"))
+    findings = data.get("findings", [])
+    
+    lines = [
+        "## Methodological Bias Audit",
+        f"- **Bias Score**: {data.get('bias_score', 0)}/10",
+        f"- **Primary Bias**: {data.get('primary_bias_detected', 'none').upper()}",
+        "",
+        f"**Critique**: {data.get('methodological_critique', '')}",
+        ""
+    ]
+    
+    if findings:
+        rows = []
+        for f in findings:
+            rows.append((str(f.get("severity", "")), str(f.get("issue", "")), str(f.get("recommendation", ""))))
+        lines.append(_table(("Severity", "Issue", "Recommendation"), rows))
+        
+    return "\n".join(lines)
+
+
 def _provider_log_section(entries: list[dict[str, Any]]) -> str:
     if not entries:
         return "## Provider Log\n\nNo provider executions yet."
@@ -272,6 +300,38 @@ def _verification_section(verification: dict[str, Any]) -> str:
             else:
                 rows.append(("", str(warning)))
         lines.extend(["", _table(("Span", "Message"), rows)])
+    return "\n".join(lines)
+
+
+def _citation_section(run_dir: Path) -> str:
+    cite_path = run_dir / "citations.json"
+    if not cite_path.exists():
+        return ""
+    
+    data = json.loads(cite_path.read_text(encoding="utf-8"))
+    verified = data.get("verified", [])
+    hallucinations = data.get("hallucinations", [])
+    
+    lines = [
+        "## Scholarly Grounding (Citations)",
+        f"- **Status**: `{data.get('status', 'unknown')}`",
+        f"- **Verified Citations**: {len(verified)}",
+        f"- **Potential Hallucinations**: {len(hallucinations)}",
+        ""
+    ]
+    
+    if verified:
+        lines.append("### Verified Sources")
+        rows = [(v.get("citation", ""), v.get("source_file", "")) for v in verified]
+        lines.append(_table(("Citation", "Source Collection"), rows))
+        lines.append("")
+        
+    if hallucinations:
+        lines.append("### Warning: Unverified Citations")
+        rows = [(h.get("citation", ""), h.get("reason", "")) for h in hallucinations]
+        lines.append(_table(("Citation", "Issue"), rows))
+        lines.append("")
+        
     return "\n".join(lines)
 
 

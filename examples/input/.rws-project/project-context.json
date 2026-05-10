@@ -1,0 +1,9 @@
+{
+  "stylistic_commitments": [
+    {
+      "term": "Mock Term",
+      "decision": "Keep it as is.",
+      "rationale": "Mock provider uses a stable placeholder commitment for schema validation."
+    }
+  ]
+}

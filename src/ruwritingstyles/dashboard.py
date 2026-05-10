@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 from typing import Any
+from .db import Database
 
 
 def generate_project_dashboard(repo_root: Path, output_path: Path | None = None) -> Path:
@@ -15,31 +16,24 @@ def generate_project_dashboard(repo_root: Path, output_path: Path | None = None)
     run_folders = [d for d in runs_dir.iterdir() if d.is_dir() and (d / "segments.json").exists()]
     
     dashboard_data = []
+    db = Database(repo_root)
     
     for run_dir in run_folders:
+        run_id = run_dir.name
+        db_run = db.get_run(run_id) or {}
+        
         run_info = {
-            "id": run_dir.name,
+            "id": run_id,
             "timestamp": datetime.fromtimestamp(run_dir.stat().st_mtime).strftime("%Y-%m-%d %H:%M"),
-            "style": "unknown",
-            "status": "unknown",
-            "findings": 0,
-            "sentiment": None,
-            "peer_review": None
+            "style": db_run.get("profile", "unknown"),
+            "status": db_run.get("status", "unknown"),
+            "bias_score": db_run.get("bias_score"),
+            "citations": db_run.get("citation_stats"),
+            "compass": db_run.get("compass"),
+            "sentiment": None
         }
         
-        # Load segments for style/source
-        seg_path = run_dir / "segments.json"
-        if seg_path.exists():
-            segs = json.loads(seg_path.read_text(encoding="utf-8"))
-            run_info["source"] = Path(segs.get("input_path", "unknown")).name
-            
-        # Load verification for status
-        ver_path = run_dir / "verification.json"
-        if ver_path.exists():
-            ver = json.loads(ver_path.read_text(encoding="utf-8"))
-            run_info["status"] = ver.get("status", "unknown")
-            
-        # Sentiment
+        # Sentiment fallback from file
         sent_path = run_dir / "sentiment.json"
         if sent_path.exists():
             run_info["sentiment"] = json.loads(sent_path.read_text(encoding="utf-8"))
@@ -89,25 +83,27 @@ def generate_project_dashboard(repo_root: Path, output_path: Path | None = None)
             </div>
             
             <div class="card">
-                <h2>Processing Queue</h2>
+                <h2>Production Metrics</h2>
                 <table>
                     <thead>
                         <tr>
                             <th>Run ID</th>
-                            <th>Source</th>
-                            <th>Date</th>
+                            <th>Style Profile</th>
+                            <th>Bias Audit</th>
+                            <th>Citations (V/H)</th>
+                            <th>Compass (Avg)</th>
                             <th>Status</th>
-                            <th>Sentiment Shift (Dist)</th>
                         </tr>
                     </thead>
                     <tbody>
                         {" ".join(f'''
                         <tr>
                             <td><code>{r['id']}</code></td>
-                            <td>{r.get('source', '-')}</td>
-                            <td>{r['timestamp']}</td>
+                            <td>{r['style']}</td>
+                            <td><span class="badge" style="background: {("#ffdddd" if (r['bias_score'] or 0) > 3 else "#ddffdd")}">{r['bias_score'] if r['bias_score'] is not None else '-'}</span></td>
+                            <td>{r['citations']['verified'] if r['citations'] else 0} / {r['citations']['hallucinations'] if r['citations'] else 0}</td>
+                            <td>{round(sum(r['compass'].values())/len(r['compass']), 2) if r['compass'] else '-'}</td>
                             <td><span class="badge status-{r['status']}">{r['status']}</span></td>
-                            <td>{r['sentiment']['deltas']['distance'] if r['sentiment'] else '-'}</td>
                         </tr>
                         ''' for r in sorted(dashboard_data, key=lambda x: x['timestamp'], reverse=True))}
                     </tbody>

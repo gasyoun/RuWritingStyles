@@ -18,6 +18,8 @@ from .execution import (
 )
 from .report import write_run_report
 from .html_summary import write_html_report
+from .citations import extract_citations, verify_citations_against_knowledge
+from .bias import run_bias_audit
 
 def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model: str | None = None, profile: str = "researcher") -> None:
     from .db import Database
@@ -72,9 +74,21 @@ def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model:
             )
             # Save Council metrics
             db.save_metric(run_id, "bloom_stats", calculate_bloom_stats(run_dir))
-            db.save_metric(run_id, "profile", calculate_methodological_compass(run_dir, manifest))
+            db.save_metric(run_id, "compass", calculate_methodological_compass(run_dir, manifest))
             return council.council_json
         step("council", do_council)
+
+        # 2.5. Bias Audit
+        def do_bias_audit():
+            res = run_bias_audit(
+                repo_root=repo_root,
+                run_dir=run_dir,
+                provider=provider,
+                model=model or model_policy.resolve_model("council", provider_name),
+            )
+            db.save_metric(run_id, "bias_score", res.get("bias_score", 0))
+            return run_dir / "bias-audit.json"
+        step("bias_audit", do_bias_audit)
 
         # 3. Revision
         def do_revision():
@@ -100,6 +114,27 @@ def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model:
             )
             return verification.verification_json
         step("verification", do_verify)
+
+        # 4.5. Citations
+        def do_citations():
+            rev_path = run_dir / "revised.md"
+            if not rev_path.exists():
+                return
+            text = rev_path.read_text(encoding="utf-8")
+            citations = extract_citations(text)
+            verification = verify_citations_against_knowledge(repo_root, citations)
+            
+            cite_path = run_dir / "citations.json"
+            cite_path.write_text(json.dumps(verification, ensure_ascii=False, indent=2), encoding="utf-8")
+            
+            # Save to metrics
+            db.save_metric(run_id, "citation_stats", {
+                "total": len(citations),
+                "verified": len(verification["verified"]),
+                "hallucinations": len(verification["hallucinations"])
+            })
+            return cite_path
+        step("citations", do_citations)
 
         # 5. Impact
         def do_impact():

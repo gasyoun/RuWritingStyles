@@ -23,9 +23,11 @@ from .migration import migrate_document_style
 from .sentiment import analyze_philological_sentiment
 from .peer_review import run_peer_review
 from .dashboard import generate_project_dashboard
+from .db import Database
 from .api import app as web_app
 from .generation import generate_style_passport, save_generated_style
 from .styleguide import generate_stylebook_markdown, save_stylebook
+from .profiling import calculate_bloom_stats, calculate_methodological_compass
 from .council import create_council_bundle
 from .council_summary import load_council_summary, render_council_summary
 from .diff import write_revision_diff
@@ -48,6 +50,8 @@ from .providers import provider_from_name
 from .report import write_run_report
 from .review import create_review_bundle, create_deliberation_bundle
 from .revision import create_revision_bundle
+from .citations import extract_citations, verify_citations_against_knowledge
+from .bias import run_bias_audit
 from .runs import create_prepare_run
 from .segment import normalize_document, read_document, segment_markdown
 from .validation import (
@@ -1136,7 +1140,22 @@ def _execute_run_pipeline(repo_root: Path, run_dir: Path, args: argparse.Namespa
                     print(f"completed {council.council_json.relative_to(repo_root)}")
                     if getattr(args, "interactive", False):
                         _interactive_council_review(repo_root, council.council_json)
+                    # Save metrics
+                    db.save_metric(run_id, "bloom_stats", calculate_bloom_stats(run_dir))
+                    db.save_metric(run_id, "compass", calculate_methodological_compass(run_dir, manifest))
             step(f"council{iter_suffix}", do_council_step)
+
+            def do_bias_audit():
+                print("\n--- Methodological Bias Audit ---")
+                res = run_bias_audit(
+                    repo_root=repo_root,
+                    run_dir=run_dir,
+                    provider=provider_from_name(args.provider),
+                    model=args.model or model_policy.resolve_model("council", args.provider),
+                )
+                db.save_metric(run_id, "bias_score", res.get("bias_score", 0))
+                print(f"completed bias audit, score: {res.get('bias_score', 0)}/10")
+            step(f"bias_audit{iter_suffix}", do_bias_audit)
 
             def do_revision_step():
                 revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
@@ -1165,6 +1184,24 @@ def _execute_run_pipeline(repo_root: Path, run_dir: Path, args: argparse.Namespa
                     )
                     print(f"completed {verification.verification_json.relative_to(repo_root)}")
             step(f"verification{iter_suffix}", do_verification_step)
+
+            def do_citations():
+                print("\n--- Scholarly Grounding (Citations) ---")
+                rev_path = run_dir / "revised.md"
+                if not rev_path.exists():
+                    return
+                text = rev_path.read_text(encoding="utf-8")
+                citations = extract_citations(text)
+                verification = verify_citations_against_knowledge(repo_root, citations)
+                cite_path = run_dir / "citations.json"
+                cite_path.write_text(json.dumps(verification, ensure_ascii=False, indent=2), encoding="utf-8")
+                db.save_metric(run_id, "citation_stats", {
+                    "total": len(citations),
+                    "verified": len(verification["verified"]),
+                    "hallucinations": len(verification["hallucinations"])
+                })
+                print(f"completed citation verification: {len(verification['verified'])} verified, {len(verification['hallucinations'])} hallucinations")
+            step(f"citations{iter_suffix}", do_citations)
 
             if args.execute:
                 def do_impact_step():
@@ -2372,10 +2409,22 @@ def _load_json(path: Path) -> dict:
 
 
 def _write_reports(repo_root: Path, run_dir: Path) -> None:
-    report_path = write_run_report(run_dir)
-    html_path = write_html_report(run_dir)
-    print(f"updated {report_path.relative_to(repo_root)}")
-    print(f"updated {html_path.relative_to(repo_root)}")
+    try:
+        db = Database(repo_root)
+        run_id = run_dir.name
+        report_path = write_run_report(run_dir)
+        html_path = write_html_report(run_dir)
+        from .latex import write_latex_report
+        write_latex_report(run_dir, db.get_run(run_id))
+        from .bibtex import write_bibtex
+        write_bibtex(run_dir)
+        print(f"updated {report_path.relative_to(repo_root)}")
+        print(f"updated {html_path.relative_to(repo_root)}")
+    except Exception as e:
+        print(f"error generating reports: {e}")
+        import traceback
+        traceback.print_exc()
+        raise
 
 
 def cmd_eval_benchmark(args: argparse.Namespace) -> int:

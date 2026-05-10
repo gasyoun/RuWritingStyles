@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Citation Verification Output",
+  "type": "object",
+  "required": ["status", "verified", "missing", "hallucinations"],
+  "properties": {
+    "status": { "type": "string" },
+    "verified": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["citation", "source_file"],
+        "properties": {
+          "citation": { "type": "string" },
+          "source_file": { "type": "string" }
+        }
+      }
+    },
+    "missing": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "hallucinations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["citation", "reason"],
+        "properties": {
+          "citation": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    }
+  }
+}

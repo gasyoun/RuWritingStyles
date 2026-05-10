@@ -51,9 +51,23 @@ LATEX_TEMPLATE = r"""
 \bottomrule
 \end{{longtable}}
 
+\section{{Аудит методологической предвзятости}}
+Результаты анализа беспристрастности Совета:
+\begin{{itemize}}
+    \item \textbf{{Оценка смещения:}} {bias_score}/10
+    \item \textbf{{Тип смещения:}} {bias_type}
+    \item \textbf{{Критика:}} {bias_critique}
+\end{{itemize}}
+
 \section{{Библиографический конкорданс}}
 Ссылки на академические коллекции:
 {concordance_items}
+
+\section{{Научная обоснованность (Citations)}}
+Результаты проверки цитирований:
+\begin{{itemize}}
+{citation_items}
+\end{{itemize}}
 
 \end{{document}}
 """
@@ -62,15 +76,19 @@ def generate_latex_report(run_dir: Path, db_entry: dict[str, Any]) -> str:
     run_id = run_dir.name
     profile = db_entry.get("archetype", "Researcher")
     model = db_entry.get("model", "Gemini 2.0")
-    duration = db_entry.get("duration_seconds", 0.0)
+    duration = db_entry.get("duration_seconds") or 0.0
 
     # Compass
-    compass = db_entry.get("profile", {})
-    compass_items = "\n".join([f"    \\item \\textbf{{{k}}}: {v:.2f}" for k, v in compass.items()])
+    compass = db_entry.get("compass", {})
+    if not isinstance(compass, dict):
+        compass = {}
+    compass_items = "\n".join([f"    \\item \\textbf{{{{{k}}}}}: {(v or 0.0):.2f}" for k, v in compass.items()])
 
     # Bloom
     bloom = db_entry.get("bloom_stats", {})
-    bloom_items = "\n".join([f"    \\item \\textbf{{{k}}}: {v}" for k, v in bloom.items()])
+    if not isinstance(bloom, dict):
+        bloom = {}
+    bloom_items = "\n".join([f"    \\item \\textbf{{{{{k}}}}}: {v or 0}" for k, v in bloom.items()])
 
     # Council
     council_path = run_dir / "council.json"
@@ -85,6 +103,24 @@ def generate_latex_report(run_dir: Path, db_entry: dict[str, Any]) -> str:
     # Concordance (mock/simple for now)
     concordance_items = "В данном запуске использованы ссылки на коллекции Зализняка и Тронского."
 
+    # Citations
+    cite_stats = db_entry.get("citation_stats", {})
+    citation_items = (
+        f"    \\item \\textbf{{{{Всего цитат:}}}} {cite_stats.get('total', 0)}\n"
+        f"    \\item \\textbf{{{{Верифицировано:}}}} {cite_stats.get('verified', 0)}\n"
+        f"    \\item \\textbf{{{{Галлюцинаций:}}}} {cite_stats.get('hallucinations', 0)}"
+    )
+
+    # Bias
+    bias_score = db_entry.get("bias_score", 0)
+    bias_path = run_dir / "bias-audit.json"
+    bias_type = "none"
+    bias_critique = "No audit data."
+    if bias_path.exists():
+        bias_data = json.loads(bias_path.read_text(encoding="utf-8"))
+        bias_type = bias_data.get("primary_bias_detected", "none")
+        bias_critique = bias_data.get("methodological_critique", "N/A").replace("_", r"\_")
+
     return LATEX_TEMPLATE.format(
         run_id=run_id,
         profile=profile,
@@ -93,7 +129,11 @@ def generate_latex_report(run_dir: Path, db_entry: dict[str, Any]) -> str:
         compass_items=compass_items,
         bloom_items=bloom_items,
         council_rows=council_rows,
-        concordance_items=concordance_items
+        concordance_items=concordance_items,
+        citation_items=citation_items,
+        bias_score=bias_score,
+        bias_type=bias_type,
+        bias_critique=bias_critique
     )
 
 def write_latex_report(run_dir: Path, db_entry: dict[str, Any]):
