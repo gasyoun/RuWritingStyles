@@ -126,6 +126,7 @@
 *Math: Total Phases (9) — Phase I implementation complete; v2.3.5 stabilization complete.*
 
 ## Phase I: Philological Production (Next)
-- [ ] Scholarly Apparatus: Автоматическая генерация BibTeX и сносок.
+- [x] Scholarly Apparatus: Динамическое извлечение цитат и генерация BibTeX.
+- [ ] Citation Verifier: Проверка цитат на соответствие корпусу знаний.
 - [ ] LaTeX Export: Генерация PDF-отчетов в академическом стиле.
 - [ ] Advanced Bias Detection: Анализ идеологических и методологических смещений.

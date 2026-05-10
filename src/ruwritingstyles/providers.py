@@ -133,6 +133,8 @@ class MockProvider(BaseProvider):
             return self._peer_review(metadata)
         if task == "audit":
             return self._audit(metadata)
+        if task == "bias_audit":
+            return self._bias_audit(metadata)
         raise ProviderError(f"mock provider does not support task {task!r}")
 
     def _review(self, metadata: dict[str, Any]) -> dict[str, Any]:
@@ -295,6 +297,22 @@ class MockProvider(BaseProvider):
             "audit_summary": "Mock audit summary.",
             "violations": [],
             "passed_commitments": ["Mock Term"]
+        }
+
+    def _bias_audit(self, metadata: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "status": "completed",
+            "bias_score": 1,
+            "primary_bias_detected": "none",
+            "findings": [
+                {
+                    "id": "bias-001",
+                    "severity": "note",
+                    "issue": "Mock bias audit: council is impartial.",
+                    "recommendation": "Maintain methodological diversity."
+                }
+            ],
+            "methodological_critique": "Mock critique."
         }
 
 
