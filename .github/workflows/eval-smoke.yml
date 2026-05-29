@@ -57,7 +57,7 @@ jobs:
           PYTHONPATH: src
 
       - name: Upload eval bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: "${{ inputs.suite_id }}-bundle"
           path: "runs/${{ inputs.suite_id }}/${{ inputs.suite_id }}-bundle.zip"
