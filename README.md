@@ -4,7 +4,14 @@
 
 Файл стиля - это `.md`-инструкция для Claude. Ее можно использовать двумя способами: загрузить или вставить в настройку Custom Style, либо временно дать Claude в начале диалога и попросить писать по этому профилю. Сами стили не являются пересказами исходных книг и статей. Это рабочие модели письма: тон, композиция, способ доказательства, тип примеров, допустимая терминология и запреты.
 
-**Status**: v2.4.0 (Agentic Evolution) — Живая интеграция через Model Context Protocol (MCP), автоматический поиск в Zotero и OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, WebSocket-трассировка ("Thinking Trace") и API для Obsidian/Word.
+**Status**: v2.4.0 (Agentic Evolution) — поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, WebSocket-трассировка ("Thinking Trace") и API для Obsidian/Word.
+
+Границы реализованного (честная маркировка):
+
+- **OpenAlex** — реализован (`researcher.py`, живые запросы к api.openalex.org);
+- **Zotero (MCP)** — клиент реализован (`mcp_client.py`), но требует отдельно установленного внешнего Zotero MCP-сервера; без него функция неактивна;
+- **Deep Retrieval (FTS5)** — реализован (`corpus.py`), но требует локального корпуса текстов: с 2026-06 корпус не входит в публичный репозиторий (см. [`SOURCES.md`](SOURCES.md)) и подключается через приватный репозиторий-спутник или `RWS_CORPUS_DIR`;
+- **плагины Obsidian/Word** — прототипы (`docs/`), не готовые продукты — запланированы на v2.5.0.
 
 ## Основные этапы (Roadmap)
 - [x] **Фазы A-H**: Базовая инфраструктура, мультиагентный Совет и Web Studio v3.0.
@@ -72,7 +79,7 @@
 
 ## Исходные материалы
 
-Эта таблица связывает готовые стили с файлами в [`PDFtoTXT/`](PDFtoTXT/). В одних случаях источник прямой, в других указан опорный материал: он помогает проверить тематику, лексику и научный регистр, но не является единственным образцом для стиля.
+Эта таблица связывает готовые стили с текстами исследовательского корпуса. Сами тексты охраняются авторским правом и **не входят в публичный репозиторий**: они хранятся в приватном репозитории-спутнике [`RuWritingStyles-corpus`](https://github.com/gasyoun/RuWritingStyles-corpus) (каталог `PDFtoTXT/`), доступном только участникам проекта. Библиографические описания и правовой статус — в [`SOURCES.md`](SOURCES.md). В одних случаях источник прямой, в других указан опорный материал: он помогает проверить тематику, лексику и научный регистр, но не является единственным образцом для стиля.
 
 | Стиль | Файл стиля | Исходные и опорные материалы |
 |---|---|---|
@@ -487,11 +494,11 @@ PYTHONPATH=src python -m ruwritingstyles.cli run input.md --execute --provider o
 ## Внутренняя документация проекта
 
 - [`ClaudeStyles/`](ClaudeStyles/) хранит готовые пользовательские стили. Один файл - один стиль; файл должен быть самодостаточной инструкцией, которую можно целиком вставить в Claude Custom Style.
-- [`PDFtoTXT/`](PDFtoTXT/) хранит исходные PDF, DOC и текстовые извлечения. Если для стиля есть прямой источник, он должен быть указан в разделе «Исходные материалы». Если источник не один или связь тематическая, это нужно явно называть опорным материалом.
+- Исходные PDF, DOC и текстовые извлечения хранятся в приватном репозитории [`RuWritingStyles-corpus`](https://github.com/gasyoun/RuWritingStyles-corpus) (каталог `PDFtoTXT/`); правовой статус — в [`SOURCES.md`](SOURCES.md). Если для стиля есть прямой источник, он должен быть указан в разделе «Исходные материалы». Если источник не один или связь тематическая, это нужно явно называть опорным материалом.
 - При добавлении нового стиля обновляйте как минимум четыре места: «Все созданные стили», «Исходные материалы», «Быстрый выбор по задаче» и reference-ссылки внизу README.
 - При переименовании файла стиля сначала меняйте путь в [`ClaudeStyles/`](ClaudeStyles/), затем все ссылки в README. Видимое русское название стиля может отличаться от технического имени файла.
 - Для зализняковских стилей держите единый принцип именования: в видимом тексте `Зализняк-...`, в файлах допускается существующая латинская транслитерация `zalizniak-...` или `zaliznyak-...`, если так уже назван файл.
-- [`PDFtoTXT/update.py`](PDFtoTXT/update.py) сейчас относится к служебной обработке указателей для `AAZ_Zametki_2025`; не считайте его универсальным конвертером всех PDF.
+- `PDFtoTXT/update.py` (в приватном корпусном репозитории) относится к служебной обработке указателей для `AAZ_Zametki_2025`; не считайте его универсальным конвертером всех PDF.
 - Перед коммитом полезно проверить README на старые имена файлов и затем выполнить `git diff --check`.
 - Перед релизом или большой правкой прогоните: `python tools/validate_project.py`, `python -m unittest discover -s tests`, `python -m compileall -q src tools tests`, а в `web/` - `npm run lint` и `npm run build`.
 
@@ -564,27 +571,27 @@ PYTHONPATH=src python -m ruwritingstyles.cli eval-status runs/last-regression/co
 [zalizniak-udarenie]: ClaudeStyles/zalizniak-udarenie-style.md
 [zalizniak-zametki]: ClaudeStyles/zalizniak-zametki-style.md
 [zaliznyak-novgorod]: ClaudeStyles/zaliznyak-novgorod-style.md
-[src-enklitiki-pdf]: PDFtoTXT/2008_Zalizniak_Enklitiki.pdf
-[src-enklitiki-txt]: PDFtoTXT/2008_Zalizniak_Enklitiki.txt
-[src-imennoe-pdf]: PDFtoTXT/zalizniak_russkoe_imennoe_slovoizmenenie_2002_text.pdf
-[src-imennoe-txt]: PDFtoTXT/zalizniak_russkoe_imennoe_slovoizmenenie_2002_text.txt
-[src-novgorod-pdf]: PDFtoTXT/zaliznyak_drevnenovgorodsky_dialekt_2004.pdf
-[src-novgorod-txt]: PDFtoTXT/zaliznyak_drevnenovgorodsky_dialekt_2004.txt
-[src-ocherk-doc]: PDFtoTXT/Zaliznyak-Ocherk_29-11-20-aligned.doc
-[src-slovo-pdf]: PDFtoTXT/AAZ_Slovo_2024.pdf
-[src-slovo-txt]: PDFtoTXT/AAZ_Slovo_2024.txt
-[src-smirnoff-pdf]: PDFtoTXT/Smirnoff_Mahabharata_2025.pdf
-[src-smirnoff-txt]: PDFtoTXT/Smirnoff_Mahabharata_2025.txt
-[src-tronsky-pdf]: <PDFtoTXT/2025_1а_Part 1-1.pdf>
-[src-tronsky-txt]: <PDFtoTXT/2025_1а_Part 1-1.txt>
-[src-tubb-txt]: PDFtoTXT/Tubb-ScholasticSans-2007.txt
-[src-udarenie-pdf]: PDFtoTXT/zaliznyak_drevnerusskoe_udarenie_2019__izd.pdf
-[src-udarenie-txt]: PDFtoTXT/zaliznyak_drevnerusskoe_udarenie_2019__izd.txt
-[src-zalizniak-tom1-pdf]: PDFtoTXT/Zalizniak_Tom1_2026.pdf
-[src-zametki-annotated]: PDFtoTXT/AAZ_Zametki_2025-annotated.md
-[src-zametki-index]: PDFtoTXT/AAZ_Zametki_2025-index.md
-[src-zametki-pdf]: PDFtoTXT/AAZ_Zametki_2025.pdf
-[src-zametki-txt]: PDFtoTXT/AAZ_Zametki_2025.txt
+[src-enklitiki-pdf]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/2008_Zalizniak_Enklitiki.pdf
+[src-enklitiki-txt]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/2008_Zalizniak_Enklitiki.txt
+[src-imennoe-pdf]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/zalizniak_russkoe_imennoe_slovoizmenenie_2002_text.pdf
+[src-imennoe-txt]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/zalizniak_russkoe_imennoe_slovoizmenenie_2002_text.txt
+[src-novgorod-pdf]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/zaliznyak_drevnenovgorodsky_dialekt_2004.pdf
+[src-novgorod-txt]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/zaliznyak_drevnenovgorodsky_dialekt_2004.txt
+[src-ocherk-doc]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/Zaliznyak-Ocherk_29-11-20-aligned.doc
+[src-slovo-pdf]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/AAZ_Slovo_2024.pdf
+[src-slovo-txt]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/AAZ_Slovo_2024.txt
+[src-smirnoff-pdf]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/Smirnoff_Mahabharata_2025.pdf
+[src-smirnoff-txt]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/Smirnoff_Mahabharata_2025.txt
+[src-tronsky-pdf]: <https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/2025_1а_Part 1-1.pdf>
+[src-tronsky-txt]: <https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/2025_1а_Part 1-1.txt>
+[src-tubb-txt]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/Tubb-ScholasticSans-2007.txt
+[src-udarenie-pdf]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/zaliznyak_drevnerusskoe_udarenie_2019__izd.pdf
+[src-udarenie-txt]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/zaliznyak_drevnerusskoe_udarenie_2019__izd.txt
+[src-zalizniak-tom1-pdf]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/Zalizniak_Tom1_2026.pdf
+[src-zametki-annotated]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/AAZ_Zametki_2025-annotated.md
+[src-zametki-index]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/AAZ_Zametki_2025-index.md
+[src-zametki-pdf]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/AAZ_Zametki_2025.pdf
+[src-zametki-txt]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/AAZ_Zametki_2025.txt
 
 ### Филологический Feedback Loop
 Проект поддерживает интеграцию экспертных замечаний (рецензий в формате `.docx` с комментариями Word). Протокол обработки таких замечаний описан в [docs/philological-feedback-loop.md](file:///c:/Users/user/Documents/GitHub/RuWritingStyles/docs/philological-feedback-loop.md). Все системные стили (`ClaudeStyles/*.md`) обновлены с учетом последних ревизий ИЛИ РАН (май 2026), что гарантирует соблюдение академического этикета и метатекстовой связности.

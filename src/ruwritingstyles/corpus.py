@@ -1,6 +1,7 @@
 """Corpus Management and Deep Retrieval (Phase VI)."""
 
 import logging
+import os
 import sqlite3
 from pathlib import Path
 from typing import List, Dict, Any, Optional
@@ -16,7 +17,16 @@ class CorpusManager:
     def __init__(self, repo_root: Path):
         self.repo_root = repo_root
         self.db_path = repo_root / "rws.db"
-        self.corpus_dir = repo_root / "PDFtoTXT"
+        # Corpus texts live in the private sibling repo RuWritingStyles-corpus
+        # (copyrighted sources are not distributed with this public repo).
+        # Resolution order: RWS_CORPUS_DIR env var, local PDFtoTXT/, sibling repo.
+        corpus_env = os.environ.get("RWS_CORPUS_DIR")
+        if corpus_env:
+            self.corpus_dir = Path(corpus_env)
+        elif (repo_root / "PDFtoTXT").exists():
+            self.corpus_dir = repo_root / "PDFtoTXT"
+        else:
+            self.corpus_dir = repo_root.parent / "RuWritingStyles-corpus" / "PDFtoTXT"
 
     def ingest_all(self, force: bool = False):
         """Index all TXT files in the corpus directory."""
@@ -32,7 +42,12 @@ class CorpusManager:
 
     def ingest_file(self, file_path: Path, force: bool = False):
         """Index a single TXT file into FTS5."""
-        rel_path = str(file_path.relative_to(self.repo_root))
+        try:
+            rel_path = str(file_path.relative_to(self.repo_root))
+        except ValueError:
+            # Corpus file lives outside the repo (private sibling repo);
+            # keep the index key in the historical PDFtoTXT/<name> form.
+            rel_path = str(Path("PDFtoTXT") / file_path.name)
         
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row

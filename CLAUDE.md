@@ -83,7 +83,7 @@ Roughly one module per pipeline stage: `segment`, `review`, `council`, `revision
 This repo is developed primarily on Windows; assume Windows by default.
 
 - PowerShell is the default shell. Use native command parameters, not script blocks `{}` or subexpressions `$()`. Use `$env:VAR='value'` not `export VAR=value`. The `rws web` command shells out with `shell=True` for npm specifically because of this.
-- All Python scripts that emit text should use UTF-8: `sys.stdout.reconfigure(encoding='utf-8')`. The `.txt` extractions under `PDFtoTXT/` and Russian-language style files require this.
+- All Python scripts that emit text should use UTF-8: `sys.stdout.reconfigure(encoding='utf-8')`. The Russian-language style files (and corpus `.txt` extractions, when present) require this.
 - Never commit `.env` (already gitignored). `.env.example` is the canonical template.
 
 ## Session state protocol (`.ai_state.md`)
@@ -109,5 +109,5 @@ Maintain this exact section structure in `.ai_state.md`:
 ## What not to touch casually
 
 - `ClaudeStyles/*-style.md` — these are the human-facing product. Don't edit prose without a review reason; they are referenced from `README.md` and from passports.
-- `PDFtoTXT/` — source PDFs and one-off extraction scripts. `PDFtoTXT/update.py` is *not* a generic converter (it serves `AAZ_Zametki_2025` indices specifically), per `README.md`.
+- The research corpus (source PDFs/txt) lives in the **private sibling repo** `../RuWritingStyles-corpus/PDFtoTXT` — copyrighted texts must never be committed here (see `SOURCES.md`). `CorpusManager` resolves it via `RWS_CORPUS_DIR` or the sibling path. `PDFtoTXT/update.py` there is *not* a generic converter (it serves `AAZ_Zametki_2025` indices specifically).
 - The `mvp_style_ids` list in `styles/manifest.yml` — `rws list-styles --mvp` and the default council set depend on it.

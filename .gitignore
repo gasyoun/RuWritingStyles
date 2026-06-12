@@ -17,3 +17,9 @@ exports/
 # audit sidecars
 .contributing_old.md
 .contributing_audit.txt
+
+# local indexes and the private research corpus - never commit
+# (corpus texts live in the private sibling repo RuWritingStyles-corpus)
+rws.db
+src/rws.db
+PDFtoTXT/
