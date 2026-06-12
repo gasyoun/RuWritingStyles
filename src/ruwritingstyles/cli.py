@@ -153,8 +153,31 @@ def build_parser() -> argparse.ArgumentParser:
         help="Interactively review and override Council decisions before revision.",
     )
     run.add_argument("--archetype", help="Council archetype ID")
+    run.add_argument(
+        "--no-lint-translit",
+        action="store_true",
+        help="Disable the deterministic Sanskrit transliteration linter (on by default).",
+    )
     _add_execute_args(run)
     run.set_defaults(func=cmd_run)
+
+    lint_translit = subparsers.add_parser(
+        "lint-translit",
+        help="Deterministically lint a Markdown file for Sanskrit transliteration issues (IAST vs русская передача, Harvard-Kyoto, Devanagari NFC).",
+    )
+    lint_translit.add_argument("input", type=Path, help="Input .md or .txt document.")
+    lint_translit.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit with code 1 when any finding is reported.",
+    )
+    lint_translit.add_argument(
+        "--json",
+        action="store_true",
+        dest="as_json",
+        help="Print the full lint artifact as JSON instead of a human-readable list.",
+    )
+    lint_translit.set_defaults(func=cmd_lint_translit)
  
 
     ab_test = subparsers.add_parser(
@@ -1184,6 +1207,15 @@ def _execute_run_pipeline(repo_root: Path, run_dir: Path, args: argparse.Namespa
                     )
                     print(f"completed {verification.verification_json.relative_to(repo_root)}")
             step(f"verification{iter_suffix}", do_verification_step)
+
+            if not getattr(args, "no_lint_translit", False):
+                def do_translit_lint():
+                    from .translit_lint import run_translit_lint
+                    artifact = run_translit_lint(repo_root, run_dir)
+                    doc = json.loads(artifact.read_text(encoding="utf-8"))
+                    count = len(doc.get("findings", []))
+                    print(f"completed transliteration lint: {count} finding(s) in {doc.get('source_file')}")
+                step(f"translit_lint{iter_suffix}", do_translit_lint)
 
             def do_citations():
                 print("\n--- Scholarly Grounding (Citations) ---")
@@ -2353,6 +2385,32 @@ def cmd_export_eval_suite(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_lint_translit(args: argparse.Namespace) -> int:
+    from .translit_lint import lint_text, load_sanskrit_terms
+
+    repo_root = repo_root_from()
+    input_path = args.input if args.input.is_absolute() else (Path.cwd() / args.input)
+    text = read_document(input_path.resolve())
+    result = lint_text(text, load_sanskrit_terms(repo_root))
+
+    if getattr(args, "as_json", False):
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+    else:
+        findings = result["findings"]
+        summary = result["summary"]
+        print(f"segments checked: {summary['segments_checked']}")
+        print(f"schemes detected: {', '.join(summary['schemes_detected']) or 'none'}")
+        if not findings:
+            print("no transliteration findings")
+        for f in findings:
+            fragment = f" [{f['fragment']}]" if f.get("fragment") else ""
+            print(f"{f['severity']:8} {f['span_id']:6} {f['type']}: {f['message']}{fragment}")
+
+    if getattr(args, "strict", False) and result["findings"]:
+        return 1
+    return 0
+
+
 def cmd_validate_run(args: argparse.Namespace) -> int:
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
     result = validate_run_dir(run_dir)
@@ -2417,7 +2475,7 @@ def _write_reports(repo_root: Path, run_dir: Path) -> None:
         from .latex import write_latex_report
         write_latex_report(run_dir, db.get_run(run_id))
         from .bibtex import write_bibtex
-        write_bibtex(run_dir)
+        write_bibtex(run_dir, repo_root)
         print(f"updated {report_path.relative_to(repo_root)}")
         print(f"updated {html_path.relative_to(repo_root)}")
     except Exception as e:

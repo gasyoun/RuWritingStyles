@@ -425,6 +425,35 @@ The verification prompt includes the original document, normalized document, rev
 
 When `--execute` is used, `verification.json` is updated with a verifier status, passed checks, and warnings.
 
+## Lint Sanskrit transliteration
+
+A deterministic (non-LLM) linter checks the consistency of Sanskrit term
+rendering: mixed IAST / Harvard-Kyoto schemes, русская передача without IAST
+on first mention, Devanagari NFC problems, and Cyrillic-Latin hybrid words.
+The term dictionary lives in `knowledge/sanskrit-terms.json`.
+
+Standalone, on any Markdown file:
+
+```bash
+rws lint-translit article.md
+rws lint-translit article.md --strict   # exit 1 on any finding
+rws lint-translit article.md --json     # machine-readable artifact
+```
+
+Inside `rws run` the linter runs automatically after verification and writes
+`runs/<run-id>/translit-lint.json`; its findings are also merged into
+`verification.json` `warnings[]` (tagged `"source": "translit_lint"`), so they
+appear in `rws findings` and the Web Studio. Disable with:
+
+```bash
+rws run article.md --no-lint-translit
+```
+
+Reference outputs: the `reports` step now also writes `references-gost.md` —
+the cited entries from `knowledge/bibliography.json` formatted per
+GOST R 7.0.100-2018 (Cyrillic block sorted before Latin), alongside
+`references.bib`; `report.tex` gains a matching «Литература» section.
+
 ## Inspect findings
 
 ```bash

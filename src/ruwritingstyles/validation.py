@@ -52,6 +52,23 @@ def validate_run_dir(run_dir: Path) -> ValidationResult:
             _validate_common_status(data, messages, artifact)
             if artifact == "council.json":
                 _validate_council(data, review_paths, messages)
+    translit_path = run_dir / "translit-lint.json"
+    if translit_path.exists():
+        translit = _load_json(translit_path, messages)
+        if isinstance(translit, dict):
+            _validate_with_schema(
+                translit, "translit-lint.schema.json", "translit-lint.json", schema_store, messages
+            )
+            # Span ids are only comparable to segments.json when the lint ran
+            # on normalized.md; revised.md is re-segmented and may renumber.
+            if translit.get("source_file") == "normalized.md":
+                for index, finding in enumerate(translit.get("findings", []) or []):
+                    if isinstance(finding, dict) and span_ids and finding.get("span_id") not in span_ids:
+                        messages.append(
+                            f"translit-lint.json findings[{index}] references unknown span_id "
+                            f"{finding.get('span_id')!r}"
+                        )
+
     _validate_eval_result(run_dir / "eval-result.json", schema_store, messages)
     _validate_provider_log(run_dir / "provider.log.jsonl", messages)
 

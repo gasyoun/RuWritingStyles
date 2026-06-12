@@ -1,3 +1,17 @@
+### [2.4.1] - 2026-06-13
+#### Added (Phase 1 W1: GOST bibliography)
+- **GOST R 7.0.100-2018 formatter** (`gost.py`): book/article/chapter/web reference rendering, Cyrillic-before-Latin sorting; every run now emits `references-gost.md` alongside `references.bib`, and `report.tex` gains a «Литература» section.
+- **Bibliography as single source of truth**: `bibtex.py` rewritten to render BibTeX from `knowledge/bibliography.json` (the hardcoded 3-entry `BIB_DATABASE` stub is gone); bibliography expanded 8 → 26 entries with the indological core (Елизаренкова, Топоров, Вертоградова, Кочергина + Зализняк 1987, Monier-Williams, Böhtlingk/Roth, Whitney, Renou, Tubb/Boose) and GOST fields (`kind`, `city`, `pages`, `edition`); new `bibliography.schema.json` validated in CI.
+
+#### Added (Phase 1 W2: Sanskrit transliteration linter)
+- **Deterministic linter** (`translit_lint.py`, no LLM): mixed IAST/Harvard-Kyoto schemes, inconsistent кириллица/IAST term rendering, missing IAST on first mention, Devanagari NFC issues, Cyrillic-Latin hybrid words. Term dictionary `knowledge/sanskrit-terms.json` (60 terms, each with a lexicographic source).
+- **Pipeline step `translit_lint`** in both CLI and Web pipelines (default on; `--no-lint-translit` to disable); writes `translit-lint.json` (schema + `rws validate-run` support) and merges findings into `verification.json` warnings (`"source": "translit_lint"`).
+- **`rws lint-translit <file> [--strict|--json]`**: standalone pre-flight check for any Markdown file.
+
+#### Fixed
+- `verify_citation` now also matches `## Author Year` headings in `knowledge/collections/*.md`, as documented (fixes the long-failing `test_verify_citations`); collection matches verify citations but are excluded from reference lists.
+- `pipeline.py`: missing `json`/`queue` imports that crashed the Web-pipeline citations step.
+
 ### [2.4.0] - 2026-05-10
 #### Added (Phase III: External Agent Integration)
 - **Agentic Tool-Calling Loop**: Refactored `GoogleProvider` and `OpenAIProvider` to support a multi-turn (max 5) autonomous execution loop. Providers now automatically pause, execute requested tools, and resume generation with grounding data.

@@ -1,4 +1,8 @@
+import json
+import queue
 from pathlib import Path
+from typing import Any, Optional
+
 from .config import load_manifest, load_model_policy
 from .providers import provider_from_name
 from .review import create_review_bundle
@@ -120,6 +124,12 @@ def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model:
             return verification.verification_json
         step("verification", do_verify)
 
+        # 4.4. Transliteration lint (deterministic, no provider needed)
+        def do_translit_lint():
+            from .translit_lint import run_translit_lint
+            return run_translit_lint(repo_root, run_dir)
+        step("translit_lint", do_translit_lint)
+
         # 4.5. Citations
         def do_citations():
             rev_path = run_dir / "revised.md"
@@ -174,7 +184,7 @@ def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model:
             from .latex import write_latex_report
             write_latex_report(run_dir, db.get_run(run_id))
             from .bibtex import write_bibtex
-            write_bibtex(run_dir)
+            write_bibtex(run_dir, repo_root)
             return run_dir / "reports"
         step("reports", do_reports)
         

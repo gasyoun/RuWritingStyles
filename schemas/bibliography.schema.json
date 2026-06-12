@@ -1,0 +1,27 @@
+{
+  "$id": "bibliography.schema.json",
+  "title": "Structured bibliography (knowledge/bibliography.json)",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "author", "year", "title"],
+    "properties": {
+      "id": { "type": "string", "minLength": 1 },
+      "author": { "type": "string" },
+      "year": { "type": "integer" },
+      "title": { "type": "string" },
+      "kind": { "enum": ["book", "article", "chapter", "web"] },
+      "city": { "type": "string" },
+      "publisher": { "type": "string" },
+      "journal": { "type": "string" },
+      "container": { "type": "string" },
+      "edition": { "type": "string" },
+      "volume": { "type": ["string", "integer"] },
+      "number": { "type": ["string", "integer"] },
+      "pages": { "type": "string" },
+      "url": { "type": "string" },
+      "tags": { "type": "array", "items": { "type": "string" } }
+    },
+    "additionalProperties": false
+  }
+}

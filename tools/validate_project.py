@@ -236,6 +236,12 @@ def main() -> int:
     validate_file("evals/manifest.json", "eval-manifest.schema.json", store)
     ok("evals/manifest.json is valid")
 
+    validate_file("knowledge/bibliography.json", "bibliography.schema.json", store)
+    ok("knowledge/bibliography.json is valid")
+
+    validate_file("knowledge/sanskrit-terms.json", "sanskrit-terms.schema.json", store)
+    ok("knowledge/sanskrit-terms.json is valid")
+
     claude_sources = {p.relative_to(ROOT).as_posix() for p in (ROOT / "ClaudeStyles").glob("*.md")}
     passport_sources = {p.get("source_prompt") for p in manifest_data.get("passports", [])}
 

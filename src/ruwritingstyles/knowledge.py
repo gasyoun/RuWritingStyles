@@ -41,7 +41,9 @@ class KnowledgeManager:
         return self._json_collections_cache
 
     def verify_citation(self, citation_id: str) -> dict[str, Any] | None:
-        """Verify a citation against the structured bibliography."""
+        """Verify a citation against the structured bibliography and,
+        as a fallback, against `## <Author Year>` headings in markdown
+        collections."""
         bib = self._load_bibliography()
         # Exact match on ID or fuzzy match on Author + Year
         for entry in bib:
@@ -51,6 +53,20 @@ class KnowledgeManager:
             author_year = f"{entry['author']} {entry['year']}"
             if citation_id.lower() in author_year.lower() or author_year.lower() in citation_id.lower():
                 return entry
+
+        if self.collections_dir.exists():
+            for p in self.collections_dir.glob("*.md"):
+                try:
+                    content = p.read_text(encoding="utf-8")
+                except OSError:
+                    continue
+                for heading in re.findall(r"^##\s+(.+?)\s*$", content, re.MULTILINE):
+                    if heading.lower() == citation_id.lower():
+                        return {
+                            "id": heading,
+                            "kind": "collection",
+                            "source": f"collections/{p.name}",
+                        }
         return None
 
     def search(self, query_terms: list[str]) -> str:

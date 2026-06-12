@@ -42,12 +42,13 @@ Frontend (in `web/`): `npm run dev`, `npm run build`, `npm run lint`. The CLI co
 The `rws run` command is a chain over a single `runs/<run-id>/` directory. Each stage reads earlier artifacts and writes the next:
 
 ```
-prepare   → original.md, normalized.md, segments.json
-review    → reviews/<style>.prompt.md + .review.json (one per style)
-council   → council.prompt.md, council.json
-revise    → revision.prompt.md, revision.json, revised.md, revision.diff
-verify    → verification.prompt.md, verification.json
-report    → report.md, summary.html
+prepare        → original.md, normalized.md, segments.json
+review         → reviews/<style>.prompt.md + .review.json (one per style)
+council        → council.prompt.md, council.json
+revise         → revision.prompt.md, revision.json, revised.md, revision.diff
+verify         → verification.prompt.md, verification.json
+translit_lint  → translit-lint.json (deterministic, no provider; findings also merged into verification.json warnings)
+report         → report.md, summary.html, report.tex, references.bib, references-gost.md
 ```
 
 Without `--execute`, every stage produces a prompt and a JSON shell with `status: prompt_ready`. With `--execute --provider <name>`, the provider adapter fills the JSON and updates `status: completed`. This split — prompt building is deterministic, model calls are opt-in — is load-bearing: it keeps the pipeline testable offline with `--provider mock` and lets `tests/` run without API keys or network.
@@ -68,7 +69,7 @@ Env vars are loaded from `.env` via `python-dotenv` at CLI import time. The `pro
 
 ## Schemas as the contract
 
-Every JSON artifact has a schema in `schemas/`: `review.schema.json`, `council.schema.json`, `revision.schema.json`, `verification.schema.json`, `style.schema.json`, `model-policy.schema.json`, `provider-status.schema.json`, plus `eval-*` variants. `tools/validate_project.py` and `rws validate-run` apply these via the in-repo `schema_validation.py` (a lightweight subset, not jsonschema). Current schema-sensitive fields include style `clusters`, user `profile`, council `bloom_level`, `primary_school`, and `influence`. When you change an artifact shape, change its schema and the validator together — CI runs both.
+Every JSON artifact has a schema in `schemas/`: `review.schema.json`, `council.schema.json`, `revision.schema.json`, `verification.schema.json`, `translit-lint.schema.json`, `bibliography.schema.json`, `sanskrit-terms.schema.json`, `style.schema.json`, `model-policy.schema.json`, `provider-status.schema.json`, plus `eval-*` variants. `tools/validate_project.py` and `rws validate-run` apply these via the in-repo `schema_validation.py` (a lightweight subset, not jsonschema). Current schema-sensitive fields include style `clusters`, user `profile`, council `bloom_level`, `primary_school`, and `influence`. When you change an artifact shape, change its schema and the validator together — CI runs both.
 
 ## Eval suite
 

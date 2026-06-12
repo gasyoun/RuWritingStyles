@@ -69,8 +69,20 @@ LATEX_TEMPLATE = r"""
 {citation_items}
 \end{{itemize}}
 
+\section{{Литература}}
+Список литературы по ГОСТ Р 7.0.100--2018 (кириллица перед латиницей):
+\begin{{enumerate}}
+{gost_items}
+\end{{enumerate}}
+
 \end{{document}}
 """
+
+
+def _latex_escape(text: str) -> str:
+    for char in ("&", "%", "_", "#"):
+        text = text.replace(char, "\\" + char)
+    return text
 
 def generate_latex_report(run_dir: Path, db_entry: dict[str, Any]) -> str:
     run_id = run_dir.name
@@ -121,6 +133,23 @@ def generate_latex_report(run_dir: Path, db_entry: dict[str, Any]) -> str:
         bias_type = bias_data.get("primary_bias_detected", "none")
         bias_critique = bias_data.get("methodological_critique", "N/A").replace("_", r"\_")
 
+    # GOST reference list
+    from .bibtex import matched_entries
+    from .gost import format_gost
+
+    repo_root = run_dir.parent.parent
+    revised_path = run_dir / "revised.md"
+    revised_text = (
+        revised_path.read_text(encoding="utf-8") if revised_path.exists() else ""
+    )
+    try:
+        gost_entries = matched_entries(repo_root, revised_text)
+    except Exception:
+        gost_entries = []
+    gost_items = "\n".join(
+        f"    \\item {_latex_escape(format_gost(e))}" for e in gost_entries
+    ) or "    \\item Цитирований, сопоставленных с библиографией, нет."
+
     return LATEX_TEMPLATE.format(
         run_id=run_id,
         profile=profile,
@@ -133,7 +162,8 @@ def generate_latex_report(run_dir: Path, db_entry: dict[str, Any]) -> str:
         citation_items=citation_items,
         bias_score=bias_score,
         bias_type=bias_type,
-        bias_critique=bias_critique
+        bias_critique=bias_critique,
+        gost_items=gost_items
     )
 
 def write_latex_report(run_dir: Path, db_entry: dict[str, Any]):

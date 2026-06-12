@@ -1,10 +1,25 @@
 [
   {
+    "id": "Zaliznyak 2002",
+    "author": "Зализняк А. А.",
+    "year": 2002,
+    "title": "Русское именное словоизменение: с приложением избранных работ по современному русскому языку и общему языкознанию",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Языки славянской культуры",
+    "pages": "752",
+    "tags": ["морфология", "словоизменение", "грамматика"]
+  },
+  {
     "id": "Zaliznyak 2004",
     "author": "Зализняк А. А.",
     "year": 2004,
     "title": "Древненовгородский диалект",
+    "kind": "book",
+    "edition": "2-е изд., перераб. с учетом материала находок 1995–2003 гг.",
+    "city": "М.",
     "publisher": "Языки славянской культуры",
+    "pages": "872",
     "tags": ["лингвистика", "диалектология", "берестяные грамоты"]
   },
   {
@@ -12,14 +27,30 @@
     "author": "Зализняк А. А.",
     "year": 2008,
     "title": "Из русского ударения",
+    "kind": "book",
+    "city": "М.",
     "publisher": "Языки славянской культуры",
     "tags": ["акцентология", "история языка"]
+  },
+  {
+    "id": "Zaliznyak 1987",
+    "author": "Зализняк А. А.",
+    "year": 1987,
+    "title": "Грамматический очерк санскрита",
+    "kind": "chapter",
+    "container": "Кочергина В. А. Санскритско-русский словарь",
+    "city": "М.",
+    "publisher": "Русский язык",
+    "pages": "785–895",
+    "tags": ["санскрит", "грамматика", "морфология"]
   },
   {
     "id": "Gasparov 1984",
     "author": "Гаспаров М. Л.",
     "year": 1984,
     "title": "Очерк истории русского стиха",
+    "kind": "book",
+    "city": "М.",
     "publisher": "Наука",
     "tags": ["стиховедение", "метрика"]
   },
@@ -28,6 +59,7 @@
     "author": "НКРЯ",
     "year": 2024,
     "title": "Национальный корпус русского языка",
+    "kind": "web",
     "url": "https://ruscorpora.ru",
     "tags": ["корпус", "статистика", "узус"]
   },
@@ -36,6 +68,8 @@
     "author": "Иванов Вяч. Вс., Топоров В. Н.",
     "year": 1974,
     "title": "Исследования в области славянских древностей",
+    "kind": "book",
+    "city": "М.",
     "publisher": "Наука",
     "tags": ["семиотика", "мифология", "славистика"]
   },
@@ -44,6 +78,8 @@
     "author": "Trubetzkoy N. S.",
     "year": 1939,
     "title": "Grundzüge der Phonologie",
+    "kind": "book",
+    "city": "Prague",
     "publisher": "Travaux du Cercle linguistique de Prague",
     "tags": ["фонология", "структурализм"]
   },
@@ -52,6 +88,8 @@
     "author": "Jakobson R.",
     "year": 1958,
     "title": "Morfologičeskie nabljudenija nad slavjanskim skloneniem",
+    "kind": "book",
+    "city": "The Hague",
     "publisher": "Mouton",
     "tags": ["морфология", "типология"]
   },
@@ -59,8 +97,198 @@
     "id": "Uspensky 1987",
     "author": "Успенский Б. А.",
     "year": 1987,
-    "title": "История русского литературного языка",
+    "title": "История русского литературного языка (XI–XVII вв.)",
+    "kind": "book",
+    "city": "М.",
     "publisher": "МГУ",
     "tags": ["история языка", "социолингвистика"]
+  },
+  {
+    "id": "Elizarenkova 1982",
+    "author": "Елизаренкова Т. Я.",
+    "year": 1982,
+    "title": "Грамматика ведийского языка",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Наука",
+    "pages": "439",
+    "tags": ["санскрит", "ведийский", "грамматика"]
+  },
+  {
+    "id": "Elizarenkova 1993",
+    "author": "Елизаренкова Т. Я.",
+    "year": 1993,
+    "title": "Язык и стиль ведийских риши",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Наука ; Восточная литература",
+    "pages": "320",
+    "tags": ["санскрит", "ведийский", "поэтика", "Ригведа"]
+  },
+  {
+    "id": "Elizarenkova 1999",
+    "author": "Елизаренкова Т. Я.",
+    "year": 1999,
+    "title": "Слова и вещи в Ригведе",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Восточная литература",
+    "pages": "240",
+    "tags": ["санскрит", "Ригведа", "семантика"]
+  },
+  {
+    "id": "Rigveda 1989",
+    "author": "Ригведа. Мандалы I–IV / изд. подгот. Т. Я. Елизаренкова",
+    "year": 1989,
+    "title": "",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Наука",
+    "pages": "767",
+    "tags": ["санскрит", "Ригведа", "перевод"]
+  },
+  {
+    "id": "Elizarenkova Toporov 1965",
+    "author": "Елизаренкова Т. Я., Топоров В. Н.",
+    "year": 1965,
+    "title": "Язык пали",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Наука",
+    "pages": "248",
+    "tags": ["пали", "среднеиндийские языки", "грамматика"]
+  },
+  {
+    "id": "Toporov 2004",
+    "author": "Топоров В. Н.",
+    "year": 2004,
+    "title": "Исследования по этимологии и семантике. Т. 1: Теория и некоторые частные ее приложения",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Языки славянской культуры",
+    "pages": "816",
+    "tags": ["этимология", "семантика", "индоевропеистика"]
+  },
+  {
+    "id": "Vertogradova 2002",
+    "author": "Вертоградова В. В.",
+    "year": 2002,
+    "title": "Пракриты",
+    "kind": "book",
+    "edition": "2-е изд.",
+    "city": "М.",
+    "publisher": "Восточная литература",
+    "pages": "112",
+    "tags": ["пракриты", "среднеиндийские языки"]
+  },
+  {
+    "id": "Kochergina 1987",
+    "author": "Кочергина В. А.",
+    "year": 1987,
+    "title": "Санскритско-русский словарь",
+    "kind": "book",
+    "edition": "2-е изд., испр. и доп.",
+    "city": "М.",
+    "publisher": "Русский язык",
+    "pages": "944",
+    "tags": ["санскрит", "лексикография", "словарь"]
+  },
+  {
+    "id": "Barrow 1976",
+    "author": "Барроу Т.",
+    "year": 1976,
+    "title": "Санскрит / пер. с англ. Н. Лариной",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Прогресс",
+    "pages": "411",
+    "tags": ["санскрит", "история языка", "индоевропеистика"]
+  },
+  {
+    "id": "Smirnov 1962",
+    "author": "Смирнов Б. Л.",
+    "year": 1962,
+    "title": "Махабхарата. Вып. II: Бхагавадгита / пер., введ. и примеч. Б. Л. Смирнова",
+    "kind": "book",
+    "edition": "2-е изд.",
+    "city": "Ашхабад",
+    "publisher": "Изд-во АН ТССР",
+    "pages": "402",
+    "tags": ["санскрит", "Махабхарата", "перевод", "комментарий"]
+  },
+  {
+    "id": "Tronsky 2025",
+    "author": "Индоевропейское языкознание и классическая филология — XXIX: материалы чтений памяти И. М. Тронского / отв. ред. Н. Н. Казанский",
+    "year": 2025,
+    "title": "",
+    "kind": "book",
+    "city": "СПб.",
+    "publisher": "ИЛИ РАН",
+    "tags": ["индоевропеистика", "классическая филология", "Тронский"]
+  },
+  {
+    "id": "Monier-Williams 1899",
+    "author": "Monier-Williams M.",
+    "year": 1899,
+    "title": "A Sanskrit-English Dictionary, Etymologically and Philologically Arranged",
+    "kind": "book",
+    "city": "Oxford",
+    "publisher": "Clarendon Press",
+    "pages": "1333",
+    "tags": ["санскрит", "лексикография", "словарь"]
+  },
+  {
+    "id": "Boehtlingk Roth 1855",
+    "author": "Böhtlingk O., Roth R.",
+    "year": 1855,
+    "title": "Sanskrit-Wörterbuch. Th. 1–7 (1855–1875)",
+    "kind": "book",
+    "city": "St. Petersburg",
+    "publisher": "Kaiserliche Akademie der Wissenschaften",
+    "tags": ["санскрит", "лексикография", "словарь", "PW"]
+  },
+  {
+    "id": "Whitney 1885",
+    "author": "Whitney W. D.",
+    "year": 1885,
+    "title": "The Roots, Verb-Forms and Primary Derivatives of the Sanskrit Language",
+    "kind": "book",
+    "city": "Leipzig",
+    "publisher": "Breitkopf und Härtel",
+    "pages": "250",
+    "tags": ["санскрит", "глагол", "корни"]
+  },
+  {
+    "id": "Whitney 1889",
+    "author": "Whitney W. D.",
+    "year": 1889,
+    "title": "Sanskrit Grammar, Including both the Classical Language, and the Older Dialects, of Veda and Brahmana",
+    "kind": "book",
+    "edition": "2nd ed.",
+    "city": "Cambridge (Mass.)",
+    "publisher": "Harvard University Press",
+    "pages": "552",
+    "tags": ["санскрит", "грамматика"]
+  },
+  {
+    "id": "Renou 1930",
+    "author": "Renou L.",
+    "year": 1930,
+    "title": "Grammaire sanscrite",
+    "kind": "book",
+    "city": "Paris",
+    "publisher": "Adrien-Maisonneuve",
+    "tags": ["санскрит", "грамматика"]
+  },
+  {
+    "id": "Tubb Boose 2007",
+    "author": "Tubb G. A., Boose E. R.",
+    "year": 2007,
+    "title": "Scholastic Sanskrit: A Handbook for Students",
+    "kind": "book",
+    "city": "New York",
+    "publisher": "American Institute of Buddhist Studies",
+    "pages": "320",
+    "tags": ["санскрит", "комментарий", "шастра", "учебник"]
   }
 ]

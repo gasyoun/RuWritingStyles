@@ -1,0 +1,16 @@
+{
+  "$id": "sanskrit-terms.schema.json",
+  "title": "Sanskrit term renderings (knowledge/sanskrit-terms.json)",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["ru", "iast"],
+    "properties": {
+      "ru": { "type": "string", "minLength": 1 },
+      "iast": { "type": "string", "minLength": 1 },
+      "source": { "type": "string" },
+      "note": { "type": "string" }
+    },
+    "additionalProperties": false
+  }
+}
