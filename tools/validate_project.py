@@ -102,6 +102,50 @@ def validate_file(rel_path: str, schema_name: str, store: dict[str, dict[str, An
     return data
 
 
+def _bibliography_ids() -> set:
+    data = json.loads((ROOT / "knowledge" / "bibliography.json").read_text(encoding="utf-8"))
+    return {entry.get("id") for entry in data if isinstance(entry, dict)}
+
+
+def _has_cyrillic(text: str) -> bool:
+    return any("Ѐ" <= ch <= "ӿ" for ch in text)
+
+
+def check_cross_references(manifest_data: dict[str, Any]) -> list[str]:
+    """Bibliography-id references that must resolve (not enforced by schemas).
+
+    (a) passport `provenance.sources` that look like a bibliography id
+        (Latin, contains a 4-digit year) must exist in knowledge/bibliography.json;
+        free-form Cyrillic citations are exempt.
+    (b) every knowledge/sanskrit-terms.json `source` must be a bibliography id.
+
+    (Eval `required_finding_types` are intentionally NOT constrained to passport
+    `checks` — that vocabulary is looser, guided by the prose prompt — so it is
+    not checked here.)
+    """
+    bib_ids = _bibliography_ids()
+    errors: list[str] = []
+
+    for ref in manifest_data.get("passports", []):
+        path = ROOT / ref["path"]
+        data = parse_simple_yaml(path.read_text(encoding="utf-8"))
+        if not isinstance(data, dict):
+            continue
+        sources = (data.get("provenance") or {}).get("sources") or []
+        for source in sources:
+            if isinstance(source, str) and not _has_cyrillic(source) and re.search(r"\b\d{4}\b", source):
+                if source not in bib_ids:
+                    errors.append(f"passport {ref['id']}: provenance source {source!r} not in knowledge/bibliography.json")
+
+    terms = json.loads((ROOT / "knowledge" / "sanskrit-terms.json").read_text(encoding="utf-8"))
+    for term in terms:
+        source = term.get("source")
+        if source and source not in bib_ids:
+            errors.append(f"sanskrit-terms {term.get('ru')!r}: source {source!r} not in knowledge/bibliography.json")
+
+    return errors
+
+
 def main() -> int:
     print(f"Validating RuWritingStyles repository at {ROOT}")
 
@@ -142,6 +186,13 @@ def main() -> int:
 
     validate_file("knowledge/sanskrit-terms.json", "sanskrit-terms.schema.json", store)
     ok("knowledge/sanskrit-terms.json is valid")
+
+    cross_ref_errors = check_cross_references(manifest_data)
+    if cross_ref_errors:
+        for err in cross_ref_errors:
+            print(f"  {err}")
+        fail("data cross-references do not resolve")
+    ok("bibliography cross-references resolve (provenance + sanskrit-terms)")
 
     journals_dir = ROOT / "knowledge" / "journals"
     if journals_dir.exists():
