@@ -1,0 +1,11 @@
+{
+  "id": "vestnik-spbu",
+  "name": "Вестник СПбГУ. Востоковедение и африканистика",
+  "max_chars": 40000,
+  "citation_format": "GOST-R-7.0.100-2018",
+  "transliteration_scheme": "IAST",
+  "first_mention_rule": "ru+iast",
+  "abstract_required": ["ru", "en"],
+  "keywords_required": ["ru", "en"],
+  "notes": "Университетский востоковедный журнал. Строгие требования к аннотации (расширенная, до 200 слов) и к оформлению списка литературы по ГОСТ."
+}

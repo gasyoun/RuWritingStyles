@@ -177,6 +177,10 @@ def build_parser() -> argparse.ArgumentParser:
         dest="as_json",
         help="Print the full lint artifact as JSON instead of a human-readable list.",
     )
+    lint_translit.add_argument(
+        "--journal",
+        help="Apply a journal profile's rules (preset id from `rws journals`).",
+    )
     lint_translit.set_defaults(func=cmd_lint_translit)
  
 
@@ -249,6 +253,27 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_execute_args(project_run)
     project_run.set_defaults(func=cmd_project_run)
+
+    journals = subparsers.add_parser(
+        "journals",
+        help="List available journal submission profiles from knowledge/journals/.",
+    )
+    journals.set_defaults(func=cmd_journals)
+
+    project_set_journal = subparsers.add_parser(
+        "project-set-journal",
+        help="Write a journal profile into a project's project-context.json.",
+    )
+    project_set_journal.add_argument(
+        "journal_id", help="Journal preset id from `rws journals` (e.g. vya, ppv, vestnik-spbu)."
+    )
+    project_set_journal.add_argument(
+        "--project-dir",
+        type=Path,
+        default=Path(".rws-project"),
+        help="Project directory holding project-context.json (default: .rws-project).",
+    )
+    project_set_journal.set_defaults(func=cmd_project_set_journal)
 
     audit = subparsers.add_parser(
         "audit",
@@ -2385,13 +2410,55 @@ def cmd_export_eval_suite(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_journals(_: argparse.Namespace) -> int:
+    from .journals import list_journal_presets, load_journal_preset
+
+    repo_root = repo_root_from()
+    ids = list_journal_presets(repo_root)
+    if not ids:
+        print("no journal presets found in knowledge/journals/")
+        return 0
+    for journal_id in ids:
+        preset = load_journal_preset(repo_root, journal_id) or {}
+        name = preset.get("name", "")
+        limit = preset.get("max_chars")
+        limit_str = f", ≤{limit} знаков" if limit else ""
+        print(f"{journal_id:14} {name}{limit_str}")
+    return 0
+
+
+def cmd_project_set_journal(args: argparse.Namespace) -> int:
+    from .journals import list_journal_presets, load_journal_preset
+    from .project import set_journal_profile
+
+    repo_root = repo_root_from()
+    preset = load_journal_preset(repo_root, args.journal_id)
+    if preset is None:
+        available = ", ".join(list_journal_presets(repo_root)) or "(none)"
+        print(f"error: unknown journal '{args.journal_id}'. Available: {available}")
+        return 1
+
+    project_dir = args.project_dir if args.project_dir.is_absolute() else (Path.cwd() / args.project_dir)
+    context_path = set_journal_profile(project_dir, preset)
+    print(f"set journal profile '{preset.get('name', args.journal_id)}' in {context_path}")
+    return 0
+
+
 def cmd_lint_translit(args: argparse.Namespace) -> int:
+    from .journals import load_journal_preset
     from .translit_lint import lint_text, load_sanskrit_terms
 
     repo_root = repo_root_from()
     input_path = args.input if args.input.is_absolute() else (Path.cwd() / args.input)
     text = read_document(input_path.resolve())
-    result = lint_text(text, load_sanskrit_terms(repo_root))
+    profile = None
+    journal_id = getattr(args, "journal", None)
+    if journal_id:
+        profile = load_journal_preset(repo_root, journal_id)
+        if profile is None:
+            print(f"error: unknown journal '{journal_id}'")
+            return 1
+    result = lint_text(text, load_sanskrit_terms(repo_root), profile)
 
     if getattr(args, "as_json", False):
         print(json.dumps(result, ensure_ascii=False, indent=2))

@@ -1,0 +1,11 @@
+{
+  "id": "ppv",
+  "name": "Письменные памятники Востока",
+  "max_chars": 60000,
+  "citation_format": "GOST-R-7.0.100-2018",
+  "transliteration_scheme": "IAST",
+  "first_mention_rule": "ru+iast",
+  "abstract_required": ["ru", "en"],
+  "keywords_required": ["ru", "en"],
+  "notes": "Востоковедный журнал (ИВР РАН). Допускает развернутый источниковедческий аппарат и более длинные статьи; деванагари и IAST приветствуются при работе с первоисточником."
+}

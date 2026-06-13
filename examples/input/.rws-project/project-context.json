@@ -5,5 +5,15 @@
       "decision": "Keep it as is.",
       "rationale": "Mock provider uses a stable placeholder commitment for schema validation."
     }
-  ]
+  ],
+  "journal_profile": {
+    "id": "vya",
+    "name": "Вопросы языкознания",
+    "max_chars": 40000,
+    "citation_format": "GOST-R-7.0.100-2018",
+    "transliteration_scheme": "IAST",
+    "first_mention_rule": "ru+iast",
+    "abstract_required": ["ru", "en"],
+    "keywords_required": ["ru", "en"]
+  }
 }

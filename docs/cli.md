@@ -454,6 +454,35 @@ the cited entries from `knowledge/bibliography.json` formatted per
 GOST R 7.0.100-2018 (Cyrillic block sorted before Latin), alongside
 `references.bib`; `report.tex` gains a matching «Литература» section.
 
+## Journal profiles
+
+Submission profiles for target journals live in `knowledge/journals/<id>.json`
+(presets: `vya` — Вопросы языкознания, `ppv` — Письменные памятники Востока,
+`vestnik-spbu`). List them:
+
+```bash
+rws journals
+```
+
+Attach a profile to a project so every run honours it:
+
+```bash
+rws project-set-journal vya --project-dir .rws-project
+```
+
+This writes a `journal_profile` block into `.rws-project/project-context.json`
+(preserving existing `stylistic_commitments`). When a run uses that project
+(`rws run ... --project-dir .rws-project`), the profile:
+
+- adds a «Требования журнала» section to the verifier prompt (length limit,
+  citation format, transliteration scheme, abstract/keyword languages);
+- tunes the transliteration linter (`first_mention_rule` decides whether a
+  missing IAST gloss is required);
+- adds a journal-compliance section to `report.md` (character count vs limit).
+
+`rws lint-translit article.md --journal vya` applies a profile to a one-off
+lint without a project.
+
 ## Inspect findings
 
 ```bash

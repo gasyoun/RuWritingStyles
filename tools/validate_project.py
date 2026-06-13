@@ -242,6 +242,17 @@ def main() -> int:
     validate_file("knowledge/sanskrit-terms.json", "sanskrit-terms.schema.json", store)
     ok("knowledge/sanskrit-terms.json is valid")
 
+    journals_dir = ROOT / "knowledge" / "journals"
+    if journals_dir.exists():
+        for preset in sorted(journals_dir.glob("*.json")):
+            validate_file(preset.relative_to(ROOT).as_posix(), "journal-profile.schema.json", store)
+        ok("knowledge/journals/*.json are valid")
+
+    example_context = "examples/input/.rws-project/project-context.json"
+    if (ROOT / example_context).exists():
+        validate_file(example_context, "project-context.schema.json", store)
+        ok(f"{example_context} is valid")
+
     claude_sources = {p.relative_to(ROOT).as_posix() for p in (ROOT / "ClaudeStyles").glob("*.md")}
     passport_sources = {p.get("source_prompt") for p in manifest_data.get("passports", [])}
 

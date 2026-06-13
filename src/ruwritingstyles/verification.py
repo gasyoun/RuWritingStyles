@@ -84,6 +84,51 @@ def _load_revised_document(repo_root: Path, revision_doc: dict[str, object]) -> 
     return ""
 
 
+def _render_journal_section(profile: Any, revised_text: str) -> str:
+    """Render the target-journal requirements block for the verifier prompt."""
+    if not isinstance(profile, dict) or not profile.get("name"):
+        return ""
+
+    rules: list[str] = []
+    max_chars = profile.get("max_chars")
+    if isinstance(max_chars, int) and max_chars > 0:
+        current = len(revised_text)
+        status = "в пределах нормы" if current <= max_chars else "ПРЕВЫШЕН"
+        rules.append(
+            f"Объем: не более {max_chars} знаков (сейчас ≈ {current}, лимит {status})."
+        )
+    citation_format = profile.get("citation_format")
+    if citation_format:
+        rules.append(f"Список литературы: формат {citation_format}.")
+    scheme = profile.get("transliteration_scheme")
+    if scheme:
+        rules.append(f"Транслитерация санскрита: единая схема {scheme}.")
+    first_mention = profile.get("first_mention_rule")
+    if first_mention and first_mention != "none":
+        rules.append(
+            "Первое упоминание термина: " + {
+                "ru+iast": "русская передача с IAST в скобках.",
+                "iast+ru": "IAST с русской передачей в скобках.",
+                "ru-only": "только русская передача.",
+                "iast-only": "только IAST.",
+            }.get(first_mention, first_mention)
+        )
+    for key, label in (("abstract_required", "Аннотация"), ("keywords_required", "Ключевые слова")):
+        langs = profile.get(key)
+        if isinstance(langs, list) and langs:
+            rules.append(f"{label}: обязательны на языках — {', '.join(langs)}.")
+
+    if not rules:
+        return ""
+    body = "\n".join(f"- {rule}" for rule in rules)
+    return f"""
+## Требования журнала «{profile['name']}»
+
+Проверьте соответствие пересмотренного текста требованиям целевого журнала и отметьте нарушения как предупреждения:
+{body}
+"""
+
+
 def _render_prompt(
     *,
     repo_root: Path,
@@ -112,14 +157,18 @@ def _render_prompt(
     # --- Revision artifact preview (truncated to save context budget) ---
     revision_preview = build_long_artifact_preview(run_dir / "revision.json", max_lines=60)
 
-    project_context_path = run_dir.parent / "project-context.json"
+    from .project import load_project_context
+
+    project_context = load_project_context(run_dir)
     project_context_section = ""
-    if project_context_path.exists():
-        project_context = json.loads(project_context_path.read_text(encoding="utf-8"))
-        commitments = project_context.get("commitments", [])
-        if commitments:
-            commitments_json = json.dumps(commitments, ensure_ascii=False, indent=2)
-            project_context_section = f"""
+    commitments = (
+        project_context.get("stylistic_commitments")
+        or project_context.get("commitments")
+        or []
+    )
+    if commitments:
+        commitments_json = json.dumps(commitments, ensure_ascii=False, indent=2)
+        project_context_section = f"""
 ## Stylistic Commitments (Binding Rules)
 
 The following rules were established in previous documents of this project. You MUST verify that the revised document strictly follows these decisions. Flag any inconsistencies as CRITICAL warnings.
@@ -128,6 +177,10 @@ The following rules were established in previous documents of this project. You 
 {commitments_json}
 ```
 """
+
+    journal_section = _render_journal_section(
+        project_context.get("journal_profile"), revised_document_text
+    )
 
     bib_section = ""
     bib_path = run_dir.parent / "references.bib"
@@ -171,6 +224,7 @@ Check whether the revised document preserves the source document's facts, argume
 **Style Consistency Mission**:
 Verify that all "Stylistic Commitments" provided below are correctly implemented in the revised text.
 {project_context_section}
+{journal_section}
 {bib_section}
 {unified_context_block}
 ## Run

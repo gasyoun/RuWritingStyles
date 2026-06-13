@@ -1,0 +1,22 @@
+{
+  "$id": "project-context.schema.json",
+  "title": "Shared project context (.rws-project/project-context.json)",
+  "type": "object",
+  "properties": {
+    "stylistic_commitments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["term", "decision"],
+        "properties": {
+          "term": { "type": "string" },
+          "decision": { "type": "string" },
+          "rationale": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "journal_profile": { "$ref": "journal-profile.schema.json" }
+  },
+  "additionalProperties": true
+}

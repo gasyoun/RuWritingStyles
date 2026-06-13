@@ -1,0 +1,18 @@
+{
+  "$id": "journal-profile.schema.json",
+  "title": "Journal submission profile",
+  "type": "object",
+  "required": ["id", "name"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "max_chars": { "type": "integer", "minimum": 0 },
+    "citation_format": { "type": "string" },
+    "transliteration_scheme": { "enum": ["IAST", "ISO-15919", "harvard-kyoto", "russian-only"] },
+    "first_mention_rule": { "enum": ["ru+iast", "iast+ru", "ru-only", "iast-only", "none"] },
+    "abstract_required": { "type": "array", "items": { "type": "string" } },
+    "keywords_required": { "type": "array", "items": { "type": "string" } },
+    "notes": { "type": "string" }
+  },
+  "additionalProperties": false
+}

@@ -97,9 +97,17 @@ def _finding(span_id: str, ftype: str, message: str, severity: str,
 
 
 def lint_segments(
-    segments: list[dict[str, Any]], terms: list[dict[str, Any]]
+    segments: list[dict[str, Any]],
+    terms: list[dict[str, Any]],
+    profile: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Lint pre-segmented text. Each segment: {span_id, text}. Code spans skipped."""
+    """Lint pre-segmented text. Each segment: {span_id, text}. Code spans skipped.
+
+    A journal `profile` tunes the rules: `first_mention_rule` decides whether a
+    missing IAST gloss on first mention is reported (only `ru+iast` / `iast+ru`
+    require it)."""
+    first_mention_rule = (profile or {}).get("first_mention_rule", "ru+iast")
+    require_iast_first_mention = first_mention_rule in ("ru+iast", "iast+ru")
     findings: list[dict[str, Any]] = []
     iast_examples: list[str] = []
     hk_examples: list[tuple[str, str]] = []  # (span_id, word)
@@ -167,7 +175,7 @@ def lint_segments(
             if ru_hit:
                 ru_seen[ru].append(span_id)
                 first_ever = len(ru_seen[ru]) == 1 and not iast_seen[ru]
-                if first_ever and iast not in lowered and ru not in first_mention_flagged:
+                if require_iast_first_mention and first_ever and iast not in lowered and ru not in first_mention_flagged:
                     first_mention_flagged.add(ru)
                     findings.append(_finding(
                         span_id, "missing_iast_on_first_mention",
@@ -215,7 +223,11 @@ def lint_segments(
     return {"status": "completed", "findings": findings, "summary": summary}
 
 
-def lint_text(text: str, terms: list[dict[str, Any]]) -> dict[str, Any]:
+def lint_text(
+    text: str,
+    terms: list[dict[str, Any]],
+    profile: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Segment markdown text and lint it (standalone `rws lint-translit`)."""
     from .segment import normalize_document, segment_markdown
 
@@ -230,7 +242,7 @@ def lint_text(text: str, terms: list[dict[str, Any]]) -> dict[str, Any]:
     segments = [
         {"span_id": s.span_id, "text": s.text} for s in segment_markdown(normalized)
     ]
-    result = lint_segments(segments, terms)
+    result = lint_segments(segments, terms, profile)
 
     if raw_nfc_issue:
         anchor = next(
@@ -250,12 +262,15 @@ def lint_text(text: str, terms: list[dict[str, Any]]) -> dict[str, Any]:
 def run_translit_lint(repo_root: Path, run_dir: Path) -> Path:
     """Pipeline step: lint revised.md (or normalized.md), write translit-lint.json,
     and mirror findings into verification.json warnings."""
+    from .project import resolve_journal_profile
+
     source = run_dir / "revised.md"
     if not source.exists():
         source = run_dir / "normalized.md"
     terms = load_sanskrit_terms(repo_root)
+    profile = resolve_journal_profile(run_dir)
     text = source.read_text(encoding="utf-8") if source.exists() else ""
-    result = lint_text(text, terms)
+    result = lint_text(text, terms, profile)
     result["source_file"] = source.name
 
     artifact = run_dir / "translit-lint.json"

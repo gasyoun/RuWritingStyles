@@ -47,8 +47,57 @@ def render_run_report(run_dir: Path) -> str:
         _revision_section(run_dir, revision),
         _verification_section(verification),
         _citation_section(run_dir),
+        _journal_section(run_dir),
+        _translit_lint_section(run_dir),
     ]
     return "\n\n".join(section for section in sections if section.strip()) + "\n"
+
+
+def _journal_section(run_dir: Path) -> str:
+    from .project import resolve_journal_profile
+
+    profile = resolve_journal_profile(run_dir)
+    if not profile or not profile.get("name"):
+        return ""
+
+    lines = [f"## Соответствие журналу: {profile['name']}", ""]
+    max_chars = profile.get("max_chars")
+    if isinstance(max_chars, int) and max_chars > 0:
+        revised = run_dir / "revised.md"
+        current = len(revised.read_text(encoding="utf-8")) if revised.exists() else 0
+        flag = "OK" if current <= max_chars else f"⚠ превышение на {current - max_chars}"
+        lines.append(f"- Объем: {current} / {max_chars} знаков — {flag}")
+    if profile.get("citation_format"):
+        lines.append(f"- Список литературы: {profile['citation_format']}")
+    if profile.get("transliteration_scheme"):
+        lines.append(f"- Транслитерация: {profile['transliteration_scheme']}")
+    for key, label in (("abstract_required", "Аннотация"), ("keywords_required", "Ключевые слова")):
+        langs = profile.get(key)
+        if isinstance(langs, list) and langs:
+            lines.append(f"- {label}: {', '.join(langs)}")
+    return "\n".join(lines)
+
+
+def _translit_lint_section(run_dir: Path) -> str:
+    path = run_dir / "translit-lint.json"
+    if not path.exists():
+        return ""
+    data = _load_json(path)
+    findings = data.get("findings") if isinstance(data.get("findings"), list) else []
+    summary = data.get("summary", {}) if isinstance(data.get("summary"), dict) else {}
+    lines = ["## Транслитерация санскрита (детерминированный линтер)", ""]
+    schemes = summary.get("schemes_detected") or []
+    lines.append(f"Схемы в тексте: {', '.join(schemes) if schemes else 'не обнаружены'}")
+    if not findings:
+        lines.append("\nЗамечаний нет.")
+        return "\n".join(lines)
+    rows = [
+        (str(f.get("span_id", "")), str(f.get("type", "")), str(f.get("message", "")))
+        for f in findings
+    ]
+    lines.append("")
+    lines.append(_table(("Span", "Тип", "Сообщение"), rows))
+    return "\n".join(lines)
 
 
 def _sentiment_section(run_dir: Path) -> str:

@@ -69,7 +69,7 @@ Env vars are loaded from `.env` via `python-dotenv` at CLI import time. The `pro
 
 ## Schemas as the contract
 
-Every JSON artifact has a schema in `schemas/`: `review.schema.json`, `council.schema.json`, `revision.schema.json`, `verification.schema.json`, `translit-lint.schema.json`, `bibliography.schema.json`, `sanskrit-terms.schema.json`, `style.schema.json`, `model-policy.schema.json`, `provider-status.schema.json`, plus `eval-*` variants. `tools/validate_project.py` and `rws validate-run` apply these via the in-repo `schema_validation.py` (a lightweight subset, not jsonschema). Current schema-sensitive fields include style `clusters`, user `profile`, council `bloom_level`, `primary_school`, and `influence`. When you change an artifact shape, change its schema and the validator together — CI runs both.
+Every JSON artifact has a schema in `schemas/`: `review.schema.json`, `council.schema.json`, `revision.schema.json`, `verification.schema.json`, `translit-lint.schema.json`, `bibliography.schema.json`, `sanskrit-terms.schema.json`, `journal-profile.schema.json`, `project-context.schema.json`, `style.schema.json`, `model-policy.schema.json`, `provider-status.schema.json`, plus `eval-*` variants. `tools/validate_project.py` and `rws validate-run` apply these via the in-repo `schema_validation.py` (a lightweight subset, not jsonschema). Current schema-sensitive fields include style `clusters`, user `profile`, council `bloom_level`, `primary_school`, and `influence`. When you change an artifact shape, change its schema and the validator together — CI runs both.
 
 ## Eval suite
 

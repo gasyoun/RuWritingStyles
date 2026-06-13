@@ -1,3 +1,12 @@
+### [2.4.2] - 2026-06-13
+#### Added (Phase 1 W3: journal profiles)
+- **Journal submission profiles** (`journals.py` + `knowledge/journals/{vya,ppv,vestnik-spbu}.json`): per-journal length limit, citation format, transliteration scheme, first-mention rule, abstract/keyword language requirements. New `journal-profile.schema.json` and `project-context.schema.json` validated in CI.
+- **`rws journals`** lists presets; **`rws project-set-journal <id> --project-dir DIR`** writes a `journal_profile` block into `project-context.json` (preserving commitments).
+- **Profile-aware consumers**: the verifier prompt gains a «Требования журнала» section; the transliteration linter honours `first_mention_rule` (and `rws lint-translit --journal <id>`); `report.md` gains journal-compliance (char count vs limit) and a transliteration-lint section.
+
+#### Fixed
+- `verification.py` read the project context from the wrong path (`run_dir.parent`) and the wrong key (`commitments` vs `stylistic_commitments`), so binding-rule sections never rendered; now resolved via `project.load_project_context` (run dir first, then parent) accepting both keys.
+
 ### [2.4.1] - 2026-06-13
 #### Added (Phase 1 W1: GOST bibliography)
 - **GOST R 7.0.100-2018 formatter** (`gost.py`): book/article/chapter/web reference rendering, Cyrillic-before-Latin sorting; every run now emits `references-gost.md` alongside `references.bib`, and `report.tex` gains a «Литература» section.
