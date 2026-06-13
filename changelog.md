@@ -1,3 +1,7 @@
+### [2.4.9] - 2026-06-13
+#### Fixed (architecture review #2: unify the two YAML parsers)
+- The runtime config loader (`config.py`) and the CI validator (`tools/validate_project.py`) had separate hand-rolled YAML readers that could disagree — and did: `config.py`'s `_scalar`/`_list_items` tolerate a `:` inside a quoted scalar, but the validator's `parse_simple_yaml` split on the first `:` unconditionally, so a passport `name`/source string containing `: ` parsed fine at runtime yet was rejected in CI (the P2a failure). Both now import from a single new module `ruwritingstyles/yaml_lite.py` (generic `parse_simple_yaml` + targeted `scalar`/`block`/`list_items`, sharing `parse_scalar`); the generic parser's key/value split now ignores colons inside quotes (`_kv_colon`). New `tests/test_yaml_lite.py` (10 tests) including the quoted-colon regression and a generic-vs-targeted agreement check.
+
 ### [2.4.8] - 2026-06-13
 #### Removed (architecture review #5: drop the redundant style registry)
 - Removed the `available_style_sources` block from `styles/manifest.yml` (and its `manifest.schema.json` definition). It duplicated the `passports` list but no code read it — `rws list-styles` derives the user-facing list from the passports via `load_passport_summaries`. Adding a style now touches 4 places instead of 5; `validate_project` still enforces `ClaudeStyles/*.md` ↔ passport `source_prompt` sync. No behavior change (`rws list-styles` still shows 39 styles / 6 MVP).

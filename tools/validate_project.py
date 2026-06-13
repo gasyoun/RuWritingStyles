@@ -21,8 +21,9 @@ if str(SRC) not in sys.path:
 
 try:
     from ruwritingstyles.schema_validation import validate_json_schema
+    from ruwritingstyles.yaml_lite import parse_simple_yaml
 except ImportError:
-    print("FAIL: could not import ruwritingstyles.schema_validation from src")
+    print("FAIL: could not import from ruwritingstyles (schema_validation / yaml_lite)")
     sys.exit(1)
 
 
@@ -57,116 +58,6 @@ def fail(message: str) -> None:
 
 def ok(message: str) -> None:
     print(f"OK: {message}")
-
-
-def parse_simple_yaml(text: str) -> Any:
-    """A robust zero-dependency YAML parser for the RuWritingStyles subset."""
-
-    # 1. Lexing
-    tokens = []
-    for line in text.splitlines():
-        if "#" in line: line = line[:line.find("#")]
-        if not line.strip(): continue
-
-        indent = len(line) - len(line.lstrip())
-        content = line.lstrip()
-
-        if content.startswith("- "):
-            tokens.append((indent, "LIST_ITEM", None))
-            content = content[2:].strip()
-            indent += 1 # Virtual indent for same-line content
-            if not content: continue
-
-        if ":" in content:
-            key, val = content.split(":", 1)
-            tokens.append((indent, "KEY", key.strip()))
-            val = val.strip()
-            if val:
-                tokens.append((indent + 1, "VALUE", _parse_scalar(val)))
-        else:
-            tokens.append((indent, "VALUE", _parse_scalar(content)))
-
-    # 2. Parsing tokens into tree
-    def build_tree(start_idx: int, min_indent: int) -> tuple[Any, int]:
-        if start_idx >= len(tokens):
-            return None, 0
-
-        first_indent, first_type, _ = tokens[start_idx]
-
-        if first_type == "LIST_ITEM":
-            res_list = []
-            i = start_idx
-            while i < len(tokens):
-                indent, type, val = tokens[i]
-                if indent < min_indent: break
-
-                if type == "LIST_ITEM":
-                    if i + 1 < len(tokens):
-                        ni, nt, nv = tokens[i+1]
-                        if ni > indent:
-                            nested, consumed = build_tree(i + 1, indent)
-                            res_list.append(nested)
-                            i += 1 + consumed
-                        else:
-                            res_list.append(None)
-                            i += 1
-                    else:
-                        res_list.append(None)
-                        i += 1
-                else:
-                    break
-            return res_list, i - start_idx
-
-        elif first_type == "KEY":
-            res_dict = {}
-            i = start_idx
-            while i < len(tokens):
-                indent, type, key = tokens[i]
-                if indent < min_indent: break
-
-                if type == "KEY":
-                    if i + 1 < len(tokens):
-                        ni, nt, nv = tokens[i+1]
-                        if nt == "VALUE" and ni > indent:
-                            res_dict[key] = nv
-                            i += 2
-                        elif ni > indent:
-                            nested, consumed = build_tree(i + 1, indent + 1)
-                            res_dict[key] = nested
-                            i += 1 + consumed
-                        else:
-                            res_dict[key] = None
-                            i += 1
-                    else:
-                        res_dict[key] = None
-                        i += 1
-                else:
-                    break
-            return res_dict, i - start_idx
-
-        elif first_type == "VALUE":
-            return tokens[start_idx][2], 1
-
-        else:
-            return None, 1
-
-    tree, _ = build_tree(0, -1)
-    return tree
-
-
-def _parse_scalar(val: str) -> Any:
-    val = val.strip()
-    if not val: return None
-    if val.lower() == "true": return True
-    if val.lower() == "false": return False
-    if val.lower() == "null" or val == "~": return None
-    if (val.startswith('"') and val.endswith('"')) or (val.startswith("'") and val.endswith("'")):
-        return val[1:-1]
-    try:
-        if "." in val: return float(val)
-        return int(val)
-    except ValueError:
-        return val
 
 
 def load_schema_store() -> dict[str, dict[str, Any]]:

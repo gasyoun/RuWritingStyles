@@ -14,6 +14,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+from .yaml_lite import scalar as _scalar, block as _block, list_items as _list_items
+
 
 @dataclass(frozen=True)
 class StylePassportRef:
@@ -109,25 +111,6 @@ class StylePassportSummary:
 
 def _read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
-
-
-def _scalar(text: str, key: str, default: str = "") -> str:
-    match = re.search(rf"^\s*{re.escape(key)}:\s*['\"]?([^'\"\n]+?)['\"]?\s*$", text, re.MULTILINE)
-    return match.group(1).strip() if match else default
-
-
-def _block(text: str, key: str) -> str:
-    match = re.search(rf"^{re.escape(key)}:\s*\n(?P<body>(?:^[ \t].*\n?)*)", text, re.MULTILINE)
-    return match.group("body") if match else ""
-
-
-def _list_items(block: str) -> tuple[str, ...]:
-    items: list[str] = []
-    for line in block.splitlines():
-        match = re.match(r"^\s*-\s+['\"]?([^'\"\n]+?)['\"]?\s*$", line)
-        if match:
-            items.append(match.group(1).strip())
-    return tuple(items)
 
 
 def load_manifest(repo_root: Path) -> Manifest:
