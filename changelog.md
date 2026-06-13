@@ -1,3 +1,7 @@
+### [2.4.7] - 2026-06-13
+#### Added (architecture review #4: Anthropic tool-calling parity)
+- `AnthropicProvider` now runs the same multi-turn tool-use loop as the OpenAI and Google providers (up to 5 turns): it sends MCP tools in Anthropic shape (`input_schema`), executes `tool_use` blocks via `mcp_client.execute_tool`, returns `tool_result` blocks, honours the human-injection queue between turns, and accumulates token usage. Previously single-turn with no tool support, so the agentic grounding (Zotero / OpenAlex / corpus FTS5) silently no-opped on Claude. The no-tools path is unchanged (one request → parse JSON). New `tests/test_providers_anthropic.py` (3 tests) covers the loop without a key.
+
 ### [2.4.6] - 2026-06-13
 #### Fixed (third false positive from the case study)
 - `translit_lint`: proper nouns (epic titles like Махабхарата/Рамаяна) are no longer flagged by `inconsistent_term_rendering` or `missing_iast_on_first_mention` — a naturalized Russian form and the transliterated Sanskrit word are both correct. `knowledge/sanskrit-terms.json` entries may now carry `"proper_noun": true` (schema updated); Махабхарата and Рамаяна are marked. On the test article this removes the last 2 false positives, taking linter precision to 7/7 = 1.0.

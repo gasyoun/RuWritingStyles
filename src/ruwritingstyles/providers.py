@@ -596,46 +596,105 @@ class AnthropicProvider(BaseProvider):
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
         model = self.effective_model(provider_request)
         max_tokens = int(os.environ.get("RWS_ANTHROPIC_MAX_TOKENS", "8192"))
-        body = {
-            "model": model,
-            "max_tokens": max_tokens,
-            "messages": [
+        max_turns = 5
+        messages: list[dict[str, Any]] = [
+            {"role": "user", "content": provider_request.prompt}
+        ]
+        # Anthropic tools use input_schema where the OpenAI shape uses parameters.
+        anthropic_tools = None
+        if provider_request.tools:
+            anthropic_tools = [
                 {
-                    "role": "user",
-                    "content": provider_request.prompt,
+                    "name": t["name"],
+                    "description": t.get("description", ""),
+                    "input_schema": t.get("parameters") or {"type": "object", "properties": {}},
                 }
-            ],
-            "system": "Respond only with a JSON object strictly following the provided schema.",
-        }
+                for t in provider_request.tools
+            ]
 
         telemetry = ProviderRetryTelemetry()
-        try:
-            data = _post_json_with_retries(
-                provider_name="Anthropic",
-                url=self.endpoint,
-                body=body,
-                headers={
-                    "x-api-key": self.api_key,
-                    "anthropic-version": os.environ.get("ANTHROPIC_VERSION", "2023-06-01"),
-                    "content-type": "application/json",
-                },
-                telemetry=telemetry,
-            )
-        finally:
-            self._set_retry_telemetry(telemetry)
+        total_input_tokens = 0
+        total_output_tokens = 0
 
-        usage = data.get("usage", {})
-        self._set_usage(ProviderUsage(
-            input_tokens=usage.get("input_tokens", 0),
-            output_tokens=usage.get("output_tokens", 0),
-            total_tokens=usage.get("input_tokens", 0) + usage.get("output_tokens", 0)
-        ))
+        for _turn in range(max_turns):
+            # Check for human injections between turns.
+            if provider_request.injection_queue:
+                while not provider_request.injection_queue.empty():
+                    try:
+                        injection = provider_request.injection_queue.get_nowait()
+                        messages.append({"role": "user", "content": f"RESEARCHER_INJECTION: {injection}"})
+                    except Exception:
+                        break
 
-        text = _extract_anthropic_text(data)
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError as exc:
-            raise ProviderError(f"Anthropic response did not contain parseable JSON: {text[:500]}") from exc
+            body: dict[str, Any] = {
+                "model": model,
+                "max_tokens": max_tokens,
+                "messages": messages,
+                "system": "Respond only with a JSON object strictly following the provided schema. Use the available tools to ground citations and facts when helpful; once you have what you need, return the final JSON object as your text response.",
+            }
+            if anthropic_tools:
+                body["tools"] = anthropic_tools
+
+            try:
+                data = _post_json_with_retries(
+                    provider_name="Anthropic",
+                    url=self.endpoint,
+                    body=body,
+                    headers={
+                        "x-api-key": self.api_key,
+                        "anthropic-version": os.environ.get("ANTHROPIC_VERSION", "2023-06-01"),
+                        "content-type": "application/json",
+                    },
+                    telemetry=telemetry,
+                )
+            finally:
+                self._set_retry_telemetry(telemetry)
+
+            usage = data.get("usage", {})
+            total_input_tokens += usage.get("input_tokens", 0)
+            total_output_tokens += usage.get("output_tokens", 0)
+            self._set_usage(ProviderUsage(
+                input_tokens=total_input_tokens,
+                output_tokens=total_output_tokens,
+                total_tokens=total_input_tokens + total_output_tokens,
+            ))
+
+            content_blocks = data.get("content", []) or []
+            tool_use_blocks = [
+                b for b in content_blocks
+                if isinstance(b, dict) and b.get("type") == "tool_use"
+            ]
+
+            if data.get("stop_reason") != "tool_use" or not tool_use_blocks:
+                text = _extract_anthropic_text(data)
+                try:
+                    return json.loads(text)
+                except json.JSONDecodeError as exc:
+                    raise ProviderError(f"Anthropic response did not contain parseable JSON: {text[:500]}") from exc
+
+            # Carry the assistant turn (including the tool_use blocks) forward,
+            # then answer each tool_use with a tool_result block.
+            messages.append({"role": "assistant", "content": content_blocks})
+
+            from .mcp_client import mcp_client
+            run_id = str(provider_request.metadata.get("run_id", "unknown"))
+            task = provider_request.task
+            tool_results = []
+            for block in tool_use_blocks:
+                tool_name = block.get("name")
+                args = block.get("input") or {}
+                try:
+                    result = mcp_client.execute_tool(tool_name, args, run_id=run_id, task=task)
+                except Exception as exc:
+                    result = {"error": str(exc)}
+                tool_results.append({
+                    "type": "tool_result",
+                    "tool_use_id": block.get("id"),
+                    "content": json.dumps(result, ensure_ascii=False),
+                })
+            messages.append({"role": "user", "content": tool_results})
+
+        raise ProviderError(f"Anthropic exceeded {max_turns} tool call turns without producing final JSON.")
 
 
 class OpenRouterProvider(BaseProvider):
