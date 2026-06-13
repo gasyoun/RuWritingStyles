@@ -9,7 +9,7 @@ RuWritingStyles is two layered things in one repo:
 1. A **catalog of Russian-language Custom Style prompts** (`ClaudeStyles/*-style.md`) modeled on philological writers (Зализняк, Тронский, Казанский, Лидова, Альбедиль). Each `.md` is a self-contained instruction meant to be pasted into Claude Custom Style.
 2. An **agentic review pipeline** (`src/ruwritingstyles/`) that loads those styles as machine-readable passports and runs a multi-agent "Council" over a Markdown document: segment → independent style reviews → council deliberation → revision synthesis → verification.
 
-Adding a new style requires updating both layers: the `.md` in `ClaudeStyles/`, a passport in `styles/passports/`, the `passports:` and `available_style_sources:` blocks of `styles/manifest.yml`, and the navigation/source tables in `README.md` (`README.md` documents this multi-place rule explicitly).
+Adding a new style requires updating both layers: the `.md` in `ClaudeStyles/`, a passport in `styles/passports/`, the `passports:` block of `styles/manifest.yml`, and the navigation/source tables in `README.md` (`README.md` documents this multi-place rule explicitly). `tools/validate_project.py` enforces that the `ClaudeStyles/*.md` set matches the passports' `source_prompt` set. (The former `available_style_sources` manifest block was redundant — nothing read it; `rws list-styles` derives the user-facing list from the passports via `load_passport_summaries` — so it was removed.)
 
 ## Common commands
 

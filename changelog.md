@@ -1,3 +1,7 @@
+### [2.4.8] - 2026-06-13
+#### Removed (architecture review #5: drop the redundant style registry)
+- Removed the `available_style_sources` block from `styles/manifest.yml` (and its `manifest.schema.json` definition). It duplicated the `passports` list but no code read it — `rws list-styles` derives the user-facing list from the passports via `load_passport_summaries`. Adding a style now touches 4 places instead of 5; `validate_project` still enforces `ClaudeStyles/*.md` ↔ passport `source_prompt` sync. No behavior change (`rws list-styles` still shows 39 styles / 6 MVP).
+
 ### [2.4.7] - 2026-06-13
 #### Added (architecture review #4: Anthropic tool-calling parity)
 - `AnthropicProvider` now runs the same multi-turn tool-use loop as the OpenAI and Google providers (up to 5 turns): it sends MCP tools in Anthropic shape (`input_schema`), executes `tool_use` blocks via `mcp_client.execute_tool`, returns `tool_result` blocks, honours the human-injection queue between turns, and accumulates token usage. Previously single-turn with no tool support, so the agentic grounding (Zotero / OpenAlex / corpus FTS5) silently no-opped on Claude. The no-tools path is unchanged (one request → parse JSON). New `tests/test_providers_anthropic.py` (3 tests) covers the loop without a key.

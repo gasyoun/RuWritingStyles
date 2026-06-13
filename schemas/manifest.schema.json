@@ -55,19 +55,6 @@
         "archetype": { "type": "string" },
         "conflict_resolution_strategy": { "type": "string" }
       }
-    },
-    "available_style_sources": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["id", "name", "source_prompt"],
-        "additionalProperties": false,
-        "properties": {
-          "id": { "type": "string" },
-          "name": { "type": "string" },
-          "source_prompt": { "type": "string" }
-        }
-      }
     }
   }
 }
