@@ -54,6 +54,12 @@ def provider_statuses(env: Mapping[str, str] | None = None) -> tuple[ProviderSta
             model=_env(actual_env, "RWS_OPENROUTER_MODEL") or "google/gemini-2.0-flash-exp:free",
             env=actual_env,
         ),
+        _status(
+            provider="deepseek",
+            api_key_env=("DEEPSEEK_API_KEY",),
+            model=_env(actual_env, "RWS_DEEPSEEK_MODEL") or "deepseek-chat",
+            env=actual_env,
+        ),
     )
 
 

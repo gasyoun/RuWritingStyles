@@ -869,6 +869,68 @@ class OllamaProvider(BaseProvider):
             raise ProviderError(f"Ollama response did not contain parseable JSON: {text[:500]}") from exc
 
 
+class DeepSeekProvider(BaseProvider):
+    """DeepSeek provider (OpenAI-compatible JSON mode).
+
+    Direct ``api.deepseek.com`` by default; set ``RWS_DEEPSEEK_URL`` to route the
+    same key through a proxy or an OpenRouter-style endpoint. Default model
+    ``deepseek-chat`` (V3); use ``deepseek-reasoner`` (R1) via ``--model`` or
+    ``model_policy.yml`` for the heavier judgement stages. DeepSeek's JSON mode
+    requires the word "json" in the prompt — the RWS stage prompts already ask
+    for JSON output, so this is satisfied by construction."""
+
+    name = "deepseek"
+    endpoint = "https://api.deepseek.com/v1/chat/completions"
+
+    def __init__(self, api_key: str | None = None, endpoint: str | None = None) -> None:
+        self.api_key = api_key or os.environ.get("DEEPSEEK_API_KEY")
+        if not self.api_key:
+            raise ProviderError("DEEPSEEK_API_KEY is required for provider 'deepseek'")
+        self.endpoint = endpoint or os.environ.get("RWS_DEEPSEEK_URL") or self.endpoint
+
+    def effective_model(self, provider_request: ProviderRequest) -> str:
+        return provider_request.model or os.environ.get("RWS_DEEPSEEK_MODEL") or "deepseek-chat"
+
+    def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
+        model = self.effective_model(provider_request)
+        body = {
+            "model": model,
+            "messages": [{"role": "user", "content": provider_request.prompt}],
+            "response_format": {"type": "json_object"},
+        }
+
+        telemetry = ProviderRetryTelemetry()
+        try:
+            data = _post_json_with_retries(
+                provider_name="DeepSeek",
+                url=self.endpoint,
+                body=body,
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json",
+                },
+                telemetry=telemetry,
+            )
+        finally:
+            self._set_retry_telemetry(telemetry)
+
+        usage = data.get("usage", {})
+        self._set_usage(ProviderUsage(
+            input_tokens=usage.get("prompt_tokens", 0),
+            output_tokens=usage.get("completion_tokens", 0),
+            total_tokens=usage.get("total_tokens", 0),
+        ))
+
+        if "choices" not in data or not data["choices"]:
+            raise ProviderError(f"DeepSeek response missing choices: {data}")
+
+        text = data["choices"][0]["message"]["content"]
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise ProviderError(f"DeepSeek response did not contain parseable JSON: {text[:500]}") from exc
+
+
 def provider_from_name(name: str) -> BaseProvider:
     if name == "mock":
         return MockProvider()
@@ -880,6 +942,8 @@ def provider_from_name(name: str) -> BaseProvider:
         return AnthropicProvider()
     if name == "openrouter":
         return OpenRouterProvider()
+    if name == "deepseek":
+        return DeepSeekProvider()
     if name == "local":
         return LocalProvider()
     if name == "ollama":

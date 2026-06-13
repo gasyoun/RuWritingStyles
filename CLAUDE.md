@@ -61,7 +61,7 @@ Every segment in `segments.json` has a stable `span_id` (`p002`, `h004`, `c003` 
 
 ## Provider adapters
 
-Four real providers plus `mock` (`PROVIDER_CHOICES` in `cli.py`): `openai`, `google`, `anthropic`, `openrouter`. The `mock` provider is deterministic and is what tests use; never assume a real key is available.
+Real providers plus `mock` (`PROVIDER_CHOICES` in `cli.py`): `openai`, `google`, `anthropic`, `openrouter`, `deepseek` (+ `local`/`ollama` for OpenAI-compatible self-hosting). `deepseek` is the project's primary real provider (OpenAI-compatible JSON mode; `DEEPSEEK_API_KEY`; default `deepseek-chat`, `deepseek-reasoner` routed to council/verify in `model_policy.yml`; `RWS_DEEPSEEK_URL` overrides the base for an OpenRouter/proxy route). The `mock` provider is deterministic and is what tests use; never assume a real key is available.
 
 Env vars are loaded from `.env` via `python-dotenv` at CLI import time. The `provider_status` module reports readiness without exposing keys; use `rws provider-status --provider <p> --strict` in scripts. Retry/backoff is centralized — `RWS_PROVIDER_MAX_ATTEMPTS`, `RWS_PROVIDER_RETRY_SECONDS`, and rate-limit headers (`Retry-After`, OpenAI `x-ratelimit-reset-*`, Anthropic `anthropic-ratelimit-*-reset`) feed the same retry layer; provider log entries record `retry_count`, `retry_delay_seconds`, `retry_statuses`.
 

@@ -64,8 +64,8 @@ from .verification import create_verification_bundle
 from .gallery import generate_style_gallery
 from .db import Database
 
-PROVIDER_CHOICES = ["mock", "openai", "google", "anthropic", "openrouter", "local", "ollama"]
-REAL_PROVIDER_CHOICES = ["openai", "google", "anthropic", "openrouter", "local", "ollama"]
+PROVIDER_CHOICES = ["mock", "openai", "google", "anthropic", "openrouter", "deepseek", "local", "ollama"]
+REAL_PROVIDER_CHOICES = ["openai", "google", "anthropic", "openrouter", "deepseek", "local", "ollama"]
 
 
 def _configure_stdio() -> None:

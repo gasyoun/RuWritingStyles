@@ -7,6 +7,11 @@ All notable changes to RuWritingStyles are documented here.
 ### Changed
 - Released the current changelog state as version 1.
 
+## [2.8.0] - 2026-06-13
+### Added (DeepSeek provider — the project's primary real backend)
+- **`--provider deepseek`.** New `DeepSeekProvider` (OpenAI-compatible JSON mode): direct `api.deepseek.com` by default, `DEEPSEEK_API_KEY`, default model `deepseek-chat` (V3). Set `RWS_DEEPSEEK_MODEL=deepseek-reasoner` (R1) or `RWS_DEEPSEEK_URL=<base>` to route the same key through a proxy / OpenRouter. Wired into `PROVIDER_CHOICES`, `provider_from_name`, `provider_status` (`rws provider-status --provider deepseek`), and `model_policy.yml` (a `deepseek` block routing `deepseek-chat` for review/synthesis and `deepseek-reasoner` for council + verification). `tests/test_providers_deepseek.py` (7, mock-safe — no network). `.env.example` documents the keys. Full suite 156 green.
+- This unblocks the real-quality work that was previously mock-only: running the gold eval cases on a real provider, filling `docs/benchmark.md`, and end-to-end real-paper runs. **Setup:** add `DEEPSEEK_API_KEY=...` to `.env`, then `rws run paper.md --provider deepseek --execute`.
+
 ## [2.7.4] - 2026-06-13
 ### Changed (prompt-fidelity review F2/F3/F5 — passport curation)
 - **F3 — dropped the one over-shared generic check.** Removed `overstrong_conclusion` from all 10 passports that carried it; each already has a sharper, scholar-specific overstatement check (e.g. `weak_reconstruction`, `unsupported_etymology`, `missing_alternative_interpretation`), and no eval references it. The check-overlap audit now shows only 2 checks shared by ≥3 of the 21 passports (`missing_iast_on_first_mention` — the correct Sanskrit-cluster signature — and `weak_classification`). `metadata/dublin-core.xml` regenerated.

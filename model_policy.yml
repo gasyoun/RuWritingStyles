@@ -130,6 +130,38 @@ providers:
         model: google/gemini-2.0-flash-exp:free
         reasoning: medium
 
+  deepseek:
+    docs:
+      - https://api-docs.deepseek.com/
+    models:
+      balanced:
+        id: deepseek-chat
+        status: stable
+        note: "DeepSeek V3, OpenAI-compatible JSON mode. Fast/cheap default."
+      reasoner:
+        id: deepseek-reasoner
+        status: stable
+        note: "DeepSeek R1, deeper reasoning for the heavier judgement stages."
+    task_routes:
+      architecture:
+        model: deepseek-chat
+        reasoning: medium
+      implementation:
+        model: deepseek-chat
+        reasoning: medium
+      style_review:
+        model: deepseek-chat
+        reasoning: medium
+      council:
+        model: deepseek-reasoner
+        reasoning: high
+      synthesis:
+        model: deepseek-chat
+        reasoning: medium
+      verification:
+        model: deepseek-reasoner
+        reasoning: high
+
   anthropic:
     docs:
       - https://platform.claude.com/docs/en/about-claude/models/overview
