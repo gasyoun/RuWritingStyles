@@ -143,6 +143,15 @@ def check_cross_references(manifest_data: dict[str, Any]) -> list[str]:
         if source and source not in bib_ids:
             errors.append(f"sanskrit-terms {term.get('ru')!r}: source {source!r} not in knowledge/bibliography.json")
 
+    # (c) every style id in a named council must be a known passport id.
+    passport_ids = {p.get("id") for p in manifest_data.get("passports", [])}
+    councils = manifest_data.get("councils") or {}
+    if isinstance(councils, dict):
+        for name, style_ids in councils.items():
+            for style_id in style_ids or []:
+                if style_id not in passport_ids:
+                    errors.append(f"council {name!r}: style id {style_id!r} is not a known passport id")
+
     return errors
 
 

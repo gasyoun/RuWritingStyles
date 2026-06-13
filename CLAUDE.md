@@ -111,4 +111,4 @@ Maintain this exact section structure in `.ai_state.md`:
 
 - `ClaudeStyles/*-style.md` — these are the human-facing product. Don't edit prose without a review reason; they are referenced from `README.md` and from passports.
 - The research corpus (source PDFs/txt) lives in the **private sibling repo** `../RuWritingStyles-corpus/PDFtoTXT` — copyrighted texts must never be committed here (see `SOURCES.md`). `CorpusManager` resolves it via `RWS_CORPUS_DIR` or the sibling path. `PDFtoTXT/update.py` there is *not* a generic converter (it serves `AAZ_Zametki_2025` indices specifically).
-- The `mvp_style_ids` list in `styles/manifest.yml` — `rws list-styles --mvp` and the default council set depend on it.
+- The `mvp_style_ids` list in `styles/manifest.yml` — `rws list-styles --mvp` and the default council set depend on it. The `councils:` block beside it defines named panels (`general` = `mvp_style_ids`, `sanskrit`, `indology`) selectable via `rws run --council <name>` / `rws councils`; `validate_project` fails if a council names a non-existent passport, so edit ids carefully.

@@ -23,6 +23,15 @@
     "config": { "type": ["object", "null"] },
     "metrics": { "type": "object" },
     "steps": { "type": "array", "items": { "type": "object" } },
+    "styles": {
+      "type": "object",
+      "properties": {
+        "selected": { "type": "array", "items": { "type": "object" } },
+        "council_decisions": { "type": "object" },
+        "overruled": { "type": "array", "items": { "type": "object" } },
+        "stylistic_commitments": { "type": "array", "items": { "type": "object" } }
+      }
+    },
     "created_at": { "type": "string", "format": "date-time" },
     "updated_at": { "type": "string", "format": "date-time" }
   },

@@ -121,6 +121,10 @@ def build_parser() -> argparse.ArgumentParser:
     run_styles.add_argument("--style", help="One style id from `rws list-styles`.")
     run_styles.add_argument("--styles", help="Comma-separated style ids from `rws list-styles`.")
     run_styles.add_argument(
+        "--council",
+        help="A named council from styles/manifest.yml (see `rws councils`), e.g. sanskrit.",
+    )
+    run_styles.add_argument(
         "--mvp",
         action="store_true",
         help="Use the MVP styles from styles/manifest.yml. This is the default.",
@@ -459,6 +463,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     list_styles.set_defaults(func=cmd_list_styles)
 
+    councils = subparsers.add_parser(
+        "councils",
+        help="List the named councils defined in styles/manifest.yml.",
+    )
+    councils.set_defaults(func=cmd_councils)
+
     eval_list = subparsers.add_parser(
         "eval-list",
         help="List evaluation cases from evals/manifest.json.",
@@ -601,6 +611,10 @@ def build_parser() -> argparse.ArgumentParser:
     review_styles.add_argument("--style", help="One style id from `rws list-styles`.")
     review_styles.add_argument("--styles", help="Comma-separated style ids from `rws list-styles`.")
     review_styles.add_argument(
+        "--council",
+        help="A named council from styles/manifest.yml (see `rws councils`).",
+    )
+    review_styles.add_argument(
         "--mvp",
         action="store_true",
         help="Create review bundles for the MVP styles from styles/manifest.yml.",
@@ -625,6 +639,10 @@ def build_parser() -> argparse.ArgumentParser:
     delib_styles = deliberate.add_mutually_exclusive_group(required=True)
     delib_styles.add_argument("--style", help="One style id from `rws list-styles`.")
     delib_styles.add_argument("--styles", help="Comma-separated style ids from `rws list-styles`.")
+    delib_styles.add_argument(
+        "--council",
+        help="A named council from styles/manifest.yml (see `rws councils`).",
+    )
     delib_styles.add_argument(
         "--mvp",
         action="store_true",
@@ -1831,6 +1849,22 @@ def cmd_list_styles(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_councils(_: argparse.Namespace) -> int:
+    repo_root = repo_root_from()
+    manifest = load_manifest(repo_root)
+    if not manifest.councils:
+        print("No councils defined in styles/manifest.yml.")
+        return 0
+    mvp = tuple(manifest.mvp_style_ids)
+    for name, style_ids in manifest.councils:
+        default_marker = "  (= default / --mvp)" if style_ids == mvp else ""
+        print(f"{name}{default_marker}")
+        for style_id in style_ids:
+            print(f"  - {style_id}")
+    print("\nUse: rws run <doc> --council <name>")
+    return 0
+
+
 def cmd_eval_list(_: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     for case in load_eval_cases(repo_root):
@@ -1989,7 +2023,13 @@ def cmd_review(args: argparse.Namespace) -> int:
 
 
 def _selected_style_ids(args: argparse.Namespace, manifest) -> list[str]:
-    if getattr(args, "mvp", False):
+    council = getattr(args, "council", None)
+    if council:
+        style_ids = list(manifest.resolve_council(council))
+        if not style_ids:
+            available = ", ".join(manifest.council_names()) or "(none defined)"
+            raise ValueError(f"unknown council {council!r}; available: {available}")
+    elif getattr(args, "mvp", False):
         style_ids = list(manifest.mvp_style_ids)
     elif getattr(args, "styles", None):
         style_ids = [style_id.strip() for style_id in args.styles.split(",") if style_id.strip()]

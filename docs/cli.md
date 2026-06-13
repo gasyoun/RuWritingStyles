@@ -83,6 +83,25 @@ rws list-styles --mvp
 
 MVP styles are marked with `*`. The current default set contains 6 style passports from `mvp_style_ids` in `styles/manifest.yml`.
 
+## List councils
+
+```bash
+rws councils
+```
+
+Named review panels defined in the `councils:` block of `styles/manifest.yml`. Each is a
+list of style ids you can select as a unit. `general` equals `mvp_style_ids` (the default);
+`sanskrit` aims the panel at this project's primary subject (Vedic/Classical Sanskrit,
+Pāṇinian grammar, commentary); `indology` is the full Sanskrit bench. Select one with
+`--council <name>` on `rws run`, `rws review`, or `rws deliberate`:
+
+```bash
+rws run paper.md --council sanskrit
+```
+
+`--council` is mutually exclusive with `--style`/`--styles`/`--mvp`. An unknown name fails
+with the list of available councils.
+
 ## List Eval Cases
 
 ```bash

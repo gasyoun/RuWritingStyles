@@ -13,6 +13,9 @@
       "type": "array",
       "items": { "type": "string" }
     },
+    "councils": {
+      "type": "object"
+    },
     "clusters": {
       "type": "array",
       "items": {

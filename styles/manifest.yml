@@ -10,6 +10,34 @@ mvp_style_ids:
   - averintsev
   - gasparov
 
+# Named councils — selectable default review panels (`rws run --council <name>`,
+# `rws councils` to list). `mvp_style_ids` above is the historical default and
+# equals the `general` council. The `sanskrit` council aims the default panel at
+# this project's primary subject (Sanskrit linguistics), which the general panel
+# does not cover — see docs/prompt-fidelity-review-2026-06.md (F1).
+councils:
+  general:
+    - zaliznyak-method
+    - zaliznyak-novgorod
+    - tronsky-readings
+    - melchuk
+    - averintsev
+    - gasparov
+  sanskrit:
+    - elizarenkova-veda
+    - toporov-etym
+    - panini-traditional
+    - zaliznyak-method
+    - tronsky-readings
+    - lidova-commentary
+  indology:
+    - elizarenkova-veda
+    - toporov-etym
+    - panini-traditional
+    - sanskrit-reader
+    - samasa-manual
+    - lidova-commentary
+
 clusters:
   - id: ling_iesh
     path: styles/clusters/ling_iesh.yml

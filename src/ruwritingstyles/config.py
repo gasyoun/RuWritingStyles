@@ -14,7 +14,12 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .yaml_lite import scalar as _scalar, block as _block, list_items as _list_items
+from .yaml_lite import (
+    scalar as _scalar,
+    block as _block,
+    list_items as _list_items,
+    parse_simple_yaml,
+)
 
 
 @dataclass(frozen=True)
@@ -65,6 +70,17 @@ class Manifest:
     clusters: tuple[ClusterConfig, ...]
     passports: tuple[StylePassportRef, ...]
     council: CouncilConfig | None = None
+    councils: tuple[tuple[str, tuple[str, ...]], ...] = ()
+
+    def council_names(self) -> tuple[str, ...]:
+        return tuple(name for name, _ in self.councils)
+
+    def resolve_council(self, name: str) -> tuple[str, ...]:
+        """Style ids for a named council, or () if the name is unknown."""
+        for council_name, style_ids in self.councils:
+            if council_name == name:
+                return style_ids
+        return ()
 
 
 @dataclass(frozen=True)
@@ -118,7 +134,19 @@ def load_manifest(repo_root: Path) -> Manifest:
     text = _read(path)
 
     mvp_style_ids = _list_items(_block(text, "mvp_style_ids"))
-    
+
+    # Named councils: a nested map of council-name -> [style ids]. Parsed with
+    # the generic subset parser (handles the dict-of-lists shape the targeted
+    # _block/_list_items helpers do not).
+    councils: list[tuple[str, tuple[str, ...]]] = []
+    councils_block = _block(text, "councils")
+    if councils_block:
+        parsed = parse_simple_yaml(councils_block)
+        if isinstance(parsed, dict):
+            for name, ids in parsed.items():
+                if isinstance(ids, list):
+                    councils.append((str(name), tuple(str(i) for i in ids if i)))
+
     clusters_block = _block(text, "clusters")
     clusters: list[ClusterConfig] = []
     current_cluster: dict[str, str] = {}
@@ -167,11 +195,12 @@ def load_manifest(repo_root: Path) -> Manifest:
         )
 
     return Manifest(
-        path=path, 
-        mvp_style_ids=mvp_style_ids, 
+        path=path,
+        mvp_style_ids=mvp_style_ids,
         clusters=tuple(clusters),
-        passports=tuple(entries), 
-        council=council
+        passports=tuple(entries),
+        council=council,
+        councils=tuple(councils),
     )
 
 

@@ -87,6 +87,91 @@ _RUN_COLUMNS = (
 )
 
 
+# Council decision statuses (schemas/council.schema.json enum):
+#   accepted / accepted_with_modification -> the style's finding was honored in the rewrite
+#   rejected / deferred                   -> dissent the rewrite did not act on (the trace we want)
+#   informational                         -> a note, neither honored nor overruled
+_HONORED_STATUSES = {"accepted", "accepted_with_modification"}
+_OVERRULED_STATUSES = {"rejected", "deferred"}
+
+
+def _collect_style_audit(run_dir: Path) -> dict[str, Any]:
+    """A style-intent audit trail for run.json (prompt-fidelity review F4).
+
+    Synthesis stages (council/revision) work from distilled findings, so a run
+    otherwise cannot show *which* styles judged it or *what was overruled*. This
+    records that from the on-disk artifacts: the styles that actually produced a
+    review, the council's accept/reject tally, the overruled findings (dissent
+    that left no trace in the rewrite), and the terminological commitments the
+    revision was meant to honor. Purely descriptive — reads artifacts, changes
+    no prompt or pipeline behaviour. All fields degrade gracefully when a stage
+    did not run (e.g. prompt-only mode)."""
+
+    def _load(path: Path) -> Any:
+        if not path.exists():
+            return None
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            return None
+
+    audit: dict[str, Any] = {
+        "selected": [],
+        "council_decisions": {"honored": 0, "overruled": 0, "informational": 0},
+        "overruled": [],
+        "stylistic_commitments": [],
+    }
+
+    reviews_dir = run_dir / "reviews"
+    if reviews_dir.exists():
+        selected = []
+        for review_path in sorted(reviews_dir.glob("*.review.json")):
+            review = _load(review_path)
+            if isinstance(review, dict) and review.get("style_id"):
+                findings = review.get("findings")
+                selected.append({
+                    "style_id": review["style_id"],
+                    "status": review.get("status"),
+                    "findings": len(findings) if isinstance(findings, list) else 0,
+                })
+        audit["selected"] = selected
+
+    council = _load(run_dir / "council.json")
+    if isinstance(council, dict):
+        decisions = council.get("decisions")
+        if isinstance(decisions, list):
+            honored = informational = 0
+            for decision in decisions:
+                if not isinstance(decision, dict):
+                    continue
+                status = str(decision.get("status", "")).lower()
+                if status in _HONORED_STATUSES:
+                    honored += 1
+                elif status in _OVERRULED_STATUSES:
+                    audit["overruled"].append({
+                        "finding_id": decision.get("finding_id"),
+                        "status": decision.get("status"),
+                        "primary_school": decision.get("primary_school"),
+                        "reason": decision.get("reason"),
+                    })
+                else:
+                    informational += 1
+            audit["council_decisions"] = {
+                "honored": honored,
+                "overruled": len(audit["overruled"]),
+                "informational": informational,
+            }
+        commitments = council.get("stylistic_commitments")
+        if isinstance(commitments, list):
+            audit["stylistic_commitments"] = [
+                {"term": c.get("term"), "decision": c.get("decision")}
+                for c in commitments
+                if isinstance(c, dict)
+            ]
+
+    return audit
+
+
 def write_run_manifest(repo_root: Path, run_dir: Path) -> Path | None:
     """Write a self-describing `run.json` (status, timestamps, config, metrics,
     steps) so a run directory does not depend on the gitignored `rws.db`. The DB
@@ -122,6 +207,7 @@ def write_run_manifest(repo_root: Path, run_dir: Path) -> Path | None:
     manifest["config"] = config
     manifest["metrics"] = metrics
     manifest["steps"] = db.get_run_steps(run_id)
+    manifest["styles"] = _collect_style_audit(run_dir)
 
     (run_dir / "run.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2, default=str) + "\n",
