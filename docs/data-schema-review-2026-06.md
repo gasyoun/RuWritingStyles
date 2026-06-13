@@ -84,6 +84,19 @@ passes CI silently.
 - `citation-output.schema.json` omits `additionalProperties` and does not
   document its `entry` field.
 
+## Status (2026-06-13): cheap wins #1, #5, #2, #3 implemented
+
+#1 strict-keyword guard + `minItems`/`format`/`minProperties` enforced (the guard
+caught `minProperties` as unenforced). #5 (a)+(b) bibliography cross-references
+enforced in CI; (c) eval→checks dropped — the finding-type vocabulary is
+intentionally looser (27/44 cases use types no style enumerates). #2
+`segments.schema.json` added + validated. #3 revision `applied_changes` span_ids
+validated; `verification.warnings` and translit-lint left unchecked on
+investigation — they legitimately mix the original `segments.json` basis with
+`revised.md`'s re-segmented span_ids, so a blanket check would false-positive
+(the translit-lint condition is a correct guard, not a bug). #4 (`run.json` per
+run dir) and #6 (manifest `version`) remain.
+
 ## Recommended sequence (all cheap, all lock in existing good state)
 
 1. Strict-unknown-keyword guard + implement `minItems`/`format` (#1).

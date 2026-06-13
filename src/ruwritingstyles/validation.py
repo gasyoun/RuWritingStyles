@@ -25,6 +25,7 @@ def validate_run_dir(run_dir: Path) -> ValidationResult:
 
     segments = _load_json(run_dir / "segments.json", messages)
     if isinstance(segments, dict):
+        _validate_with_schema(segments, "segments.schema.json", "segments.json", schema_store, messages)
         _validate_segments(segments, messages)
     span_ids = _span_ids(segments)
 
@@ -52,6 +53,8 @@ def validate_run_dir(run_dir: Path) -> ValidationResult:
             _validate_common_status(data, messages, artifact)
             if artifact == "council.json":
                 _validate_council(data, review_paths, messages)
+            elif artifact == "revision.json":
+                _validate_revision_spans(data, span_ids, messages)
     translit_path = run_dir / "translit-lint.json"
     if translit_path.exists():
         translit = _load_json(translit_path, messages)
@@ -195,6 +198,23 @@ def _validate_finding(finding: Any, span_ids: set[str], messages: list[str], pat
     confidence = finding.get("confidence")
     if not isinstance(confidence, (int, float)) or not 0 <= confidence <= 1:
         messages.append(f"{path.name} finding {finding.get('id')} has invalid confidence")
+
+
+def _validate_revision_spans(data: dict[str, Any], span_ids: set[str], messages: list[str]) -> None:
+    """Revision applied_changes reference the original segmentation (segments.json),
+    so their span_ids must be known. (verification.json warnings are NOT checked:
+    they mix the LLM verifier's segment-based span_ids with merged translit-lint
+    findings whose span_ids come from the re-segmented revised.md.)"""
+    changes = data.get("applied_changes")
+    if not isinstance(changes, list):
+        return
+    for index, change in enumerate(changes):
+        if isinstance(change, dict):
+            span = change.get("span_id")
+            if span is not None and span_ids and span not in span_ids:
+                messages.append(
+                    f"revision.json applied_changes[{index}] references unknown span_id {span!r}"
+                )
 
 
 def _validate_common_status(data: dict[str, Any], messages: list[str], artifact: str) -> None:

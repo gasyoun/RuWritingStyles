@@ -485,13 +485,16 @@ class CliPipelineTests(unittest.TestCase):
         expected_case_ids = {case.case_id for case in expected_cases}
         self.assertEqual(result["suite_id"], "unittest-suite")
         self.assertEqual(result["case_count"], len(expected_cases))
-        # The three deterministic Sanskrit cases are gated on the transliteration
-        # linter and citation grounding, so they pass identically under the mock
-        # provider; every other case needs a real provider and fails on mock.
+        # The deterministic Sanskrit cases are gated on the transliteration linter
+        # and citation grounding, so they pass identically under the mock provider;
+        # every other case needs a real provider and fails on mock.
         mock_passing_case_ids = {
             "translit-mixed-scheme",
             "translit-first-mention",
             "gost-hallucinated-ref",
+            "translit-inconsistent-rendering",
+            "translit-cyrillic-latin-hybrid",
+            "gost-broken-ref",
         }
         passed_case_ids = {row["case_id"] for row in result["results"] if row["passed"]}
         self.assertEqual(passed_case_ids, mock_passing_case_ids)

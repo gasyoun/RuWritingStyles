@@ -1,0 +1,29 @@
+{
+  "$id": "segments.schema.json",
+  "title": "Prepared document segments (segments.json)",
+  "type": "object",
+  "required": ["run_id", "input_path", "segment_count", "segments"],
+  "additionalProperties": false,
+  "properties": {
+    "run_id": { "type": "string" },
+    "input_path": { "type": "string" },
+    "segment_count": { "type": "integer", "minimum": 0 },
+    "segments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["span_id", "type", "text", "start_line", "end_line"],
+        "additionalProperties": false,
+        "properties": {
+          "span_id": { "type": "string", "pattern": "^[a-z]+[0-9]{3,}$" },
+          "type": { "type": "string" },
+          "text": { "type": "string" },
+          "start_line": { "type": "integer" },
+          "end_line": { "type": "integer" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "metrics": { "type": "object" }
+        }
+      }
+    }
+  }
+}
