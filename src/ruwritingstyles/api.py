@@ -58,6 +58,8 @@ from .pipeline import run_full_pipeline
 from .profiling import calculate_bloom_stats, calculate_methodological_compass, calculate_tension_heatmap
 from .provider_status import provider_statuses, provider_statuses_json
 from .runs import create_prepare_run, list_runs as list_run_ids, load_run_artifact
+from .segment import read_document, normalize_document, segment_markdown
+from .providers import provider_from_name
 import argparse
 import json
 
@@ -79,12 +81,26 @@ app.add_middleware(
 )
 
 
+def _within(root: Path, path: Path) -> bool:
+    """True if `path` is `root` itself or nested under it (both already resolved).
+    The single path-containment primitive shared by `_run_dir`, the S3 input-path
+    guard, and the S1 static-route guard — one source of truth so a later
+    hardening tweak (symlinks, Windows case-folding) can't be applied to one
+    guard and silently forgotten in another."""
+    return path == root or root in path.parents
+
+
 # --- S4: optional bearer-token auth (see docs/security-review-2026-06.md) ---
 # Off by default so the loopback dev tool keeps working with no setup. Set
-# RWS_API_TOKEN to require `Authorization: Bearer <token>` on the API + WS routes
-# — the prerequisite, together with RWS_BIND_HOST, for binding a public interface.
+# RWS_API_TOKEN to require `Authorization: Bearer <token>` — the prerequisite,
+# with RWS_BIND_HOST, for binding a public interface.
+# DEFAULT-DENY: every route requires the token *except* the explicitly-listed
+# static-frontend paths. A new data/API route is therefore protected
+# automatically — nothing ships unauthenticated by forgetting to add it to a
+# protected-prefix list.
 _API_TOKEN = os.environ.get("RWS_API_TOKEN", "").strip()
-_PROTECTED_PREFIXES = ("/runs", "/api", "/status")
+_PUBLIC_PREFIXES = ("/assets/",)             # built SPA JS/CSS bundles (trailing slash: /assets../x stays protected)
+_PUBLIC_PATHS = {"/", "/index.html", "/favicon.ico"}
 
 
 def _bearer_ok(authorization: str | None) -> bool:
@@ -98,12 +114,17 @@ def _bearer_ok(authorization: str | None) -> bool:
     return False
 
 
+def _is_public_request(method: str, path: str) -> bool:
+    if method == "OPTIONS":  # never block CORS preflight
+        return True
+    return path in _PUBLIC_PATHS or any(path.startswith(p) for p in _PUBLIC_PREFIXES)
+
+
 @app.middleware("http")
 async def _require_token(request, call_next):
     if (
         _API_TOKEN
-        and request.method != "OPTIONS"  # never block CORS preflight
-        and any(request.url.path.startswith(p) for p in _PROTECTED_PREFIXES)
+        and not _is_public_request(request.method, request.url.path)
         and not _bearer_ok(request.headers.get("authorization"))
     ):
         return JSONResponse({"detail": "Unauthorized"}, status_code=401)
@@ -246,7 +267,7 @@ async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
     # S3: confine reads to the allowed root so a caller cannot make the server
     # read an arbitrary local file (e.g. /etc/passwd, ~/.ssh/...).
     allowed_root = _input_root(repo_root)
-    if input_path != allowed_root and allowed_root not in input_path.parents:
+    if not _within(allowed_root, input_path):
         raise HTTPException(status_code=403, detail="input_path is outside the allowed root")
 
     if not input_path.exists():
@@ -308,9 +329,8 @@ async def audit_selection(req: SelectionRequest):
     """Instant audit for editor selections (Obsidian/Word)."""
     from .council import run_socratic_council
     from .generation import execute_revision_artifact
-    from .providers import provider_from_name
     from .config import load_model_policy
-    
+
     repo_root = repo_root_from()
     provider = provider_from_name(req.provider)
     model_policy = load_model_policy(repo_root)
@@ -444,7 +464,7 @@ async def compare_runs(run_ids: str):
 def _run_dir(repo_root: Path, run_id: str) -> Path:
     runs_dir = (repo_root / "runs").resolve()
     run_dir = (runs_dir / run_id).resolve()
-    if runs_dir != run_dir and runs_dir not in run_dir.parents:
+    if not _within(runs_dir, run_dir):
         raise HTTPException(status_code=400, detail="Invalid run id")
     return run_dir
 
@@ -475,7 +495,7 @@ if frontend_path.exists():
         # like GET /..%2f..%2f.env would read arbitrary files (LFI). See S1 in
         # docs/security-review-2026-06.md.
         file_path = (_frontend_root / full_path).resolve()
-        if (file_path == _frontend_root or _frontend_root in file_path.parents) and file_path.is_file():
+        if _within(_frontend_root, file_path) and file_path.is_file():
             return FileResponse(file_path)
 
         # Fallback to index.html for SPA routing

@@ -7,6 +7,15 @@ All notable changes to RuWritingStyles are documented here.
 ### Changed
 - Released the current changelog state as version 1.
 
+## [2.7.2] - 2026-06-13
+### Fixed (from a `/code-review` pass over the security + councils + Phase-4 diff)
+- **Crash on the web-UI run path (pre-existing).** `POST /runs/execute` called `read_document`/`normalize_document`/`segment_markdown` (defined in `segment.py`) but `api.py` never imported them, so the React "New Run" button raised `NameError`. Added the import; new regression test prepares a real in-repo run via `TestClient` without crashing.
+- **S4 auth hardened to default-deny.** The middleware previously protected an allowlist of prefixes (`/runs`, `/api`, `/status`), so a future route under a new prefix would have shipped unauthenticated. Inverted to default-deny: every route requires the token except an explicit static-frontend allowlist (`_PUBLIC_PATHS` / `_PUBLIC_PREFIXES`). New test asserts an unknown route 401s under a token while `/` stays public.
+- **Single path-containment primitive.** The three resolve+`in .parents` guards (`_run_dir`, the S3 input-path check, the S1 static-route check) were consolidated into one `_within(root, path)` helper, so a later traversal-hardening tweak can't be applied to one guard and forgotten in another. Behaviour preserved (verified: prefix-collision `/repo` vs `/repo-evil` stays False).
+- **Second missing-import crash (found by an adversarial verification pass).** `resolve_run`→`background_revision` called `provider_from_name` without importing it in scope, so `/runs/{id}/resolve`'s re-revision raised `NameError` (swallowed by `except Exception`) and silently failed on real providers. Hoisted `provider_from_name` to a module import (fixes both call sites; removes the redundant local import in `audit_selection`).
+- **Auth hardening:** the public exemption for static assets is now `/assets/` (trailing slash) so `/assets../x` stays protected. The verification confirmed no unauthenticated bypass of any data route.
+- `tests/test_api_security.py` 6 → 12 (adds `_within`/`_is_public_request` unit coverage and the module-global regression). Full suite 145 green. **Documented limitation:** the bundled SPA sends no `Authorization` header, so token-ON mode needs a token-aware client. Other `/code-review` findings (audit re-reads, tool passport-loader duplication, CLI arg copy-paste) were assessed and left as documented low-priority cleanups.
+
 ## [2.7.1] - 2026-06-13
 ### Security (closes security-review S3 + S4 — the public-bind tier)
 - **S4 — optional bearer-token auth.** A new HTTP middleware (`api._require_token`) requires `Authorization: Bearer <RWS_API_TOKEN>` on `/runs`, `/api`, and `/status` when `RWS_API_TOKEN` is set; the WebSocket checks the same token (header or `?token=`). **Off by default** so the loopback dev tool needs zero setup; CORS preflight (`OPTIONS`) is never blocked; constant-time comparison (`secrets.compare_digest`).

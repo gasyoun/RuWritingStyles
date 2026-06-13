@@ -154,12 +154,37 @@ Items 1–5 shipped in v2.5.4. **S3 and S4 now implemented (v2.7.1)** — the pu
   `RWS_INPUT_ROOT` for legitimate out-of-repo inputs. A path resolving outside returns
   **403** before any read, closing the arbitrary-file-read. The default UI path
   (`…/RuWritingStyles/article.md`) is under the repo, so the local flow is unaffected.
-- **S4 — optional bearer-token auth.** An HTTP middleware (`api._require_token`) requires
-  `Authorization: Bearer <RWS_API_TOKEN>` on `/runs`, `/api`, `/status` when `RWS_API_TOKEN`
-  is set; the WebSocket checks the same token (header or `?token=`, closes 1008 on failure).
-  **Off by default** — the loopback dev tool keeps working with zero setup. CORS preflight
-  (`OPTIONS`) is never blocked; comparison is constant-time (`secrets.compare_digest`).
+- **S4 — optional bearer-token auth, default-deny.** An HTTP middleware (`api._require_token`)
+  requires `Authorization: Bearer <RWS_API_TOKEN>` when `RWS_API_TOKEN` is set. It is
+  **default-deny**: every route is protected *except* an explicit static-frontend allowlist
+  (`_PUBLIC_PATHS` = `/`, `/index.html`, `/favicon.ico`; `_PUBLIC_PREFIXES` = `/assets`), so a
+  future data route is protected automatically rather than relying on a maintainer to add it
+  to a protected-prefix list. The WebSocket checks the same token (header or `?token=`, closes
+  1008). **Off by default** — the loopback dev tool keeps working with zero setup. CORS
+  preflight (`OPTIONS`) is never blocked; comparison is constant-time (`secrets.compare_digest`).
 
-`tests/test_api_security.py` (6) covers both via `TestClient`. **To bind publicly now:** set
-`RWS_BIND_HOST=0.0.0.0` (S2) **and** `RWS_API_TOKEN=<secret>` (S4); optionally
-`RWS_INPUT_ROOT` (S3). Without a token, keep it on loopback.
+A follow-up `/code-review` pass (2026-06-13) then (a) caught and fixed a **pre-existing crash** —
+`/runs/execute` called `read_document`/`normalize_document`/`segment_markdown` which were never
+imported in `api.py`, so the web-UI "New Run" path raised `NameError`; (b) hardened S4 from a
+protected-prefix allowlist to the default-deny model above; (c) consolidated the three
+path-containment checks (`_run_dir`, S3, S1) into one shared `_within(root, path)` primitive so a
+later traversal-hardening tweak can't be applied to one guard and forgotten in another.
+
+An adversarial verification pass (4 parallel skeptics) then drove raw ASGI scopes against the
+auth layer and found **no unauthenticated bypass** (encoded traversal, case/slash variants,
+`OPTIONS`, `/openapi.json`, WS — all denied), and confirmed the `_within` refactor is a
+behaviour-preserving extraction. It also caught a **fourth same-class missing-import bug** the
+first pass missed: `resolve_run`→`background_revision` called `provider_from_name` without it in
+scope (`NameError` swallowed by `except Exception`, so `/runs/{id}/resolve` re-revision silently
+failed on real providers). Fixed by hoisting `provider_from_name` to a module import; the
+`/assets` exemption was also tightened to `/assets/` (so `/assets../x` stays protected).
+
+`tests/test_api_security.py` (12) covers all of this via `TestClient` plus unit coverage of
+`_within`/`_is_public_request`. **To bind publicly now:** set `RWS_BIND_HOST=0.0.0.0` (S2)
+**and** `RWS_API_TOKEN=<secret>` (S4); optionally `RWS_INPUT_ROOT` (S3). Without a token, keep
+it on loopback.
+
+**Known limitation (token-ON mode):** the bundled React SPA (`web/src/App.jsx`) sends no
+`Authorization` header on its `fetch` calls, so with `RWS_API_TOKEN` set every API call from the
+default UI returns 401 — token-ON mode currently requires a token-aware client (curl/scripts, or
+a frontend change to plumb the token). The loopback default (no token) is unaffected.
