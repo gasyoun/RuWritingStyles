@@ -30,3 +30,9 @@ council:
     - philological_depth
 conflict_priority:
   default: high
+
+provenance:
+  sources:
+    - "Аверинцев С. С. Работы по поэтике и истории культуры"
+  derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника"
+  derivation_date: "2026-05"

@@ -41,3 +41,9 @@ council:
     - narrow_grammar
     - unsupported_etymology
     - unavailable_primary_source
+
+provenance:
+  sources:
+    - "Lidova 2024"
+  derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника"
+  derivation_date: "2026-05"

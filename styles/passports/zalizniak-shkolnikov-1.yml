@@ -40,3 +40,10 @@ council:
     - narrow_accentological_reconstruction
     - manuscript_reading_without_source
     - factual_bibliography
+
+provenance:
+  sources:
+    - "Зализняк А. А. Лекции и научно-популярные выступления"
+    - "Zaliznyak 2002"
+  derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника"
+  derivation_date: "2026-05"

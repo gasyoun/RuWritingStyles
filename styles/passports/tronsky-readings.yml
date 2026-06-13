@@ -42,3 +42,9 @@ council:
     - unavailable_primary_source
     - bibliography_not_provided
     - domain_claim_outside_philology
+
+provenance:
+  sources:
+    - "Tronsky 2025"
+  derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника"
+  derivation_date: "2026-05"

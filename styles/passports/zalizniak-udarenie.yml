@@ -41,3 +41,10 @@ council:
     - cultural_context_without_linguistic_claim
     - public_polemics
     - unavailable_primary_source
+
+provenance:
+  sources:
+    - "Zaliznyak 2008"
+    - "Зализняк А. А. Древнерусское ударение (2019)"
+  derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника"
+  derivation_date: "2026-05"

@@ -38,3 +38,9 @@ council:
     - cultural_context_without_linguistic_claim
     - manuscript_reading_without_source
     - public_polemics
+
+provenance:
+  sources:
+    - "Zaliznyak 2002"
+  derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника"
+  derivation_date: "2026-05"

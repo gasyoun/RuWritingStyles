@@ -40,3 +40,10 @@ council:
     - narrow_grammar
     - manuscript_reading_without_source
     - unsupported_etymology
+
+provenance:
+  sources:
+    - "Альбедиль М. Ф. Востоковедные юбилейные сборники"
+    - "Smirnov 1962"
+  derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника"
+  derivation_date: "2026-05"

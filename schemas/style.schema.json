@@ -153,6 +153,20 @@
           }
         }
       }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "derived_by": { "type": "string" },
+        "derivation_date": { "type": "string" },
+        "validated_by": { "type": "string" },
+        "last_validated": { "type": "string" }
+      }
     }
   }
 }

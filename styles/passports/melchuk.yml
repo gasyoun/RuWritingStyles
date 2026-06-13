@@ -30,3 +30,9 @@ council:
     - syntax
 conflict_priority:
   default: extreme
+
+provenance:
+  sources:
+    - "Мельчук И. А. Опыт теории лингвистических моделей «Смысл ↔ Текст»"
+  derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника"
+  derivation_date: "2026-05"

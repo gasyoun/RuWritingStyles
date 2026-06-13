@@ -41,3 +41,9 @@ council:
     - manuscript_reading_without_source
     - narrow_accentological_reconstruction
     - cultural_context_without_linguistic_claim
+
+provenance:
+  sources:
+    - "Зализняк А. А. Из заметок о любительской лингвистике (2010; переизд. 2025)"
+  derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника"
+  derivation_date: "2026-05"

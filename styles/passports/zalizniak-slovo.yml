@@ -39,3 +39,9 @@ council:
     - unavailable_primary_source
     - cultural_context_without_linguistic_claim
     - reader_simplification
+
+provenance:
+  sources:
+    - "Зализняк А. А. «Слово о полку Игореве» — взгляд лингвиста (2008)"
+  derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника"
+  derivation_date: "2026-05"

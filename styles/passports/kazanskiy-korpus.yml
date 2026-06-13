@@ -40,3 +40,9 @@ council:
     - unavailable_primary_source
     - narrow_accentological_reconstruction
     - public_polemics
+
+provenance:
+  sources:
+    - "Kazansky 2025"
+  derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника"
+  derivation_date: "2026-05"

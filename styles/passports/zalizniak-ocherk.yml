@@ -39,3 +39,10 @@ council:
     - manuscript_reading_without_source
     - factual_bibliography
     - cultural_context_without_linguistic_claim
+
+provenance:
+  sources:
+    - "Зализняк А. А. Очерк русской грамматики (Труды, т. 1)"
+    - "Zaliznyak 2002"
+  derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника"
+  derivation_date: "2026-05"

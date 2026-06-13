@@ -30,3 +30,9 @@ council:
     - verse_theory
 conflict_priority:
   default: high
+
+provenance:
+  sources:
+    - "Gasparov 1984"
+  derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника"
+  derivation_date: "2026-05"
