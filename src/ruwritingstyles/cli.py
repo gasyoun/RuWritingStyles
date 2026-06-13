@@ -50,7 +50,7 @@ from .providers import provider_from_name
 from .report import write_run_report
 from .review import create_review_bundle, create_deliberation_bundle
 from .revision import create_revision_bundle
-from .citations import extract_citations, verify_citations_against_knowledge
+from .citations import citation_stats, extract_citations, verify_citations_against_knowledge
 from .bias import run_bias_audit
 from .runs import create_prepare_run
 from .segment import normalize_document, read_document, segment_markdown
@@ -1252,11 +1252,7 @@ def _execute_run_pipeline(repo_root: Path, run_dir: Path, args: argparse.Namespa
                 verification = verify_citations_against_knowledge(repo_root, citations)
                 cite_path = run_dir / "citations.json"
                 cite_path.write_text(json.dumps(verification, ensure_ascii=False, indent=2), encoding="utf-8")
-                db.save_metric(run_id, "citation_stats", {
-                    "total": len(citations),
-                    "verified": len(verification["verified"]),
-                    "not_in_bibliography": len(verification["not_in_bibliography"])
-                })
+                db.save_metric(run_id, "citation_stats", citation_stats(citations, verification))
                 print(f"completed citation verification: {len(verification['verified'])} verified, {len(verification['not_in_bibliography'])} not in bibliography")
             step(f"citations{iter_suffix}", do_citations)
 

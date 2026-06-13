@@ -22,7 +22,7 @@ from .execution import (
 )
 from .report import write_run_report
 from .html_summary import write_html_report
-from .citations import extract_citations, verify_citations_against_knowledge
+from .citations import citation_stats, extract_citations, verify_citations_against_knowledge
 from .bias import run_bias_audit
 
 def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model: str | None = None, profile: str = "researcher", on_update: Any = None, injection_queue: Optional[queue.Queue] = None) -> None:
@@ -143,11 +143,7 @@ def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model:
             cite_path.write_text(json.dumps(verification, ensure_ascii=False, indent=2), encoding="utf-8")
             
             # Save to metrics
-            db.save_metric(run_id, "citation_stats", {
-                "total": len(citations),
-                "verified": len(verification["verified"]),
-                "not_in_bibliography": len(verification["not_in_bibliography"])
-            })
+            db.save_metric(run_id, "citation_stats", citation_stats(citations, verification))
             return cite_path
         step("citations", do_citations)
 

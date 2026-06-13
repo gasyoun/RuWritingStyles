@@ -58,3 +58,16 @@ def verify_citations_against_knowledge(repo_root: Path, citations: list[str]) ->
             })
             
     return verification
+
+
+def citation_stats(citations: list[str], verification: dict[str, Any]) -> dict[str, int]:
+    """Summary counts for the ``citation_stats`` metric.
+
+    Shared by the CLI and pipeline citation steps so the metric shape is
+    defined in exactly one place.
+    """
+    return {
+        "total": len(citations),
+        "verified": len(verification["verified"]),
+        "not_in_bibliography": len(verification["not_in_bibliography"]),
+    }
