@@ -1,0 +1,47 @@
+id: sanskrit-reader
+name: Санскрит-ридер
+source_prompt: ClaudeStyles/sanskrit-reader-style.md
+role: clarity_reviewer
+language: ru
+level: private
+cluster: indology
+extends: cluster:indology
+
+best_for:
+  - учебный разбор санскритского отрывка
+  - комментированная хрестоматия
+  - пояснение грамматической темы для студентов
+  - пословный разбор и связный перевод
+
+checks:
+  - translation_replaces_analysis
+  - undefined_term
+  - register_drift_to_academic
+  - missing_iast_on_first_mention
+
+limits:
+  - не заменяет систематическую грамматику
+  - не должен подменять разбор формы готовым переводом
+  - не должен упрощать ценой потери точности
+
+review_mode:
+  rewrite_allowed: false
+  requires_span_ids: true
+  output_format: findings_json
+
+council:
+  can_reply_to:
+    - clarity
+    - sanskrit_terminology
+    - translation
+    - pedagogy
+  should_defer:
+    - domain_claim_outside_indology
+    - advanced_research_dispute
+
+provenance:
+  sources:
+    - "Kochergina 1987"
+    - "Tubb Boose 2007"
+  derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника"
+  derivation_date: "2026-06"

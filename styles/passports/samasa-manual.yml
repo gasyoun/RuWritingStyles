@@ -1,0 +1,49 @@
+id: samasa-manual
+name: Самаса-пособие
+source_prompt: ClaudeStyles/samasa-manual-style.md
+role: systematic_grammar_reviewer
+language: ru
+level: private
+cluster: indology
+extends: cluster:indology
+
+best_for:
+  - грамматическое пособие по санскриту
+  - типология сложных слов (самаса)
+  - определение, классификация, правило, пример
+  - учебный разбор словообразования
+
+checks:
+  - wrong_samasa_type
+  - missing_vigraha
+  - weak_classification
+  - missing_iast_on_first_mention
+  - missing_example_or_exception
+
+limits:
+  - не заменяет грамматику и словарь
+  - не должен определять тип самасы по внешнему виду без vigraha
+  - не должен давать правило без примера и исключения
+
+review_mode:
+  rewrite_allowed: false
+  requires_span_ids: true
+  output_format: findings_json
+
+council:
+  can_reply_to:
+    - grammar
+    - sanskrit_terminology
+    - classification
+    - word_formation
+  should_defer:
+    - domain_claim_outside_indology
+    - bibliography_not_provided
+
+provenance:
+  sources:
+    - "Whitney 1889"
+    - "Tubb Boose 2007"
+    - "Kochergina 1987"
+  derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника"
+  derivation_date: "2026-06"

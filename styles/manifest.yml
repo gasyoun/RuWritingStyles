@@ -43,6 +43,10 @@ clusters:
     path: styles/clusters/ling_dss.yml
     name: "Диалектологическая Школа"
     location: "Moscow"
+  - id: indology
+    path: styles/clusters/indology.yml
+    name: "Индология (санскритология)"
+    location: "Moscow-Petersburg"
   - id: lit_opoyaz
     path: styles/clusters/lit_opoyaz.yml
     name: "ОПОЯЗ"
@@ -158,6 +162,37 @@ passports:
     level: private
     cluster: ling_mts
     source_prompt: ClaudeStyles/lidova-commentary-style.md
+  - id: elizarenkova-veda
+    path: styles/passports/elizarenkova-veda.yml
+    level: private
+    cluster: indology
+    source_prompt: ClaudeStyles/elizarenkova-veda-style.md
+    weight: 1.3
+  - id: toporov-etym
+    path: styles/passports/toporov-etym.yml
+    level: private
+    cluster: indology
+    source_prompt: ClaudeStyles/toporov-etym-style.md
+    weight: 1.2
+  - id: sanskrit-reader
+    path: styles/passports/sanskrit-reader.yml
+    level: private
+    cluster: indology
+    source_prompt: ClaudeStyles/sanskrit-reader-style.md
+  - id: samasa-manual
+    path: styles/passports/samasa-manual.yml
+    level: private
+    cluster: indology
+    source_prompt: ClaudeStyles/samasa-manual-style.md
+  - id: panini-traditional
+    path: styles/passports/panini-traditional.yml
+    level: private
+    cluster: indology
+    source_prompt: ClaudeStyles/panini-traditional-style.md
+  - id: indology
+    path: styles/clusters/indology.yml
+    level: cluster
+    source_prompt: ClaudeStyles/indology-style.md
   - id: ling_iesh
     path: styles/clusters/ling_iesh.yml
     level: cluster
@@ -237,6 +272,24 @@ available_style_sources:
   - id: lidova-commentary
     name: Лидова
     source_prompt: ClaudeStyles/lidova-commentary-style.md
+  - id: elizarenkova-veda
+    name: Елизаренкова-веда
+    source_prompt: ClaudeStyles/elizarenkova-veda-style.md
+  - id: toporov-etym
+    name: Топоров-этимология
+    source_prompt: ClaudeStyles/toporov-etym-style.md
+  - id: sanskrit-reader
+    name: Санскрит-ридер
+    source_prompt: ClaudeStyles/sanskrit-reader-style.md
+  - id: samasa-manual
+    name: Самаса-пособие
+    source_prompt: ClaudeStyles/samasa-manual-style.md
+  - id: panini-traditional
+    name: Панини-традиция
+    source_prompt: ClaudeStyles/panini-traditional-style.md
+  - id: indology
+    name: Индология
+    source_prompt: ClaudeStyles/indology-style.md
   - id: tronsky-readings
     name: Tronsky-Readings
     source_prompt: ClaudeStyles/tronsky-readings-style.md

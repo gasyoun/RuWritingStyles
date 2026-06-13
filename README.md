@@ -77,6 +77,18 @@
 | [`ClaudeStyles/lidova-commentary-style.md`][lidova-commentary] | [Лидова][lidova-commentary] | История комментария, жанра, канона, школы, устной и письменной передачи. | Развернутая историко-филологическая аргументация. |
 | [`ClaudeStyles/tronsky-readings-style.md`][tronsky-readings] | [Tronsky-Readings][tronsky-readings] | Небольшая специальная статья по классической филологии, индоевропеистике, текстологии или древним языкам. | Плотная источниковедческая работа без публицистики. |
 
+### Индологический кластер (санскритология)
+
+Кластер `indology` собирает стили для русскоязычных научных текстов по санскриту. Общий принцип: при первом упоминании термин даётся в русской передаче и IAST, держится одна схема транслитерации, различаются ведийский / эпический / классический санскрит и слой коренного текста и комментария. Обобщающий профиль — [`ClaudeStyles/indology-style.md`][indology].
+
+| Файл | Стиль | Для чего нужен | Главная интонация |
+|---|---|---|---|
+| [`ClaudeStyles/elizarenkova-veda-style.md`][elizarenkova-veda] | [Елизаренкова-веда][elizarenkova-veda] | Ведийская филология: разбор словоформы, ударения, синтаксиса гимна, осторожная семантизация. | Сдержанная точность с вниманием к поэтике гимна. |
+| [`ClaudeStyles/toporov-etym-style.md`][toporov-etym] | [Топоров-этимология][toporov-etym] | Этимология и семантическая реконструкция санскритских и индоевропейских лексем. | Широкий сравнительный фон, подчинённый регулярности. |
+| [`ClaudeStyles/sanskrit-reader-style.md`][sanskrit-reader] | [Санскрит-ридер][sanskrit-reader] | Учебный разбор отрывка, комментированная хрестоматия для студентов. | Ясность без упрощения, уважение к читателю. |
+| [`ClaudeStyles/samasa-manual-style.md`][samasa-manual] | [Самаса-пособие][samasa-manual] | Грамматическое пособие по сложным словам: определение, классификация, правило, пример, исключение. | Сухая алгоритмическая ясность. |
+| [`ClaudeStyles/panini-traditional-style.md`][panini-traditional] | [Панини-традиция][panini-traditional] | Изложение грамматики с опорой на туземную традицию: сутра, вритти, пример. | Дисциплинированное описание категории изнутри традиции. |
+
 ## Исходные материалы
 
 Эта таблица связывает готовые стили с текстами исследовательского корпуса. Сами тексты охраняются авторским правом и **не входят в публичный репозиторий**: они хранятся в приватном репозитории-спутнике [`RuWritingStyles-corpus`](https://github.com/gasyoun/RuWritingStyles-corpus) (каталог `PDFtoTXT/`), доступном только участникам проекта. Библиографические описания и правовой статус — в [`SOURCES.md`](SOURCES.md). В одних случаях источник прямой, в других указан опорный материал: он помогает проверить тематику, лексику и научный регистр, но не является единственным образцом для стиля.
@@ -563,6 +575,12 @@ PYTHONPATH=src python -m ruwritingstyles.cli eval-status runs/last-regression/co
 [kazanskiy-korpus]: ClaudeStyles/kazanskiy-korpus-style.md
 [lidova-commentary]: ClaudeStyles/lidova-commentary-style.md
 [tronsky-readings]: ClaudeStyles/tronsky-readings-style.md
+[indology]: ClaudeStyles/indology-style.md
+[elizarenkova-veda]: ClaudeStyles/elizarenkova-veda-style.md
+[toporov-etym]: ClaudeStyles/toporov-etym-style.md
+[sanskrit-reader]: ClaudeStyles/sanskrit-reader-style.md
+[samasa-manual]: ClaudeStyles/samasa-manual-style.md
+[panini-traditional]: ClaudeStyles/panini-traditional-style.md
 [zalizniak-enklitiki]: ClaudeStyles/zalizniak-enklitiki-style.md
 [zalizniak-imennoe]: ClaudeStyles/zalizniak-imennoe-style.md
 [zalizniak-ocherk]: ClaudeStyles/zalizniak-ocherk-style.md

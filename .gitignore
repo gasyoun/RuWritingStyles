@@ -26,3 +26,5 @@ PDFtoTXT/
 
 # stray log captures
 *.log
+full.out
+full.err
