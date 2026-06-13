@@ -3,6 +3,7 @@
 import logging
 import os
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 
@@ -49,7 +50,7 @@ class CorpusManager:
             # keep the index key in the historical PDFtoTXT/<name> form.
             rel_path = str(Path("PDFtoTXT") / file_path.name)
         
-        with sqlite3.connect(self.db_path) as conn:
+        with closing(sqlite3.connect(self.db_path)) as conn:
             conn.row_factory = sqlite3.Row
             
             # Check if already indexed
@@ -88,13 +89,41 @@ class CorpusManager:
             
             conn.commit()
 
+    def stats(self) -> Dict[str, Any]:
+        """Summary of the corpus directory and the FTS5 index."""
+        available = (
+            sorted(p.name for p in self.corpus_dir.glob("*.txt"))
+            if self.corpus_dir.exists()
+            else []
+        )
+        indexed_files = 0
+        indexed_segments = 0
+        if self.db_path.exists():
+            with closing(sqlite3.connect(self.db_path)) as conn:
+                try:
+                    indexed_files = conn.execute(
+                        "SELECT COUNT(*) FROM corpus_metadata"
+                    ).fetchone()[0]
+                    indexed_segments = conn.execute(
+                        "SELECT COUNT(*) FROM corpus_segments"
+                    ).fetchone()[0]
+                except sqlite3.OperationalError:
+                    pass
+        return {
+            "corpus_dir": str(self.corpus_dir),
+            "corpus_dir_exists": self.corpus_dir.exists(),
+            "available_txt": available,
+            "indexed_files": indexed_files,
+            "indexed_segments": indexed_segments,
+        }
+
     def search(self, query: str, limit: int = 5) -> List[Dict[str, Any]]:
         """Search the corpus using FTS5."""
         # Sanitize query for FTS5 (basic)
         sanitized_query = query.replace('"', '""')
         
         results = []
-        with sqlite3.connect(self.db_path) as conn:
+        with closing(sqlite3.connect(self.db_path)) as conn:
             conn.row_factory = sqlite3.Row
             # Use snippet() for context
             sql = """

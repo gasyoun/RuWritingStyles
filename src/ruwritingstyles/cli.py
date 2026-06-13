@@ -275,6 +275,32 @@ def build_parser() -> argparse.ArgumentParser:
     )
     project_set_journal.set_defaults(func=cmd_project_set_journal)
 
+    corpus_status = subparsers.add_parser(
+        "corpus-status",
+        help="Show the corpus directory and FTS5 index status (Deep Retrieval).",
+    )
+    corpus_status.set_defaults(func=cmd_corpus_status)
+
+    corpus_ingest = subparsers.add_parser(
+        "corpus-ingest",
+        help="Index the corpus .txt files into the local FTS5 store (rws.db).",
+    )
+    corpus_ingest.add_argument(
+        "--force", action="store_true", help="Re-index files even if already indexed."
+    )
+    corpus_ingest.set_defaults(func=cmd_corpus_ingest)
+
+    corpus_search = subparsers.add_parser(
+        "corpus-search",
+        help="Full-text search the indexed corpus (FTS5) and print snippets.",
+    )
+    corpus_search.add_argument("query", help="FTS5 query, e.g. \"samasa OR vigraha\".")
+    corpus_search.add_argument("--limit", type=int, default=5, help="Max results (default 5).")
+    corpus_search.add_argument(
+        "--json", action="store_true", dest="as_json", help="Print results as JSON."
+    )
+    corpus_search.set_defaults(func=cmd_corpus_search)
+
     audit = subparsers.add_parser(
         "audit",
         help="Perform a final project-wide consistency audit against all stylistic commitments.",
@@ -2220,6 +2246,57 @@ def cmd_project_set_journal(args: argparse.Namespace) -> int:
     project_dir = args.project_dir if args.project_dir.is_absolute() else (Path.cwd() / args.project_dir)
     context_path = set_journal_profile(project_dir, preset)
     print(f"set journal profile '{preset.get('name', args.journal_id)}' in {context_path}")
+    return 0
+
+
+def cmd_corpus_status(_: argparse.Namespace) -> int:
+    from .corpus import CorpusManager
+
+    stats = CorpusManager(repo_root_from()).stats()
+    print(f"corpus dir: {stats['corpus_dir']}")
+    if not stats["corpus_dir_exists"]:
+        print("  (not found — set RWS_OFFLINE/RWS_CORPUS_DIR or add the private corpus repo)")
+    print(f"available .txt files: {len(stats['available_txt'])}")
+    for name in stats["available_txt"]:
+        print(f"  - {name}")
+    print(f"indexed files: {stats['indexed_files']}")
+    print(f"indexed segments: {stats['indexed_segments']}")
+    if stats["available_txt"] and stats["indexed_files"] < len(stats["available_txt"]):
+        print("run `rws corpus-ingest` to index the corpus.")
+    return 0
+
+
+def cmd_corpus_ingest(args: argparse.Namespace) -> int:
+    from .corpus import CorpusManager
+    from .db import Database
+
+    repo_root = repo_root_from()
+    Database(repo_root)  # ensure FTS5 tables exist
+    cm = CorpusManager(repo_root)
+    if not cm.corpus_dir.exists():
+        print(f"error: corpus directory not found: {cm.corpus_dir}")
+        print("set RWS_CORPUS_DIR or clone the private RuWritingStyles-corpus repo alongside this one.")
+        return 1
+    cm.ingest_all(force=args.force)
+    stats = cm.stats()
+    print(f"indexed {stats['indexed_files']} file(s), {stats['indexed_segments']} segment(s) from {cm.corpus_dir}")
+    return 0
+
+
+def cmd_corpus_search(args: argparse.Namespace) -> int:
+    from .corpus import CorpusManager
+
+    results = CorpusManager(repo_root_from()).search(args.query, limit=args.limit)
+    if getattr(args, "as_json", False):
+        print(json.dumps(results, ensure_ascii=False, indent=2))
+        return 0
+    if not results:
+        print("no matches (is the corpus indexed? run `rws corpus-ingest`)")
+        return 0
+    for r in results:
+        head = f"{r.get('author') or '?'} {r.get('year') or ''}".strip()
+        print(f"[{head}] {r['file']}")
+        print(f"  {r.get('snippet') or ''}")
     return 0
 
 

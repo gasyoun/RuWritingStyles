@@ -483,6 +483,26 @@ This writes a `journal_profile` block into `.rws-project/project-context.json`
 `rws lint-translit article.md --journal vya` applies a profile to a one-off
 lint without a project.
 
+## Corpus Deep Retrieval (FTS5)
+
+The corpus is a local SQLite/FTS5 full-text index over the project's source
+texts (the `.txt` extractions). The texts themselves are copyrighted and live
+in the private sibling repo `RuWritingStyles-corpus` (`PDFtoTXT/`); point at
+them with `RWS_CORPUS_DIR` or clone that repo alongside this one. The index is
+built in the local, gitignored `rws.db`.
+
+```bash
+rws corpus-status                       # corpus dir, available .txt, indexed counts
+rws corpus-ingest                       # index all .txt into FTS5 (--force to re-index)
+rws corpus-search "samasa OR vigraha"   # FTS5 query, prints author/file + snippet
+rws corpus-search "ведийский" --json    # machine-readable results
+```
+
+Search uses SQLite FTS5 syntax (`AND`/`OR`/`NEAR`, phrase quotes). This is the
+same index the `search_corpus` MCP tool queries during a real-provider run, so
+ingesting once makes Deep Retrieval available both from the CLI and inside the
+Council.
+
 ## Inspect findings
 
 ```bash

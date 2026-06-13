@@ -1,3 +1,9 @@
+### [2.5.0] - 2026-06-13
+#### Added (Phase 2: corpus Deep Retrieval is now usable)
+- **`rws corpus-status` / `corpus-ingest` / `corpus-search`** expose the SQLite/FTS5 `CorpusManager`, which was implemented but reachable only via the `search_corpus` MCP tool (so unusable without a real-provider tool call). Ingesting indexes the private corpus `.txt` extractions into the local `rws.db`; search returns ranked snippets. Verified on the existing indology source texts (Tubb's *Scholastic Sanskrit*, Smirnov's *Mahābhārata*): `corpus-search "samasa OR vigraha"` returns precise compound-grammar passages — the material backing the `samasa-manual` / `panini-traditional` styles. `CorpusManager.stats()` added; the indology authors' texts (Elizarenkova/Toporov/Vertogradova/Ivanov) remain the author's to add to the private repo, after which `rws corpus-ingest` picks them up.
+- `CorpusManager` SQLite connections now close (`contextlib.closing`) — `with sqlite3.connect()` commits but does not close, which leaked handles (and locked the DB on Windows). New `tests/test_corpus.py` (4 tests, offline, tempdir).
+- `RWS_CORPUS_DIR` / corpus workflow documented in `docs/cli.md`.
+
 ### [2.4.10] - 2026-06-13
 #### Added / Fixed (architecture review #6: offline tests + the network leak)
 - The test suite no longer makes real network calls. `MockProvider` simulates a `search_scholar` tool call during verification, which routed through `WebResearcher` to OpenAlex (10s timeouts / 429s) on every mock run that reached verification — the source of the multi-thousand-second `test_cli_pipeline`/eval runtimes. `WebResearcher.search` now honours an `RWS_OFFLINE` flag (default off, so real-provider runs are unchanged); `run_eval_case` sets it for `--provider mock`, and the pipeline test modules set it at import. `test_eval_sanskrit` dropped from ~9s to ~1.7s.
