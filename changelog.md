@@ -1,3 +1,12 @@
+### [2.7.0] - 2026-06-13
+#### Added (Phase 4 — archival DH-grade metadata; closes docs/roadmap-sanskrit-dh.md Фаза 4)
+- **`CITATION.cff`** (Citation File Format 1.2.0) — GitHub now shows a "Cite this repository" button; author M. Yu. Gasuns, Apache-2.0, keyworded. A commented `identifiers` block is ready for the Zenodo DOI after the first release.
+- **`.zenodo.json`** — Zenodo deposition metadata (software, `language: rus`, creators, keywords, related identifier) so a GitHub release archives with a DOI.
+- **`docs/AI_DISCLOSURE.md`** — ready-to-paste AI-use disclosure formulas (RU minimal / RU with provider / EN) for a paper's footnote or Acknowledgements, plus an honest account of the LLM vs deterministic layers and the human-in-the-loop `run.json` trace. Linked from README. Stance: the tool is a reviewer, not a co-author; the researcher carries responsibility.
+- **`tools/passports_to_dublin_core.py` + `metadata/dublin-core.xml`** — exports all 21 style passports to the unqualified DCMI element set (field→`dc:*` mapping documented in the tool), one well-formed record each. Re-runnable.
+- **Version alignment.** `pyproject.toml` (2.4.0→2.7.0, author fixed to M. Yu. Gasuns), `styles/manifest.yml` (2.4.0→2.7.0 — closes data-review #6, the last stale-version item), `CITATION.cff`, and the README status line now all read v2.7.0.
+- Deferred per roadmap (after phases 1–3, not Phase 4): Word/Obsidian plugins; the indological bibliography core beyond the current 44 entries.
+
 ### [2.6.0] - 2026-06-13
 #### Added (prompt/style-fidelity review — docs/prompt-fidelity-review-2026-06.md)
 - Whole-content fidelity review of the two layers (39 `ClaudeStyles/*.md` ↔ 39 manifest passports) and the pipeline's preservation of style intent. The `.md`↔passport mapping is faithful and bidirectionally CI-enforced; voice reaches the model verbatim at review + deliberation; the synthesis stages (council/revision/verification) are finding-mediated.

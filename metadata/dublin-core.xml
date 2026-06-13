@@ -1,0 +1,600 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<records xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <record id="albedil-sbornik">
+    <dc:identifier>albedil-sbornik</dc:identifier>
+    <dc:title>Albedil-Sbornik</dc:title>
+    <dc:subject>Albedil-Sbornik</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>cultural_context_reviewer; культурный очерк; ритуалы и мифы; музейные предметы; юбилейный научный сборник; гуманитарная интонация дара и памяти</dc:description>
+    <dc:subject>культурный очерк</dc:subject>
+    <dc:subject>ритуалы и мифы</dc:subject>
+    <dc:subject>музейные предметы</dc:subject>
+    <dc:subject>юбилейный научный сборник</dc:subject>
+    <dc:subject>гуманитарная интонация дара и памяти</dc:subject>
+    <dc:subject>missing_cultural_context</dc:subject>
+    <dc:subject>object_description_gap</dc:subject>
+    <dc:subject>unsupported_ritual_claim</dc:subject>
+    <dc:subject>tone_too_dry</dc:subject>
+    <dc:subject>overstrong_conclusion</dc:subject>
+    <dc:subject>mts</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/albedil-sbornik-style.md</dc:source>
+    <dc:source>Альбедиль М. Ф. Востоковедные юбилейные сборники</dc:source>
+    <dc:source>Smirnov 1962</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-05</dc:date>
+    <dc:relation>cluster:mts</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="averintsev">
+    <dc:identifier>averintsev</dc:identifier>
+    <dc:title>С. С. Аверинцев</dc:title>
+    <dc:subject>С. С. Аверинцев</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>cultural_context_reviewer; богословие; история культуры; антиковедение; византинистика</dc:description>
+    <dc:subject>богословие</dc:subject>
+    <dc:subject>история культуры</dc:subject>
+    <dc:subject>антиковедение</dc:subject>
+    <dc:subject>византинистика</dc:subject>
+    <dc:subject>term_depth</dc:subject>
+    <dc:subject>historical_perspective</dc:subject>
+    <dc:subject>cultural_intertextuality</dc:subject>
+    <dc:subject>rhetorical_period</dc:subject>
+    <dc:subject>epistemic_caution</dc:subject>
+    <dc:subject>lit_historico_cultural</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/averintsev-style.md</dc:source>
+    <dc:source>Аверинцев С. С. Работы по поэтике и истории культуры</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-05</dc:date>
+    <dc:relation>cluster:lit_historico_cultural</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="elizarenkova-veda">
+    <dc:identifier>elizarenkova-veda</dc:identifier>
+    <dc:title>Елизаренкова-веда</dc:title>
+    <dc:subject>Елизаренкова-веда</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>source_critical_reviewer; ведийская филология; язык и стиль Ригведы; ведийское ударение и синтаксис гимна; перевод и комментарий ведийского текста; формульность и поэтика гимна</dc:description>
+    <dc:subject>ведийская филология</dc:subject>
+    <dc:subject>язык и стиль Ригведы</dc:subject>
+    <dc:subject>ведийское ударение и синтаксис гимна</dc:subject>
+    <dc:subject>перевод и комментарий ведийского текста</dc:subject>
+    <dc:subject>формульность и поэтика гимна</dc:subject>
+    <dc:subject>anachronistic_sanskrit_period</dc:subject>
+    <dc:subject>missing_iast_on_first_mention</dc:subject>
+    <dc:subject>unsupported_semantization</dc:subject>
+    <dc:subject>missing_context_of_hymn</dc:subject>
+    <dc:subject>missing_source</dc:subject>
+    <dc:subject>indology</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/elizarenkova-veda-style.md</dc:source>
+    <dc:source>Elizarenkova 1982</dc:source>
+    <dc:source>Elizarenkova 1993</dc:source>
+    <dc:source>Elizarenkova 1999</dc:source>
+    <dc:source>Rigveda 1989</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-06</dc:date>
+    <dc:relation>cluster:indology</dc:relation>
+    <dc:relation>cluster:indology</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="gasparov">
+    <dc:identifier>gasparov</dc:identifier>
+    <dc:title>М. Л. Гаспаров</dc:title>
+    <dc:subject>М. Л. Гаспаров</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>clarity_reviewer; стихосложение; античная литература; перевод; точный анализ</dc:description>
+    <dc:subject>стихосложение</dc:subject>
+    <dc:subject>античная литература</dc:subject>
+    <dc:subject>перевод</dc:subject>
+    <dc:subject>точный анализ</dc:subject>
+    <dc:subject>logical_clarity</dc:subject>
+    <dc:subject>terminological_precision</dc:subject>
+    <dc:subject>verse_structure</dc:subject>
+    <dc:subject>fact_checking</dc:subject>
+    <dc:subject>stylistic_dryness</dc:subject>
+    <dc:subject>lit_structural</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/gasparov-style.md</dc:source>
+    <dc:source>Gasparov 1984</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-05</dc:date>
+    <dc:relation>cluster:lit_structural</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="kazanskiy-korpus">
+    <dc:identifier>kazanskiy-korpus</dc:identifier>
+    <dc:title>Казанский</dc:title>
+    <dc:subject>Казанский</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>commentary_reviewer; филологический комментарий; переводческий нюанс; сопоставление оригинала и перевода; семантический контекст; корпусные параллели</dc:description>
+    <dc:subject>филологический комментарий</dc:subject>
+    <dc:subject>переводческий нюанс</dc:subject>
+    <dc:subject>сопоставление оригинала и перевода</dc:subject>
+    <dc:subject>семантический контекст</dc:subject>
+    <dc:subject>корпусные параллели</dc:subject>
+    <dc:subject>missing_commentary</dc:subject>
+    <dc:subject>weak_translation_equivalence</dc:subject>
+    <dc:subject>semantic_nuance_gap</dc:subject>
+    <dc:subject>missing_context</dc:subject>
+    <dc:subject>overstrong_conclusion</dc:subject>
+    <dc:subject>mts</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/kazanskiy-korpus-style.md</dc:source>
+    <dc:source>Kazansky 2025</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-05</dc:date>
+    <dc:relation>cluster:mts</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="lidova-commentary">
+    <dc:identifier>lidova-commentary</dc:identifier>
+    <dc:title>Лидова</dc:title>
+    <dc:subject>Лидова</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>commentary_reviewer; история комментария; жанр и канон; школа и авторитет; устная и письменная передача; традиция толкования</dc:description>
+    <dc:subject>история комментария</dc:subject>
+    <dc:subject>жанр и канон</dc:subject>
+    <dc:subject>школа и авторитет</dc:subject>
+    <dc:subject>устная и письменная передача</dc:subject>
+    <dc:subject>традиция толкования</dc:subject>
+    <dc:subject>missing_tradition_context</dc:subject>
+    <dc:subject>weak_genre_framing</dc:subject>
+    <dc:subject>missing_authority_chain</dc:subject>
+    <dc:subject>commentary_function_gap</dc:subject>
+    <dc:subject>overstrong_conclusion</dc:subject>
+    <dc:subject>mts</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/lidova-commentary-style.md</dc:source>
+    <dc:source>Lidova 2024</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-05</dc:date>
+    <dc:relation>cluster:mts</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="melchuk">
+    <dc:identifier>melchuk</dc:identifier>
+    <dc:title>И. А. Мельчук</dc:title>
+    <dc:subject>И. А. Мельчук</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>systematic_grammar_reviewer; теоретическая лингвистика; семантика; синтаксис; модель «Смысл — Текст»</dc:description>
+    <dc:subject>теоретическая лингвистика</dc:subject>
+    <dc:subject>семантика</dc:subject>
+    <dc:subject>синтаксис</dc:subject>
+    <dc:subject>модель «Смысл — Текст»</dc:subject>
+    <dc:subject>semantic_decomposition</dc:subject>
+    <dc:subject>syntactic_dependency</dc:subject>
+    <dc:subject>terminological_consistency</dc:subject>
+    <dc:subject>explicit_rules</dc:subject>
+    <dc:subject>formal_notation</dc:subject>
+    <dc:subject>ling_mss</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/melchuk-style.md</dc:source>
+    <dc:source>Мельчук И. А. Опыт теории лингвистических моделей «Смысл ↔ Текст»</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-05</dc:date>
+    <dc:relation>cluster:ling_mss</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="panini-traditional">
+    <dc:identifier>panini-traditional</dc:identifier>
+    <dc:title>Панини-традиция</dc:title>
+    <dc:subject>Панини-традиция</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>commentary_reviewer; грамматическая теория Панини и комментаторов; терминология вьякараны; изложение сутра-вритти-пример; соотнесение туземного и западного описания</dc:description>
+    <dc:subject>грамматическая теория Панини и комментаторов</dc:subject>
+    <dc:subject>терминология вьякараны</dc:subject>
+    <dc:subject>изложение сутра-вритти-пример</dc:subject>
+    <dc:subject>соотнесение туземного и западного описания</dc:subject>
+    <dc:subject>mistranslated_native_term</dc:subject>
+    <dc:subject>missing_commentary_layer</dc:subject>
+    <dc:subject>unattributed_commentary</dc:subject>
+    <dc:subject>missing_sutra_reference</dc:subject>
+    <dc:subject>missing_iast_on_first_mention</dc:subject>
+    <dc:subject>indology</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/panini-traditional-style.md</dc:source>
+    <dc:source>Tubb Boose 2007</dc:source>
+    <dc:source>Whitney 1889</dc:source>
+    <dc:source>Renou 1930</dc:source>
+    <dc:source>Paribok 2011</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-06</dc:date>
+    <dc:relation>cluster:indology</dc:relation>
+    <dc:relation>cluster:indology</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="samasa-manual">
+    <dc:identifier>samasa-manual</dc:identifier>
+    <dc:title>Самаса-пособие</dc:title>
+    <dc:subject>Самаса-пособие</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>systematic_grammar_reviewer; грамматическое пособие по санскриту; типология сложных слов (самаса); определение, классификация, правило, пример; учебный разбор словообразования</dc:description>
+    <dc:subject>грамматическое пособие по санскриту</dc:subject>
+    <dc:subject>типология сложных слов (самаса)</dc:subject>
+    <dc:subject>определение, классификация, правило, пример</dc:subject>
+    <dc:subject>учебный разбор словообразования</dc:subject>
+    <dc:subject>wrong_samasa_type</dc:subject>
+    <dc:subject>missing_vigraha</dc:subject>
+    <dc:subject>weak_classification</dc:subject>
+    <dc:subject>missing_iast_on_first_mention</dc:subject>
+    <dc:subject>missing_example_or_exception</dc:subject>
+    <dc:subject>indology</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/samasa-manual-style.md</dc:source>
+    <dc:source>Whitney 1889</dc:source>
+    <dc:source>Tubb Boose 2007</dc:source>
+    <dc:source>Kochergina 1987</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-06</dc:date>
+    <dc:relation>cluster:indology</dc:relation>
+    <dc:relation>cluster:indology</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="sanskrit-reader">
+    <dc:identifier>sanskrit-reader</dc:identifier>
+    <dc:title>Санскрит-ридер</dc:title>
+    <dc:subject>Санскрит-ридер</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>clarity_reviewer; учебный разбор санскритского отрывка; комментированная хрестоматия; пояснение грамматической темы для студентов; пословный разбор и связный перевод</dc:description>
+    <dc:subject>учебный разбор санскритского отрывка</dc:subject>
+    <dc:subject>комментированная хрестоматия</dc:subject>
+    <dc:subject>пояснение грамматической темы для студентов</dc:subject>
+    <dc:subject>пословный разбор и связный перевод</dc:subject>
+    <dc:subject>translation_replaces_analysis</dc:subject>
+    <dc:subject>undefined_term</dc:subject>
+    <dc:subject>register_drift_to_academic</dc:subject>
+    <dc:subject>missing_iast_on_first_mention</dc:subject>
+    <dc:subject>indology</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/sanskrit-reader-style.md</dc:source>
+    <dc:source>Kochergina 1987</dc:source>
+    <dc:source>Tubb Boose 2007</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-06</dc:date>
+    <dc:relation>cluster:indology</dc:relation>
+    <dc:relation>cluster:indology</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="toporov-etym">
+    <dc:identifier>toporov-etym</dc:identifier>
+    <dc:title>Топоров-этимология</dc:title>
+    <dc:subject>Топоров-этимология</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>source_critical_reviewer; этимология санскритских и индоевропейских лексем; семантическая реконструкция; сравнительно-историческое языкознание; разбор мифологических и ритуальных терминов</dc:description>
+    <dc:subject>этимология санскритских и индоевропейских лексем</dc:subject>
+    <dc:subject>семантическая реконструкция</dc:subject>
+    <dc:subject>сравнительно-историческое языкознание</dc:subject>
+    <dc:subject>разбор мифологических и ритуальных терминов</dc:subject>
+    <dc:subject>unsupported_sanskrit_etymology</dc:subject>
+    <dc:subject>accidental_similarity</dc:subject>
+    <dc:subject>arbitrary_sound_change</dc:subject>
+    <dc:subject>unsupported_semantization</dc:subject>
+    <dc:subject>missing_iast_on_first_mention</dc:subject>
+    <dc:subject>indology</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/toporov-etym-style.md</dc:source>
+    <dc:source>Toporov 2004</dc:source>
+    <dc:source>Elizarenkova Toporov 1965</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-06</dc:date>
+    <dc:relation>cluster:indology</dc:relation>
+    <dc:relation>cluster:indology</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="tronsky-readings">
+    <dc:identifier>tronsky-readings</dc:identifier>
+    <dc:title>Tronsky-Readings</dc:title>
+    <dc:subject>Tronsky-Readings</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>source_critical_reviewer; короткая специальная филологическая статья; источник и аппарат; чтение рукописи; перевод и комментарий; альтернативные трактовки</dc:description>
+    <dc:subject>короткая специальная филологическая статья</dc:subject>
+    <dc:subject>источник и аппарат</dc:subject>
+    <dc:subject>чтение рукописи</dc:subject>
+    <dc:subject>перевод и комментарий</dc:subject>
+    <dc:subject>альтернативные трактовки</dc:subject>
+    <dc:subject>missing_source</dc:subject>
+    <dc:subject>missing_apparatus</dc:subject>
+    <dc:subject>unsupported_reading</dc:subject>
+    <dc:subject>weak_parallel</dc:subject>
+    <dc:subject>overstrong_conclusion</dc:subject>
+    <dc:subject>missing_alternative_interpretation</dc:subject>
+    <dc:subject>iesh</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/tronsky-readings-style.md</dc:source>
+    <dc:source>Tronsky 2025</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-05</dc:date>
+    <dc:relation>cluster:iesh</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="zalizniak-enklitiki">
+    <dc:identifier>zalizniak-enklitiki</dc:identifier>
+    <dc:title>Зализняк-энклитики</dc:title>
+    <dc:subject>Зализняк-энклитики</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>systematic_grammar_reviewer; древнерусская фраза; энклитики и частицы; скрытый грамматический механизм; корпусные закономерности; различение живой и книжной нормы</dc:description>
+    <dc:subject>древнерусская фраза</dc:subject>
+    <dc:subject>энклитики и частицы</dc:subject>
+    <dc:subject>скрытый грамматический механизм</dc:subject>
+    <dc:subject>корпусные закономерности</dc:subject>
+    <dc:subject>различение живой и книжной нормы</dc:subject>
+    <dc:subject>missing_corpus_pattern</dc:subject>
+    <dc:subject>weak_rule_reconstruction</dc:subject>
+    <dc:subject>mixed_phenomena</dc:subject>
+    <dc:subject>insufficient_examples</dc:subject>
+    <dc:subject>overstrong_conclusion</dc:subject>
+    <dc:subject>mts</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/zalizniak-enklitiki-style.md</dc:source>
+    <dc:source>Зализняк А. А. Древнерусские энклитики (2008)</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-05</dc:date>
+    <dc:relation>cluster:mts</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="zalizniak-imennoe">
+    <dc:identifier>zalizniak-imennoe</dc:identifier>
+    <dc:title>Зализняк-именное</dc:title>
+    <dc:subject>Зализняк-именное</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>systematic_grammar_reviewer; формальная морфология; словоформы и лексемы; парадигмы; грамматические разряды; алгоритмическое описание словоизменения</dc:description>
+    <dc:subject>формальная морфология</dc:subject>
+    <dc:subject>словоформы и лексемы</dc:subject>
+    <dc:subject>парадигмы</dc:subject>
+    <dc:subject>грамматические разряды</dc:subject>
+    <dc:subject>алгоритмическое описание словоизменения</dc:subject>
+    <dc:subject>unclear_definition</dc:subject>
+    <dc:subject>weak_classification</dc:subject>
+    <dc:subject>paradigm_gap</dc:subject>
+    <dc:subject>algorithm_gap</dc:subject>
+    <dc:subject>mixed_levels</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/zalizniak-imennoe-style.md</dc:source>
+    <dc:source>Zaliznyak 2002</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-05</dc:date>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="zalizniak-ocherk">
+    <dc:identifier>zalizniak-ocherk</dc:identifier>
+    <dc:title>Зализняк-очерк</dc:title>
+    <dc:subject>Зализняк-очерк</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>systematic_grammar_reviewer; грамматические определения; классификации; правила и исключения; учебные и справочные объяснения</dc:description>
+    <dc:subject>грамматические определения</dc:subject>
+    <dc:subject>классификации</dc:subject>
+    <dc:subject>правила и исключения</dc:subject>
+    <dc:subject>учебные и справочные объяснения</dc:subject>
+    <dc:subject>unclear_definition</dc:subject>
+    <dc:subject>weak_classification</dc:subject>
+    <dc:subject>missing_example</dc:subject>
+    <dc:subject>overstrong_conclusion</dc:subject>
+    <dc:subject>argument_order_problem</dc:subject>
+    <dc:subject>iesh</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/zalizniak-ocherk-style.md</dc:source>
+    <dc:source>Зализняк А. А. Очерк русской грамматики (Труды, т. 1)</dc:source>
+    <dc:source>Zaliznyak 2002</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-05</dc:date>
+    <dc:relation>cluster:iesh</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="zalizniak-shkolnikov-1">
+    <dc:identifier>zalizniak-shkolnikov-1</dc:identifier>
+    <dc:title>Зализняк-школьников_1</dc:title>
+    <dc:subject>Зализняк-школьников_1</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>clarity_reviewer; объяснение сложной лингвистики неспециалистам; учебные примеры; постепенное введение термина; научпоп без упрощения; проверка понятности</dc:description>
+    <dc:subject>объяснение сложной лингвистики неспециалистам</dc:subject>
+    <dc:subject>учебные примеры</dc:subject>
+    <dc:subject>постепенное введение термина</dc:subject>
+    <dc:subject>научпоп без упрощения</dc:subject>
+    <dc:subject>проверка понятности</dc:subject>
+    <dc:subject>unclear_for_reader</dc:subject>
+    <dc:subject>missing_simple_example</dc:subject>
+    <dc:subject>term_introduced_too_early</dc:subject>
+    <dc:subject>explanation_gap</dc:subject>
+    <dc:subject>style_overreach</dc:subject>
+    <dc:subject>nss</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/zalizniak-shkolnikov_1-style.md</dc:source>
+    <dc:source>Зализняк А. А. Лекции и научно-популярные выступления</dc:source>
+    <dc:source>Zaliznyak 2002</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-05</dc:date>
+    <dc:relation>cluster:nss</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="zalizniak-slovo">
+    <dc:identifier>zalizniak-slovo</dc:identifier>
+    <dc:title>Зализняк-слово</dc:title>
+    <dc:subject>Зализняк-слово</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>source_critical_reviewer; подлинность древнего памятника; баланс аргументов за и против; системность языковых признаков; вероятность имитации; проверка веса доказательств</dc:description>
+    <dc:subject>подлинность древнего памятника</dc:subject>
+    <dc:subject>баланс аргументов за и против</dc:subject>
+    <dc:subject>системность языковых признаков</dc:subject>
+    <dc:subject>вероятность имитации</dc:subject>
+    <dc:subject>проверка веса доказательств</dc:subject>
+    <dc:subject>weak_evidence_balance</dc:subject>
+    <dc:subject>missing_counterargument</dc:subject>
+    <dc:subject>imitation_risk_unchecked</dc:subject>
+    <dc:subject>system_pattern_gap</dc:subject>
+    <dc:subject>overstrong_conclusion</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/zalizniak-slovo-style.md</dc:source>
+    <dc:source>Зализняк А. А. «Слово о полку Игореве» — взгляд лингвиста (2008)</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-05</dc:date>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="zalizniak-udarenie">
+    <dc:identifier>zalizniak-udarenie</dc:identifier>
+    <dc:title>Зализняк-ударение</dc:title>
+    <dc:subject>Зализняк-ударение</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>source_critical_reviewer; историческая акцентология; ударение и варианты; акцентные парадигмы; надежность свидетельств; реконструкция по рукописным и словарным данным</dc:description>
+    <dc:subject>историческая акцентология</dc:subject>
+    <dc:subject>ударение и варианты</dc:subject>
+    <dc:subject>акцентные парадигмы</dc:subject>
+    <dc:subject>надежность свидетельств</dc:subject>
+    <dc:subject>реконструкция по рукописным и словарным данным</dc:subject>
+    <dc:subject>missing_accent_source</dc:subject>
+    <dc:subject>weak_reconstruction</dc:subject>
+    <dc:subject>paradigm_gap</dc:subject>
+    <dc:subject>evidence_reliability_gap</dc:subject>
+    <dc:subject>overstrong_conclusion</dc:subject>
+    <dc:subject>mss</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/zalizniak-udarenie-style.md</dc:source>
+    <dc:source>Zaliznyak 2008</dc:source>
+    <dc:source>Зализняк А. А. Древнерусское ударение (2019)</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-05</dc:date>
+    <dc:relation>cluster:mss</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="zalizniak-zametki">
+    <dc:identifier>zalizniak-zametki</dc:identifier>
+    <dc:title>Зализняк-заметки</dc:title>
+    <dc:subject>Зализняк-заметки</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>polemical_linguistic_reviewer; псевдоэтимологии; внешнее сходство слов; произвольные звуковые замены; критика любительской лингвистики; слабые исторические выводы из языкового материала</dc:description>
+    <dc:subject>псевдоэтимологии</dc:subject>
+    <dc:subject>внешнее сходство слов</dc:subject>
+    <dc:subject>произвольные звуковые замены</dc:subject>
+    <dc:subject>критика любительской лингвистики</dc:subject>
+    <dc:subject>слабые исторические выводы из языкового материала</dc:subject>
+    <dc:subject>unsupported_etymology</dc:subject>
+    <dc:subject>arbitrary_sound_change</dc:subject>
+    <dc:subject>accidental_similarity</dc:subject>
+    <dc:subject>weak_historical_inference</dc:subject>
+    <dc:subject>unsupported_method</dc:subject>
+    <dc:subject>overstrong_conclusion</dc:subject>
+    <dc:subject>iesh</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/zalizniak-zametki-style.md</dc:source>
+    <dc:source>Зализняк А. А. Из заметок о любительской лингвистике (2010; переизд. 2025)</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-05</dc:date>
+    <dc:relation>cluster:iesh</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="zaliznyak-method">
+    <dc:identifier>zaliznyak-method</dc:identifier>
+    <dc:title>А. А. Зализняк (Общий метод)</dc:title>
+    <dc:subject>А. А. Зализняк (Общий метод)</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>source_critical_reviewer; доказательная лингвистика; морфология; историческая грамматика; борьба с лженаукой</dc:description>
+    <dc:subject>доказательная лингвистика</dc:subject>
+    <dc:subject>морфология</dc:subject>
+    <dc:subject>историческая грамматика</dc:subject>
+    <dc:subject>борьба с лженаукой</dc:subject>
+    <dc:subject>evidentiary_base</dc:subject>
+    <dc:subject>logical_consistency</dc:subject>
+    <dc:subject>historical_continuity</dc:subject>
+    <dc:subject>anti_amateur_linguistics</dc:subject>
+    <dc:subject>clarity_of_explanation</dc:subject>
+    <dc:subject>ling_iesh</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/zaliznyak-method-style.md</dc:source>
+    <dc:source>Zaliznyak 2002</dc:source>
+    <dc:source>Zaliznyak 2004</dc:source>
+    <dc:source>Зализняк А. А. Из заметок о любительской лингвистике</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-05</dc:date>
+    <dc:relation>cluster:ling_iesh</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="zaliznyak-novgorod">
+    <dc:identifier>zaliznyak-novgorod</dc:identifier>
+    <dc:title>Зализняк-новгород</dc:title>
+    <dc:subject>Зализняк-новгород</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>source_critical_reviewer; древненовгородский диалект; берестяные грамоты; графика и написание; датировка источника; корпусные параллели</dc:description>
+    <dc:subject>древненовгородский диалект</dc:subject>
+    <dc:subject>берестяные грамоты</dc:subject>
+    <dc:subject>графика и написание</dc:subject>
+    <dc:subject>датировка источника</dc:subject>
+    <dc:subject>корпусные параллели</dc:subject>
+    <dc:subject>missing_source_date</dc:subject>
+    <dc:subject>missing_graphics_analysis</dc:subject>
+    <dc:subject>dialect_claim_unchecked</dc:subject>
+    <dc:subject>missing_corpus_parallel</dc:subject>
+    <dc:subject>overstrong_conclusion</dc:subject>
+    <dc:subject>iesh</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/zaliznyak-novgorod-style.md</dc:source>
+    <dc:source>Zaliznyak 2004</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-05</dc:date>
+    <dc:relation>cluster:iesh</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+</records>

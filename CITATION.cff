@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+message: "If you use this software or its style catalogue, please cite it as below."
+title: "RuWritingStyles: Russian Claude custom styles and an agentic review pipeline for scholarly writing on Sanskrit linguistics"
+abstract: >-
+  RuWritingStyles is a bilingual resource for scholarly writing on Sanskrit
+  linguistics in Russian. It combines (1) a catalogue of Russian-language Claude
+  custom-style prompts modelled on the prose method of major philologists
+  (Zaliznyak, Tronsky, Mel'cuk, Elizarenkova, Toporov, Lidova and others), and
+  (2) a zero-runtime-dependency agentic review pipeline that runs a multi-style
+  "Council" over a Markdown manuscript (segment, independent style reviews,
+  council deliberation, revision, verification) with deterministic Sanskrit
+  quality checks: IAST/Cyrillic transliteration consistency, GOST R 7.0.100-2018
+  bibliography formatting, and citation grounding. Review panels are selectable
+  by named council (general / sanskrit / indology).
+type: software
+authors:
+  - family-names: Gasuns
+    given-names: "M. Yu."
+    email: gasyoun@gmail.com
+    alias: gasyoun
+version: 2.7.0
+date-released: "2026-06-13"
+license: Apache-2.0
+repository-code: "https://github.com/gasyoun/RuWritingStyles"
+url: "https://github.com/gasyoun/RuWritingStyles"
+keywords:
+  - Sanskrit
+  - linguistics
+  - digital humanities
+  - Russian
+  - large language models
+  - agentic review
+  - scholarly writing
+  - IAST transliteration
+  - GOST R 7.0.100-2018
+  - Indology
+# After the first Zenodo release, add the minted DOI here so the "Cite this
+# repository" button resolves to the archived version, e.g.:
+# identifiers:
+#   - type: doi
+#     value: 10.5281/zenodo.XXXXXXX
+#     description: "Concept DOI (all versions)"

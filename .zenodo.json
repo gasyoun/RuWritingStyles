@@ -1,0 +1,32 @@
+{
+  "title": "RuWritingStyles: Russian Claude custom styles and an agentic review pipeline for scholarly writing on Sanskrit linguistics",
+  "description": "<p>RuWritingStyles is a bilingual resource for scholarly writing on Sanskrit linguistics in Russian. It combines (1) a catalogue of Russian-language Claude custom-style prompts modelled on the prose method of major philologists (Zaliznyak, Tronsky, Mel'čuk, Elizarenkova, Toporov, Lidova and others), and (2) a zero-runtime-dependency agentic review pipeline that runs a multi-style &quot;Council&quot; over a Markdown manuscript (segment, independent style reviews, council deliberation, revision, verification) with deterministic Sanskrit quality checks: IAST/Cyrillic transliteration consistency, GOST R 7.0.100-2018 bibliography formatting, and citation grounding. Review panels are selectable by named council (general / sanskrit / indology).</p>",
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "Apache-2.0",
+  "language": "rus",
+  "creators": [
+    {
+      "name": "Gasuns, M. Yu."
+    }
+  ],
+  "keywords": [
+    "Sanskrit",
+    "linguistics",
+    "digital humanities",
+    "Russian",
+    "large language models",
+    "agentic review",
+    "scholarly writing",
+    "IAST transliteration",
+    "GOST R 7.0.100-2018",
+    "Indology"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/gasyoun/RuWritingStyles",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}

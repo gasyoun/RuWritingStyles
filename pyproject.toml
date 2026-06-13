@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ruwritingstyles"
-version = "2.4.0"
+version = "2.7.0"
 description = "Agentic style review tooling for RuWritingStyles."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
 authors = [
-  { name = "RuWritingStyles contributors" }
+  { name = "M. Yu. Gasuns", email = "gasyoun@gmail.com" }
 ]
 dependencies = [
   "fastapi>=0.115",
