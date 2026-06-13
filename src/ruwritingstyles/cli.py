@@ -1255,9 +1255,9 @@ def _execute_run_pipeline(repo_root: Path, run_dir: Path, args: argparse.Namespa
                 db.save_metric(run_id, "citation_stats", {
                     "total": len(citations),
                     "verified": len(verification["verified"]),
-                    "hallucinations": len(verification["hallucinations"])
+                    "not_in_bibliography": len(verification["not_in_bibliography"])
                 })
-                print(f"completed citation verification: {len(verification['verified'])} verified, {len(verification['hallucinations'])} hallucinations")
+                print(f"completed citation verification: {len(verification['verified'])} verified, {len(verification['not_in_bibliography'])} not in bibliography")
             step(f"citations{iter_suffix}", do_citations)
 
             if args.execute:

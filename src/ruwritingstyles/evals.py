@@ -557,9 +557,11 @@ def _finding_types(run_dir: Path) -> set[str]:
         if isinstance(finding, dict) and finding.get("type"):
             result.add(str(finding["type"]))
 
-    # Citation grounding: surface a synthetic type for hallucinated references.
+    # Citation grounding: a citation absent from the structured bibliography
+    # surfaces a synthetic finding type for the deterministic eval cases (e.g.
+    # the deliberately fabricated reference in gost-hallucinated-ref).
     citations = _load_json(run_dir / "citations.json")
-    if citations.get("hallucinations"):
+    if citations.get("not_in_bibliography"):
         result.add("hallucinated_citation")
 
     return result

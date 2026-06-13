@@ -359,26 +359,26 @@ def _citation_section(run_dir: Path) -> str:
     
     data = json.loads(cite_path.read_text(encoding="utf-8"))
     verified = data.get("verified", [])
-    hallucinations = data.get("hallucinations", [])
-    
+    not_in_bibliography = data.get("not_in_bibliography", [])
+
     lines = [
         "## Scholarly Grounding (Citations)",
         f"- **Status**: `{data.get('status', 'unknown')}`",
         f"- **Verified Citations**: {len(verified)}",
-        f"- **Potential Hallucinations**: {len(hallucinations)}",
+        f"- **Not in Bibliography**: {len(not_in_bibliography)}",
         ""
     ]
-    
+
     if verified:
         lines.append("### Verified Sources")
         rows = [(v.get("citation", ""), v.get("source_file", "")) for v in verified]
         lines.append(_table(("Citation", "Source Collection"), rows))
         lines.append("")
-        
-    if hallucinations:
-        lines.append("### Warning: Unverified Citations")
-        rows = [(h.get("citation", ""), h.get("reason", "")) for h in hallucinations]
-        lines.append(_table(("Citation", "Issue"), rows))
+
+    if not_in_bibliography:
+        lines.append("### Citations not in local bibliography")
+        rows = [(h.get("citation", ""), h.get("reason", "")) for h in not_in_bibliography]
+        lines.append(_table(("Citation", "Note"), rows))
         lines.append("")
         
     return "\n".join(lines)

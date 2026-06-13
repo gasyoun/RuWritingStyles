@@ -349,8 +349,8 @@ function App() {
 
               <div className="stat-card glass">
                 <div className="stat-header"><BookOpen size={16} /><span>Citation Grounding</span></div>
-                <div className="stat-value">{runData.citation_stats?.verified?.length || 0} / {runData.citation_stats?.hallucinations?.length || 0}</div>
-                <div className="stat-label">Verified / Hallucinations</div>
+                <div className="stat-value">{runData.citation_stats?.verified?.length || 0} / {runData.citation_stats?.not_in_bibliography?.length || 0}</div>
+                <div className="stat-label">Verified / Not in bibliography</div>
               </div>
             </section>
 
@@ -463,8 +463,8 @@ function App() {
                           <div className="cite-source" style={{fontSize: '0.8rem', color: '#8b949e'}}>{c.entry?.title || c.source_file}</div>
                         </div>
                       ))}
-                      <div className="section-label" style={{marginTop: '1.5rem'}}>Hallucinations / Missing</div>
-                      {runData.citation_stats?.hallucinations?.map((c, i) => (
+                      <div className="section-label" style={{marginTop: '1.5rem'}}>Not in bibliography / Missing</div>
+                      {runData.citation_stats?.not_in_bibliography?.map((c, i) => (
                         <div key={i} className="citation-item failed" style={{borderLeft: '2px solid #f85149', paddingLeft: '8px', marginBottom: '8px'}}>
                           <div className="cite-text" style={{fontWeight: 'bold', color: '#f85149'}}>{c.citation}</div>
                           <div className="cite-reason" style={{fontSize: '0.8rem', color: '#8b949e'}}>{c.reason}</div>

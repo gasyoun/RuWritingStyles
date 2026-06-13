@@ -33,8 +33,8 @@
    заполняемую из `format_gost`; BibTeX остаётся параллельным выходом для
    журналов с собственным `.bst`.
 4. **Связка с проверкой цитирований**: `citations.py::verify_citations_against_knowledge`
-   уже возвращает `verified/missing/hallucinations`; в `references-gost.md`
-   попадают только `verified`-записи, `hallucinations` идут предупреждением
+   уже возвращает `verified/missing/not_in_bibliography`; в `references-gost.md`
+   попадают только `verified`-записи, `not_in_bibliography` идут предупреждением
    в `verification.json.warnings[]`.
 5. **Наполнение `knowledge/bibliography.json`**: ~25 записей индологического ядра
    (Елизаренкова, Топоров, Monier-Williams, Böhtlingk/Roth, Whitney, Renou,

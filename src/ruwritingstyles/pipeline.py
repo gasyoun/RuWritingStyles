@@ -146,7 +146,7 @@ def run_full_pipeline(repo_root: Path, run_dir: Path, provider_name: str, model:
             db.save_metric(run_id, "citation_stats", {
                 "total": len(citations),
                 "verified": len(verification["verified"]),
-                "hallucinations": len(verification["hallucinations"])
+                "not_in_bibliography": len(verification["not_in_bibliography"])
             })
             return cite_path
         step("citations", do_citations)

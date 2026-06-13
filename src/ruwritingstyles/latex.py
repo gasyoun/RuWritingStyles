@@ -120,7 +120,7 @@ def generate_latex_report(run_dir: Path, db_entry: dict[str, Any]) -> str:
     citation_items = (
         f"    \\item \\textbf{{{{Всего цитат:}}}} {cite_stats.get('total', 0)}\n"
         f"    \\item \\textbf{{{{Верифицировано:}}}} {cite_stats.get('verified', 0)}\n"
-        f"    \\item \\textbf{{{{Галлюцинаций:}}}} {cite_stats.get('hallucinations', 0)}"
+        f"    \\item \\textbf{{{{Не в библиографии:}}}} {cite_stats.get('not_in_bibliography', 0)}"
     )
 
     # Bias

@@ -34,8 +34,8 @@ class TestCitations(unittest.TestCase):
             
             self.assertEqual(len(results["verified"]), 1)
             self.assertEqual(results["verified"][0]["citation"], "Зализняк 2004")
-            self.assertEqual(len(results["hallucinations"]), 1)
-            self.assertEqual(results["hallucinations"][0]["citation"], "Unknown 2026")
+            self.assertEqual(len(results["not_in_bibliography"]), 1)
+            self.assertEqual(results["not_in_bibliography"][0]["citation"], "Unknown 2026")
 
 if __name__ == "__main__":
     unittest.main()

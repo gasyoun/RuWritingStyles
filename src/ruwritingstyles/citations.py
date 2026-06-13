@@ -35,9 +35,14 @@ def verify_citations_against_knowledge(repo_root: Path, citations: list[str]) ->
         "status": "completed",
         "verified": [],
         "missing": [],
-        "hallucinations": []
+        # The deterministic check can only tell whether a citation is grounded
+        # in the local bibliography, not whether the underlying source is real.
+        # Absence from an incomplete seed bibliography is NOT proof of
+        # fabrication, so the key is named for exactly what it measures
+        # (renamed from the misleading "hallucinations").
+        "not_in_bibliography": []
     }
-    
+
     for cite in citations:
         entry = km.verify_citation(cite)
         if entry:
@@ -47,11 +52,7 @@ def verify_citations_against_knowledge(repo_root: Path, citations: list[str]) ->
             })
         else:
             verification["missing"].append(cite)
-            # The `hallucinations` key name is kept for backward compatibility
-            # (pipeline, eval scorer, and the gost-hallucinated-ref eval case
-            # read it), but absence from an incomplete seed bibliography is NOT
-            # proof of fabrication — the reason states the precise fact.
-            verification["hallucinations"].append({
+            verification["not_in_bibliography"].append({
                 "citation": cite,
                 "reason": "Not found in structured bibliography (knowledge/bibliography.json); not necessarily fabricated."
             })

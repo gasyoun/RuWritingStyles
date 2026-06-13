@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Citation Verification Output",
   "type": "object",
-  "required": ["status", "verified", "missing", "hallucinations"],
+  "required": ["status", "verified", "missing", "not_in_bibliography"],
   "properties": {
     "status": { "type": "string" },
     "verified": {
@@ -20,7 +20,7 @@
       "type": "array",
       "items": { "type": "string" }
     },
-    "hallucinations": {
+    "not_in_bibliography": {
       "type": "array",
       "items": {
         "type": "object",

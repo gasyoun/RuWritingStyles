@@ -5,7 +5,7 @@
 ### [2.4.5] - 2026-06-13
 #### Added (Phase 2 prep: bibliography population from the case study)
 - `knowledge/bibliography.json` expanded 26 → 44 entries with the real sources cited by the commentary-strategies article (Бурба, Эрман, Гринцер, Кальянов, Васильков–Невелева, Сыркин, Казанский, Лидова, Парибок ×2, Malhotra, Goldman ×2, Jhalakikar, and three web corpora), with full GOST fields and ids matching the inline `(Author Year)` citation form. The article's four extracted citations now verify and `references-gost.md` renders a correct GOST list (Cyrillic-sorted) instead of coming out empty — the gap surfaced by `docs/case-study-phase1.md`.
-- `citations.py`: the `reason` text for unmatched citations now states that absence from an incomplete bibliography is not proof of fabrication. The `hallucinations` key is kept (pipeline / eval scorer / `gost-hallucinated-ref` case depend on it).
+- `citations.py`: unmatched citations are now collected under a `not_in_bibliography` key (renamed from the misleading `hallucinations`), and the `reason` states that absence from an incomplete bibliography is not proof of fabrication. All consumers were updated (`citation-output.schema.json`, `report.py`, `pipeline.py`, `cli.py`, `latex.py`, `dashboard.py`, `web/App.jsx`, `tests/test_citations.py`); the eval scorer still emits the synthetic `hallucinated_citation` type for the deliberately fabricated `gost-hallucinated-ref` case.
 
 ### [2.4.4] - 2026-06-13
 #### Added (Phase 1 W6: real-paper case study — closes the deterministic layer of Phase 1)

@@ -101,7 +101,7 @@ def generate_project_dashboard(repo_root: Path, output_path: Path | None = None)
                             <td><code>{r['id']}</code></td>
                             <td>{r['style']}</td>
                             <td><span class="badge" style="background: {("#ffdddd" if (r['bias_score'] or 0) > 3 else "#ddffdd")}">{r['bias_score'] if r['bias_score'] is not None else '-'}</span></td>
-                            <td>{r['citations']['verified'] if r['citations'] else 0} / {r['citations']['hallucinations'] if r['citations'] else 0}</td>
+                            <td>{r['citations']['verified'] if r['citations'] else 0} / {r['citations']['not_in_bibliography'] if r['citations'] else 0}</td>
                             <td>{round(sum(r['compass'].values())/len(r['compass']), 2) if r['compass'] else '-'}</td>
                             <td><span class="badge status-{r['status']}">{r['status']}</span></td>
                         </tr>
