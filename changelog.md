@@ -1,3 +1,7 @@
+### [2.4.6] - 2026-06-13
+#### Fixed (third false positive from the case study)
+- `translit_lint`: proper nouns (epic titles like Махабхарата/Рамаяна) are no longer flagged by `inconsistent_term_rendering` or `missing_iast_on_first_mention` — a naturalized Russian form and the transliterated Sanskrit word are both correct. `knowledge/sanskrit-terms.json` entries may now carry `"proper_noun": true` (schema updated); Махабхарата and Рамаяна are marked. On the test article this removes the last 2 false positives, taking linter precision to 7/7 = 1.0.
+
 ### [2.4.5] - 2026-06-13
 #### Added (Phase 2 prep: bibliography population from the case study)
 - `knowledge/bibliography.json` expanded 26 → 44 entries with the real sources cited by the commentary-strategies article (Бурба, Эрман, Гринцер, Кальянов, Васильков–Невелева, Сыркин, Казанский, Лидова, Парибок ×2, Malhotra, Goldman ×2, Jhalakikar, and three web corpora), with full GOST fields and ids matching the inline `(Author Year)` citation form. The article's four extracted citations now verify and `references-gost.md` renders a correct GOST list (Cyrillic-sorted) instead of coming out empty — the gap surfaced by `docs/case-study-phase1.md`.

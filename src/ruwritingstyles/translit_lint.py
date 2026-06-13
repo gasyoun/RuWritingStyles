@@ -120,6 +120,11 @@ def lint_segments(
     require it)."""
     first_mention_rule = (profile or {}).get("first_mention_rule", "ru+iast")
     require_iast_first_mention = first_mention_rule in ("ru+iast", "iast+ru")
+    # Proper nouns (epic titles, place names) have established naturalized
+    # Russian spellings, so they need neither an IAST gloss on first mention
+    # nor single-script discipline — «Махабхарата» and *mahābhārata* are both
+    # correct and serve different functions.
+    proper_nouns = {t["ru"] for t in terms if t.get("proper_noun")}
     findings: list[dict[str, Any]] = []
     iast_examples: list[str] = []
     hk_examples: list[tuple[str, str]] = []  # (span_id, word)
@@ -187,7 +192,7 @@ def lint_segments(
             if ru_hit:
                 ru_seen[ru].append(span_id)
                 first_ever = len(ru_seen[ru]) == 1 and not iast_seen[ru]
-                if require_iast_first_mention and first_ever and iast not in lowered and ru not in first_mention_flagged:
+                if require_iast_first_mention and ru not in proper_nouns and first_ever and iast not in lowered and ru not in first_mention_flagged:
                     first_mention_flagged.add(ru)
                     findings.append(_finding(
                         span_id, "missing_iast_on_first_mention",
@@ -210,6 +215,8 @@ def lint_segments(
     # Document-level: free variation русская передача / IAST.
     for term in terms:
         ru = term["ru"]
+        if ru in proper_nouns:
+            continue
         unpaired_iast = [s for s in iast_seen[ru] if s not in ru_seen[ru]]
         if len(ru_seen[ru]) >= 2 and len(unpaired_iast) >= 2:
             findings.append(_finding(

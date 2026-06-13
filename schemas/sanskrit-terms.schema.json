@@ -9,7 +9,8 @@
       "ru": { "type": "string", "minLength": 1 },
       "iast": { "type": "string", "minLength": 1 },
       "source": { "type": "string" },
-      "note": { "type": "string" }
+      "note": { "type": "string" },
+      "proper_noun": { "type": "boolean" }
     },
     "additionalProperties": false
   }

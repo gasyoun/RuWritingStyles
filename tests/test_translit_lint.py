@@ -120,6 +120,24 @@ class MixedScriptAndDevanagariTests(unittest.TestCase):
         self.assertNotIn("devanagari_nfc_issue", types_of(result))
 
 
+class ProperNounTests(unittest.TestCase):
+    TITLES = [{"ru": "махабхарата", "iast": "mahābhārata", "proper_noun": True}]
+
+    def test_proper_noun_not_flagged_inconsistent(self) -> None:
+        # Epic title legitimately appears as both «Махабхарата» and *mahābhārata*.
+        text = (
+            "Поэма Махабхарата огромна.\n\nВ Махабхарате много книг.\n\n"
+            "Слово mahābhārata означает «великое сказание о бхаратах».\n\n"
+            "Текст mahābhārata изучается давно."
+        )
+        result = lint_text(text, self.TITLES)
+        self.assertNotIn("inconsistent_term_rendering", types_of(result))
+
+    def test_proper_noun_not_flagged_missing_first_mention(self) -> None:
+        result = lint_text("Поэма Махабхарата огромна.", self.TITLES)
+        self.assertNotIn("missing_iast_on_first_mention", types_of(result))
+
+
 class ConsistencyTests(unittest.TestCase):
     def test_free_variation_is_flagged(self) -> None:
         text = (
