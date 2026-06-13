@@ -1,3 +1,8 @@
+### [2.4.3] - 2026-06-13
+#### Added (Phase 1 W5: deterministic Sanskrit eval cases)
+- Three eval cases in `evals/manifest.json` — `translit-mixed-scheme`, `translit-first-mention`, `gost-hallucinated-ref` (inputs under `examples/input/`) — that **pass under the `mock` provider** because they are scored on deterministic checks, not provider output. This lets the Eval Smoke CI exercise the transliteration linter and citation grounding without API keys.
+- `run_eval_case` now runs the transliteration linter and citation grounding as provider-independent post-verification checks (`_run_deterministic_checks`); `_finding_types` aggregates linter finding types and surfaces a synthetic `hallucinated_citation` type when `citations.json` reports hallucinations.
+
 ### [2.4.2] - 2026-06-13
 #### Added (Phase 1 W3: journal profiles)
 - **Journal submission profiles** (`journals.py` + `knowledge/journals/{vya,ppv,vestnik-spbu}.json`): per-journal length limit, citation format, transliteration scheme, first-mention rule, abstract/keyword language requirements. New `journal-profile.schema.json` and `project-context.schema.json` validated in CI.

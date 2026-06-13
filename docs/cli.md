@@ -90,7 +90,7 @@ rws eval-list
 ```
 
 This reads `evals/manifest.json` and prints the current comparison cases, their input documents, default styles, expected risks, scoring thresholds, and tags.
-The current suite contains 33 cases covering unsupported etymology, over-strong source claims, scholarly register/overconfidence, cluster behavior, adversarial caution, syntax and source discipline.
+The current suite contains 36 cases covering unsupported etymology, over-strong source claims, scholarly register/overconfidence, cluster behavior, adversarial caution, syntax and source discipline, plus three deterministic Sanskrit cases (`translit-mixed-scheme`, `translit-first-mention`, `gost-hallucinated-ref`) that pass on `mock` because they are gated on the transliteration linter and citation grounding rather than on provider output.
 
 ## Run An Eval Case
 

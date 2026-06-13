@@ -195,6 +195,11 @@ def run_eval_case(
             merged_feedback = {"warnings": combined_warnings}
             (run_dir / "verification.json").write_text(json.dumps(merged_feedback, ensure_ascii=False, indent=2), encoding="utf-8")
 
+    # Deterministic post-verification checks (provider-independent), so that
+    # eval cases can be gated on the transliteration linter and citation
+    # grounding and pass identically under the mock provider.
+    _run_deterministic_checks(repo_root, run_dir)
+
     result_path = _write_eval_result(
         repo_root=repo_root,
         run_dir=run_dir,
@@ -204,6 +209,30 @@ def run_eval_case(
     )
     write_run_report(run_dir)
     return EvalRunResult(run_dir=run_dir, result_path=result_path)
+
+
+def _run_deterministic_checks(repo_root: Path, run_dir: Path) -> None:
+    """Run the transliteration linter and citation grounding (no provider)."""
+    from .translit_lint import run_translit_lint
+
+    try:
+        run_translit_lint(repo_root, run_dir)
+    except Exception:
+        pass
+
+    rev_path = run_dir / "revised.md"
+    if not rev_path.exists():
+        return
+    try:
+        from .citations import extract_citations, verify_citations_against_knowledge
+
+        citations = extract_citations(rev_path.read_text(encoding="utf-8"))
+        citation_doc = verify_citations_against_knowledge(repo_root, citations)
+        (run_dir / "citations.json").write_text(
+            json.dumps(citation_doc, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+    except Exception:
+        pass
 
 
 def run_eval_suite(
@@ -521,6 +550,18 @@ def _finding_types(run_dir: Path) -> set[str]:
         for finding in findings:
             if isinstance(finding, dict) and finding.get("type"):
                 result.add(str(finding["type"]))
+
+    # Deterministic transliteration linter findings.
+    translit = _load_json(run_dir / "translit-lint.json")
+    for finding in translit.get("findings", []) if isinstance(translit.get("findings"), list) else []:
+        if isinstance(finding, dict) and finding.get("type"):
+            result.add(str(finding["type"]))
+
+    # Citation grounding: surface a synthetic type for hallucinated references.
+    citations = _load_json(run_dir / "citations.json")
+    if citations.get("hallucinations"):
+        result.add("hallucinated_citation")
+
     return result
 
 
