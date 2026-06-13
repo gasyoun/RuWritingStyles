@@ -20,7 +20,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 try:
-    from ruwritingstyles.schema_validation import validate_json_schema
+    from ruwritingstyles.schema_validation import lint_schema, validate_json_schema
     from ruwritingstyles.yaml_lite import parse_simple_yaml
 except ImportError:
     print("FAIL: could not import from ruwritingstyles (schema_validation / yaml_lite)")
@@ -108,6 +108,16 @@ def main() -> int:
     check_required_files()
     store = load_schema_store()
     ok("loaded JSON schemas")
+
+    keyword_errors = []
+    for name, schema in sorted(store.items()):
+        for message in lint_schema(schema):
+            keyword_errors.append(f"{name} {message}")
+    if keyword_errors:
+        for err in keyword_errors:
+            print(f"  {err}")
+        fail("schemas use unsupported keywords (extend schema_validation.py or remove them)")
+    ok("schemas use only supported keywords")
 
     manifest_data = validate_file("styles/manifest.yml", "manifest.schema.json", store)
     ok("styles/manifest.yml is valid")

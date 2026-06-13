@@ -1,9 +1,53 @@
-"""Small dependency-free JSON Schema subset validator."""
+"""Small dependency-free JSON Schema subset validator.
+
+The supported vocabulary is intentionally a subset. `lint_schema` flags any
+schema that uses a keyword outside this subset, so an unsupported constraint
+fails loudly (in CI via `tools/validate_project.py`) instead of being silently
+ignored.
+"""
 
 from __future__ import annotations
 
+from datetime import datetime
 import re
 from typing import Any
+
+# Keywords this validator understands. Annotations ($id/$schema/title/
+# description/default) are accepted but carry no constraint. Anything not here
+# is reported by lint_schema as unsupported.
+KNOWN_KEYWORDS = frozenset({
+    "$schema", "$id", "$ref", "title", "description", "default",
+    "type", "enum", "const",
+    "properties", "required", "additionalProperties", "minProperties", "maxProperties",
+    "items", "minItems", "maxItems",
+    "minLength", "maxLength", "pattern", "format",
+    "minimum", "maximum",
+})
+
+# `format` values this validator actually checks; others are accepted as advisory.
+_ENFORCED_FORMATS = frozenset({"date-time"})
+
+
+def lint_schema(schema: Any, path: str = "$") -> tuple[str, ...]:
+    """Report schema keywords outside the supported subset (recursively)."""
+    messages: list[str] = []
+    _lint(schema, path, messages)
+    return tuple(messages)
+
+
+def _lint(schema: Any, path: str, messages: list[str]) -> None:
+    if not isinstance(schema, dict):
+        return
+    for key in schema:
+        if key not in KNOWN_KEYWORDS:
+            messages.append(f"{path}: unsupported schema keyword {key!r}")
+    properties = schema.get("properties")
+    if isinstance(properties, dict):
+        for name, sub in properties.items():
+            _lint(sub, f"{path}.properties.{name}", messages)
+    items = schema.get("items")
+    if isinstance(items, dict):
+        _lint(items, f"{path}.items", messages)
 
 
 def validate_json_schema(
@@ -58,6 +102,12 @@ def _validate(
         if isinstance(items_schema, dict):
             for index, item in enumerate(data):
                 _validate(item, items_schema, f"{path}[{index}]", schema_store, messages)
+        min_items = schema.get("minItems")
+        if isinstance(min_items, int) and len(data) < min_items:
+            messages.append(f"{path}: must have at least {min_items} item(s)")
+        max_items = schema.get("maxItems")
+        if isinstance(max_items, int) and len(data) > max_items:
+            messages.append(f"{path}: must have at most {max_items} item(s)")
 
     if isinstance(data, dict):
         _validate_object(data, schema, path, schema_store, messages)
@@ -77,6 +127,14 @@ def _validate_object(
         if key not in data:
             messages.append(f"{path}: missing required property {key}")
 
+    min_properties = schema.get("minProperties")
+    if isinstance(min_properties, int) and len(data) < min_properties:
+        messages.append(f"{path}: must have at least {min_properties} propert(y/ies)")
+
+    max_properties = schema.get("maxProperties")
+    if isinstance(max_properties, int) and len(data) > max_properties:
+        messages.append(f"{path}: must have at most {max_properties} propert(y/ies)")
+
     if schema.get("additionalProperties") is False:
         allowed = set(properties)
         for key in data:
@@ -93,9 +151,27 @@ def _validate_string(data: str, schema: dict[str, Any], path: str, messages: lis
     if isinstance(min_length, int) and len(data) < min_length:
         messages.append(f"{path}: length must be at least {min_length}")
 
+    max_length = schema.get("maxLength")
+    if isinstance(max_length, int) and len(data) > max_length:
+        messages.append(f"{path}: length must be at most {max_length}")
+
     pattern = schema.get("pattern")
     if isinstance(pattern, str) and re.search(pattern, data) is None:
         messages.append(f"{path}: does not match pattern {pattern!r}")
+
+    fmt = schema.get("format")
+    if fmt in _ENFORCED_FORMATS and not _matches_format(data, fmt):
+        messages.append(f"{path}: not a valid {fmt}")
+
+
+def _matches_format(data: str, fmt: str) -> bool:
+    if fmt == "date-time":
+        try:
+            datetime.fromisoformat(data.replace("Z", "+00:00"))
+            return True
+        except ValueError:
+            return False
+    return True
 
 
 def _validate_number(data: int | float, schema: dict[str, Any], path: str, messages: list[str]) -> None:
