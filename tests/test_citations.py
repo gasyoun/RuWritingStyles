@@ -11,7 +11,16 @@ class TestCitations(unittest.TestCase):
         self.assertIn("Зализняк 2004", cites)
         self.assertIn("Тронский 1960", cites)
         self.assertIn("Gasparov1984", cites)
-        
+
+    def test_email_address_is_not_extracted_as_citation(self):
+        # Real false positive found on a live article: the author's contact
+        # "gasyoun@gmail.com" must not yield a "gmail" citation.
+        text = "Автор: М. Ю. Гасунс (gasyoun@gmail.com). См. также @Smith2020."
+        cites = extract_citations(text)
+        self.assertNotIn("gmail", cites)
+        self.assertIn("Smith2020", cites)
+
+
     def test_verify_citations(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             root = Path(tmp_dir)

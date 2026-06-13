@@ -63,6 +63,18 @@ def _is_iast_word(word: str) -> bool:
     return any(ch in IAST_DIACRITICS for ch in word)
 
 
+def _has_fused_mixed_token(word: str) -> bool:
+    """True only if some hyphen-separated sub-token fuses Cyrillic and Latin
+    in one piece (e.g. «бхāшья»). Hyphenated compounds whose parts are each
+    mono-script — a Latin acronym + Cyrillic word («IAST-транслитерация»,
+    «TEI-схемы») or a Cyrillic term + its IAST gloss («сноски-bhāṣya») — are
+    legitimate and must not be flagged."""
+    for token in re.split(r"['’\-‐‑‒–]", word):
+        if token and _has_cyrillic(token) and _has_latin(token):
+            return True
+    return False
+
+
 def _skeleton(word: str) -> str:
     """ASCII skeleton: lowercase, diacritics stripped (kṛṣṇa -> krsna)."""
     decomposed = unicodedata.normalize("NFD", word.lower())
@@ -147,7 +159,7 @@ def lint_segments(
             cyr = _has_cyrillic(word)
             lat = _has_latin(word)
 
-            if cyr and lat:
+            if cyr and lat and _has_fused_mixed_token(word):
                 findings.append(_finding(
                     span_id, "iast_in_cyrillic_word",
                     f"Смешение кириллицы и латиницы внутри словоформы: «{word}».",

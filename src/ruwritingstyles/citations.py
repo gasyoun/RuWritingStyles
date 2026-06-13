@@ -12,8 +12,9 @@ def extract_citations(text: str) -> list[str]:
     """
     # Pattern for (Author Year) or [Author Year]
     bracketed = re.findall(r"[\(\[](?:[А-ЯA-Z][а-яa-z]+|[\w-]+)\s+\d{4}[\)\]]", text)
-    # Pattern for @Key
-    at_style = re.findall(r"@[\w-]+", text)
+    # Pattern for @Key (BibTeX-style). The negative lookbehind avoids matching
+    # the domain of an email address like "name@gmail.com".
+    at_style = re.findall(r"(?<!\w)@[\w-]+", text)
     
     # Clean up
     results = []

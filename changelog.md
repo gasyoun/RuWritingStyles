@@ -1,3 +1,11 @@
+### [2.4.4] - 2026-06-13
+#### Added (Phase 1 W6: real-paper case study — closes the deterministic layer of Phase 1)
+- `docs/case-study-phase1.md`: a real Russian Sanskrit-studies article run through the deterministic pipeline layer (transliteration linter, GOST bibliography, citation grounding, `vya` journal profile). Documents what each check caught (7 genuine missing-IAST first mentions, length over the ВЯ limit, 4 citations absent from the seed bibliography) and the false-positive analysis.
+
+#### Fixed (both found on live article data)
+- `translit_lint`: `iast_in_cyrillic_word` no longer flags acronym-plus-Cyrillic compounds (`IAST-транслитерацией`, `TEI-схемы`) or `Cyrillic-IAST` glosses (`сноски-bhāṣya`); only a single hyphen-free sub-token that itself fuses Cyrillic and Latin (e.g. `бхāшья`) is flagged (`_has_fused_mixed_token`). −5 false positives on the test article.
+- `citations.extract_citations`: a negative lookbehind stops `@gmail` (and other email domains) being extracted as a `@`-style citation key.
+
 ### [2.4.3] - 2026-06-13
 #### Added (Phase 1 W5: deterministic Sanskrit eval cases)
 - Three eval cases in `evals/manifest.json` — `translit-mixed-scheme`, `translit-first-mention`, `gost-hallucinated-ref` (inputs under `examples/input/`) — that **pass under the `mock` provider** because they are scored on deterministic checks, not provider output. This lets the Eval Smoke CI exercise the transliteration linter and citation grounding without API keys.

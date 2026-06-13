@@ -94,6 +94,18 @@ class MixedScriptAndDevanagariTests(unittest.TestCase):
         result = lint_text(text, TERMS)
         self.assertIn("iast_in_cyrillic_word", types_of(result))
 
+    def test_latin_acronym_hyphen_cyrillic_is_not_flagged(self) -> None:
+        # Real false positive found on a live article: "IAST-транслитерацией",
+        # "TEI-схемы" are acronym+Cyrillic compounds, not fused transliteration.
+        text = "Запись IAST-транслитерацией и работа с TEI-схемы и XML-разметкой."
+        result = lint_text(text, TERMS)
+        self.assertNotIn("iast_in_cyrillic_word", types_of(result))
+
+    def test_cyrillic_term_hyphen_iast_gloss_is_not_flagged(self) -> None:
+        text = "В сноски-bhāṣya автор выносит толкование."
+        result = lint_text(text, TERMS)
+        self.assertNotIn("iast_in_cyrillic_word", types_of(result))
+
     def test_devanagari_precomposed_nukta_is_flagged(self) -> None:
         # U+0958 (qa) is a composition exclusion: its NFC form is क + ◌़,
         # so a file containing the precomposed letter is NOT in NFC.
