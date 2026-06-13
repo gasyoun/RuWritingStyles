@@ -722,6 +722,203 @@
       "metadata": {
         "text_domain": "linguistics"
       }
+    },
+    {
+      "id": "translit-inconsistent-rendering",
+      "input": "examples/input/translit-inconsistent-rendering.md",
+      "purpose": "Deterministic linter must flag a Sanskrit term rendered inconsistently in Cyrillic and IAST without a system.",
+      "default_styles": [
+        "tronsky-readings"
+      ],
+      "expected_risks": [
+        "inconsistent_term_rendering"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "inconsistent_term_rendering"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT",
+        "deterministic"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "translit-cyrillic-latin-hybrid",
+      "input": "examples/input/translit-cyrillic-latin-hybrid.md",
+      "purpose": "Deterministic linter must flag a single word that fuses Cyrillic and IAST letters (e.g. бхāшья).",
+      "default_styles": [
+        "tronsky-readings"
+      ],
+      "expected_risks": [
+        "iast_in_cyrillic_word"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "iast_in_cyrillic_word"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT",
+        "deterministic"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "gost-broken-ref",
+      "input": "examples/input/gost-broken-ref.md",
+      "purpose": "Citation grounding must flag a broken reference (Monier-Williams with an impossible year) absent from the structured bibliography.",
+      "default_styles": [
+        "tronsky-readings"
+      ],
+      "expected_risks": [
+        "hallucinated_citation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "hallucinated_citation"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT",
+        "deterministic"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "sanskrit-pseudo-etymology",
+      "input": "examples/input/sanskrit-pseudo-etymology.md",
+      "purpose": "Expert reviewers must reject a sound-similarity pseudo-etymology deriving mokṣa from Russian 'мочь'.",
+      "default_styles": [
+        "toporov-etym",
+        "zalizniak-zametki"
+      ],
+      "expected_risks": [
+        "unsupported_sanskrit_etymology"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "unsupported_sanskrit_etymology"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "karaka-not-padezh",
+      "input": "examples/input/karaka-not-padezh.md",
+      "purpose": "Expert reviewer must flag conflating the Paninian kāraka (semantic role) with grammatical case.",
+      "default_styles": [
+        "panini-traditional"
+      ],
+      "expected_risks": [
+        "mistranslated_native_term"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "mistranslated_native_term"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "vedic-classical-anachronism",
+      "input": "examples/input/vedic-classical-anachronism.md",
+      "purpose": "Expert reviewer must flag ascribing Classical-Sanskrit forms/rules to a Vedic (Rigveda) hymn.",
+      "default_styles": [
+        "elizarenkova-veda"
+      ],
+      "expected_risks": [
+        "anachronistic_sanskrit_period"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "anachronistic_sanskrit_period"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "samasa-misclassification",
+      "input": "examples/input/samasa-misclassification.md",
+      "purpose": "Expert reviewer must flag a bahuvrīhi example analysed as a tatpuruṣa.",
+      "default_styles": [
+        "samasa-manual"
+      ],
+      "expected_risks": [
+        "wrong_samasa_type"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "wrong_samasa_type"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "commentary-layer-mix",
+      "input": "examples/input/commentary-layer-mix.md",
+      "purpose": "Expert reviewer must flag presenting a commentator's gloss as the explicit statement of the root text.",
+      "default_styles": [
+        "panini-traditional",
+        "lidova-commentary"
+      ],
+      "expected_risks": [
+        "missing_commentary_layer"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "missing_commentary_layer"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
     }
   ]
 }
