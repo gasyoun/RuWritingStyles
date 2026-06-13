@@ -18,7 +18,6 @@ checks:
   - missing_graphics_analysis
   - dialect_claim_unchecked
   - missing_corpus_parallel
-  - overstrong_conclusion
 
 limits:
   - не должен считать отклонение от книжной нормы ошибкой без проверки

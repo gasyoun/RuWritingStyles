@@ -172,5 +172,29 @@ preserved, not just probably (F4). F1 is the one that changes the product today.
   deferred (it changes verifier output and warrants its own eval pass).
 - **F3 — generic-check audit.** Built `tools/audit_passport_checks.py` (repeatable) and
   corrected this section against its data: the catalog is well-differentiated; the single
-  real item is `overstrong_conclusion` (10/21). The thin-passport sharpening (F2) and the
-  cluster regrouping (F5) remain the author's domain calls, documented above.
+  real item is `overstrong_conclusion` (10/21).
+
+## Status (2026-06-13, round 2): F2, F3, F5 resolved
+
+The author chose **drop `overstrong_conclusion`** (F2/F3) and **de-region the weighting** (F5).
+
+- **F2 reframed.** Re-reading the five "generic" passports against their `.md` showed three
+  are genuine named-scholar voices with adequate signature checks (`zalizniak-shkolnikov-1`,
+  `kazanskiy-korpus`, `albedil-sbornik`) and `samasa-manual` is already sharp
+  (`wrong_samasa_type`/`missing_vigraha`); only `sanskrit-reader` is a pure register preset.
+  So no forced "sharpening" — the premise was softer than the first pass implied.
+- **F3 done.** Dropped `overstrong_conclusion` from all **10** passports that carried it —
+  each already has a *sharper*, scholar-specific overstatement check (`weak_reconstruction`,
+  `unsupported_etymology`, `missing_alternative_interpretation`, …), and no eval references
+  it. The audit now shows only 2 checks shared by ≥3 passports (`missing_iast_on_first_mention`,
+  the correct Sanskrit-cluster signature, and `weak_classification`). `metadata/dublin-core.xml`
+  regenerated.
+- **F5 done by de-regioning, not regrouping.** The clusters mix *method* and *city* and
+  `get_cluster_weights` boosted on both, so a misfiled passport (e.g. the accentology
+  `zalizniak-udarenie` parked in the Moscow *Semantic* cluster) drew a wrong regional
+  authority. Rather than contested per-passport reassignments (one sub-agent target,
+  `kazanskiy-korpus`→indology, was itself wrong — Kazansky is a classicist), the
+  geography-based location boost was **removed**; deliberate cluster boosting survives via
+  explicit `styles/archetypes.yml` weights, which key on `cluster_id`, not city.
+  `tests/test_cluster_weights.py` (2). The cluster *memberships* are left as the author's
+  documentation, no longer a silent weighting hazard.

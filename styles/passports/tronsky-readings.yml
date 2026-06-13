@@ -18,7 +18,6 @@ checks:
   - missing_apparatus
   - unsupported_reading
   - weak_parallel
-  - overstrong_conclusion
   - missing_alternative_interpretation
 
 limits:

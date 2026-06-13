@@ -16,7 +16,6 @@ checks:
   - missing_counterargument
   - imitation_risk_unchecked
   - system_pattern_gap
-  - overstrong_conclusion
 
 limits:
   - не должен решать вопрос подлинности по одному признаку

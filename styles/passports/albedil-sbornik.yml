@@ -18,7 +18,6 @@ checks:
   - object_description_gap
   - unsupported_ritual_claim
   - tone_too_dry
-  - overstrong_conclusion
 
 limits:
   - не должен заменять строгий грамматический разбор

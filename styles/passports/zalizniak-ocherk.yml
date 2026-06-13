@@ -16,7 +16,6 @@ checks:
   - unclear_definition
   - weak_classification
   - missing_example
-  - overstrong_conclusion
   - argument_order_problem
 
 limits:

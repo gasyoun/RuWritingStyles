@@ -1,4 +1,4 @@
-version: "2.7.3"
+version: "2.7.4"
 schema: "../schemas/style.schema.json"
 description: "Hierarchical index of RuWritingStyles style clusters and passports."
 

@@ -7,6 +7,12 @@ All notable changes to RuWritingStyles are documented here.
 ### Changed
 - Released the current changelog state as version 1.
 
+## [2.7.4] - 2026-06-13
+### Changed (prompt-fidelity review F2/F3/F5 — passport curation)
+- **F3 — dropped the one over-shared generic check.** Removed `overstrong_conclusion` from all 10 passports that carried it; each already has a sharper, scholar-specific overstatement check (e.g. `weak_reconstruction`, `unsupported_etymology`, `missing_alternative_interpretation`), and no eval references it. The check-overlap audit now shows only 2 checks shared by ≥3 of the 21 passports (`missing_iast_on_first_mention` — the correct Sanskrit-cluster signature — and `weak_classification`). `metadata/dublin-core.xml` regenerated.
+- **F5 — de-regioned `get_cluster_weights`.** Clusters encode both a school's method and a city, and the council multiplied a finding's weight by geography (Moscow/Leningrad archetype × cluster `location`) regardless of method fit — so a misfiled passport (the accentology `zalizniak-udarenie` parked in the Moscow *Semantic* cluster) drew the wrong regional authority. Removed the location-string boost; deliberate cluster boosting still works via explicit `styles/archetypes.yml` weights (which key on `cluster_id`, not city). Cluster memberships left as-is (regrouping by method has a real method-vs-region tradeoff and is the author's call). `tests/test_cluster_weights.py` (2).
+- **F2 reframed, not forced.** Inspection showed the five "generic" passports are mostly genuine named-scholar voices with adequate signature checks (only `sanskrit-reader` is a pure register preset), so no artificial sharpening was applied. See docs/prompt-fidelity-review-2026-06.md. Full suite 149 green.
+
 ## [2.7.3] - 2026-06-13
 ### Changed (low-priority `/code-review` cleanups)
 - **Shared passport loader.** `config.load_passport_dicts(repo_root)` is the single glob+parse over `styles/passports/*.yml`; `tools/audit_passport_checks.py` and `tools/passports_to_dublin_core.py` now call it instead of each re-globbing and parsing. Verified behaviour-preserving: regenerated `metadata/dublin-core.xml` is byte-identical.

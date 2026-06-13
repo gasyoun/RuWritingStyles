@@ -18,7 +18,6 @@ checks:
   - weak_translation_equivalence
   - semantic_nuance_gap
   - missing_context
-  - overstrong_conclusion
 
 limits:
   - не должен подменять текстологический аппарат свободным пересказом

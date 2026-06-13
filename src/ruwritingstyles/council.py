@@ -149,29 +149,27 @@ def get_cluster_weights(manifest: Manifest, text_domain: str, archetype: Council
         elif archetype and ref.cluster_id in archetype.weights:
             weight = archetype.weights[ref.cluster_id]
         
-        domains, location = cluster_meta.get(ref.cluster_id, ((), ""))
-        
+        domains, _location = cluster_meta.get(ref.cluster_id, ((), ""))
+
         # 2. Domain Match Boost
         if text_domain != "unknown" and text_domain in domains:
             weight *= 1.5
-            
-        # 3. Methodological Authority (Regional/School boosts)
+
+        # 3. Methodological Authority (domain → school boost, by method not geography)
         if text_domain == "etymology" and ref.cluster_id == "ling_iesh":
             weight *= 2.0
         elif text_domain == "semiotics" and ref.cluster_id == "ling_mts":
             weight *= 2.0
         elif text_domain == "literature" and ref.cluster_id and ref.cluster_id.startswith("lit_"):
             weight *= 1.2
-            
-        # 4. Regional Archetype Boosts
-        if archetype:
-            is_moscow_arch = "Moscow" in archetype.name
-            is_leningrad_arch = "Leningrad" in archetype.name or "Petersburg" in archetype.name
-            
-            if is_moscow_arch and location == "Moscow":
-                weight *= 2.0
-            elif is_leningrad_arch and location in ("Leningrad", "Petersburg"):
-                weight *= 2.0
+
+        # De-regioned (prompt-fidelity review F5): the former location-string boost
+        # (Moscow/Leningrad archetype × cluster `location`) multiplied weight by
+        # geography regardless of whether a passport's method actually fits its
+        # cluster — so a misfiled passport (e.g. an accentologist parked in the
+        # Moscow Semantic cluster) drew the wrong regional authority. Deliberate
+        # cluster boosting is still available via explicit archetype weights in
+        # styles/archetypes.yml, which key on cluster_id, not city.
 
         adjusted_weights[ref.style_id] = weight
         

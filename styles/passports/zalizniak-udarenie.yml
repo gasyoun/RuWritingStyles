@@ -18,7 +18,6 @@ checks:
   - weak_reconstruction
   - paradigm_gap
   - evidence_reliability_gap
-  - overstrong_conclusion
 
 limits:
   - не должен принимать реконструкцию за прямой факт

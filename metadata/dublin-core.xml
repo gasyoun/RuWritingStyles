@@ -16,7 +16,6 @@
     <dc:subject>object_description_gap</dc:subject>
     <dc:subject>unsupported_ritual_claim</dc:subject>
     <dc:subject>tone_too_dry</dc:subject>
-    <dc:subject>overstrong_conclusion</dc:subject>
     <dc:subject>mts</dc:subject>
     <dc:type>Text</dc:type>
     <dc:format>text/markdown</dc:format>
@@ -131,7 +130,6 @@
     <dc:subject>weak_translation_equivalence</dc:subject>
     <dc:subject>semantic_nuance_gap</dc:subject>
     <dc:subject>missing_context</dc:subject>
-    <dc:subject>overstrong_conclusion</dc:subject>
     <dc:subject>mts</dc:subject>
     <dc:type>Text</dc:type>
     <dc:format>text/markdown</dc:format>
@@ -159,7 +157,6 @@
     <dc:subject>weak_genre_framing</dc:subject>
     <dc:subject>missing_authority_chain</dc:subject>
     <dc:subject>commentary_function_gap</dc:subject>
-    <dc:subject>overstrong_conclusion</dc:subject>
     <dc:subject>mts</dc:subject>
     <dc:type>Text</dc:type>
     <dc:format>text/markdown</dc:format>
@@ -332,7 +329,6 @@
     <dc:subject>missing_apparatus</dc:subject>
     <dc:subject>unsupported_reading</dc:subject>
     <dc:subject>weak_parallel</dc:subject>
-    <dc:subject>overstrong_conclusion</dc:subject>
     <dc:subject>missing_alternative_interpretation</dc:subject>
     <dc:subject>iesh</dc:subject>
     <dc:type>Text</dc:type>
@@ -361,7 +357,6 @@
     <dc:subject>weak_rule_reconstruction</dc:subject>
     <dc:subject>mixed_phenomena</dc:subject>
     <dc:subject>insufficient_examples</dc:subject>
-    <dc:subject>overstrong_conclusion</dc:subject>
     <dc:subject>mts</dc:subject>
     <dc:type>Text</dc:type>
     <dc:format>text/markdown</dc:format>
@@ -413,7 +408,6 @@
     <dc:subject>unclear_definition</dc:subject>
     <dc:subject>weak_classification</dc:subject>
     <dc:subject>missing_example</dc:subject>
-    <dc:subject>overstrong_conclusion</dc:subject>
     <dc:subject>argument_order_problem</dc:subject>
     <dc:subject>iesh</dc:subject>
     <dc:type>Text</dc:type>
@@ -472,7 +466,6 @@
     <dc:subject>missing_counterargument</dc:subject>
     <dc:subject>imitation_risk_unchecked</dc:subject>
     <dc:subject>system_pattern_gap</dc:subject>
-    <dc:subject>overstrong_conclusion</dc:subject>
     <dc:type>Text</dc:type>
     <dc:format>text/markdown</dc:format>
     <dc:language>ru</dc:language>
@@ -498,7 +491,6 @@
     <dc:subject>weak_reconstruction</dc:subject>
     <dc:subject>paradigm_gap</dc:subject>
     <dc:subject>evidence_reliability_gap</dc:subject>
-    <dc:subject>overstrong_conclusion</dc:subject>
     <dc:subject>mss</dc:subject>
     <dc:type>Text</dc:type>
     <dc:format>text/markdown</dc:format>
@@ -528,7 +520,6 @@
     <dc:subject>accidental_similarity</dc:subject>
     <dc:subject>weak_historical_inference</dc:subject>
     <dc:subject>unsupported_method</dc:subject>
-    <dc:subject>overstrong_conclusion</dc:subject>
     <dc:subject>iesh</dc:subject>
     <dc:type>Text</dc:type>
     <dc:format>text/markdown</dc:format>
@@ -585,7 +576,6 @@
     <dc:subject>missing_graphics_analysis</dc:subject>
     <dc:subject>dialect_claim_unchecked</dc:subject>
     <dc:subject>missing_corpus_parallel</dc:subject>
-    <dc:subject>overstrong_conclusion</dc:subject>
     <dc:subject>iesh</dc:subject>
     <dc:type>Text</dc:type>
     <dc:format>text/markdown</dc:format>

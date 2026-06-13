@@ -19,7 +19,6 @@ checks:
   - accidental_similarity
   - weak_historical_inference
   - unsupported_method
-  - overstrong_conclusion
 
 limits:
   - не заменяет источниковедческий аппарат

@@ -18,7 +18,6 @@ checks:
   - weak_genre_framing
   - missing_authority_chain
   - commentary_function_gap
-  - overstrong_conclusion
 
 limits:
   - не должен заменять пословный текстологический комментарий

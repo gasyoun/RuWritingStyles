@@ -18,7 +18,6 @@ checks:
   - weak_rule_reconstruction
   - mixed_phenomena
   - insufficient_examples
-  - overstrong_conclusion
 
 limits:
   - не должен выводить правило из единичного примера
