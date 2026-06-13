@@ -340,10 +340,14 @@ def core_pipeline(
             post_run()
 
         db.update_run_status(run_id, "completed")
+        from .runs import write_run_manifest
+        write_run_manifest(repo_root, run_dir)
         if on_update:
             on_update({"type": "run_status", "status": "completed"})
     except Exception as exc:
         db.update_run_status(run_id, "failed", summary=str(exc))
+        from .runs import write_run_manifest
+        write_run_manifest(repo_root, run_dir)
         if on_update:
             on_update({"type": "run_status", "status": "failed", "error": str(exc)})
         raise

@@ -8,33 +8,23 @@
     "run_id": { "type": "string" },
     "status": {
       "type": "string",
-      "enum": ["initializing", "segmented", "reviewed", "deliberating", "revised", "verified", "completed", "failed"]
+      "enum": ["prepared", "executing", "completed", "failed"]
     },
-    "text_domain": {
-      "type": "string",
-      "enum": [
-        "etymology",
-        "functional_grammar",
-        "semantics",
-        "discourse_analysis",
-        "typology",
-        "normative",
-        "dialectology",
-        "semiotics",
-        "literary_formalism",
-        "literary_structural",
-        "literary_textology",
-        "literary_mythopoetics",
-        "literary_narratology",
-        "literary_bakhtin",
-        "literary_historico_cultural",
-        "literary_reception",
-        "literary_poststructural",
-        "unknown"
-      ],
-      "default": "unknown"
-    },
+    "text_domain": { "type": "string", "default": "unknown" },
+    "input_path": { "type": "string" },
+    "provider": { "type": "string" },
+    "model": { "type": ["string", "null"] },
+    "archetype": { "type": ["string", "null"] },
+    "profile": { "type": ["string", "null"] },
+    "started_at": { "type": ["string", "null"] },
+    "finished_at": { "type": ["string", "null"] },
+    "duration_seconds": { "type": ["number", "null"] },
+    "summary": { "type": ["string", "null"] },
+    "config": { "type": ["object", "null"] },
+    "metrics": { "type": "object" },
+    "steps": { "type": "array", "items": { "type": "object" } },
     "created_at": { "type": "string", "format": "date-time" },
     "updated_at": { "type": "string", "format": "date-time" }
-  }
+  },
+  "additionalProperties": false
 }

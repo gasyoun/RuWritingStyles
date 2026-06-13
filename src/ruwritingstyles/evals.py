@@ -213,6 +213,8 @@ def run_eval_case(
         model=provider.effective_model(ProviderRequest(task="eval", prompt="", schema={}, metadata={}, model=model)),
     )
     write_run_report(run_dir)
+    from .runs import write_run_manifest
+    write_run_manifest(repo_root, run_dir)
     return EvalRunResult(run_dir=run_dir, result_path=result_path)
 
 

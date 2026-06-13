@@ -94,8 +94,11 @@ intentionally looser (27/44 cases use types no style enumerates). #2
 validated; `verification.warnings` and translit-lint left unchecked on
 investigation — they legitimately mix the original `segments.json` basis with
 `revised.md`'s re-segmented span_ids, so a blanket check would false-positive
-(the translit-lint condition is a correct guard, not a bug). #4 (`run.json` per
-run dir) and #6 (manifest `version`) remain.
+(the translit-lint condition is a correct guard, not a bug). #4 done: every run
+writes a self-describing `run.json` (status/timestamps/config/metrics/steps) via
+`runs.write_run_manifest`, validated against `run.schema.json` (whose stale
+status/text_domain vocabulary was corrected). Only #6 (manifest `version`)
+remains.
 
 ## Recommended sequence (all cheap, all lock in existing good state)
 

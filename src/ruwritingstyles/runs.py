@@ -76,7 +76,58 @@ def create_prepare_run(
     )
     write_run_report(run_dir)
     write_html_report(run_dir)
+    write_run_manifest(repo_root, run_dir)
     return run_dir
+
+
+_RUN_COLUMNS = (
+    "run_id", "input_path", "provider", "model", "archetype", "profile",
+    "status", "created_at", "started_at", "finished_at", "duration_seconds",
+    "updated_at", "summary",
+)
+
+
+def write_run_manifest(repo_root: Path, run_dir: Path) -> Path | None:
+    """Write a self-describing `run.json` (status, timestamps, config, metrics,
+    steps) so a run directory does not depend on the gitignored `rws.db`. The DB
+    stays the live source during a run; this is the durable on-disk snapshot, and
+    makes the DB a rebuildable index over runs/."""
+    from .db import Database
+
+    db = Database(repo_root)
+    run_id = run_dir.name
+    run = db.get_run(run_id)
+    if not run:
+        return None
+
+    metrics = {k: v for k, v in run.items() if k not in _RUN_COLUMNS and k != "config_json"}
+    config = None
+    raw_config = run.get("config_json")
+    if raw_config:
+        try:
+            config = json.loads(raw_config)
+        except (json.JSONDecodeError, TypeError):
+            config = None
+
+    text_domain = "unknown"
+    meta_path = run_dir / "metadata.json"
+    if meta_path.exists():
+        try:
+            text_domain = json.loads(meta_path.read_text(encoding="utf-8")).get("text_domain", "unknown")
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    manifest: dict[str, Any] = {key: run.get(key) for key in _RUN_COLUMNS}
+    manifest["text_domain"] = text_domain
+    manifest["config"] = config
+    manifest["metrics"] = metrics
+    manifest["steps"] = db.get_run_steps(run_id)
+
+    (run_dir / "run.json").write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2, default=str) + "\n",
+        encoding="utf-8",
+    )
+    return run_dir / "run.json"
 
 
 def list_runs(repo_root: Path) -> list[str]:

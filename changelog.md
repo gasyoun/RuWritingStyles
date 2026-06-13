@@ -1,3 +1,8 @@
+### [2.5.3] - 2026-06-13
+#### Added (data review #4: runs are self-describing on disk)
+- Every run now writes a `run.json` (`runs.write_run_manifest`) capturing status, timestamps, duration, config, **all metrics** (bloom/compass/tension/bias/citation_stats) and step outcomes — data that previously lived only in the gitignored `rws.db`. A run directory is now portable and the DB is a rebuildable index. Written at prepare, at pipeline completion/failure (`core_pipeline`), and at the end of each eval case.
+- This also makes `run.schema.json` a real, validated artifact (it was unused). Fixed its stale vocabulary: `status` enum now matches the actual values (`prepared`/`executing`/`completed`/`failed`, was `initializing`/`segmented`/…), and `text_domain` is a plain string (its old enum excluded `linguistics`, which the eval cases actually use). `validate_run_dir` validates `run.json`. New `test_core_pipeline` assertion.
+
 ### [2.5.2] - 2026-06-13
 #### Added (data/schema review enforcement — docs/data-schema-review-2026-06.md)
 - **Strict-keyword guard** (`schema_validation.lint_schema`): `validate_project` now fails if any schema uses a keyword outside the supported subset, so an unsupported constraint fails loudly instead of being silently ignored. It immediately surfaced `minProperties` (model-policy.schema) as unenforced. Implemented the keywords that were used yet ignored — `minItems`, `format: date-time`, `minProperties` (plus `maxItems`/`maxLength`/`maxProperties`). New `tests/test_schema_validation.py` (6).

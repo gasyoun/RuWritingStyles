@@ -50,6 +50,14 @@ class CorePipelineTests(unittest.TestCase):
         council = json.loads((run_dir / "council.json").read_text(encoding="utf-8"))
         self.assertEqual(council.get("status"), "completed")
 
+        # Run is self-describing on disk (not DB-dependent): run.json carries
+        # final status, metrics and step outcomes.
+        run_manifest = json.loads((run_dir / "run.json").read_text(encoding="utf-8"))
+        self.assertEqual(run_manifest["status"], "completed")
+        self.assertIn("bloom_stats", run_manifest["metrics"])
+        self.assertIn("citation_stats", run_manifest["metrics"])
+        self.assertTrue(run_manifest["steps"])
+
     def test_prompt_only_mode_builds_bundles_without_executing(self) -> None:
         run_dir, manifest, model_policy = self._prepare("unittest-core-prompt")
         core_pipeline(

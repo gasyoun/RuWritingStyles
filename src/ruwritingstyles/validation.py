@@ -29,6 +29,12 @@ def validate_run_dir(run_dir: Path) -> ValidationResult:
         _validate_segments(segments, messages)
     span_ids = _span_ids(segments)
 
+    run_json_path = run_dir / "run.json"
+    if run_json_path.exists():
+        run_data = _load_json(run_json_path, messages)
+        if isinstance(run_data, dict):
+            _validate_with_schema(run_data, "run.schema.json", "run.json", schema_store, messages)
+
     for required in ["original.md", "normalized.md", "report.md", "summary.html"]:
         if not (run_dir / required).exists():
             messages.append(f"missing {required}")
