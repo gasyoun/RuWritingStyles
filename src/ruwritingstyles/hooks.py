@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 # Patterns for known credential shapes — anchored to avoid false positives on
 # legitimate Slavic/Russian text that may contain "sk-" as a morpheme prefix.
 _CREDENTIAL_PATTERNS = [
-    re.compile(r'sk-[A-Za-z0-9]{20,}'),          # OpenAI / Anthropic API keys
+    re.compile(r'sk-[A-Za-z0-9-]{20,}'),         # OpenAI / Anthropic / OpenRouter (sk-or-) / Nous (sk-nous-) keys
     re.compile(r'AKIA[A-Z0-9]{16}'),              # AWS Access Key IDs
     re.compile(r'AIza[0-9A-Za-z\\-_]{35}'),       # Google API keys
     re.compile(r'ghp_[A-Za-z0-9]{36}'),           # GitHub Personal Access Tokens

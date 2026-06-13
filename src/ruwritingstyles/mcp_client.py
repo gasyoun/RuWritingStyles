@@ -9,6 +9,8 @@ from .db import Database
 
 logger = logging.getLogger(__name__)
 
+import os
+import shlex
 import subprocess
 import threading
 import queue
@@ -51,10 +53,13 @@ class ZoteroMCPClient:
             
         try:
             logger.info(f"Launching MCP Server: {self.server_path}")
-            # Launch the server process
+            # Launch the server process. Split into an argv list and run without
+            # a shell — shell=True is an unnecessary injection sink if server_path
+            # ever becomes less-trusted. See S7 in docs/security-review-2026-06.md.
+            command = shlex.split(self.server_path, posix=(os.name != "nt"))
             self._process = subprocess.Popen(
-                self.server_path,
-                shell=True,
+                command,
+                shell=False,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,

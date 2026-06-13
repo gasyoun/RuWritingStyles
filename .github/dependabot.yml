@@ -17,3 +17,12 @@ updates:
       time: "08:00"
       timezone: Europe/Moscow
     open-pull-requests-limit: 5
+
+  - package-ecosystem: npm
+    directory: /web
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:00"
+      timezone: Europe/Moscow
+    open-pull-requests-limit: 5

@@ -1,3 +1,13 @@
+### [2.5.4] - 2026-06-13
+#### Security (security review — docs/security-review-2026-06.md)
+- Whole-surface security review of the public web layer (FastAPI, subprocess, SSRF, secrets, SQL, deserialization, path handling). Threat model: safe as a loopback single-user tool, **not** safe to bind publicly as-is. Two sweep "CRITICAL" alarms were verified false — `.env` is gitignored and **never committed** (`git log --all -- .env` empty; no key leak), and `GET /runs/{run_id}` already bounds-checks via `_run_dir`. SQL is fully parameterized; no unsafe deserialization.
+- **Fixed S1 (LFI):** the SPA catch-all route (`api.py`) served `web/dist / full_path` with no bounds check — `GET /..%2f..%2f.env` would read arbitrary files. Now resolves and rejects anything outside `web/dist/` (mirrors the `_run_dir` guard).
+- **Fixed S2 (exposure default):** the API bound `0.0.0.0` by default. Now defaults to `127.0.0.1`; set `RWS_BIND_HOST=0.0.0.0` to opt into a public bind. Highest risk-reduction-per-line, since the API ships no auth.
+- **Fixed S6 (redaction gap):** the credential scrubber regex `sk-[A-Za-z0-9]{20,}` stopped at the first hyphen, so OpenRouter (`sk-or-…`) / Nous (`sk-nous-…`) keys went un-redacted in exported artifacts. Broadened to `sk-[A-Za-z0-9-]{20,}`.
+- **Fixed S7 (subprocess):** dropped `shell=True` on the MCP server launch (`mcp_client.py`); the server path is now `shlex.split` into an argv list and run with `shell=False`.
+- **Hardening:** added the `npm` ecosystem (`/web`) to Dependabot.
+- **Deferred to a product decision (documented, not changed):** S3 (`/runs/execute` reads any absolute local path — needs an input-path allowlist) and S4 (no API authentication — needs an `RWS_API_TOKEN` gate) are the prerequisites for ever exposing this as a multi-user service.
+
 ### [2.5.3] - 2026-06-13
 #### Added (data review #4: runs are self-describing on disk)
 - Every run now writes a `run.json` (`runs.write_run_manifest`) capturing status, timestamps, duration, config, **all metrics** (bloom/compass/tension/bias/citation_stats) and step outcomes — data that previously lived only in the gitignored `rws.db`. A run directory is now portable and the DB is a rebuildable index. Written at prepare, at pipeline completion/failure (`core_pipeline`), and at the end of each eval case.

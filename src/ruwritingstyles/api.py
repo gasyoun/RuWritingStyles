@@ -404,20 +404,29 @@ frontend_path = Path("web/dist")
 if frontend_path.exists():
     app.mount("/assets", StaticFiles(directory=frontend_path / "assets"), name="assets")
 
+    _frontend_root = frontend_path.resolve()
+
     @app.get("/{full_path:path}")
     async def serve_frontend(full_path: str):
         if full_path.startswith("api/") or full_path.startswith("runs/") or full_path == "status":
             raise HTTPException(status_code=404)
-        
-        # Check if file exists
-        file_path = frontend_path / full_path
-        if file_path.is_file():
+
+        # Resolve and bounds-check before serving: the catch-all must never
+        # escape web/dist/ (mirrors the _run_dir guard). Without this, a request
+        # like GET /..%2f..%2f.env would read arbitrary files (LFI). See S1 in
+        # docs/security-review-2026-06.md.
+        file_path = (_frontend_root / full_path).resolve()
+        if (file_path == _frontend_root or _frontend_root in file_path.parents) and file_path.is_file():
             return FileResponse(file_path)
-            
+
         # Fallback to index.html for SPA routing
-        return FileResponse(frontend_path / "index.html")
+        return FileResponse(_frontend_root / "index.html")
 
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    # Default to loopback; require an explicit opt-in to expose publicly. See S2
+    # in docs/security-review-2026-06.md — the API ships no auth, so a routable
+    # bind exposes unauthenticated run execution and local file reads.
+    host = os.environ.get("RWS_BIND_HOST", "127.0.0.1")
+    uvicorn.run(app, host=host, port=port)
