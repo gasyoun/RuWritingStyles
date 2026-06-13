@@ -1070,259 +1070,42 @@ def cmd_run(args: argparse.Namespace) -> int:
 
 
 def _execute_run_pipeline(repo_root: Path, run_dir: Path, args: argparse.Namespace, manifest: Any, model_policy: Any) -> int:
-    db = Database(repo_root)
-    run_id = run_dir.name
-    db.update_run_status(run_id, "executing")
-    
+    """Thin CLI wrapper over the shared `core_pipeline` (see pipeline.py)."""
+    from .pipeline import core_pipeline
+
     style_ids = _selected_style_ids(args, manifest)
     project_dir = getattr(args, "project_dir", None)
     if project_dir:
         project_dir = project_dir if project_dir.is_absolute() else (Path.cwd() / project_dir)
 
-    def step(step_id: str, func: callable):
-        steps = db.get_run_steps(run_id)
-        if any(s["step_id"] == step_id and s["status"] == "completed" for s in steps):
-             print(f"skipping completed step: {step_id}")
-             return
-             
-        db.update_step_status(run_id, step_id, "executing")
-        try:
-            func()
-            db.update_step_status(run_id, step_id, "completed")
-        except Exception as e:
-            db.update_step_status(run_id, step_id, "failed", error=str(e))
-            raise
+    interactive_hook = (
+        _interactive_council_review if getattr(args, "interactive", False) else None
+    )
 
-    try:
-        # 1. Review
-        def do_review():
-            for style_id in style_ids:
-                bundle = create_review_bundle(
-                    repo_root=repo_root,
-                    run_dir=run_dir,
-                    style_id=style_id,
-                    manifest=manifest,
-                    profile=args.profile,
-                )
-                print(f"created {bundle.review_json.relative_to(repo_root)}")
-                if args.execute:
-                    execute_review_artifact(
-                        repo_root=repo_root,
-                        review_path=bundle.review_json,
-                        provider=provider_from_name(args.provider),
-                        model=args.model or model_policy.resolve_model("style_review", args.provider),
-                    )
-                    print(f"completed {bundle.review_json.relative_to(repo_root)}")
-        step("review", do_review)
-
-        # 2. Deliberation
-        if getattr(args, "deliberate", False):
-            def do_deliberation():
-                print("\n--- Cross-Style Deliberation (Debate) ---")
-                for style_id in style_ids:
-                    bundle = create_deliberation_bundle(
-                        repo_root=repo_root,
-                        run_dir=run_dir,
-                        style_id=style_id,
-                        manifest=manifest,
-                        profile=args.profile,
-                    )
-                    print(f"created {bundle.deliberation_json.relative_to(repo_root)}")
-                    if args.execute:
-                        execute_deliberation_artifact(
-                            repo_root=repo_root,
-                            delib_path=bundle.deliberation_json,
-                            provider=provider_from_name(args.provider),
-                            model=args.model or model_policy.resolve_model("style_review", args.provider),
-                        )
-                        print(f"completed {bundle.deliberation_json.relative_to(repo_root)}")
-            step("deliberation", do_deliberation)
-
-        # 3. Scrutiny
-        if getattr(args, "scrutiny", False):
-            def do_scrutiny():
-                print("\n--- Linguistic Scrutiny (Expert Audit) ---")
-                bundle = create_scrutiny_bundle(repo_root=repo_root, run_dir=run_dir)
-                print(f"created {bundle.scrutiny_json.relative_to(repo_root)}")
-                if args.execute:
-                    execute_scrutiny_artifact(
-                        repo_root=repo_root,
-                        scrutiny_path=bundle.scrutiny_json,
-                        provider=provider_from_name(args.provider),
-                        model=args.model or model_policy.resolve_model("verification", args.provider),
-                    )
-                    print(f"completed {bundle.scrutiny_json.relative_to(repo_root)}")
-            step("scrutiny", do_scrutiny)
-
-        # 4. Iterations
-        max_iterations = getattr(args, "max_iterations", 1)
-        for iteration in range(1, max_iterations + 1):
-            iter_suffix = f"_iter{iteration}" if max_iterations > 1 else ""
-            
-            if iteration > 1:
-                print(f"\n--- Fact-Checking Iteration {iteration} ---")
-
-            def do_council_step():
-                verification_feedback = None
-                if iteration > 1:
-                    prev_verification = run_dir / "verification.json"
-                    if prev_verification.exists():
-                        verification_feedback = json.loads(prev_verification.read_text(encoding="utf-8"))
-
-                council = create_council_bundle(
-                    repo_root=repo_root,
-                    run_dir=run_dir,
-                    manifest=manifest,
-                    verification_feedback=verification_feedback,
-                    archetype_id=getattr(args, "archetype", None),
-                    profile=args.profile,
-                )
-                print(f"created {council.council_json.relative_to(repo_root)}")
-                if args.execute:
-                    execute_council_artifact(
-                        repo_root=repo_root,
-                        council_path=council.council_json,
-                        provider=provider_from_name(args.provider),
-                        model=args.model or model_policy.resolve_model("council", args.provider),
-                    )
-                    print(f"completed {council.council_json.relative_to(repo_root)}")
-                    if getattr(args, "interactive", False):
-                        _interactive_council_review(repo_root, council.council_json)
-                    # Save metrics
-                    db.save_metric(run_id, "bloom_stats", calculate_bloom_stats(run_dir))
-                    db.save_metric(run_id, "compass", calculate_methodological_compass(run_dir, manifest))
-            step(f"council{iter_suffix}", do_council_step)
-
-            def do_bias_audit():
-                print("\n--- Methodological Bias Audit ---")
-                res = run_bias_audit(
-                    repo_root=repo_root,
-                    run_dir=run_dir,
-                    provider=provider_from_name(args.provider),
-                    model=args.model or model_policy.resolve_model("council", args.provider),
-                )
-                db.save_metric(run_id, "bias_score", res.get("bias_score", 0))
-                print(f"completed bias audit, score: {res.get('bias_score', 0)}/10")
-            step(f"bias_audit{iter_suffix}", do_bias_audit)
-
-            def do_revision_step():
-                revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
-                print(f"created {revision.revision_json.relative_to(repo_root)}")
-                if args.execute:
-                    execute_revision_artifact(
-                        repo_root=repo_root,
-                        revision_path=revision.revision_json,
-                        provider=provider_from_name(args.provider),
-                        model=args.model or model_policy.resolve_model("synthesis", args.provider),
-                    )
-                    print(f"completed {revision.revision_json.relative_to(repo_root)}")
-                    diff_path = write_revision_diff(run_dir)
-                    print(f"updated {diff_path.relative_to(repo_root)}")
-            step(f"revision{iter_suffix}", do_revision_step)
-
-            def do_verification_step():
-                verification = create_verification_bundle(repo_root=repo_root, run_dir=run_dir)
-                print(f"created {verification.verification_json.relative_to(repo_root)}")
-                if args.execute:
-                    execute_verification_artifact(
-                        repo_root=repo_root,
-                        verification_path=verification.verification_json,
-                        provider=provider_from_name(args.provider),
-                        model=args.model or model_policy.resolve_model("verification", args.provider),
-                    )
-                    print(f"completed {verification.verification_json.relative_to(repo_root)}")
-            step(f"verification{iter_suffix}", do_verification_step)
-
-            if not getattr(args, "no_lint_translit", False):
-                def do_translit_lint():
-                    from .translit_lint import run_translit_lint
-                    artifact = run_translit_lint(repo_root, run_dir)
-                    doc = json.loads(artifact.read_text(encoding="utf-8"))
-                    count = len(doc.get("findings", []))
-                    print(f"completed transliteration lint: {count} finding(s) in {doc.get('source_file')}")
-                step(f"translit_lint{iter_suffix}", do_translit_lint)
-
-            def do_citations():
-                print("\n--- Scholarly Grounding (Citations) ---")
-                rev_path = run_dir / "revised.md"
-                if not rev_path.exists():
-                    return
-                text = rev_path.read_text(encoding="utf-8")
-                citations = extract_citations(text)
-                verification = verify_citations_against_knowledge(repo_root, citations)
-                cite_path = run_dir / "citations.json"
-                cite_path.write_text(json.dumps(verification, ensure_ascii=False, indent=2), encoding="utf-8")
-                db.save_metric(run_id, "citation_stats", citation_stats(citations, verification))
-                print(f"completed citation verification: {len(verification['verified'])} verified, {len(verification['not_in_bibliography'])} not in bibliography")
-            step(f"citations{iter_suffix}", do_citations)
-
-            if args.execute:
-                def do_impact_step():
-                    impact = create_impact_bundle(repo_root=repo_root, run_dir=run_dir)
-                    print(f"created {impact.impact_json.relative_to(repo_root)}")
-                    execute_impact_artifact(
-                        repo_root=repo_root,
-                        impact_path=impact.impact_json,
-                        provider=provider_from_name(args.provider),
-                        model=args.model or model_policy.resolve_model("verification", args.provider),
-                    )
-                    print(f"completed {impact.impact_json.relative_to(repo_root)}")
-                step(f"impact{iter_suffix}", do_impact_step)
-
-                def do_syntax_step():
-                    from .syntax import create_syntax_bundle
-                    from .execution import execute_syntax_artifact
-                    syntax_bundle = create_syntax_bundle(repo_root=repo_root, run_dir=run_dir)
-                    if syntax_bundle:
-                        s_path = Path(syntax_bundle["syntax_path"])
-                        print(f"created {s_path.relative_to(repo_root)}")
-                        execute_syntax_artifact(
-                            repo_root=repo_root,
-                            syntax_path=s_path,
-                            provider=provider_from_name(args.provider),
-                            model=(args.model or model_policy.resolve_model("verification", args.provider))
-                        )
-                        print(f"completed {s_path.relative_to(repo_root)}")
-                step(f"syntax{iter_suffix}", do_syntax_step)
-
-                # Check if we should loop (not a formal step, just logic)
-                verification_json = run_dir / "verification.json"
-                impact_json = run_dir / "impact.json"
-                if verification_json.exists() and impact_json.exists():
-                    v_doc = json.loads(verification_json.read_text(encoding="utf-8"))
-                    i_doc = json.loads(impact_json.read_text(encoding="utf-8"))
-                    
-                    v_warnings = v_doc.get("warnings", [])
-                    i_warnings = [
-                        f"Impact failure in {a['span_id']} ({a['tag']}): {a['comment']}"
-                        for a in i_doc.get("assessments", []) if not a.get("passed")
-                    ]
-                    
-                    combined_warnings = v_warnings + i_warnings
-                    if not combined_warnings or iteration == max_iterations:
-                        break
-                    else:
-                        merged_feedback = {"warnings": combined_warnings}
-                        (run_dir / "verification.json").write_text(json.dumps(merged_feedback, ensure_ascii=False, indent=2), encoding="utf-8")
-                        print(f"Verification/Impact failed with {len(combined_warnings)} warnings. Retrying...")
-                else:
-                    break
-            else:
-                break
-
-        # 5. Reports
-        def do_reports_step():
-            _write_reports(repo_root, run_dir)
-        step("reports", do_reports_step)
-
-        if project_dir and args.execute:
+    post_run = None
+    if project_dir and args.execute:
+        def post_run() -> None:
             update_project_context(project_dir, run_dir)
 
-        db.update_run_status(run_id, "completed")
-    except Exception as exc:
-        db.update_run_status(run_id, "failed", summary=str(exc))
-        raise
-
+    core_pipeline(
+        repo_root=repo_root,
+        run_dir=run_dir,
+        provider_name=args.provider,
+        model=args.model,
+        profile=args.profile,
+        manifest=manifest,
+        model_policy=model_policy,
+        style_ids=style_ids,
+        execute=args.execute,
+        max_iterations=getattr(args, "max_iterations", 1),
+        deliberate=getattr(args, "deliberate", False),
+        scrutiny=getattr(args, "scrutiny", False),
+        lint_translit=not getattr(args, "no_lint_translit", False),
+        archetype=getattr(args, "archetype", None),
+        interactive_hook=interactive_hook,
+        emit=print,
+        post_run=post_run,
+    )
     return 0
 
 
