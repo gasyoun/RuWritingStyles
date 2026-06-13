@@ -23,3 +23,6 @@ exports/
 rws.db
 src/rws.db
 PDFtoTXT/
+
+# stray log captures
+*.log
