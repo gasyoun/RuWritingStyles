@@ -1,3 +1,8 @@
+### [2.4.5] - 2026-06-13
+#### Added (Phase 2 prep: bibliography population from the case study)
+- `knowledge/bibliography.json` expanded 26 → 44 entries with the real sources cited by the commentary-strategies article (Бурба, Эрман, Гринцер, Кальянов, Васильков–Невелева, Сыркин, Казанский, Лидова, Парибок ×2, Malhotra, Goldman ×2, Jhalakikar, and three web corpora), with full GOST fields and ids matching the inline `(Author Year)` citation form. The article's four extracted citations now verify and `references-gost.md` renders a correct GOST list (Cyrillic-sorted) instead of coming out empty — the gap surfaced by `docs/case-study-phase1.md`.
+- `citations.py`: the `reason` text for unmatched citations now states that absence from an incomplete bibliography is not proof of fabrication. The `hallucinations` key is kept (pipeline / eval scorer / `gost-hallucinated-ref` case depend on it).
+
 ### [2.4.4] - 2026-06-13
 #### Added (Phase 1 W6: real-paper case study — closes the deterministic layer of Phase 1)
 - `docs/case-study-phase1.md`: a real Russian Sanskrit-studies article run through the deterministic pipeline layer (transliteration linter, GOST bibliography, citation grounding, `vya` journal profile). Documents what each check caught (7 genuine missing-IAST first mentions, length over the ВЯ limit, 4 citations absent from the seed bibliography) and the false-positive analysis.

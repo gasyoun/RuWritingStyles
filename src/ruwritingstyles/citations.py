@@ -47,10 +47,13 @@ def verify_citations_against_knowledge(repo_root: Path, citations: list[str]) ->
             })
         else:
             verification["missing"].append(cite)
-            # Verification logic for hallucinations
+            # The `hallucinations` key name is kept for backward compatibility
+            # (pipeline, eval scorer, and the gost-hallucinated-ref eval case
+            # read it), but absence from an incomplete seed bibliography is NOT
+            # proof of fabrication — the reason states the precise fact.
             verification["hallucinations"].append({
                 "citation": cite,
-                "reason": "Not found in structured bibliography."
+                "reason": "Not found in structured bibliography (knowledge/bibliography.json); not necessarily fabricated."
             })
             
     return verification
