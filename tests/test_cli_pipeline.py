@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 import json
+import os
 from pathlib import Path
 import shutil
 import sys
@@ -9,6 +10,10 @@ import tempfile
 import unittest
 from unittest.mock import patch
 from zipfile import ZipFile
+
+# Mock-provider runs must stay offline (the MockProvider simulates a
+# search_scholar tool call during verification that otherwise hits OpenAlex).
+os.environ.setdefault("RWS_OFFLINE", "1")
 
 
 ROOT = Path(__file__).resolve().parents[1]

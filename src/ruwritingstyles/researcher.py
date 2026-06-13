@@ -2,11 +2,20 @@
 
 import json
 import logging
+import os
 import urllib.request
 import urllib.parse
 from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
+
+
+def _offline() -> bool:
+    """Offline mode disables outbound scholarly API calls (set RWS_OFFLINE=1).
+
+    Tests and `--provider mock` runs use this so the deterministic path makes
+    no network requests; real-provider runs leave it unset and hit OpenAlex."""
+    return os.environ.get("RWS_OFFLINE", "").strip().lower() in ("1", "true", "yes")
 
 class WebResearcher:
     """
@@ -23,8 +32,12 @@ class WebResearcher:
         2. Query OpenAlex API
         3. Parse and rank results
         """
+        if _offline():
+            logger.debug("WebResearcher: offline mode, skipping network search.")
+            return []
+
         logger.info(f"WebResearcher: Searching for '{query}'...")
-        
+
         try:
             # OpenAlex search parameters
             params = {

@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import json
+import os
 from pathlib import Path
 import re
 from typing import Any
@@ -91,6 +92,10 @@ def run_eval_case(
     run_id: str | None = None,
     deliberate: bool = False,
 ) -> EvalRunResult:
+    # Eval runs on the mock provider are deterministic and offline by intent;
+    # keep the MockProvider's simulated tool calls from reaching the network.
+    if provider_name == "mock":
+        os.environ.setdefault("RWS_OFFLINE", "1")
     case = _find_case(repo_root, case_id)
     manifest = load_manifest(repo_root)
     model_policy = load_model_policy(repo_root)

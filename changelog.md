@@ -1,3 +1,9 @@
+### [2.4.10] - 2026-06-13
+#### Added / Fixed (architecture review #6: offline tests + the network leak)
+- The test suite no longer makes real network calls. `MockProvider` simulates a `search_scholar` tool call during verification, which routed through `WebResearcher` to OpenAlex (10s timeouts / 429s) on every mock run that reached verification — the source of the multi-thousand-second `test_cli_pipeline`/eval runtimes. `WebResearcher.search` now honours an `RWS_OFFLINE` flag (default off, so real-provider runs are unchanged); `run_eval_case` sets it for `--provider mock`, and the pipeline test modules set it at import. `test_eval_sanskrit` dropped from ~9s to ~1.7s.
+- New `tests/test_core_pipeline.py` (4 tests): direct fast coverage of the unified `core_pipeline` (execute, prompt-only, and the API `on_update` event stream) and of `execution.execute_review_artifact` — the orchestration code that previously had no unit tests of its own.
+- `RWS_OFFLINE` documented in `.env.example`.
+
 ### [2.4.9] - 2026-06-13
 #### Fixed (architecture review #2: unify the two YAML parsers)
 - The runtime config loader (`config.py`) and the CI validator (`tools/validate_project.py`) had separate hand-rolled YAML readers that could disagree — and did: `config.py`'s `_scalar`/`_list_items` tolerate a `:` inside a quoted scalar, but the validator's `parse_simple_yaml` split on the first `:` unconditionally, so a passport `name`/source string containing `: ` parsed fine at runtime yet was rejected in CI (the P2a failure). Both now import from a single new module `ruwritingstyles/yaml_lite.py` (generic `parse_simple_yaml` + targeted `scalar`/`block`/`list_items`, sharing `parse_scalar`); the generic parser's key/value split now ignores colons inside quotes (`_kv_colon`). New `tests/test_yaml_lite.py` (10 tests) including the quoted-colon regression and a generic-vs-targeted agreement check.
