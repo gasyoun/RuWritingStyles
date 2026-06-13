@@ -1,3 +1,19 @@
+# Changelog
+
+All notable changes to RuWritingStyles are documented here.
+
+## [Unreleased]
+
+### Changed
+- Reserve this section for upcoming repository changes before the next dated
+  release or maintenance snapshot.
+
+### [2.7.1] - 2026-06-13
+#### Security (closes security-review S3 + S4 — the public-bind tier)
+- **S4 — optional bearer-token auth.** A new HTTP middleware (`api._require_token`) requires `Authorization: Bearer <RWS_API_TOKEN>` on `/runs`, `/api`, and `/status` when `RWS_API_TOKEN` is set; the WebSocket checks the same token (header or `?token=`). **Off by default** so the loopback dev tool needs zero setup; CORS preflight (`OPTIONS`) is never blocked; constant-time comparison (`secrets.compare_digest`).
+- **S3 — input_path allowlist.** `POST /runs/execute` now confines `input_path` to an allowed root (`api._input_root`: the repo root by default, widenable via `RWS_INPUT_ROOT`); a path resolving outside returns **403** before any read, closing the arbitrary-file-read. The default web-UI path is under the repo, so the local flow is unaffected.
+- `tests/test_api_security.py` (6, via FastAPI `TestClient`). `.env.example` documents `RWS_BIND_HOST` / `RWS_API_TOKEN` / `RWS_INPUT_ROOT`. **To bind publicly: set `RWS_BIND_HOST=0.0.0.0` AND `RWS_API_TOKEN=<secret>`.** All security-review findings are now closed.
+
 ### [2.7.0] - 2026-06-13
 #### Added (Phase 4 — archival DH-grade metadata; closes docs/roadmap-sanskrit-dh.md Фаза 4)
 - **`CITATION.cff`** (Citation File Format 1.2.0) — GitHub now shows a "Cite this repository" button; author M. Yu. Gasuns, Apache-2.0, keyworded. A commented `identifiers` block is ready for the Zenodo DOI after the first release.

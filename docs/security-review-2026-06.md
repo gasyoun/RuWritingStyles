@@ -144,3 +144,22 @@ cross-user vector. Keep escaping on any new HTML sink.
 Items 1–5 are safe, mechanical, and lock down the default posture without changing any
 intended workflow. 6 is the "actually shippable as a public service" tier and is a product
 decision, not a cleanup.
+
+## Status (2026-06-13): all findings closed
+
+Items 1–5 shipped in v2.5.4. **S3 and S4 now implemented (v2.7.1)** — the public-bind tier:
+
+- **S3 — input_path allowlist.** `POST /runs/execute` now confines `input_path` to an
+  allowed root (`api._input_root`): the repo root by default, widenable with
+  `RWS_INPUT_ROOT` for legitimate out-of-repo inputs. A path resolving outside returns
+  **403** before any read, closing the arbitrary-file-read. The default UI path
+  (`…/RuWritingStyles/article.md`) is under the repo, so the local flow is unaffected.
+- **S4 — optional bearer-token auth.** An HTTP middleware (`api._require_token`) requires
+  `Authorization: Bearer <RWS_API_TOKEN>` on `/runs`, `/api`, `/status` when `RWS_API_TOKEN`
+  is set; the WebSocket checks the same token (header or `?token=`, closes 1008 on failure).
+  **Off by default** — the loopback dev tool keeps working with zero setup. CORS preflight
+  (`OPTIONS`) is never blocked; comparison is constant-time (`secrets.compare_digest`).
+
+`tests/test_api_security.py` (6) covers both via `TestClient`. **To bind publicly now:** set
+`RWS_BIND_HOST=0.0.0.0` (S2) **and** `RWS_API_TOKEN=<secret>` (S4); optionally
+`RWS_INPUT_ROOT` (S3). Without a token, keep it on loopback.

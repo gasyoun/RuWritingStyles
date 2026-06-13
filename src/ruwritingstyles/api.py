@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import os
+import secrets
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Dict, List, Set
 
@@ -77,6 +79,37 @@ app.add_middleware(
 )
 
 
+# --- S4: optional bearer-token auth (see docs/security-review-2026-06.md) ---
+# Off by default so the loopback dev tool keeps working with no setup. Set
+# RWS_API_TOKEN to require `Authorization: Bearer <token>` on the API + WS routes
+# — the prerequisite, together with RWS_BIND_HOST, for binding a public interface.
+_API_TOKEN = os.environ.get("RWS_API_TOKEN", "").strip()
+_PROTECTED_PREFIXES = ("/runs", "/api", "/status")
+
+
+def _bearer_ok(authorization: str | None) -> bool:
+    if not _API_TOKEN:
+        return True  # auth disabled
+    if not authorization:
+        return False
+    parts = authorization.split()
+    if len(parts) == 2 and parts[0].lower() == "bearer":
+        return secrets.compare_digest(parts[1], _API_TOKEN)
+    return False
+
+
+@app.middleware("http")
+async def _require_token(request, call_next):
+    if (
+        _API_TOKEN
+        and request.method != "OPTIONS"  # never block CORS preflight
+        and any(request.url.path.startswith(p) for p in _PROTECTED_PREFIXES)
+        and not _bearer_ok(request.headers.get("authorization"))
+    ):
+        return JSONResponse({"detail": "Unauthorized"}, status_code=401)
+    return await call_next(request)
+
+
 @app.get("/status")
 async def get_status(provider: str = "google"):
     statuses = provider_statuses()
@@ -127,6 +160,15 @@ async def get_run_details(run_id: str):
 
 @app.websocket("/ws/{run_id}")
 async def websocket_endpoint(websocket: WebSocket, run_id: str):
+    if _API_TOKEN:
+        # Browsers can't set headers on a WebSocket; accept ?token= too.
+        query_token = websocket.query_params.get("token")
+        authorized = _bearer_ok(websocket.headers.get("authorization")) or (
+            bool(query_token) and secrets.compare_digest(query_token, _API_TOKEN)
+        )
+        if not authorized:
+            await websocket.close(code=1008)  # policy violation
+            return
     await manager.connect(run_id, websocket)
     try:
         while True:
@@ -183,6 +225,16 @@ class RunRequest(BaseModel):
     execute: bool = True
 
 
+def _input_root(repo_root: Path) -> Path:
+    """The directory `input_path` must resolve under (S3). Defaults to the repo
+    root; widen with RWS_INPUT_ROOT (e.g. a documents folder) for legitimate
+    out-of-repo inputs. Deny-by-default closes the arbitrary-file-read in the
+    review — see docs/security-review-2026-06.md."""
+    configured = os.environ.get("RWS_INPUT_ROOT")
+    root = Path(configured).expanduser() if configured else repo_root
+    return root.resolve()
+
+
 @app.post("/runs/execute")
 async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
     repo_root = repo_root_from()
@@ -190,6 +242,13 @@ async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
     if not input_path.is_absolute():
         input_path = repo_root / input_path
     input_path = input_path.resolve()
+
+    # S3: confine reads to the allowed root so a caller cannot make the server
+    # read an arbitrary local file (e.g. /etc/passwd, ~/.ssh/...).
+    allowed_root = _input_root(repo_root)
+    if input_path != allowed_root and allowed_root not in input_path.parents:
+        raise HTTPException(status_code=403, detail="input_path is outside the allowed root")
+
     if not input_path.exists():
         raise HTTPException(status_code=404, detail=f"Input file not found at: {req.input_path}")
 
