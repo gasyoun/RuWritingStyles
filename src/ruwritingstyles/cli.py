@@ -117,17 +117,9 @@ def build_parser() -> argparse.ArgumentParser:
         "--run-id",
         help="Optional deterministic run id. The target runs/<run-id> must not already exist.",
     )
-    run_styles = run.add_mutually_exclusive_group()
-    run_styles.add_argument("--style", help="One style id from `rws list-styles`.")
-    run_styles.add_argument("--styles", help="Comma-separated style ids from `rws list-styles`.")
-    run_styles.add_argument(
-        "--council",
-        help="A named council from styles/manifest.yml (see `rws councils`), e.g. sanskrit.",
-    )
-    run_styles.add_argument(
-        "--mvp",
-        action="store_true",
-        help="Use the MVP styles from styles/manifest.yml. This is the default.",
+    _add_style_selection_group(
+        run, required=False,
+        mvp_help="Use the MVP styles from styles/manifest.yml. This is the default.",
     )
     run.add_argument(
         "--max-iterations",
@@ -607,17 +599,9 @@ def build_parser() -> argparse.ArgumentParser:
         help="Create an offline review bundle for one style and a prepared run directory.",
     )
     review.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
-    review_styles = review.add_mutually_exclusive_group(required=True)
-    review_styles.add_argument("--style", help="One style id from `rws list-styles`.")
-    review_styles.add_argument("--styles", help="Comma-separated style ids from `rws list-styles`.")
-    review_styles.add_argument(
-        "--council",
-        help="A named council from styles/manifest.yml (see `rws councils`).",
-    )
-    review_styles.add_argument(
-        "--mvp",
-        action="store_true",
-        help="Create review bundles for the MVP styles from styles/manifest.yml.",
+    _add_style_selection_group(
+        review, required=True,
+        mvp_help="Create review bundles for the MVP styles from styles/manifest.yml.",
     )
     _add_execute_args(review)
     review.set_defaults(func=cmd_review)
@@ -636,17 +620,9 @@ def build_parser() -> argparse.ArgumentParser:
         help="Perform cross-style deliberation/debate from prepared style reviews.",
     )
     deliberate.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
-    delib_styles = deliberate.add_mutually_exclusive_group(required=True)
-    delib_styles.add_argument("--style", help="One style id from `rws list-styles`.")
-    delib_styles.add_argument("--styles", help="Comma-separated style ids from `rws list-styles`.")
-    delib_styles.add_argument(
-        "--council",
-        help="A named council from styles/manifest.yml (see `rws councils`).",
-    )
-    delib_styles.add_argument(
-        "--mvp",
-        action="store_true",
-        help="Create deliberation bundles for the MVP styles.",
+    _add_style_selection_group(
+        deliberate, required=True,
+        mvp_help="Create deliberation bundles for the MVP styles.",
     )
     _add_execute_args(deliberate)
     deliberate.set_defaults(func=cmd_deliberate)
@@ -818,6 +794,21 @@ def build_parser() -> argparse.ArgumentParser:
     validate_provider_status.set_defaults(func=cmd_validate_provider_status)
 
     return parser
+
+
+def _add_style_selection_group(
+    parser: argparse.ArgumentParser, *, required: bool, mvp_help: str
+) -> None:
+    """The shared --style/--styles/--council/--mvp mutually-exclusive group used
+    by run/review/deliberate (they differ only in `required` and the --mvp help)."""
+    group = parser.add_mutually_exclusive_group(required=required)
+    group.add_argument("--style", help="One style id from `rws list-styles`.")
+    group.add_argument("--styles", help="Comma-separated style ids from `rws list-styles`.")
+    group.add_argument(
+        "--council",
+        help="A named council from styles/manifest.yml (see `rws councils`), e.g. sanskrit.",
+    )
+    group.add_argument("--mvp", action="store_true", help=mvp_help)
 
 
 def _add_execute_args(parser: argparse.ArgumentParser) -> None:
@@ -2025,10 +2016,12 @@ def cmd_review(args: argparse.Namespace) -> int:
 def _selected_style_ids(args: argparse.Namespace, manifest) -> list[str]:
     council = getattr(args, "council", None)
     if council:
-        style_ids = list(manifest.resolve_council(council))
-        if not style_ids:
+        if council not in manifest.council_names():
             available = ", ".join(manifest.council_names()) or "(none defined)"
             raise ValueError(f"unknown council {council!r}; available: {available}")
+        style_ids = list(manifest.resolve_council(council))
+        if not style_ids:
+            raise ValueError(f"council {council!r} is defined but empty")
     elif getattr(args, "mvp", False):
         style_ids = list(manifest.mvp_style_ids)
     elif getattr(args, "styles", None):

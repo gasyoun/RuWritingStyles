@@ -7,6 +7,13 @@ All notable changes to RuWritingStyles are documented here.
 ### Changed
 - Released the current changelog state as version 1.
 
+## [2.7.3] - 2026-06-13
+### Changed (low-priority `/code-review` cleanups)
+- **Shared passport loader.** `config.load_passport_dicts(repo_root)` is the single glob+parse over `styles/passports/*.yml`; `tools/audit_passport_checks.py` and `tools/passports_to_dublin_core.py` now call it instead of each re-globbing and parsing. Verified behaviour-preserving: regenerated `metadata/dublin-core.xml` is byte-identical.
+- **DRY CLI style selection.** The `--style`/`--styles`/`--council`/`--mvp` mutually-exclusive group (previously copy-pasted into `run`/`review`/`deliberate`) is now one `_add_style_selection_group(parser, *, required, mvp_help)` helper. New parse test asserts `--council` is wired on all three.
+- **Clearer council errors.** `rws run --council <name>` now distinguishes an *unknown* council ("unknown council 'x'; available: …") from a *defined-but-empty* one ("council 'x' is defined but empty"), instead of reporting both as unknown.
+- Deliberately NOT changed: the `_collect_style_audit` "re-reads 3×/run" finding — `run.json` is written at prepare / completion / failure and the audit must re-read because artifacts accumulate between those calls; memoizing by run_id would serve a stale, empty audit at completion. `tests/test_councils.py` 9 → 11; full suite 147 green.
+
 ## [2.7.2] - 2026-06-13
 ### Fixed (from a `/code-review` pass over the security + councils + Phase-4 diff)
 - **Crash on the web-UI run path (pre-existing).** `POST /runs/execute` called `read_document`/`normalize_document`/`segment_markdown` (defined in `segment.py`) but `api.py` never imported them, so the React "New Run" button raised `NameError`. Added the import; new regression test prepares a real in-repo run via `TestClient` without crashing.

@@ -361,6 +361,21 @@ def load_archetypes(repo_root: Path) -> tuple[CouncilArchetype, ...]:
     return tuple(archetypes)
 
 
+def load_passport_dicts(repo_root: Path) -> list[dict[str, Any]]:
+    """Parsed passport dicts from `styles/passports/*.yml`, sorted by filename.
+
+    The raw-dict view of every passport, for tooling that needs fields beyond the
+    user-facing summary (checks, best_for, provenance, ...). One loader so the
+    glob+parse is not re-implemented per tool."""
+    passports_dir = repo_root / "styles" / "passports"
+    dicts: list[dict[str, Any]] = []
+    for path in sorted(passports_dir.glob("*.yml")):
+        data = parse_simple_yaml(_read(path))
+        if isinstance(data, dict):
+            dicts.append(data)
+    return dicts
+
+
 def load_passport_summaries(repo_root: Path, manifest: Manifest | None = None) -> tuple[StylePassportSummary, ...]:
     actual_manifest = manifest or load_manifest(repo_root)
     summaries: list[StylePassportSummary] = []

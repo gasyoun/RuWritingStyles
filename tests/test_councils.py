@@ -1,4 +1,5 @@
 import argparse
+import dataclasses
 import sys
 import unittest
 from pathlib import Path
@@ -64,6 +65,40 @@ class SelectedStyleIdsTests(unittest.TestCase):
     def test_default_is_still_mvp(self) -> None:
         ids = _selected_style_ids(self._args(), self.manifest)
         self.assertEqual(ids, list(self.manifest.mvp_style_ids))
+
+    def test_empty_council_distinguished_from_unknown(self) -> None:
+        # A defined-but-empty council reports differently from an unknown name.
+        with_empty = dataclasses.replace(
+            self.manifest, councils=self.manifest.councils + (("empty", ()),)
+        )
+        with self.assertRaises(ValueError) as empty_ctx:
+            _selected_style_ids(self._args(council="empty"), with_empty)
+        self.assertIn("empty", str(empty_ctx.exception).lower())
+        self.assertIn("defined but empty", str(empty_ctx.exception))
+
+        with self.assertRaises(ValueError) as unknown_ctx:
+            _selected_style_ids(self._args(council="nope"), with_empty)
+        self.assertIn("unknown council", str(unknown_ctx.exception))
+
+
+class CouncilArgParsingTests(unittest.TestCase):
+    """The shared _add_style_selection_group helper must wire --council onto run,
+    review, and deliberate identically."""
+
+    def _parser(self):
+        from ruwritingstyles.cli import build_parser
+
+        return build_parser()
+
+    def test_council_flag_parses_on_all_three_subcommands(self) -> None:
+        parser = self._parser()
+        for argv in (
+            ["run", "doc.md", "--council", "sanskrit"],
+            ["review", "runs/x", "--council", "sanskrit"],
+            ["deliberate", "runs/x", "--council", "sanskrit"],
+        ):
+            ns = parser.parse_args(argv)
+            self.assertEqual(ns.council, "sanskrit", argv)
 
 
 class CouncilIntegrityCheckTests(unittest.TestCase):

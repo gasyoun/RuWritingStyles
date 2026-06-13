@@ -27,23 +27,20 @@ sys.stderr.reconfigure(encoding="utf-8")
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from ruwritingstyles.yaml_lite import parse_simple_yaml  # noqa: E402
+from ruwritingstyles.config import load_passport_dicts  # noqa: E402
 
 THRESHOLD = 3          # a check in >= THRESHOLD passports is "shared"
 SHARED_RATIO_FLAG = 0.5  # flag passports whose checks are >= 50% shared
 
 
-def _checks(passport_path: Path) -> list[str]:
-    data = parse_simple_yaml(passport_path.read_text(encoding="utf-8"))
-    if not isinstance(data, dict):
-        return []
-    checks = data.get("checks") or []
-    return [c for c in checks if isinstance(c, str)]
+def _checks(passport: dict) -> list[str]:
+    return [c for c in (passport.get("checks") or []) if isinstance(c, str)]
 
 
 def main() -> int:
-    passports = sorted((ROOT / "styles" / "passports").glob("*.yml"))
-    per_passport = {p.stem: _checks(p) for p in passports}
+    per_passport = {
+        p.get("id", "?"): _checks(p) for p in load_passport_dicts(ROOT)
+    }
 
     freq: Counter[str] = Counter()
     for checks in per_passport.values():

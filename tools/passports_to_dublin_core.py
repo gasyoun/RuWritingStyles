@@ -32,7 +32,7 @@ sys.stderr.reconfigure(encoding="utf-8")
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from ruwritingstyles.yaml_lite import parse_simple_yaml  # noqa: E402
+from ruwritingstyles.config import load_passport_dicts  # noqa: E402
 
 DC_NS = "http://purl.org/dc/elements/1.1/"
 CREATOR = "RuWritingStyles project (M. Yu. Gasuns)"
@@ -98,12 +98,7 @@ def _record(passport: dict) -> str:
 
 
 def main() -> int:
-    passports = sorted((ROOT / "styles" / "passports").glob("*.yml"))
-    records = []
-    for path in passports:
-        data = parse_simple_yaml(path.read_text(encoding="utf-8"))
-        if isinstance(data, dict):
-            records.append(_record(data))
+    records = [_record(data) for data in load_passport_dicts(ROOT)]
 
     xml = (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
