@@ -20,13 +20,16 @@ implementation plan and milestones.
 
 ## Status
 
-**M2 — inline UI.** Findings surface through the editor's native lint system
-(`@codemirror/lint`): wavy underlines, hover bubbles, the built-in problems panel,
-and F8 / next-diagnostic navigation, plus a status-bar count (`RWS ✗3 ⚠7`). Linting
-is continuous and debounced; the `RuWritingStyles: lint current note (show problems)`
-command force-relints and opens the problems panel. Journal compliance is M3. The
-deterministic linter underneath is the parity-tested port from M1 — see
-[Testing](#testing).
+**M3 — MVP complete (transliteration + journal compliance).** Findings surface
+through the editor's native lint system (`@codemirror/lint`): wavy underlines, hover
+bubbles, the built-in problems panel, and F8 / next-diagnostic navigation, plus a
+status-bar count (`RWS ✗3 ⚠7`). Linting is continuous and debounced; the
+`RuWritingStyles: lint current note (show problems)` command force-relints, opens
+the panel, and shows a journal checklist. A **settings tab** picks the journal
+profile (`vya` / `ppv` / `vestnik-spbu`), which drives the IAST first-mention rule
+and the length + abstract/keywords compliance check; gaps show in the same panel.
+Both the transliteration linter and the journal check are parity-tested ports of the
+engine — see [Testing](#testing).
 
 ## Development
 
@@ -40,10 +43,14 @@ npm test               # parity test vs the Python engine (Node 24+)
 
 ## Testing
 
-`npm test` runs `test/parity.test.ts` (Node's native runner): it lints the
-fixtures with the TypeScript port and asserts the findings + summary are
-identical to the golden output of the engine's `rws lint-translit`. Regenerate
-the golden fixtures from the engine with `python tools/export_lint_fixtures.py`.
+`npm test` runs all of `test/**/*.test.ts` (Node's native runner): **32 tests** —
+
+- `parity.test.ts`: TS transliteration findings + summary identical to the engine's
+  `rws lint-translit` golden output (regenerate: `python tools/export_lint_fixtures.py`).
+- `journal.test.ts`: TS journal-compliance identical to the engine's
+  `report.journal_compliance()` golden output, incl. the real gúṇa article vs
+  *Вестник СПбГУ* (regenerate: `python tools/export_journal_fixtures.py`).
+- `locate.test.ts`: every located finding's editor range slices to the right substring.
 
 To test in Obsidian, symlink or copy this folder's `manifest.json`, `main.js`, and
 `styles.css` into `<vault>/.obsidian/plugins/ruwritingstyles/`, then enable the plugin
