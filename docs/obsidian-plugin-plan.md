@@ -287,9 +287,13 @@ verdict / warnings / length delta).
 - **Requires** the engine running (`rws web`) + a provider key. The live round-trip is
   not headless-testable; the request/parse/summary logic is unit-tested (5 tests).
 
-**Next refinements (not done):** live "Thinking Trace" via `/ws/{run_id}`; inline
-accept/reject of the revision (diff-apply) instead of a sibling note; pass the selected
-journal profile into the run.
+**Refinements done:** ✅ inline accept/reject — the result opens a modal (apply to the
+note via `vault.modify` / save to a sibling note / cancel); ✅ journal pass-through —
+`POST /runs/execute` takes a `journal` preset id, written into the run's
+`project-context.json` so the pipeline honours it.
+
+**Still open:** live "Thinking Trace" via `/ws/{run_id}` (currently polls `/runs/{id}`);
+finer-grained per-change (diff) accept rather than whole-note replace.
 
 ### Word / Office.js add-in
 
