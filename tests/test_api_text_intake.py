@@ -55,6 +55,28 @@ class TextIntakeTests(unittest.TestCase):
         finally:
             del os.environ["RWS_MAX_TEXT_CHARS"]
 
+    def test_journal_preset_is_written_into_the_run(self) -> None:
+        import json
+
+        resp = self.client.post(
+            "/runs/execute",
+            json={"text": "# T\n\nтекст", "journal": "vestnik-spbu", "execute": False},
+        )
+        self.assertEqual(resp.status_code, 200, resp.text)
+        run_id = resp.json()["run_id"]
+        self._cleanup(run_id)
+        ctx = json.loads(
+            (REPO_ROOT / "runs" / run_id / "project-context.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(ctx["journal_profile"]["id"], "vestnik-spbu")
+
+    def test_unknown_journal_is_400(self) -> None:
+        resp = self.client.post(
+            "/runs/execute",
+            json={"text": "hi", "journal": "no-such-journal", "execute": False},
+        )
+        self.assertEqual(resp.status_code, 400, resp.text)
+
     def test_text_filename_directory_parts_are_stripped(self) -> None:
         # A path-like filename must not escape runs/ — only the basename is used.
         resp = self.client.post(

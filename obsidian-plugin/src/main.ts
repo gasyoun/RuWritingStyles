@@ -114,13 +114,14 @@ export default class RuWritingStylesPlugin extends Plugin {
     return JOURNALS[this.settings.journal] ?? null;
   }
 
-  /** The Tier-2 engine connection settings. */
+  /** The Tier-2 engine connection settings (incl. the selected journal). */
   auditSettings(): AuditSettings {
     return {
       backendUrl: this.settings.backendUrl,
       apiToken: this.settings.apiToken,
       provider: this.settings.auditProvider,
       profile: this.settings.auditProfile,
+      journal: this.settings.journal,
     };
   }
 

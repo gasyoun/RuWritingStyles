@@ -60,6 +60,8 @@ from .provider_status import provider_statuses, provider_statuses_json
 from .runs import create_prepare_run, list_runs as list_run_ids, load_run_artifact
 from .segment import read_document, normalize_document, segment_markdown
 from .providers import provider_from_name
+from .journals import list_journal_presets, load_journal_preset
+from .project import set_journal_profile
 import argparse
 import json
 
@@ -247,6 +249,7 @@ class RunRequest(BaseModel):
     provider: str = "google"
     model: str | None = None
     profile: str = "researcher"
+    journal: str | None = None  # journal preset id; honoured by the pipeline
     execute: bool = True
 
 
@@ -305,6 +308,17 @@ async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
     repo_root = repo_root_from()
     input_path, original_text = _resolve_execute_input(req, repo_root)
 
+    # Resolve the journal preset (if any) before creating the run so an unknown
+    # id fails cleanly without leaving an orphan run directory.
+    journal_profile = None
+    if req.journal:
+        journal_profile = load_journal_preset(repo_root, req.journal)
+        if not journal_profile:
+            raise HTTPException(
+                status_code=400,
+                detail=f"unknown journal '{req.journal}'; available: {list_journal_presets(repo_root)}",
+            )
+
     manifest = load_manifest(repo_root)
     model_policy = load_model_policy(repo_root)
 
@@ -322,6 +336,11 @@ async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
         provider=req.provider,
         profile=req.profile,
     )
+
+    # The pipeline (verifier / translit linter / report) honours the journal via
+    # resolve_journal_profile(run_dir) → run_dir/project-context.json.
+    if journal_profile:
+        set_journal_profile(run_dir, journal_profile)
 
     if req.execute:
         import asyncio

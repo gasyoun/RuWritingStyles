@@ -11,7 +11,7 @@
  * Obsidian-bound orchestration (requestUrl + vault).
  */
 
-import { App, Notice, TFile, requestUrl } from "obsidian";
+import { App, Modal, Notice, Setting, TFile, requestUrl } from "obsidian";
 
 import {
   auditHeaders,
@@ -123,8 +123,22 @@ async function presentResult(app: App, file: TFile | null, details: RunDetails):
     new Notice(`RuWritingStyles: ${summary}. Правка не получена.`, 12000);
     return;
   }
-  // Non-destructive: write the revised text to a sibling note and open it for
-  // side-by-side comparison rather than overwriting the original.
+  new AuditResultModal(app, file, details, summary).open();
+}
+
+/** Apply the revision into the original note (recoverable via Obsidian file
+ *  history); falls back to a sibling note when there is no backing file. */
+async function applyToNote(app: App, file: TFile | null, revised: string, details: RunDetails): Promise<void> {
+  if (!file) {
+    await writeSiblingNote(app, file, revised, details);
+    return;
+  }
+  await app.vault.modify(file, revised);
+  new Notice("RuWritingStyles: правка применена к заметке (Ctrl+Z для отмены).", 8000);
+}
+
+/** Write the revision to a sibling note and open it for side-by-side comparison. */
+async function writeSiblingNote(app: App, file: TFile | null, revised: string, details: RunDetails): Promise<void> {
   const folder = file?.parent && file.parent.path !== "/" ? `${file.parent.path}/` : "";
   const stem = file?.basename ?? "obsidian-note";
   let target = `${folder}${stem}.rws-revised.md`;
@@ -134,8 +148,53 @@ async function presentResult(app: App, file: TFile | null, details: RunDetails):
   try {
     const created = await app.vault.create(target, revised);
     await app.workspace.getLeaf(true).openFile(created);
-    new Notice(`RuWritingStyles: ${summary}. Правка → ${target}`, 12000);
+    new Notice(`RuWritingStyles: правка → ${target}`, 8000);
   } catch (e) {
-    new Notice(`RuWritingStyles: ${summary}. Не удалось записать правку — ${errorText(e)}`, 12000);
+    new Notice(`RuWritingStyles: не удалось записать правку — ${errorText(e)}`, 12000);
+  }
+}
+
+/** Accept/reject dialog for a finished Council audit. */
+class AuditResultModal extends Modal {
+  constructor(
+    app: App,
+    private readonly file: TFile | null,
+    private readonly details: RunDetails,
+    private readonly summary: string
+  ) {
+    super(app);
+  }
+
+  onOpen(): void {
+    const { contentEl } = this;
+    contentEl.createEl("h3", { text: "RuWritingStyles — результат Совета" });
+    contentEl.createEl("p", { text: this.summary });
+    contentEl.createEl("p", {
+      cls: "setting-item-description",
+      text: "«Применить» заменит текущую заметку правкой (можно отменить через Ctrl+Z). «В отдельную заметку» сохранит правку рядом для сравнения.",
+    });
+
+    const revised = this.details.revised_text ?? "";
+    new Setting(contentEl)
+      .addButton((btn) =>
+        btn
+          .setButtonText("Применить к заметке")
+          .setCta()
+          .onClick(async () => {
+            this.close();
+            await applyToNote(this.app, this.file, revised, this.details);
+          })
+      )
+      .addButton((btn) =>
+        btn.setButtonText("В отдельную заметку").onClick(async () => {
+          this.close();
+          await writeSiblingNote(this.app, this.file, revised, this.details);
+        })
+      )
+      .addButton((btn) => btn.setButtonText("Отмена").onClick(() => this.close()));
+  }
+
+  onClose(): void {
+    this.contentEl.empty();
   }
 }

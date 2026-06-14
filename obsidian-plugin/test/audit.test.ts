@@ -22,9 +22,10 @@ const settings: AuditSettings = {
   apiToken: "",
   provider: "deepseek",
   profile: "researcher",
+  journal: "none",
 };
 
-test("executeBody carries text/filename/provider/profile and execute:true", () => {
+test("executeBody carries text/filename/provider/profile and execute:true; omits journal when none", () => {
   const body = executeBody("# T\n\nтекст", "note", settings);
   assert.deepEqual(body, {
     text: "# T\n\nтекст",
@@ -33,6 +34,11 @@ test("executeBody carries text/filename/provider/profile and execute:true", () =
     profile: "researcher",
     execute: true,
   });
+});
+
+test("executeBody includes journal when a preset is selected", () => {
+  const body = executeBody("t", "note", { ...settings, journal: "vestnik-spbu" });
+  assert.equal((body as { journal?: string }).journal, "vestnik-spbu");
 });
 
 test("auditHeaders omits Authorization without a token, includes it with one", () => {

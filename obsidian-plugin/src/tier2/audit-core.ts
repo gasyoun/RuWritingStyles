@@ -8,17 +8,21 @@ export interface AuditSettings {
   apiToken: string;
   provider: string;
   profile: string;
+  /** Journal preset id, or "none" to omit. */
+  journal: string;
 }
 
 /** Body for POST /runs/execute (text-body intake). */
 export function executeBody(text: string, filename: string, s: AuditSettings) {
-  return {
+  const body: Record<string, unknown> = {
     text,
     filename,
     provider: s.provider,
     profile: s.profile,
     execute: true,
   };
+  if (s.journal && s.journal !== "none") body.journal = s.journal;
+  return body;
 }
 
 /** Auth header set (bearer token only when configured). */
