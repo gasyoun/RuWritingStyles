@@ -24,7 +24,7 @@ ASSETS = ROOT / "obsidian-plugin" / "src" / "assets"
 
 def _copy(src: Path, dst: Path) -> None:
     dst.parent.mkdir(parents=True, exist_ok=True)
-    dst.write_bytes(src.read_bytes())  # byte-identical: the drift check compares bytes
+    dst.write_bytes(src.read_bytes())  # copy verbatim; drift check compares EOL-normalized
     print(f"  {src.relative_to(ROOT).as_posix()} -> {dst.relative_to(ROOT).as_posix()}")
 
 
