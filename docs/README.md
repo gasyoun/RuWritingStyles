@@ -52,6 +52,9 @@
 
 ## Разработка и развёртывание
 
+- [`obsidian-plugin-plan.md`](obsidian-plugin-plan.md) — план плагина для Obsidian:
+  MVP с лёгкими детерминированными проверками (порт линтера на TypeScript), полный
+  аудит «Совета» через локальный FastAPI как Tier 2.
 - [`deployment.md`](deployment.md), [`onboarding.md`](onboarding.md),
   [`adr-001-reject-langgraph.md`](adr-001-reject-langgraph.md),
   [`provider-roadmaps.md`](provider-roadmaps.md) и прочие — внутренние материалы.

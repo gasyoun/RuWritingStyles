@@ -1,0 +1,28 @@
+{
+  "status": "completed",
+  "findings": [
+    {
+      "span_id": "p002",
+      "type": "mixed_transliteration_scheme",
+      "message": "В тексте смешаны схемы транслитерации: IAST (напр., «tatpuruṣa») и Harvard-Kyoto (напр., «tatpuruSa»). Приведите к одной схеме (для журналов — IAST).",
+      "severity": "error",
+      "fragment": "tatpuruSa"
+    }
+  ],
+  "summary": {
+    "segments_checked": 3,
+    "iast_word_count": 3,
+    "hk_word_count": 2,
+    "schemes_detected": [
+      "harvard-kyoto",
+      "iast"
+    ],
+    "finding_counts": {
+      "mixed_transliteration_scheme": 1,
+      "inconsistent_term_rendering": 0,
+      "missing_iast_on_first_mention": 0,
+      "devanagari_nfc_issue": 0,
+      "iast_in_cyrillic_word": 0
+    }
+  }
+}

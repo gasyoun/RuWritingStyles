@@ -1,0 +1,24 @@
+[
+  {
+    "name": "guna-vestnik",
+    "profile_id": "vestnik-spbu"
+  },
+  {
+    "name": "ru-only",
+    "profile_id": "vestnik-spbu"
+  },
+  {
+    "name": "both-present",
+    "profile_id": "vestnik-spbu"
+  },
+  {
+    "name": "over-length",
+    "profile": {
+      "id": "tiny",
+      "name": "Tiny",
+      "max_chars": 50,
+      "abstract_required": [],
+      "keywords_required": []
+    }
+  }
+]

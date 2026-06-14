@@ -1,0 +1,30 @@
+{
+  "name": "Вестник СПбГУ. Востоковедение и африканистика",
+  "length": {
+    "current": 12114,
+    "max": 40000,
+    "over": 0
+  },
+  "citationFormat": "GOST-R-7.0.100-2018",
+  "transliterationScheme": "IAST",
+  "abstract": [
+    {
+      "lang": "ru",
+      "present": true
+    },
+    {
+      "lang": "en",
+      "present": false
+    }
+  ],
+  "keywords": [
+    {
+      "lang": "ru",
+      "present": true
+    },
+    {
+      "lang": "en",
+      "present": false
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "status": "completed",
+  "findings": [
+    {
+      "span_id": "p002",
+      "type": "missing_iast_on_first_mention",
+      "message": "Первое упоминание термина «татпуруша» без IAST в скобках: ожидается «татпуруша (tatpuruṣa)».",
+      "severity": "warning",
+      "term": "татпуруша"
+    }
+  ],
+  "summary": {
+    "segments_checked": 3,
+    "iast_word_count": 2,
+    "hk_word_count": 0,
+    "schemes_detected": [
+      "iast"
+    ],
+    "finding_counts": {
+      "mixed_transliteration_scheme": 0,
+      "inconsistent_term_rendering": 0,
+      "missing_iast_on_first_mention": 1,
+      "devanagari_nfc_issue": 0,
+      "iast_in_cyrillic_word": 0
+    }
+  }
+}

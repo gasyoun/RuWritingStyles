@@ -1,0 +1,11 @@
+{
+  "id": "vya",
+  "name": "Вопросы языкознания",
+  "max_chars": 40000,
+  "citation_format": "GOST-R-7.0.100-2018",
+  "transliteration_scheme": "IAST",
+  "first_mention_rule": "ru+iast",
+  "abstract_required": ["ru", "en"],
+  "keywords_required": ["ru", "en"],
+  "notes": "Ведущий российский лингвистический журнал (ИЯз РАН). Аннотация и ключевые слова на русском и английском; список литературы по ГОСТ; санскритские термины — русская передача с IAST при первом упоминании."
+}

@@ -1,0 +1,27 @@
+/*
+ * RuWritingStyles — styling.
+ *
+ * Findings render through CodeMirror's native lint system, which ships its own
+ * underline/panel theme; here we only (a) tie the severity colors to Obsidian's
+ * theme variables so they match light/dark, and (b) style the status-bar item.
+ */
+
+.cm-lintRange-error {
+  text-decoration-color: var(--text-error);
+}
+
+.cm-lintRange-warning {
+  text-decoration-color: var(--text-warning);
+}
+
+.cm-diagnostic-error {
+  border-left-color: var(--text-error);
+}
+
+.cm-diagnostic-warning {
+  border-left-color: var(--text-warning);
+}
+
+.rws-statusbar {
+  font-variant-numeric: tabular-nums;
+}

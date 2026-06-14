@@ -6,7 +6,7 @@
 
 > 🚀 **Хотите прогнать свою статью через «Совет» стилей?** За пять шагов от установки до первой рецензии (с ключом DeepSeek) — [`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md).
 
-**Status**: v2.9.2 (Agentic Evolution) — основной провайдер **DeepSeek**, поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, выбираемые именованные советы (`rws councils`), проверка соответствия журналу (`--journal`), WebSocket-трассировка ("Thinking Trace") и API для Obsidian/Word.
+**Status**: v2.10.0 (Agentic Evolution) — основной провайдер **DeepSeek**, поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, выбираемые именованные советы (`rws councils`), проверка соответствия журналу (`--journal`), WebSocket-трассировка ("Thinking Trace") и API для Obsidian/Word.
 
 Границы реализованного (честная маркировка):
 
@@ -48,7 +48,7 @@
 - [x] **v2.8.3–2.8.4**: дисциплина правки для коротких заметок и проверка соответствия журналу (`rws run --journal <id>` — реальная проверка наличия аннотации и ключевых слов по языкам).
 - [x] **v2.8.5–2.8.6**: русский quickstart ([`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md)) и углубление базы знаний (индологическое ядро библиографии + ссылки CDSL).
 - [x] **v2.9.0–2.9.1**: углублённая документация ([`docs/USE_CASES.ru.md`](docs/USE_CASES.ru.md), карта [`docs/README.md`](docs/README.md)) и галерея стилей ([`docs/STYLE_GALLERY.ru.md`](docs/STYLE_GALLERY.ru.md)).
-- [ ] **Дальше (релизные действия автора)**: DOI на Zenodo (→ вписать в [`CITATION.cff`](CITATION.cff)), финализация и подача методологической статьи ([`docs/methodology-paper-outline.md`](docs/methodology-paper-outline.md)); по желанию — финализация плагинов Obsidian/Word.
+- [ ] **Дальше (релизные действия автора)**: DOI на Zenodo (→ вписать в [`CITATION.cff`](CITATION.cff)), финализация и подача методологической статьи ([`docs/methodology-paper-outline.md`](docs/methodology-paper-outline.md)); плагин для Obsidian — план реализации (MVP: лёгкие детерминированные проверки) в [`docs/obsidian-plugin-plan.md`](docs/obsidian-plugin-plan.md).
 
 ## Навигация
 

@@ -53,6 +53,52 @@ def render_run_report(run_dir: Path) -> str:
     return "\n\n".join(section for section in sections if section.strip()) + "\n"
 
 
+# Per-language presence markers for the journal abstract / keywords check.
+# Mirrored verbatim in the Obsidian plugin port (obsidian-plugin/src/lint/journal.ts);
+# the plugin's parity test regenerates its golden output from journal_compliance(),
+# so any change here must stay in sync.
+ABSTRACT_MARKERS = {"ru": ("аннотац", "резюме"), "en": ("abstract",)}
+KEYWORDS_MARKERS = {"ru": ("ключевые слова",), "en": ("keywords", "key words")}
+
+
+def journal_compliance(text: str, profile: dict) -> dict:
+    """Pure journal-compliance check shared by the report and the Obsidian port.
+
+    `text` is the document; both the length and the abstract/keywords presence
+    test are computed from it. Returns a structured result (no formatting) so the
+    same logic can be mirrored in TypeScript and checked for parity. Line endings
+    are normalized so the character count is stable across LF/CRLF checkouts.
+    """
+    text = text.replace("\r\n", "\n")
+    low = text.lower()
+    result: dict = {
+        "name": profile.get("name"),
+        "length": None,
+        "citation_format": profile.get("citation_format"),
+        "transliteration_scheme": profile.get("transliteration_scheme"),
+        "abstract": [],
+        "keywords": [],
+    }
+    max_chars = profile.get("max_chars")
+    if isinstance(max_chars, int) and max_chars > 0:
+        current = len(text)
+        result["length"] = {
+            "current": current,
+            "max": max_chars,
+            "over": max(0, current - max_chars),
+        }
+    for key, markers, out in (
+        ("abstract_required", ABSTRACT_MARKERS, "abstract"),
+        ("keywords_required", KEYWORDS_MARKERS, "keywords"),
+    ):
+        langs = profile.get(key)
+        if isinstance(langs, list):
+            for lang in langs:
+                present = any(m in low for m in markers.get(lang, ()))
+                result[out].append({"lang": lang, "present": present})
+    return result
+
+
 def _journal_section(run_dir: Path) -> str:
     from .project import resolve_journal_profile
 
@@ -60,38 +106,27 @@ def _journal_section(run_dir: Path) -> str:
     if not profile or not profile.get("name"):
         return ""
 
-    lines = [f"## Соответствие журналу: {profile['name']}", ""]
-    max_chars = profile.get("max_chars")
-    if isinstance(max_chars, int) and max_chars > 0:
-        revised = run_dir / "revised.md"
-        current = len(revised.read_text(encoding="utf-8")) if revised.exists() else 0
-        flag = "OK" if current <= max_chars else f"⚠ превышение на {current - max_chars}"
-        lines.append(f"- Объем: {current} / {max_chars} знаков — {flag}")
-    if profile.get("citation_format"):
-        lines.append(f"- Список литературы: {profile['citation_format']}")
-    if profile.get("transliteration_scheme"):
-        lines.append(f"- Транслитерация: {profile['transliteration_scheme']}")
-
-    # Verify the required abstract / keywords are actually present per language,
-    # rather than only echoing the requirement.
     doc_text = ""
     for cand in ("revised.md", "normalized.md", "original.md"):
         candidate = run_dir / cand
         if candidate.exists():
             doc_text = candidate.read_text(encoding="utf-8")
             break
-    low = doc_text.lower()
-    markers = {
-        "abstract_required": {"ru": ("аннотац", "резюме"), "en": ("abstract",)},
-        "keywords_required": {"ru": ("ключевые слова",), "en": ("keywords", "key words")},
-    }
-    for key, label in (("abstract_required", "Аннотация"), ("keywords_required", "Ключевые слова")):
-        langs = profile.get(key)
-        if isinstance(langs, list) and langs:
-            parts = [
-                f"{lang} {'✓' if any(m in low for m in markers[key].get(lang, ())) else '⚠ нет'}"
-                for lang in langs
-            ]
+
+    comp = journal_compliance(doc_text, profile)
+    lines = [f"## Соответствие журналу: {comp['name']}", ""]
+    if comp["length"]:
+        length = comp["length"]
+        flag = "OK" if length["over"] == 0 else f"⚠ превышение на {length['over']}"
+        lines.append(f"- Объем: {length['current']} / {length['max']} знаков — {flag}")
+    if comp["citation_format"]:
+        lines.append(f"- Список литературы: {comp['citation_format']}")
+    if comp["transliteration_scheme"]:
+        lines.append(f"- Транслитерация: {comp['transliteration_scheme']}")
+    for label, items in (("Аннотация", comp["abstract"]), ("Ключевые слова", comp["keywords"])):
+        if items:
+            langs = [it["lang"] for it in items]
+            parts = [f"{it['lang']} {'✓' if it['present'] else '⚠ нет'}" for it in items]
             lines.append(f"- {label} ({', '.join(langs)}): {', '.join(parts)}")
     return "\n".join(lines)
 
