@@ -34,10 +34,10 @@ export const MAX_CONSECUTIVE_FAILURES = 3;
  *  provider/profile so a typo surfaces before the request, not as a server 4xx. */
 export function executeBody(text: string, filename: string, s: AuditSettings) {
   if (!VALID_PROVIDERS.includes(s.provider)) {
-    throw new Error(`unknown provider: ${s.provider}`);
+    throw new ClientConfigError(`unknown provider: ${s.provider}`);
   }
   if (!VALID_PROFILES.includes(s.profile)) {
-    throw new Error(`unknown profile: ${s.profile}`);
+    throw new ClientConfigError(`unknown profile: ${s.profile}`);
   }
   const body: Record<string, unknown> = {
     text,

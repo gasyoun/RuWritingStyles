@@ -54,9 +54,10 @@ test("executeBody includes journal when a preset is selected", () => {
   assert.equal((body as { journal?: string }).journal, "vestnik-spbu");
 });
 
-test("executeBody rejects an unknown provider / profile", () => {
+test("executeBody rejects an unknown provider / profile with ClientConfigError", () => {
+  assert.throws(() => executeBody("t", "n", { ...settings, provider: "bogus" }), ClientConfigError);
   assert.throws(() => executeBody("t", "n", { ...settings, provider: "bogus" }), /unknown provider/);
-  assert.throws(() => executeBody("t", "n", { ...settings, profile: "bogus" }), /unknown profile/);
+  assert.throws(() => executeBody("t", "n", { ...settings, profile: "bogus" }), ClientConfigError);
 });
 
 test("auditHeaders omits Authorization without a token, includes it with one", () => {

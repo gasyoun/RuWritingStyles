@@ -22,6 +22,7 @@ import {
   baseUrl,
   classifyHttpStatus,
   executeBody,
+  isValidBackendUrl,
   sanitizeRunId,
   shouldAbortPolling,
   summarizeRun,
@@ -42,6 +43,16 @@ function errorText(e: unknown): string {
   return e instanceof Error ? e.message : String(e);
 }
 
+/** Obsidian's `resp.json` is a getter that THROWS on a non-JSON body (e.g. HTML
+ *  from a misconfigured proxy); read it defensively. */
+function readJson(resp: { json: unknown }): unknown {
+  try {
+    return resp.json;
+  } catch {
+    throw new Error("non-JSON response body");
+  }
+}
+
 async function postExecute(s: AuditSettings, text: string, filename: string): Promise<string> {
   const resp = await requestUrl({
     url: `${baseUrl(s)}/runs/execute`,
@@ -53,7 +64,7 @@ async function postExecute(s: AuditSettings, text: string, filename: string): Pr
   if (resp.status !== 200) {
     throw new Error(`HTTP ${resp.status}${resp.text ? ` — ${resp.text}` : ""}`);
   }
-  return validateExecuteResponse(resp.json).run_id;
+  return validateExecuteResponse(readJson(resp)).run_id;
 }
 
 async function getRun(s: AuditSettings, runId: string): Promise<RunDetails> {
@@ -71,7 +82,14 @@ async function getRun(s: AuditSettings, runId: string): Promise<RunDetails> {
     case "transient":
       throw new TransientError(`HTTP ${resp.status}`);
     default:
-      return validateRunDetails(resp.json); // may throw on a 200-with-non-JSON
+      // A 200 with a non-JSON / wrong-shape body is a persistent misconfiguration,
+      // not a transient blip — classify it fatal so the loop stops promptly with a
+      // config message instead of exhausting retries as "engine unavailable".
+      try {
+        return validateRunDetails(readJson(resp));
+      } catch (e) {
+        throw new ClientConfigError(errorText(e));
+      }
   }
 }
 
@@ -105,6 +123,13 @@ export async function runCouncilAudit(
     new Notice("RuWritingStyles: пустая заметка — нечего отправлять Совету.");
     return;
   }
+  if (!isValidBackendUrl(settings.backendUrl)) {
+    new Notice(
+      "RuWritingStyles: неверный адрес движка в настройках — нужен http:// или https://.",
+      10000
+    );
+    return;
+  }
   if (auditInProgress) {
     new Notice("RuWritingStyles: аудит уже выполняется — дождитесь завершения.");
     return;
@@ -119,11 +144,17 @@ export async function runCouncilAudit(
     try {
       runId = await postExecute(settings, text, filename);
     } catch (e) {
-      new Notice(
-        `RuWritingStyles: не удалось запустить Совет — ${errorText(e)}. ` +
-          `Запущен ли движок (rws web) на ${base}?`,
-        12000
-      );
+      // A config error (bad provider/profile/token) is the user's settings, not a
+      // down engine — don't suggest "is the engine running?".
+      if (e instanceof ClientConfigError) {
+        new Notice(`RuWritingStyles: ошибка настроек — ${errorText(e)}.`, 12000);
+      } else {
+        new Notice(
+          `RuWritingStyles: не удалось запустить Совет — ${errorText(e)}. ` +
+            `Запущен ли движок (rws web) на ${base}?`,
+          12000
+        );
+      }
       return;
     }
 
@@ -134,8 +165,6 @@ export async function runCouncilAudit(
     let consecutiveFailures = 0;
 
     for (let attempt = 1; attempt <= MAX_POLL_ATTEMPTS; attempt++) {
-      await sleep(POLL_INTERVAL_MS);
-
       let status: string | undefined;
       let current: RunDetails | null = null;
       let fatal: "not_found" | "client_config" | undefined;
@@ -146,7 +175,7 @@ export async function runCouncilAudit(
       } catch (e) {
         if (e instanceof RunNotFoundError) fatal = "not_found";
         else if (e instanceof ClientConfigError) fatal = "client_config";
-        else consecutiveFailures++; // TransientError or a non-JSON 200
+        else consecutiveFailures++; // TransientError (5xx / 429) → retry
       }
 
       const decision = shouldAbortPolling({ status, attempt, consecutiveFailures, fatal });
@@ -156,9 +185,9 @@ export async function runCouncilAudit(
         break;
       }
       progress.setMessage(`RuWritingStyles: Совет (${runId}) — ${status ?? "…"}`);
+      // Poll the first attempt immediately; space out the rest.
+      if (attempt < MAX_POLL_ATTEMPTS) await sleep(POLL_INTERVAL_MS);
     }
-
-    progress.hide();
 
     if (!details) {
       new Notice(abortMessage(abortReason, runId, base), 12000);
@@ -196,8 +225,12 @@ async function applyToNote(app: App, file: TFile | null, revised: string, detail
     await writeSiblingNote(app, file, revised, details);
     return;
   }
-  await app.vault.modify(file, revised);
-  new Notice("RuWritingStyles: правка применена к заметке (Ctrl+Z для отмены).", 8000);
+  try {
+    await app.vault.modify(file, revised);
+    new Notice("RuWritingStyles: правка применена к заметке (Ctrl+Z для отмены).", 8000);
+  } catch (e) {
+    new Notice(`RuWritingStyles: не удалось применить правку — ${errorText(e)}`, 12000);
+  }
 }
 
 /** Write the revision to a sibling note and open it for side-by-side comparison. */
