@@ -15,6 +15,7 @@ import type { Diagnostic } from "@codemirror/lint";
 
 import { lintText } from "../lint/translit.ts";
 import { locateFindings } from "../lint/locate.ts";
+import { checkJournal, journalGaps } from "../lint/journal.ts";
 import type { JournalProfile, Term } from "../lint/types.ts";
 
 /** `source` tag on our diagnostics, so we count only our own. */
@@ -64,6 +65,25 @@ export function makeRwsLintExtension(host: RwsLintHost): Extension {
         message: f.message,
         source: RWS_SOURCE,
       });
+    }
+
+    // Journal-compliance gaps are document-level; anchor them to the first line
+    // (where article metadata lives) so they show in the same problems panel.
+    if (text.length > 0) {
+      const compliance = checkJournal(text, journal);
+      if (compliance) {
+        const newline = text.indexOf("\n");
+        const end = newline > 0 ? newline : text.length;
+        for (const gap of journalGaps(compliance)) {
+          diagnostics.push({
+            from: 0,
+            to: end,
+            severity: gap.severity === "error" ? "error" : "warning",
+            message: gap.message,
+            source: RWS_SOURCE,
+          });
+        }
+      }
     }
     return diagnostics;
   };
