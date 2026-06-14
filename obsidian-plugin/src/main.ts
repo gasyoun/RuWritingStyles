@@ -8,7 +8,8 @@ import { lintText } from "./lint/translit.ts";
 import { locateFindings } from "./lint/locate.ts";
 import { checkJournal, summarizeJournal } from "./lint/journal.ts";
 import { RwsSettingTab } from "./settings.ts";
-import type { JournalProfile, Term } from "./lint/types.ts";
+import { FINDING_TYPES } from "./lint/types.ts";
+import type { FindingType, JournalProfile, Term } from "./lint/types.ts";
 import {
   RWS_SOURCE,
   countRwsDiagnostics,
@@ -27,15 +28,21 @@ import {
 
 export interface RwsSettings {
   /** Journal profile id ("none" | "vya" | "ppv" | "vestnik-spbu"). Drives the
-   *  first-mention rule (and, in M3, the compliance section). */
+   *  first-mention rule and the compliance check. */
   journal: string;
-  /** Re-lint on save (debounced). Off by default. */
-  lintOnSave: boolean;
+  /** Per-finding-type enable map; a type is on unless explicitly false.
+   *  (Linting is continuous and debounced via the native linter, so a separate
+   *  "lint on save" toggle would be redundant — these toggles are what's useful.) */
+  checks: Record<FindingType, boolean>;
+}
+
+function allChecksEnabled(): Record<FindingType, boolean> {
+  return Object.fromEntries(FINDING_TYPES.map((t) => [t, true])) as Record<FindingType, boolean>;
 }
 
 export const DEFAULT_SETTINGS: RwsSettings = {
   journal: "none",
-  lintOnSave: false,
+  checks: allChecksEnabled(),
 };
 
 export default class RuWritingStylesPlugin extends Plugin {
@@ -52,7 +59,11 @@ export default class RuWritingStylesPlugin extends Plugin {
     // Native-lint editor extension: continuous (debounced) underlines + panel.
     this.registerEditorExtension(
       makeRwsLintExtension({
-        getLintConfig: () => ({ terms: this.terms, journal: this.currentJournal() }),
+        getLintConfig: () => ({
+          terms: this.terms,
+          journal: this.currentJournal(),
+          enabledChecks: this.settings.checks,
+        }),
         reportCounts: (errors, warnings) => this.setStatus(errors, warnings),
       })
     );
@@ -94,7 +105,9 @@ export default class RuWritingStylesPlugin extends Plugin {
     }
     const text = editor.getValue();
     const profile = this.currentJournal();
-    const findings = lintText(text, this.terms, profile).findings;
+    const findings = lintText(text, this.terms, profile).findings.filter(
+      (f) => this.settings.checks[f.type] !== false
+    );
 
     const lines: string[] = [];
     if (findings.length === 0) {
@@ -150,7 +163,10 @@ export default class RuWritingStylesPlugin extends Plugin {
   }
 
   async loadSettings(): Promise<void> {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    const data = (await this.loadData()) as Partial<RwsSettings> | null;
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, data);
+    // Merge checks per-key so a new finding type added later defaults to on.
+    this.settings.checks = Object.assign(allChecksEnabled(), data?.checks);
   }
 
   async saveSettings(): Promise<void> {
