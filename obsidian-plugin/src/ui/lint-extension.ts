@@ -16,7 +16,8 @@ import type { Diagnostic } from "@codemirror/lint";
 import { lintText } from "../lint/translit.ts";
 import { locateFindings } from "../lint/locate.ts";
 import { checkJournal, journalGaps } from "../lint/journal.ts";
-import type { JournalProfile, Term } from "../lint/types.ts";
+import { iastInsertion } from "../lint/quickfix.ts";
+import type { FindingType, JournalProfile, Term } from "../lint/types.ts";
 
 /** `source` tag on our diagnostics, so we count only our own. */
 export const RWS_SOURCE = "RuWritingStyles";
@@ -24,6 +25,13 @@ export const RWS_SOURCE = "RuWritingStyles";
 export interface LintConfig {
   terms: Term[];
   journal: JournalProfile | null;
+  /** Per-finding-type enable map; a type is on unless explicitly false. */
+  enabledChecks: Record<string, boolean>;
+}
+
+/** Whether a finding type is enabled (default on). */
+function isEnabled(checks: Record<string, boolean>, type: FindingType): boolean {
+  return checks[type] !== false;
 }
 
 export interface RwsLintHost {
@@ -49,22 +57,36 @@ export function countRwsDiagnostics(
 
 export function makeRwsLintExtension(host: RwsLintHost): Extension {
   const lintSource = (view: EditorView): Diagnostic[] => {
-    const { terms, journal } = host.getLintConfig();
+    const { terms, journal, enabledChecks } = host.getLintConfig();
     const text = view.state.doc.toString();
     const result = lintText(text, terms, journal);
     const located = locateFindings(text, result.findings, terms);
 
     const diagnostics: Diagnostic[] = [];
     for (const f of located) {
-      // Only findings we could anchor to a range get an inline diagnostic.
+      // Respect the per-type toggles (M4) and only show anchored findings.
+      if (!isEnabled(enabledChecks, f.type)) continue;
       if (f.from == null || f.to == null || f.to <= f.from) continue;
-      diagnostics.push({
+      const diagnostic: Diagnostic = {
         from: f.from,
         to: f.to,
         severity: f.severity === "error" ? "error" : "warning",
         message: f.message,
         source: RWS_SOURCE,
-      });
+      };
+      // Quick-fix (M4): insert " (iast)" after a flagged first mention.
+      const insertion = iastInsertion(f, terms);
+      if (insertion) {
+        diagnostic.actions = [
+          {
+            name: "Вставить IAST",
+            apply: (editorView, _from, to) => {
+              editorView.dispatch({ changes: { from: to, insert: insertion } });
+            },
+          },
+        ];
+      }
+      diagnostics.push(diagnostic);
     }
 
     // Journal-compliance gaps are document-level; anchor them to the first line

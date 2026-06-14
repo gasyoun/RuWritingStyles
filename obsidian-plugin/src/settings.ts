@@ -1,10 +1,11 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 
 import { JOURNALS } from "./assets.ts";
+import { FINDING_TYPES, FINDING_TYPE_LABELS } from "./lint/types.ts";
 import type RuWritingStylesPlugin from "./main.ts";
 
-/** Settings tab: pick the journal profile (drives the IAST first-mention rule and
- *  the length / abstract / keywords compliance check). */
+/** Settings tab: journal profile (drives the IAST first-mention rule and the
+ *  length / abstract / keywords compliance check) + per-check toggles. */
 export class RwsSettingTab extends PluginSettingTab {
   private readonly plugin: RuWritingStylesPlugin;
 
@@ -35,5 +36,17 @@ export class RwsSettingTab extends PluginSettingTab {
           this.plugin.relintAll();
         });
       });
+
+    new Setting(containerEl).setName("Проверки транслитерации").setHeading();
+    for (const type of FINDING_TYPES) {
+      new Setting(containerEl).setName(FINDING_TYPE_LABELS[type]).addToggle((toggle) => {
+        toggle.setValue(this.plugin.settings.checks[type] !== false);
+        toggle.onChange(async (value) => {
+          this.plugin.settings.checks[type] = value;
+          await this.plugin.saveSettings();
+          this.plugin.relintAll();
+        });
+      });
+    }
   }
 }

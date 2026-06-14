@@ -33,6 +33,24 @@ export type FindingType =
   | "devanagari_nfc_issue"
   | "iast_in_cyrillic_word";
 
+/** Ordered list of the finding types (for settings toggles, defaults). */
+export const FINDING_TYPES: FindingType[] = [
+  "mixed_transliteration_scheme",
+  "inconsistent_term_rendering",
+  "missing_iast_on_first_mention",
+  "devanagari_nfc_issue",
+  "iast_in_cyrillic_word",
+];
+
+/** Human (Russian) labels for the finding types, used in the settings tab. */
+export const FINDING_TYPE_LABELS: Record<FindingType, string> = {
+  mixed_transliteration_scheme: "Смешение схем транслитерации (IAST / Harvard-Kyoto)",
+  inconsistent_term_rendering: "Непоследовательная передача термина",
+  missing_iast_on_first_mention: "Нет IAST при первом упоминании",
+  devanagari_nfc_issue: "Деванагари (NFC / OCR)",
+  iast_in_cyrillic_word: "Латиница внутри кириллического слова",
+};
+
 export type Severity = "error" | "warning";
 
 /** A lint finding. `from`/`to` are absolute offsets into the *original* note,
