@@ -1,8 +1,11 @@
-import { App, PluginSettingTab, Setting } from "obsidian";
+import { App, Notice, PluginSettingTab, Setting } from "obsidian";
 
 import { JOURNALS } from "./assets.ts";
 import { FINDING_TYPES, FINDING_TYPE_LABELS } from "./lint/types.ts";
+import { isValidBackendUrl } from "./tier2/audit-core.ts";
 import type RuWritingStylesPlugin from "./main.ts";
+
+const DEFAULT_BACKEND_URL = "http://127.0.0.1:8000";
 
 /** Settings tab: journal profile (drives the IAST first-mention rule and the
  *  length / abstract / keywords compliance check) + per-check toggles. */
@@ -62,10 +65,16 @@ export class RwsSettingTab extends PluginSettingTab {
       .setName("Адрес движка")
       .setDesc("URL локального API RuWritingStyles.")
       .addText((text) => {
-        text.setPlaceholder("http://127.0.0.1:8000");
+        text.setPlaceholder(DEFAULT_BACKEND_URL);
         text.setValue(this.plugin.settings.backendUrl);
         text.onChange(async (value) => {
-          this.plugin.settings.backendUrl = value.trim() || "http://127.0.0.1:8000";
+          const trimmed = value.trim();
+          if (trimmed && !isValidBackendUrl(trimmed)) {
+            new Notice("RuWritingStyles: адрес движка должен начинаться с http:// или https://");
+            this.plugin.settings.backendUrl = DEFAULT_BACKEND_URL;
+          } else {
+            this.plugin.settings.backendUrl = trimmed || DEFAULT_BACKEND_URL;
+          }
           await this.plugin.saveSettings();
         });
       });
