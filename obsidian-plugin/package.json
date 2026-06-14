@@ -26,6 +26,6 @@
     "builtin-modules": "^3.3.0",
     "esbuild": "^0.28.1",
     "obsidian": "1.5.7",
-    "typescript": "5.4.5"
+    "typescript": "6.0.3"
   }
 }
