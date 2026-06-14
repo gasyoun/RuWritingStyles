@@ -7,6 +7,11 @@ All notable changes to RuWritingStyles are documented here.
 ### Changed
 - Released the current changelog state as version 1.
 
+## [2.8.3] - 2026-06-14
+### Changed (tighten revision for short notes — quality item 1)
+- `revision.py` gained a load-bearing **"Editing discipline"** block: touch only the spans named in accepted council decisions, copy every other span **verbatim**, make the smallest change that resolves each finding, and don't materially lengthen the text. Re-running the over-editing gold cases on `deepseek-chat` shows the effect is real and large where it mattered — `sanskrit-pseudo-etymology` char-delta **0.67 → 0.03**, `samasa` 0.29 → 0.20.
+- **Methodological finding (documented in `docs/benchmark.md`):** DeepSeek is **non-deterministic** — `commentary-layer-mix` matched its expected risk in one run and missed it in an identical re-run. So single-run eval pass-counts are noisy; reliable scoring needs N-run averaging (or temperature=0 / majority vote). The eval diff threshold was deliberately **not** loosened (that would game the gold protocol); whether to make it input-length-aware is left to the author. Remaining cap trips are tiny-stub (~300–450 char) artifacts.
+
 ## [2.8.2] - 2026-06-14
 ### Added (P3 — first real full-article run on DeepSeek; case study)
 - Authored a genuine ~22k-char Russian article on the lexicography of *guṇa* (PW / Monier-Williams / Apte) for *Вестник СПбГУ*, with **3 deliberately seeded problems** (fabricated IE etymology; missing IAST on *vṛddhi*/*sandhi*; a PW(1855–75)←Apte(1890) anachronism — see `docs/p3-seed-key.md`), and ran it through `--council sanskrit` on `deepseek-chat`. **All 3 caught** at the correct spans with on-target types and genuine explanations — toporov-etym refuted the fake etymology with real comparative knowledge (knew *funis* ← *bʰendʰ-*, not the planted *gʷenǝ-*). Full write-up: `docs/case-study-p3-guna.md`.
