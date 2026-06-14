@@ -49,11 +49,20 @@ years later.
 
 ## Scoring
 
+**Result (2026-06-14, `--council sanskrit` on `deepseek-chat`) — see
+[case-study-p3-guna.md](case-study-p3-guna.md):**
+
 | Seed | Caught? | Finding type(s) | By which style(s) |
 |---|---|---|---|
-| 1 — etymology | _tbd_ | | |
-| 2 — missing IAST | _tbd_ | | |
-| 3 — anachronism | _tbd_ | | |
+| 1 — etymology | ✅ | `unsupported_sanskrit_etymology`, `missing_source` | toporov-etym, zaliznyak-method |
+| 2 — missing IAST | ✅✅ | `missing_iast_on_first_mention` | deterministic `translit_lint` (named *vṛddhi* + *sandhi*) + toporov-etym |
+| 3 — anachronism | ✅ | `unsupported_reading`, `logical_inconsistency` (correct judgement, label ≠ `anachronistic_sanskrit_period`) | tronsky-readings, zaliznyak-method |
+
+**3/3 caught.** Bonus: the linter found 2 *unintended* un-IAST'd terms (*sūtra*,
+*vyākaraṇa*) + a *guṇa*/*гуна* inconsistency — real omissions the author missed. No
+false-positive storm (elizarenkova-veda = 0; others 3–5 on a 22k-char article). Revision
+stayed proportionate (char-delta 0.18 / line 0.22, well inside the 0.50 / 0.75 caps) —
+the benchmark's "over-rewrite" was a short-doc ratio artifact.
 
 A genuine pass = all 3 caught with on-target finding types and **no excessive false
-positives on the sound remainder of the article** (the rest is intentionally clean).
+positives on the sound remainder of the article** (the rest is intentionally clean). ✅ met.

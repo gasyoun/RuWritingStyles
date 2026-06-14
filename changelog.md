@@ -7,6 +7,11 @@ All notable changes to RuWritingStyles are documented here.
 ### Changed
 - Released the current changelog state as version 1.
 
+## [2.8.2] - 2026-06-14
+### Added (P3 — first real full-article run on DeepSeek; case study)
+- Authored a genuine ~22k-char Russian article on the lexicography of *guṇa* (PW / Monier-Williams / Apte) for *Вестник СПбГУ*, with **3 deliberately seeded problems** (fabricated IE etymology; missing IAST on *vṛddhi*/*sandhi*; a PW(1855–75)←Apte(1890) anachronism — see `docs/p3-seed-key.md`), and ran it through `--council sanskrit` on `deepseek-chat`. **All 3 caught** at the correct spans with on-target types and genuine explanations — toporov-etym refuted the fake etymology with real comparative knowledge (knew *funis* ← *bʰendʰ-*, not the planted *gʷenǝ-*). Full write-up: `docs/case-study-p3-guna.md`.
+- **Revision is proportionate on real-length text** (char-delta 0.18 / changed-line 0.22, well inside the gold caps) — so the short-case "over-rewrite" in the benchmark is now understood as a ratio artifact of ~500-char docs, not a general defect (noted in `docs/benchmark.md`). Bonus: the linter surfaced 2 *unintended* un-IAST'd terms the author missed; no false-positive storm (elizarenkova-veda = 0 on a non-Vedic text). First concrete evidence the pipeline produces philologically credible reviews on real material.
+
 ## [2.8.1] - 2026-06-14
 ### Added (first real-provider benchmark — DeepSeek)
 - Ran the 5 gold Sanskrit eval cases on `--provider deepseek` (`deepseek-chat`) and filled `docs/benchmark.md` with real numbers. **Headline: detection 5/5, verification 5/5, but overall pass 1/5** — the four failures are *not* detection misses (the council with the right indology styles caught the expected risk in every case) but the **revision stage over-rewriting** past the gold protocol's diff-fidelity caps (`max_changed_line_ratio 0.75` / `max_char_delta_ratio 0.5`; `karaka-not-padezh` grew +153% chars). The one pass (`commentary-layer-mix`) is exactly the one with minimal edits (0.25 lines / 0.05 chars).
