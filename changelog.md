@@ -7,6 +7,10 @@ All notable changes to RuWritingStyles are documented here.
 ### Changed
 - Released the current changelog state as version 1.
 
+## [2.8.5] - 2026-06-14
+### Added (onboarding — quality item 3 / P4)
+- **`docs/QUICKSTART.ru.md`** — a five-step Russian quickstart (install → DeepSeek key in `.env` → first run on a bundled example → your own article with `--council sanskrit --journal vestnik-spbu` → reading the report), plus an offline/no-key path on `--provider mock` and a cheat-sheet of useful commands. Every command was verified to exist and parse. Linked prominently from the top of `README.md`. This is the entry point for the "install + run the CLI" community deliverable.
+
 ## [2.8.4] - 2026-06-14
 ### Added (journal-profile pass — quality item 2)
 - **`rws run --journal <id>`** applies a journal profile inline (no project dir needed): it writes the resolved profile into the run's context, so the verifier, transliteration linter, and report all honour it. Unknown ids fail with the available list.
