@@ -239,7 +239,11 @@ async def get_run_concordance(run_id: str):
 
 
 class RunRequest(BaseModel):
-    input_path: str
+    # Provide EITHER `text` (inline document body — preferred for editor clients
+    # like the Obsidian plugin) OR `input_path` (a server-side file, allowlisted).
+    input_path: str | None = None
+    text: str | None = None
+    filename: str | None = None  # label for the run id / source (text mode)
     provider: str = "google"
     model: str | None = None
     profile: str = "researcher"
@@ -256,24 +260,51 @@ def _input_root(repo_root: Path) -> Path:
     return root.resolve()
 
 
-@app.post("/runs/execute")
-async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
-    repo_root = repo_root_from()
+def _max_text_chars() -> int:
+    """Cap on an inline `text` submission, to bound memory/cost. Override with
+    RWS_MAX_TEXT_CHARS."""
+    try:
+        return int(os.environ.get("RWS_MAX_TEXT_CHARS", "300000"))
+    except ValueError:
+        return 300000
+
+
+def _resolve_execute_input(req: "RunRequest", repo_root: Path) -> tuple[Path, str]:
+    """Resolve an execute request to (label_path, original_text).
+
+    Text mode (`req.text`) reads nothing from disk — the body IS the document — so
+    it is not subject to the input_path allowlist; the label_path is virtual, used
+    only for the run-id slug and the source label. File mode keeps the S3 allowlist.
+    """
+    if req.text is not None:
+        if len(req.text) > _max_text_chars():
+            raise HTTPException(
+                status_code=413,
+                detail=f"text exceeds {_max_text_chars()} characters",
+            )
+        # Virtual label only (never created / read); strip any directory parts.
+        label = Path(req.filename or "obsidian-note.md").name or "obsidian-note.md"
+        return repo_root / "runs" / label, req.text
+
+    if not req.input_path:
+        raise HTTPException(status_code=400, detail="provide either 'text' or 'input_path'")
+
     input_path = Path(req.input_path).expanduser()
     if not input_path.is_absolute():
         input_path = repo_root / input_path
     input_path = input_path.resolve()
-
-    # S3: confine reads to the allowed root so a caller cannot make the server
-    # read an arbitrary local file (e.g. /etc/passwd, ~/.ssh/...).
-    allowed_root = _input_root(repo_root)
-    if not _within(allowed_root, input_path):
+    if not _within(_input_root(repo_root), input_path):
         raise HTTPException(status_code=403, detail="input_path is outside the allowed root")
-
     if not input_path.exists():
         raise HTTPException(status_code=404, detail=f"Input file not found at: {req.input_path}")
+    return input_path, read_document(input_path)
 
-    original_text = read_document(input_path)
+
+@app.post("/runs/execute")
+async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
+    repo_root = repo_root_from()
+    input_path, original_text = _resolve_execute_input(req, repo_root)
+
     manifest = load_manifest(repo_root)
     model_policy = load_model_policy(repo_root)
 
