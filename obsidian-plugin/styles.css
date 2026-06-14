@@ -25,3 +25,32 @@
 .rws-statusbar {
   font-variant-numeric: tabular-nums;
 }
+
+/* Tier-2 per-change diff modal */
+.rws-diff-list {
+  max-height: 40vh;
+  overflow-y: auto;
+  margin: 0.5em 0;
+}
+
+.rws-diff-hunk {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  padding: 0 0.6em 0.4em;
+  margin-bottom: 0.5em;
+}
+
+.rws-diff-pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: var(--font-smaller);
+  margin: 0;
+}
+
+.rws-diff-del {
+  color: var(--text-error);
+}
+
+.rws-diff-add {
+  color: var(--text-success);
+}

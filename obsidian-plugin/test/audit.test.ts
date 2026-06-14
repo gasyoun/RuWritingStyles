@@ -18,16 +18,28 @@ import {
   TransientError,
   auditHeaders,
   classifyHttpStatus,
+  countChangeHunks,
+  diffLines,
   executeBody,
+  formatTraceMessage,
   isTerminal,
   isValidBackendUrl,
+  reconstruct,
   sanitizeRunId,
   shouldAbortPolling,
   summarizeRun,
   validateExecuteResponse,
   validateRunDetails,
+  wsUrl,
 } from "../src/tier2/audit-core.ts";
 import type { AuditSettings } from "../src/tier2/audit-core.ts";
+
+function acceptedSet(...idx: number[]): Set<number> {
+  return new Set(idx);
+}
+function allChangeIndices(hunks: ReturnType<typeof diffLines>): Set<number> {
+  return new Set(Array.from({ length: countChangeHunks(hunks) }, (_, i) => i));
+}
 
 const settings: AuditSettings = {
   backendUrl: "http://127.0.0.1:8000",
@@ -173,4 +185,53 @@ test("summarizeRun is robust to missing artifacts", () => {
   const summary = summarizeRun({ status: "completed" });
   assert.match(summary, /решений совета: 0/);
   assert.match(summary, /объём 0→0/);
+});
+
+// --- live trace -------------------------------------------------------------
+
+test("wsUrl maps http→ws / https→wss and adds token query", () => {
+  assert.equal(wsUrl(settings, "r1"), "ws://127.0.0.1:8000/ws/r1");
+  assert.equal(wsUrl({ ...settings, backendUrl: "https://x.example/" }, "r1"), "wss://x.example/ws/r1");
+  assert.equal(
+    wsUrl({ ...settings, apiToken: "tok en" }, "r1"),
+    "ws://127.0.0.1:8000/ws/r1?token=tok%20en"
+  );
+});
+
+test("formatTraceMessage renders known shapes; null for noise", () => {
+  assert.equal(formatTraceMessage({ type: "step_update", step_id: "council", status: "executing" }), "council: executing");
+  assert.equal(formatTraceMessage({ type: "run_status", status: "completed" }), "completed");
+  assert.equal(formatTraceMessage({ tool: "search_scholar" }), "инструмент: search_scholar");
+  assert.equal(formatTraceMessage({}), null);
+  assert.equal(formatTraceMessage("nope"), null);
+});
+
+// --- diff + selective reconstruct -------------------------------------------
+
+const ORIG = "line1\nline2\nline3\nline4";
+const REV = "line1\nLINE-2\nline3\nline4-new";
+
+test("reconstruct: accept-all === revised, accept-none === original", () => {
+  const hunks = diffLines(ORIG, REV);
+  assert.equal(countChangeHunks(hunks), 2);
+  assert.equal(reconstruct(hunks, allChangeIndices(hunks)), REV);
+  assert.equal(reconstruct(hunks, acceptedSet()), ORIG);
+});
+
+test("reconstruct: selective accept mixes original and revised per hunk", () => {
+  const hunks = diffLines(ORIG, REV);
+  // accept only the first change (LINE-2), reject the second (line4-new)
+  assert.equal(reconstruct(hunks, acceptedSet(0)), "line1\nLINE-2\nline3\nline4");
+  // accept only the second
+  assert.equal(reconstruct(hunks, acceptedSet(1)), "line1\nline2\nline3\nline4-new");
+});
+
+test("diffLines handles pure insert / pure delete / identical", () => {
+  assert.equal(countChangeHunks(diffLines("a\nb", "a\nb")), 0);
+  const ins = diffLines("a\nc", "a\nb\nc");
+  assert.equal(reconstruct(ins, allChangeIndices(ins)), "a\nb\nc");
+  assert.equal(reconstruct(ins, acceptedSet()), "a\nc");
+  const del = diffLines("a\nb\nc", "a\nc");
+  assert.equal(reconstruct(del, allChangeIndices(del)), "a\nc");
+  assert.equal(reconstruct(del, acceptedSet()), "a\nb\nc");
 });

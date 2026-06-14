@@ -174,3 +174,130 @@ export function shouldAbortPolling(args: {
 export function sanitizeRunId(id: string): string {
   return id.replace(/[^A-Za-z0-9._-]/g, "_") || "run";
 }
+
+// --- Live trace (WebSocket /ws/{id}) ----------------------------------------
+
+/** WebSocket URL for the live "Thinking Trace": http→ws, https→wss, token as a
+ *  query param (Electron WebSocket can't set headers; the engine accepts ?token=). */
+export function wsUrl(s: AuditSettings, runId: string): string {
+  const base = baseUrl(s).replace(/^http/, "ws"); // http→ws, https→wss
+  const query = s.apiToken ? `?token=${encodeURIComponent(s.apiToken)}` : "";
+  return `${base}/ws/${encodeURIComponent(runId)}${query}`;
+}
+
+/** Render a trace message from the engine into a short progress line, or null if
+ *  there's nothing worth showing. Defensive — the broadcast shape varies
+ *  ({type:run_status,status}, {type:step_update,step_id,status}, tool calls). */
+export function formatTraceMessage(msg: unknown): string | null {
+  if (!msg || typeof msg !== "object") return null;
+  const m = msg as Record<string, unknown>;
+  const status = typeof m.status === "string" ? m.status : "";
+  if (m.type === "step_update") {
+    const step = typeof m.step_id === "string" ? m.step_id : "шаг";
+    return `${step}: ${status || "…"}`;
+  }
+  if (m.type === "run_status") return status || null;
+  if (typeof m.tool === "string") return `инструмент: ${m.tool}`;
+  if (typeof m.message === "string") return m.message;
+  return status || null;
+}
+
+// --- Line diff + selective reconstruct (per-change accept) -------------------
+
+export type DiffHunk =
+  | { kind: "equal"; lines: string[] }
+  | { kind: "change"; before: string[]; after: string[] };
+
+function splitLines(text: string): string[] {
+  return text.replace(/\r\n/g, "\n").split("\n");
+}
+
+/** Line-level diff (LCS) of two texts → equal/change hunks. Consecutive
+ *  deletions+insertions coalesce into one `change` hunk (before = removed lines,
+ *  after = added lines). */
+export function diffLines(original: string, revised: string): DiffHunk[] {
+  const a = splitLines(original);
+  const b = splitLines(revised);
+  const n = a.length;
+  const m = b.length;
+
+  // LCS length table.
+  const dp: number[][] = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+  for (let i = n - 1; i >= 0; i--) {
+    for (let j = m - 1; j >= 0; j--) {
+      dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    }
+  }
+
+  const hunks: DiffHunk[] = [];
+  let eq: string[] = [];
+  let before: string[] = [];
+  let after: string[] = [];
+  const flushEq = () => {
+    if (eq.length) {
+      hunks.push({ kind: "equal", lines: eq });
+      eq = [];
+    }
+  };
+  const flushChange = () => {
+    if (before.length || after.length) {
+      hunks.push({ kind: "change", before, after });
+      before = [];
+      after = [];
+    }
+  };
+
+  let i = 0;
+  let j = 0;
+  while (i < n && j < m) {
+    if (a[i] === b[j]) {
+      flushChange();
+      eq.push(a[i]);
+      i++;
+      j++;
+    } else if (dp[i + 1][j] >= dp[i][j + 1]) {
+      flushEq();
+      before.push(a[i]);
+      i++;
+    } else {
+      flushEq();
+      after.push(b[j]);
+      j++;
+    }
+  }
+  while (i < n) {
+    flushEq();
+    before.push(a[i]);
+    i++;
+  }
+  while (j < m) {
+    flushEq();
+    after.push(b[j]);
+    j++;
+  }
+  flushChange();
+  flushEq();
+  return hunks;
+}
+
+/** Number of toggleable change hunks in a diff. */
+export function countChangeHunks(hunks: DiffHunk[]): number {
+  return hunks.filter((h) => h.kind === "change").length;
+}
+
+/** Rebuild the text taking the revised side for accepted change hunks (by their
+ *  0-based change-hunk index) and the original side for the rest. Accept-all →
+ *  the revised text; accept-none → the original. */
+export function reconstruct(hunks: DiffHunk[], acceptedChangeIndices: Set<number>): string {
+  const out: string[] = [];
+  let changeIdx = 0;
+  for (const h of hunks) {
+    if (h.kind === "equal") {
+      out.push(...h.lines);
+    } else {
+      out.push(...(acceptedChangeIndices.has(changeIdx) ? h.after : h.before));
+      changeIdx++;
+    }
+  }
+  return out.join("\n");
+}

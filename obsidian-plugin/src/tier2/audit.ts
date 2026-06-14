@@ -21,15 +21,20 @@ import {
   auditHeaders,
   baseUrl,
   classifyHttpStatus,
+  countChangeHunks,
+  diffLines,
   executeBody,
+  formatTraceMessage,
   isValidBackendUrl,
+  reconstruct,
   sanitizeRunId,
   shouldAbortPolling,
   summarizeRun,
   validateExecuteResponse,
   validateRunDetails,
+  wsUrl,
 } from "./audit-core.ts";
-import type { AbortReason, AuditSettings, RunDetails } from "./audit-core.ts";
+import type { AbortReason, AuditSettings, DiffHunk, RunDetails } from "./audit-core.ts";
 
 export type { AuditSettings, RunDetails } from "./audit-core.ts";
 
@@ -110,8 +115,41 @@ function abortMessage(reason: AbortReason, runId: string, base: string): string 
 }
 
 /**
+ * Best-effort live "Thinking Trace": subscribe to /ws/{id} and feed formatted
+ * lines to `onLine`. Purely additive — polling remains the source of truth — so
+ * any WebSocket failure is swallowed. Returns a closer.
+ */
+function openTrace(settings: AuditSettings, runId: string, onLine: (line: string) => void): () => void {
+  let socket: WebSocket | null = null;
+  try {
+    socket = new WebSocket(wsUrl(settings, runId));
+    socket.onmessage = (ev: MessageEvent) => {
+      try {
+        const line = formatTraceMessage(JSON.parse(String(ev.data)));
+        if (line) onLine(line);
+      } catch {
+        /* ignore non-JSON frames */
+      }
+    };
+    socket.onerror = () => {
+      /* best-effort; the poll loop is authoritative */
+    };
+  } catch {
+    socket = null;
+  }
+  return () => {
+    try {
+      socket?.close();
+    } catch {
+      /* ignore */
+    }
+  };
+}
+
+/**
  * Run the full Council audit on `text` and present the result. Polls every
- * POLL_INTERVAL_MS up to MAX_POLL_ATTEMPTS, exiting early on a fatal error.
+ * POLL_INTERVAL_MS up to MAX_POLL_ATTEMPTS, exiting early on a fatal error; a
+ * best-effort WebSocket enriches the progress with the live trace.
  */
 export async function runCouncilAudit(
   app: App,
@@ -138,6 +176,7 @@ export async function runCouncilAudit(
   const base = baseUrl(settings);
   const filename = file?.basename ?? "obsidian-note";
   const progress = new Notice("RuWritingStyles: запуск Совета…", 0);
+  let closeTrace: () => void = () => {};
 
   try {
     let runId: string;
@@ -159,6 +198,9 @@ export async function runCouncilAudit(
     }
 
     progress.setMessage(`RuWritingStyles: Совет запущен (${runId})…`);
+    closeTrace = openTrace(settings, runId, (line) =>
+      progress.setMessage(`RuWritingStyles: ${runId} — ${line}`)
+    );
 
     let details: RunDetails | null = null;
     let abortReason: AbortReason = "timeout";
@@ -199,6 +241,7 @@ export async function runCouncilAudit(
     }
     presentResult(app, file, details, details.status === "needs_human_review");
   } finally {
+    closeTrace();
     progress.hide();
     auditInProgress = false;
   }
@@ -250,8 +293,15 @@ async function writeSiblingNote(app: App, file: TFile | null, revised: string, d
   }
 }
 
-/** Accept/reject dialog for a finished Council audit. */
+/** Max change hunks to render with a toggle; any beyond this stay accepted. */
+const MAX_RENDERED_HUNKS = 40;
+
+/** Accept/reject dialog for a finished Council audit, with per-change toggles. */
 class AuditResultModal extends Modal {
+  private readonly hunks: DiffHunk[];
+  /** Per change-hunk acceptance (indexed by change-hunk order); default all on. */
+  private readonly accepted: boolean[];
+
   constructor(
     app: App,
     private readonly file: TFile | null,
@@ -259,6 +309,8 @@ class AuditResultModal extends Modal {
     private readonly needsReview: boolean
   ) {
     super(app);
+    this.hunks = diffLines(details.original_text ?? "", details.revised_text ?? "");
+    this.accepted = new Array(countChangeHunks(this.hunks)).fill(true);
   }
 
   onOpen(): void {
@@ -286,29 +338,81 @@ class AuditResultModal extends Modal {
       }
     }
 
+    const revised = this.details.revised_text ?? "";
+    const changeCount = this.accepted.length;
+
+    if (changeCount === 0) {
+      contentEl.createEl("p", { text: "Изменений нет — правка совпадает с заметкой." });
+      new Setting(contentEl).addButton((btn) =>
+        btn.setButtonText("Закрыть").setCta().onClick(() => this.close())
+      );
+      return;
+    }
+
     contentEl.createEl("p", {
       cls: "setting-item-description",
-      text: "«Применить» заменит текущую заметку правкой (Ctrl+Z для отмены). «В отдельную заметку» сохранит правку рядом для сравнения.",
+      text: "Отметьте изменения для применения; снятые останутся как в оригинале. «Применить выбранные» меняет текущую заметку (Ctrl+Z для отмены).",
     });
+    this.renderHunks(contentEl);
 
-    const revised = this.details.revised_text ?? "";
     new Setting(contentEl)
       .addButton((btn) =>
         btn
-          .setButtonText("Применить к заметке")
+          .setButtonText("Применить выбранные")
           .setCta()
           .onClick(async () => {
+            const set = new Set<number>();
+            this.accepted.forEach((on, i) => {
+              if (on) set.add(i);
+            });
             this.close();
-            await applyToNote(this.app, this.file, revised, this.details);
+            await applyToNote(this.app, this.file, reconstruct(this.hunks, set), this.details);
           })
       )
       .addButton((btn) =>
-        btn.setButtonText("В отдельную заметку").onClick(async () => {
+        btn.setButtonText("В отдельную заметку (полностью)").onClick(async () => {
           this.close();
           await writeSiblingNote(this.app, this.file, revised, this.details);
         })
       )
       .addButton((btn) => btn.setButtonText("Отмена").onClick(() => this.close()));
+  }
+
+  /** Render each change hunk with an accept toggle and a capped before/after. */
+  private renderHunks(container: HTMLElement): void {
+    const list = container.createEl("div", { cls: "rws-diff-list" });
+    let changeIdx = 0;
+    let rendered = 0;
+    for (const hunk of this.hunks) {
+      if (hunk.kind !== "change") continue;
+      const idx = changeIdx++;
+      if (rendered >= MAX_RENDERED_HUNKS) continue; // beyond cap: stays accepted by default
+      rendered++;
+
+      const row = list.createEl("div", { cls: "rws-diff-hunk" });
+      new Setting(row).setName(`Изменение ${idx + 1}`).addToggle((toggle) => {
+        toggle.setValue(true);
+        toggle.onChange((value) => {
+          this.accepted[idx] = value;
+        });
+      });
+      const pre = row.createEl("pre", { cls: "rws-diff-pre" });
+      for (const line of hunk.before.slice(0, 8)) {
+        pre.createEl("div", { cls: "rws-diff-del", text: `− ${line}` });
+      }
+      for (const line of hunk.after.slice(0, 8)) {
+        pre.createEl("div", { cls: "rws-diff-add", text: `+ ${line}` });
+      }
+      if (hunk.before.length > 8 || hunk.after.length > 8) {
+        pre.createEl("div", { text: "…" });
+      }
+    }
+    if (changeIdx > MAX_RENDERED_HUNKS) {
+      container.createEl("p", {
+        cls: "setting-item-description",
+        text: `Показаны первые ${MAX_RENDERED_HUNKS} из ${changeIdx} изменений; остальные применяются по умолчанию.`,
+      });
+    }
   }
 
   onClose(): void {
