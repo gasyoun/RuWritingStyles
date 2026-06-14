@@ -6,14 +6,14 @@
 
 > 🚀 **Хотите прогнать свою статью через «Совет» стилей?** За пять шагов от установки до первой рецензии (с ключом DeepSeek) — [`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md).
 
-**Status**: v2.9.1 (Agentic Evolution) — поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, WebSocket-трассировка ("Thinking Trace"), выбираемые именованные советы (`rws councils`) и API для Obsidian/Word.
+**Status**: v2.9.2 (Agentic Evolution) — основной провайдер **DeepSeek**, поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, выбираемые именованные советы (`rws councils`), проверка соответствия журналу (`--journal`), WebSocket-трассировка ("Thinking Trace") и API для Obsidian/Word.
 
 Границы реализованного (честная маркировка):
 
 - **OpenAlex** — реализован (`researcher.py`, живые запросы к api.openalex.org);
 - **Zotero (MCP)** — клиент реализован (`mcp_client.py`), но требует отдельно установленного внешнего Zotero MCP-сервера; без него функция неактивна;
-- **Deep Retrieval (FTS5)** — реализован (`corpus.py`), но требует локального корпуса текстов: с 2026-06 корпус не входит в публичный репозиторий (см. [`SOURCES.md`](SOURCES.md)) и подключается через приватный репозиторий-спутник или `RWS_CORPUS_DIR`;
-- **плагины Obsidian/Word** — прототипы (`docs/`), не готовые продукты — запланированы на v2.5.0.
+- **Deep Retrieval (FTS5)** — реализован (`corpus.py`) и доступен из CLI (`rws corpus-status` / `corpus-ingest` / `corpus-search`), но требует локального корпуса текстов: с 2026-06 корпус не входит в публичный репозиторий (см. [`SOURCES.md`](SOURCES.md)) и подключается через приватный репозиторий-спутник или `RWS_CORPUS_DIR`;
+- **плагины Obsidian/Word** — реализован только API-слой (FastAPI); сами плагины остаются прототипами и отложены (решение о выпуске за автором), к конкретной версии больше не привязаны.
 
 ## Цитирование и декларация об использовании ИИ
 
@@ -35,8 +35,20 @@
 - [x] **Фаза III**: Интеграция MCP и внешних академических библиотек.
 - [x] **Фаза IV**: SQLite Native Orchestration (протоколирование всех вызовов инструментов).
 - [x] **Фаза V**: WebSocket Web Studio (Live Thinking Trace).
-- [x] **Фаза VI**: Deep Document Retrieval (FTS5 RAG по корпусу Зализняка).
-- [ ] **v2.5.0 (Next)**: Socratic Injection (инъекция аргументов исследователя "на лету") и финализация плагинов для Obsidian/Word.
+- [x] **Фаза VI**: Deep Document Retrieval (FTS5 RAG по корпусу).
+
+**Sanskrit DH — публичный ресурс для русскоязычной санскритологии на движке DeepSeek (v2.5–v2.9):**
+
+- [x] **v2.5.0**: Deep Retrieval корпуса доступен из CLI (`rws corpus-status` / `corpus-ingest` / `corpus-search`).
+- [x] **v2.5.x**: санскритские eval-кейсы и золотой протокол ([`evals/GOLD_PROTOCOL.md`](evals/GOLD_PROTOCOL.md), каркас [`docs/benchmark.md`](docs/benchmark.md)); ужесточение JSON-схем, self-describing `run.json` и security-review веб-слоя.
+- [x] **v2.6.0**: именованные советы (`rws councils`: `general` / `sanskrit` / `indology`, выбор через `--council`) и аудит-след отбора стилей в `run.json`.
+- [x] **v2.7.0**: архивные DH-метаданные ([`CITATION.cff`](CITATION.cff), [`.zenodo.json`](.zenodo.json), [`docs/AI_DISCLOSURE.md`](docs/AI_DISCLOSURE.md), Dublin Core) + закрытие security-review (input-allowlist, bearer-token).
+- [x] **v2.8.0**: провайдер **DeepSeek** — основной реальный бэкенд (`--provider deepseek`).
+- [x] **v2.8.1–2.8.2**: первый бенчмарк на реальном провайдере и кейс-стади настоящей статьи (лексикография *guṇa*, совет `sanskrit` — все три заложенные проблемы пойманы) — [`docs/benchmark.md`](docs/benchmark.md), [`docs/case-study-p3-guna.md`](docs/case-study-p3-guna.md).
+- [x] **v2.8.3–2.8.4**: дисциплина правки для коротких заметок и проверка соответствия журналу (`rws run --journal <id>` — реальная проверка наличия аннотации и ключевых слов по языкам).
+- [x] **v2.8.5–2.8.6**: русский quickstart ([`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md)) и углубление базы знаний (индологическое ядро библиографии + ссылки CDSL).
+- [x] **v2.9.0–2.9.1**: углублённая документация ([`docs/USE_CASES.ru.md`](docs/USE_CASES.ru.md), карта [`docs/README.md`](docs/README.md)) и галерея стилей ([`docs/STYLE_GALLERY.ru.md`](docs/STYLE_GALLERY.ru.md)).
+- [ ] **Дальше (релизные действия автора)**: DOI на Zenodo (→ вписать в [`CITATION.cff`](CITATION.cff)), финализация и подача методологической статьи ([`docs/methodology-paper-outline.md`](docs/methodology-paper-outline.md)); по желанию — финализация плагинов Obsidian/Word.
 
 ## Навигация
 
@@ -491,6 +503,13 @@ rws run статья.md --execute --provider deepseek --council sanskrit --journ
 
 ## Документация разработки
 
+Точка входа — курированная карта документации [`docs/README.md`](docs/README.md), которая раскладывает 35+ файлов `docs/` по аудиториям (с чего начать / доказательная база / цитирование и ИИ / как устроено / рецензии / разработка). Ниже — ключевые документы.
+
+- [`docs/README.md`](docs/README.md) — курированная карта всей документации по аудиториям; основа будущего русского docs-сайта.
+- [`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md) — русский quickstart за пять шагов (установка → ключ DeepSeek в `.env` → первый прогон на готовом примере → своя статья с `--council sanskrit --journal vestnik-spbu` → чтение отчёта), плюс offline-путь без ключа.
+- [`docs/USE_CASES.ru.md`](docs/USE_CASES.ru.md) — семь развёрнутых командных сценариев русскоязычного санскритолога (этимология, подготовка к журналу, ведийский vs классический санскрит, самаса, сверка словарей PW/MW/Apte, транслитерация, сравнение прогонов): ситуация → команда → результат.
+- [`docs/benchmark.md`](docs/benchmark.md) — реальные числа бенчмарка на DeepSeek (детекция / верификация / дисциплина правки) и методологические оговорки (недетерминированность, нужно усреднение по N прогонам).
+- [`docs/case-study-p3-guna.md`](docs/case-study-p3-guna.md) — кейс-стади настоящей статьи (лексикография *guṇa* для «Вестника СПбГУ»): совет `sanskrit` на `deepseek-chat` поймал все три заложенные проблемы на верных спанах.
 - [`docs/roadmap.md`](docs/roadmap.md) описывает развитие проекта от каталога стилей к агентной системе проверки и редакции документов.
 - [`docs/agent-protocol.md`](docs/agent-protocol.md) задает протокол, по которому разные стили проверяют документ, отвечают друг другу и участвуют в итоговой редакции.
 - [`docs/deployment.md`](docs/deployment.md) содержит инструкции по локальному запуску, Docker Compose, FastAPI static deployment и smoke checks.
