@@ -1,0 +1,15 @@
+/*
+ * RuWritingStyles — inline lint decorations.
+ * Severity styling is applied to CodeMirror marks in M2; these classes are the
+ * stable hooks the decoration ViewPlugin will attach.
+ */
+
+.rws-finding-error {
+  text-decoration: underline wavy var(--text-error);
+  text-decoration-skip-ink: none;
+}
+
+.rws-finding-warning {
+  text-decoration: underline wavy var(--text-warning);
+  text-decoration-skip-ink: none;
+}

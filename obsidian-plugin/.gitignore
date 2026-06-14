@@ -1,0 +1,9 @@
+# Build output (attached to GitHub releases, not committed to source)
+main.js
+*.js.map
+
+# Dependencies
+node_modules/
+
+# Local plugin data
+data.json

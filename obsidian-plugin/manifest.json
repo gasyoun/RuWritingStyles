@@ -1,0 +1,10 @@
+{
+  "id": "ruwritingstyles",
+  "name": "RuWritingStyles",
+  "version": "0.1.0",
+  "minAppVersion": "1.4.0",
+  "description": "Inline philological checks for Russian Sanskrit-studies notes: IAST transliteration linting and journal compliance, ported from the RuWritingStyles engine. Runs locally with no server or API key.",
+  "author": "M. Yu. Gasuns",
+  "authorUrl": "https://github.com/gasyoun/RuWritingStyles",
+  "isDesktopOnly": false
+}

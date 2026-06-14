@@ -249,10 +249,13 @@ priority.
 
 1. **Char-count parity** — adopt `[...text].length` (decided above) to match Python
    code-point counting.
-2. **Asset sync enforcement** — fold the drift check into `validate_project.py` (so one
-   command covers it) vs a standalone CI step. Lean: `validate_project`.
-3. **Plugin id / display name / author** — proposed id `ruwritingstyles`; confirm the
-   public display name for the community directory.
+2. **Asset sync enforcement** — *decided:* fold the drift check into
+   `validate_project.py`. CI runs Python only (`ci.yml` has no Node job; the `web/`
+   build is a local release check), and `validate_project` is already the repo's sync
+   gate (ClaudeStyles↔passports, bibliography cross-refs). A standalone Node CI step
+   just to diff JSON would be redundant tooling. Lands in M1 with the assets.
+3. **Plugin id / display name / author** — *decided:* id `ruwritingstyles`, display
+   name `RuWritingStyles`, author M. Yu. Gasuns (matches `CITATION.cff`).
 4. **Mobile** — the MVP is pure TS, so `isDesktopOnly:false` should hold; verify CM6
    decorations behave on mobile before claiming support.
 
