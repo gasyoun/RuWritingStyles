@@ -1,0 +1,60 @@
+[
+  {
+    "name": "translit-cyrillic-latin-hybrid",
+    "profile": null
+  },
+  {
+    "name": "translit-first-mention",
+    "profile": null
+  },
+  {
+    "name": "translit-inconsistent-rendering",
+    "profile": null
+  },
+  {
+    "name": "translit-mixed-scheme",
+    "profile": null
+  },
+  {
+    "name": "sanskrit-pseudo-etymology",
+    "profile": null
+  },
+  {
+    "name": "karaka-not-padezh",
+    "profile": null
+  },
+  {
+    "name": "samasa-misclassification",
+    "profile": null
+  },
+  {
+    "name": "vedic-classical-anachronism",
+    "profile": null
+  },
+  {
+    "name": "commentary-layer-mix",
+    "profile": null
+  },
+  {
+    "name": "clean",
+    "profile": null
+  },
+  {
+    "name": "code-skip",
+    "profile": null
+  },
+  {
+    "name": "hybrid-word",
+    "profile": null
+  },
+  {
+    "name": "devanagari-orphan",
+    "profile": null
+  },
+  {
+    "name": "first-mention-suppressed",
+    "profile": {
+      "first_mention_rule": "none"
+    }
+  }
+]

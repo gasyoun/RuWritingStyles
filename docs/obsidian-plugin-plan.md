@@ -214,6 +214,9 @@ This turns "did the port stay faithful?" into a red/green check on every change.
 
 ## 10. Milestones (with acceptance criteria)
 
+**Progress:** M0 ✅ (scaffold builds) · M1 ✅ (linter + segmentation ported, assets
+synced, drift check live, parity **14/14** green). M2–M5 pending.
+
 | # | Milestone | Done when |
 |---|---|---|
 | **M0** | Scaffold | Plugin loads in Obsidian; `RWS: lint current note` exists as a no-op; build (`npm run build`) produces `main.js`. |

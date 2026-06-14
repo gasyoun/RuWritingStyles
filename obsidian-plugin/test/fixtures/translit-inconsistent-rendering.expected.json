@@ -1,0 +1,34 @@
+{
+  "status": "completed",
+  "findings": [
+    {
+      "span_id": "p002",
+      "type": "missing_iast_on_first_mention",
+      "message": "Первое упоминание термина «сутра» без IAST в скобках: ожидается «сутра (sūtra)».",
+      "severity": "warning",
+      "term": "сутра"
+    },
+    {
+      "span_id": "p004",
+      "type": "inconsistent_term_rendering",
+      "message": "Термин передается то кириллицей («бхашья»), то латиницей («bhāṣya») без системы; выберите основную форму, вторую давайте в скобках при первом упоминании.",
+      "severity": "warning",
+      "term": "бхашья"
+    }
+  ],
+  "summary": {
+    "segments_checked": 5,
+    "iast_word_count": 3,
+    "hk_word_count": 0,
+    "schemes_detected": [
+      "iast"
+    ],
+    "finding_counts": {
+      "mixed_transliteration_scheme": 0,
+      "inconsistent_term_rendering": 1,
+      "missing_iast_on_first_mention": 1,
+      "devanagari_nfc_issue": 0,
+      "iast_in_cyrillic_word": 0
+    }
+  }
+}
