@@ -50,7 +50,7 @@ Two tiers, only the first is in the MVP:
 
 ```
 Tier 1 (MVP)  — native TypeScript, runs inside Obsidian, zero setup
-   note text ──► segment(TS) ──► translitLint(TS) + journalCheck(TS) ──► CM6 marks + side panel
+   note text ──► segment(TS) ──► translitLint(TS) + journalCheck(TS) ──► locate ──► CM6 lint diagnostics
                   ▲ assets bundled: sanskrit-terms.json, journals/*.json (synced from engine)
 
 Tier 2 (later) — full council audit via the existing engine, opt-in
@@ -59,7 +59,7 @@ Tier 2 (later) — full council audit via the existing engine, opt-in
                   requires: `rws web` running + DEEPSEEK_API_KEY + (optional) RWS_API_TOKEN
 ```
 
-The two tiers share the **Finding** shape so the side panel renders both identically.
+The two tiers share the **Finding** shape so both render through the same lint-diagnostics path.
 
 ## 4. The checks to port (source of truth + exact semantics)
 
@@ -153,16 +153,17 @@ obsidian-plugin/
   esbuild.config.mjs
   tsconfig.json
   src/
-    main.ts              # Plugin: register commands, settings, CM6 extension
-    settings.ts          # settings tab + interface
+    main.ts              # Plugin: register CM6 lint extension, command, status bar
+    assets.ts            # imports the bundled term dict + journal profiles
+    settings.ts          # settings tab + interface (M3/M4)
     lint/
-      types.ts           # Finding, JournalProfile, Term
+      types.ts           # Finding, JournalProfile, Term, Segment
       segment.ts         # normalize + segment, offset-tracking
       translit.ts        # port of translit_lint
-      journal.ts         # journal-compliance check
+      locate.ts          # map a finding to an editor character range
+      journal.ts         # journal-compliance check (M3)
     ui/
-      decorations.ts     # CM6 ViewPlugin: inline marks (underline by severity)
-      panel.ts           # ItemView side panel: grouped findings, click → jump
+      lint-extension.ts  # CM6 @codemirror/lint source + status-bar sync
     assets/              # synced from ../knowledge (see §4.3)
       sanskrit-terms.json
       journals/*.json
@@ -177,15 +178,26 @@ License Apache-2.0 (matches the repo / `CITATION.cff`).
 
 ## 7. Commands and UX
 
-- **`RWS: lint current note`** — run translit + journal checks, populate the side
-  panel, paint inline marks. The primary command.
-- **`RWS: clear lint highlights`**.
-- **Side panel** (`ItemView`): findings grouped by severity, each row shows
-  type · message · term/fragment; clicking scrolls to and selects the range.
-- **Inline marks** (CM6 `Decoration.mark`): error = red wavy underline, warning =
-  amber; hover tooltip = the message.
-- **Status-bar item**: `⚠ 3 · ⓘ 2` live counts for the active note.
-- **Quick-fix (M4):** for `missing_iast_on_first_mention`, an action to insert
+Findings surface through CodeMirror's **native lint system** (`@codemirror/lint`,
+bundled by Obsidian) rather than a custom panel — chosen 2026-06-14 over a docked
+`ItemView`. This gives, for free: wavy underlines, hover message bubbles, the
+built-in toggleable problems panel, and F8 / next-diagnostic navigation.
+
+- **A `linter()` source** runs the ported translit (+ journal, M3) checks on the
+  current note continuously and debounced (~400 ms); the **locator**
+  (`lint/locate.ts`) maps each finding to an editor range by re-finding its
+  fragment/term in the live text (robust to the linter's internal normalization).
+- **`RuWritingStyles: lint current note (show problems)`** — force an immediate
+  re-lint and open the problems panel. Continuous linting makes a separate "clear"
+  command unnecessary.
+- **Inline**: error = red wavy underline, warning = amber, tied to Obsidian's
+  `--text-error` / `--text-warning`; hover = the message.
+- **Status-bar item**: `RWS ✗3 ⚠7` live counts for the focused note (`RWS ✓` when
+  clean), synced via a CM6 `updateListener` + `active-leaf-change`.
+- Findings that can't be anchored to a range (rare; e.g. document-level journal
+  findings in M3) are reported via a Notice rather than shown inline, so they don't
+  silently vanish.
+- **Quick-fix (M4):** for `missing_iast_on_first_mention`, a lint `action` to insert
   ` (iast)` after the first mention from the term dictionary.
 
 ## 8. Settings
@@ -215,13 +227,14 @@ This turns "did the port stay faithful?" into a red/green check on every change.
 ## 10. Milestones (with acceptance criteria)
 
 **Progress:** M0 ✅ (scaffold builds) · M1 ✅ (linter + segmentation ported, assets
-synced, drift check live, parity **14/14** green). M2–M5 pending.
+synced, drift check live, parity **14/14** green) · M2 ✅ (native CM6 lint diagnostics
++ locator + status bar; **28/28** tests green — parity + locate). M3–M5 pending.
 
 | # | Milestone | Done when |
 |---|---|---|
 | **M0** | Scaffold | Plugin loads in Obsidian; `RWS: lint current note` exists as a no-op; build (`npm run build`) produces `main.js`. |
 | **M1** | Port linter + segmentation + asset sync | `parity.test.ts` green vs Python fixtures; `export_plugin_assets.py` + drift check in place. |
-| **M2** | Inline UI | Findings render as CM6 marks + side panel; click → jump to range; status-bar counts. |
+| **M2** | Inline UI | Findings render via `@codemirror/lint` (underlines + hover + problems panel + F8 nav); locator maps findings to editor ranges; status-bar counts. |
 | **M3** | Journal compliance | Journal dropdown drives `first_mention_rule`; length + abstract/keywords presence match the engine report on the gúṇa article. |
 | **M4** | Quick-fix + lint-on-save + polish | First-mention IAST insertion; debounced on-save lint; settings complete. |
 | **M5** | Packaging | Release zip (`main.js`, `manifest.json`, `styles.css`); BRAT beta; community-plugin PR opened. |
