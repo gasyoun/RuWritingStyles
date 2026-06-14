@@ -235,8 +235,10 @@ This turns "did the port stay faithful?" into a red/green check on every change.
 **Progress:** M0 ✅ · M1 ✅ (parity **14/14**) · M2 ✅ (native CM6 lint diagnostics +
 locator + status bar) · M3 ✅ (journal-compliance port + settings dropdown; engine
 extracted a pure `journal_compliance()` helper) · M4 ✅ (IAST quick-fix + per-check
-toggles; **36/36** tests) · M5 ✅ (release automation + packaging guide). **All
-milestones shipped; remaining steps are author release actions (see below).**
+toggles) · M5 ✅ (release automation + packaging guide) · **Tier 2 ✅ first cut**
+(text-body intake on `/runs/execute` + a Council-audit command; **41/41** tests).
+**All milestones shipped; remaining = author release actions (see below) + Tier-2
+refinements (§11).**
 
 The **plugin is feature-complete (M0–M5).** The journal check reports, on the gúṇa
 article vs *Вестник СПбГУ*, length OK (12114/40000), abstract ru ✓ en ✗, keywords
@@ -267,17 +269,27 @@ M0–M3 are the MVP the author signed off on; M4–M5 are fast-follow.
 
 ## 11. Future work
 
-### Full Council audit (Tier 2)
+### Full Council audit (Tier 2) — ✅ shipped (first cut)
 
-Command **`RWS: run full audit`** → `POST /runs/execute` on the local engine, subscribe
-`/ws/{run_id}` for the live "Thinking Trace", then read `/runs/{run_id}` artifacts and
-render findings + `revised.md` with an **accept-into-note** action.
+Command **`Full council audit (run on engine)`** → `POST /runs/execute` on the local
+engine, poll `/runs/{run_id}` until terminal, then write the engine's `revised.md` to a
+**sibling note** (non-destructive) with a summary (council decisions / verification
+verdict / warnings / length delta).
 
-**Backend change required (flagged now):** `POST /runs/execute` currently takes an
-`input_path` confined to `RWS_INPUT_ROOT` (repo root by default) — it cannot ingest an
-arbitrary note's *text*. Tier 2 needs either a **text-body intake** on `/runs/execute`
-(or a new `/runs/execute-text`) or a documented temp-file-under-allowed-root flow. This
-is the single API addition the plugin would drive; it is out of MVP scope.
+- **Backend (done):** `POST /runs/execute` now accepts a **text body** (`text` +
+  `filename`) in addition to `input_path`. Text mode reads nothing from disk, so it's
+  not subject to the input_path allowlist; bounded by `RWS_MAX_TEXT_CHARS`.
+  `tests/test_api_text_intake.py`.
+- **Client (done):** `src/tier2/audit-core.ts` (pure, unit-tested) + `audit.ts`
+  (Obsidian requestUrl + vault). Settings: engine URL, optional bearer token, provider
+  (default `deepseek`), profile. The user invoking the command is the authorization to
+  send the draft to the provider.
+- **Requires** the engine running (`rws web`) + a provider key. The live round-trip is
+  not headless-testable; the request/parse/summary logic is unit-tested (5 tests).
+
+**Next refinements (not done):** live "Thinking Trace" via `/ws/{run_id}`; inline
+accept/reject of the revision (diff-apply) instead of a sibling note; pass the selected
+journal profile into the run.
 
 ### Word / Office.js add-in
 
