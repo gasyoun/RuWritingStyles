@@ -7,6 +7,11 @@ All notable changes to RuWritingStyles are documented here.
 ### Changed
 - Released the current changelog state as version 1.
 
+## [2.8.1] - 2026-06-14
+### Added (first real-provider benchmark — DeepSeek)
+- Ran the 5 gold Sanskrit eval cases on `--provider deepseek` (`deepseek-chat`) and filled `docs/benchmark.md` with real numbers. **Headline: detection 5/5, verification 5/5, but overall pass 1/5** — the four failures are *not* detection misses (the council with the right indology styles caught the expected risk in every case) but the **revision stage over-rewriting** past the gold protocol's diff-fidelity caps (`max_changed_line_ratio 0.75` / `max_char_delta_ratio 0.5`; `karaka-not-padezh` grew +153% chars). The one pass (`commentary-layer-mix`) is exactly the one with minimal edits (0.25 lines / 0.05 chars).
+- **Actionable next step for review quality:** tighten the `revision` stage toward minimal, span-scoped surgical edits rather than paragraph rewrites — a prompt/policy change, not a detection problem. Framed in `docs/benchmark.md` as the automated detection layer (layer 1); the ≥2-rater expert gold annotation (layer 2, per `evals/GOLD_PROTOCOL.md`) is still pending.
+
 ## [2.8.0] - 2026-06-13
 ### Added (DeepSeek provider — the project's primary real backend)
 - **`--provider deepseek`.** New `DeepSeekProvider` (OpenAI-compatible JSON mode): direct `api.deepseek.com` by default, `DEEPSEEK_API_KEY`, default model `deepseek-chat` (V3). Set `RWS_DEEPSEEK_MODEL=deepseek-reasoner` (R1) or `RWS_DEEPSEEK_URL=<base>` to route the same key through a proxy / OpenRouter. Wired into `PROVIDER_CHOICES`, `provider_from_name`, `provider_status` (`rws provider-status --provider deepseek`), and `model_policy.yml` (a `deepseek` block routing `deepseek-chat` for review/synthesis and `deepseek-reasoner` for council + verification). `tests/test_providers_deepseek.py` (7, mock-safe — no network). `.env.example` documents the keys. Full suite 156 green.
