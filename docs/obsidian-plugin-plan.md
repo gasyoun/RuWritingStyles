@@ -280,12 +280,19 @@ verdict / warnings / length delta).
   `filename`) in addition to `input_path`. Text mode reads nothing from disk, so it's
   not subject to the input_path allowlist; bounded by `RWS_MAX_TEXT_CHARS`.
   `tests/test_api_text_intake.py`.
-- **Client (done):** `src/tier2/audit-core.ts` (pure, unit-tested) + `audit.ts`
-  (Obsidian requestUrl + vault). Settings: engine URL, optional bearer token, provider
-  (default `deepseek`), profile. The user invoking the command is the authorization to
-  send the draft to the provider.
+- **Client (done):** `src/tier2/audit-core.ts` (pure, unit-tested — **16 tests**) +
+  `audit.ts` (Obsidian requestUrl + vault + modal). Settings: engine URL (scheme-
+  validated), optional bearer token, provider (default `deepseek`, validated), profile.
+  The user invoking the command is the authorization to send the draft to the provider.
+- **Hardened** (two Ultracode review/verify workflows, 2026-06-14): typed HTTP errors +
+  a pure `shouldAbortPolling` state machine (fast exit on 404/4xx/transient-exhaustion,
+  not a silent 15-min timeout); non-JSON-200 guard on Obsidian's throwing `resp.json`
+  getter; response-shape validation; `needs_human_review` treated as terminal;
+  immediate first poll; concurrent-audit guard; try/catch around `vault.modify`;
+  warnings listed in the modal; provider/profile + URL validation. 8 adversarially-
+  confirmed bugs fixed.
 - **Requires** the engine running (`rws web`) + a provider key. The live round-trip is
-  not headless-testable; the request/parse/summary logic is unit-tested (5 tests).
+  not headless-testable; all request/parse/classify/poll-decision logic is unit-tested.
 
 **Refinements done:** ✅ inline accept/reject — the result opens a modal (apply to the
 note via `vault.modify` / save to a sibling note / cancel); ✅ journal pass-through —
