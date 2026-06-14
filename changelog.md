@@ -2,6 +2,15 @@
 
 All notable changes to RuWritingStyles are documented here.
 
+## [2.10.0] - 2026-06-14
+### Added (Obsidian plugin — deterministic checks inline in the editor, MVP M0–M4)
+- **`obsidian-plugin/`** — a TypeScript Obsidian plugin running the engine's deterministic checks inline:
+  - **Transliteration linter** (M1/M2): all 5 finding types ported from `translit_lint.py`, shown as CodeMirror 6 native lint diagnostics (400 ms debounce, status-bar count).
+  - **Journal compliance** (M3): port of the new pure `report.journal_compliance()` (length / citation format / IAST scheme / abstract + keywords presence per language); a settings tab selects the target journal (vya / ppv / vestnik-spbu).
+  - **IAST quick-fix + per-check toggles** (M4): a CodeMirror quick-fix inserts ` (iast)` after a flagged first mention (pure insertion, idempotent, user-triggered); each check is individually toggleable.
+- **Parity enforced, not asserted.** `tools/export_lint_fixtures.py` + `tools/export_journal_fixtures.py` regenerate golden fixtures from the *actual Python engine*; the plugin's tests `deepEqual` against them — **36/36 pass**. `tools/validate_project.py` fails if the plugin's bundled `knowledge/` assets drift; a new **`plugin` CI job** (`.github/workflows/ci.yml`, Node 24) runs the parity tests on every PR. `report.journal_compliance()` is a pure function so the Python and TS sides share one source of truth.
+- Reviewed pre-merge (M0–M2 and M3–M4 separately): parity sound, security sound (purely local — no network/eval/telemetry; the only write is the user-triggered IAST insertion), build sound, **0 blockers**. Desktop+mobile, zero runtime dependencies (bundled), Apache-2.0.
+
 ## [1.0.0] - 2026-06-13
 
 ### Changed

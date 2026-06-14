@@ -31,3 +31,21 @@ jobs:
 
       - name: Run tests
         run: python -m unittest discover -s tests
+
+  plugin:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      # Enforces TS↔Python parity of the deterministic checks (transliteration
+      # linter + journal compliance): the tests compare the plugin's output to
+      # golden fixtures regenerated from the Python engine. Pure check — no install.
+      - name: Obsidian plugin parity tests (TS ↔ Python)
+        run: npm --prefix obsidian-plugin test
