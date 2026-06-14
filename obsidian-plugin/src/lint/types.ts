@@ -48,6 +48,30 @@ export interface Finding {
   to?: number;
 }
 
+/** Presence of a required abstract/keywords block in one language. */
+export interface JournalLangCheck {
+  lang: string;
+  present: boolean;
+}
+
+export interface JournalLength {
+  current: number;
+  max: number;
+  /** chars over the limit; 0 = within limit. */
+  over: number;
+}
+
+/** Result of the journal-compliance check — mirrors the engine's
+ *  report.journal_compliance() (camelCased). */
+export interface JournalCompliance {
+  name?: string;
+  length: JournalLength | null;
+  citationFormat?: string;
+  transliterationScheme?: string;
+  abstract: JournalLangCheck[];
+  keywords: JournalLangCheck[];
+}
+
 export interface LintSummary {
   segments_checked: number;
   iast_word_count: number;

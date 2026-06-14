@@ -155,11 +155,19 @@ def check_cross_references(manifest_data: dict[str, Any]) -> list[str]:
     return errors
 
 
+def _normalized_text(path: Path) -> str:
+    """Read a file as UTF-8 with line endings normalized to LF. The plugin assets
+    must match knowledge/ in *data*, not byte-for-byte: a Windows checkout with
+    autocrlf rewrites the working-tree EOLs, which must not count as drift."""
+    return path.read_bytes().decode("utf-8").replace("\r\n", "\n")
+
+
 def check_plugin_assets_sync() -> list[str]:
-    """The Obsidian plugin ships byte-for-byte copies of the term dictionary and
-    journal profiles (obsidian-plugin/src/assets/), synced from knowledge/ by
+    """The Obsidian plugin ships copies of the term dictionary and journal profiles
+    (obsidian-plugin/src/assets/), synced from knowledge/ by
     tools/export_plugin_assets.py. Fail if they drift so the plugin's linter can
-    never diverge from the engine's data. No-op if the plugin dir is absent."""
+    never diverge from the engine's data. The comparison is EOL-insensitive (see
+    _normalized_text). No-op if the plugin dir is absent."""
     plugin_root = ROOT / "obsidian-plugin"
     if not plugin_root.exists():
         return []
@@ -175,7 +183,7 @@ def check_plugin_assets_sync() -> list[str]:
     for src, dst in pairs:
         if not dst.exists():
             errors.append(f"missing plugin asset {dst.relative_to(ROOT).as_posix()} ({hint})")
-        elif src.read_bytes() != dst.read_bytes():
+        elif _normalized_text(src) != _normalized_text(dst):
             errors.append(
                 f"plugin asset {dst.relative_to(ROOT).as_posix()} differs from "
                 f"{src.relative_to(ROOT).as_posix()} ({hint})"
