@@ -6,6 +6,8 @@ import type { Diagnostic } from "@codemirror/lint";
 import { JOURNALS, TERMS } from "./assets.ts";
 import { lintText } from "./lint/translit.ts";
 import { locateFindings } from "./lint/locate.ts";
+import { checkJournal, summarizeJournal } from "./lint/journal.ts";
+import { RwsSettingTab } from "./settings.ts";
 import type { JournalProfile, Term } from "./lint/types.ts";
 import {
   RWS_SOURCE,
@@ -16,11 +18,11 @@ import {
 /**
  * RuWritingStyles — Obsidian plugin.
  *
- * M2: findings surface through the editor's native lint system
- * (@codemirror/lint) — wavy underlines, hover bubbles, the built-in problems
- * panel, and F8 navigation. A status-bar item shows error/warning counts. The
- * deterministic transliteration linter is the parity-tested port from M1.
- * Journal-compliance is M3. See docs/obsidian-plugin-plan.md.
+ * Findings surface through the editor's native lint system (@codemirror/lint) —
+ * wavy underlines, hover bubbles, the built-in problems panel, and F8 navigation,
+ * plus a status-bar count. The deterministic transliteration linter (M1/M2) and
+ * the journal-compliance check (M3) are parity-tested ports of the engine; a
+ * settings tab picks the journal profile. See docs/obsidian-plugin-plan.md.
  */
 
 export interface RwsSettings {
@@ -54,6 +56,8 @@ export default class RuWritingStylesPlugin extends Plugin {
         reportCounts: (errors, warnings) => this.setStatus(errors, warnings),
       })
     );
+
+    this.addSettingTab(new RwsSettingTab(this.app, this));
 
     // Command: re-lint now and open the problems panel.
     this.addCommand({
@@ -89,22 +93,37 @@ export default class RuWritingStylesPlugin extends Plugin {
       openLintPanel(cm);
     }
     const text = editor.getValue();
-    const findings = lintText(text, this.terms, this.currentJournal()).findings;
+    const profile = this.currentJournal();
+    const findings = lintText(text, this.terms, profile).findings;
+
+    const lines: string[] = [];
     if (findings.length === 0) {
-      new Notice("RuWritingStyles: транслитерация — замечаний нет.");
-      return;
+      lines.push("транслитерация — замечаний нет");
+    } else {
+      // Most findings anchor to a range and show inline; surface any that don't.
+      const located = locateFindings(text, findings, this.terms).filter(
+        (f) => f.from != null && f.to != null
+      ).length;
+      lines.push(`транслитерация — ${findings.length} замечани${plural(findings.length)}`);
+      if (located < findings.length) {
+        lines.push(`${findings.length - located} без точной привязки (не показаны в тексте)`);
+      }
     }
-    // Most findings anchor to a range and show inline; surface any that don't
-    // rather than letting them vanish from the panel.
-    const located = locateFindings(text, findings, this.terms).filter(
-      (f) => f.from != null && f.to != null
-    ).length;
-    if (located < findings.length) {
-      new Notice(
-        `RuWritingStyles: ${findings.length} замечани${plural(findings.length)}; ` +
-          `${findings.length - located} без точной привязки и не показаны в тексте.`
-      );
+
+    // Journal compliance checklist (incl. the passing items the panel omits).
+    const compliance = checkJournal(text, profile);
+    if (compliance) lines.push(summarizeJournal(compliance));
+
+    new Notice("RuWritingStyles: " + lines.join(" · "), 12000);
+  }
+
+  /** Re-lint every open markdown editor (after a settings change). */
+  relintAll(): void {
+    for (const leaf of this.app.workspace.getLeavesOfType("markdown")) {
+      const cm = this.cmOf((leaf.view as MarkdownView).editor);
+      if (cm) forceLinting(cm);
     }
+    this.refreshStatus();
   }
 
   private setStatus(errors: number, warnings: number): void {

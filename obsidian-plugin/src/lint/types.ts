@@ -66,8 +66,8 @@ export interface JournalLength {
 export interface JournalCompliance {
   name?: string;
   length: JournalLength | null;
-  citationFormat?: string;
-  transliterationScheme?: string;
+  citationFormat: string | null;
+  transliterationScheme: string | null;
   abstract: JournalLangCheck[];
   keywords: JournalLangCheck[];
 }
