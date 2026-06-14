@@ -7,6 +7,11 @@ All notable changes to RuWritingStyles are documented here.
 ### Changed
 - Released the current changelog state as version 1.
 
+## [2.8.6] - 2026-06-14
+### Added (knowledge-base depth — quality item 4 / P5)
+- **Indological bibliography core** added to `knowledge/bibliography.json` (44 → 49): **Apte 1890** (*The Practical Sanskrit-English Dictionary* — was missing despite being cited in the P3 gúṇa article, so its citation can now ground), **Böhtlingk 1879** (kürzere Fassung / pw), **Mayrhofer 1986** (*Etymologisches Wörterbuch des Altindoarischen* — the standard etymological reference for the etymology styles), **Grassmann 1873** (*Wörterbuch zum Rig-Veda*), **Macdonell 1910** (*Vedic Grammar*). Added Cologne **CDSL** links (sanskrit-lexicon org repos) to Monier-Williams, Böhtlingk-Roth (PW), Apte, Böhtlingk-kürzere and Grassmann. Format-preserving edit; schema + cross-references still resolve.
+- `knowledge/sanskrit-terms.json` (60 → 61): added **vigraha** (the analytical decomposition central to the `samasa-manual` style).
+
 ## [2.8.5] - 2026-06-14
 ### Added (onboarding — quality item 3 / P4)
 - **`docs/QUICKSTART.ru.md`** — a five-step Russian quickstart (install → DeepSeek key in `.env` → first run on a bundled example → your own article with `--council sanskrit --journal vestnik-spbu` → reading the report), plus an offline/no-key path on `--provider mock` and a cheat-sheet of useful commands. Every command was verified to exist and parse. Linked prominently from the top of `README.md`. This is the entry point for the "install + run the CLI" community deliverable.

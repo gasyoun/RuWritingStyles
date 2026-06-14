@@ -6,7 +6,7 @@
 
 > 🚀 **Хотите прогнать свою статью через «Совет» стилей?** За пять шагов от установки до первой рецензии (с ключом DeepSeek) — [`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md).
 
-**Status**: v2.8.5 (Agentic Evolution) — поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, WebSocket-трассировка ("Thinking Trace"), выбираемые именованные советы (`rws councils`) и API для Obsidian/Word.
+**Status**: v2.8.6 (Agentic Evolution) — поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, WebSocket-трассировка ("Thinking Trace"), выбираемые именованные советы (`rws councils`) и API для Obsidian/Word.
 
 Границы реализованного (честная маркировка):
 

@@ -58,5 +58,6 @@
   { "ru": "упасарга", "iast": "upasarga", "source": "Tubb Boose 2007" },
   { "ru": "атманепада", "iast": "ātmanepada", "source": "Whitney 1889" },
   { "ru": "парасмайпада", "iast": "parasmaipada", "source": "Whitney 1889" },
-  { "ru": "лакара", "iast": "lakāra", "source": "Tubb Boose 2007" }
+  { "ru": "лакара", "iast": "lakāra", "source": "Tubb Boose 2007" },
+  { "ru": "виграха", "iast": "vigraha", "source": "Tubb Boose 2007", "note": "аналитическое разложение сложного слова (самаса)" }
 ]

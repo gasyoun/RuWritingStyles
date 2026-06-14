@@ -235,7 +235,8 @@
     "city": "Oxford",
     "publisher": "Clarendon Press",
     "pages": "1333",
-    "tags": ["санскрит", "лексикография", "словарь"]
+    "url": "https://github.com/sanskrit-lexicon/MWS",
+    "tags": ["санскрит", "лексикография", "словарь", "CDSL"]
   },
   {
     "id": "Boehtlingk Roth 1855",
@@ -245,7 +246,8 @@
     "kind": "book",
     "city": "St. Petersburg",
     "publisher": "Kaiserliche Akademie der Wissenschaften",
-    "tags": ["санскрит", "лексикография", "словарь", "PW"]
+    "url": "https://github.com/sanskrit-lexicon/PWG",
+    "tags": ["санскрит", "лексикография", "словарь", "PW", "CDSL"]
   },
   {
     "id": "Whitney 1885",
@@ -464,5 +466,58 @@
     "kind": "web",
     "url": "https://samskrtam.ru/parallel-corpus/",
     "tags": ["санскрит", "корпус", "перевод"]
+  },
+  {
+    "id": "Apte 1890",
+    "author": "Apte V. S.",
+    "year": 1890,
+    "title": "The Practical Sanskrit-English Dictionary",
+    "kind": "book",
+    "city": "Poona",
+    "publisher": "Shiralkar & Co.",
+    "url": "https://github.com/sanskrit-lexicon/AP90",
+    "tags": ["санскрит", "лексикография", "словарь", "CDSL"]
+  },
+  {
+    "id": "Boehtlingk 1879",
+    "author": "Böhtlingk O.",
+    "year": 1879,
+    "title": "Sanskrit-Wörterbuch in kürzerer Fassung. Th. 1–7 (1879–1889)",
+    "kind": "book",
+    "city": "St. Petersburg",
+    "publisher": "Kaiserliche Akademie der Wissenschaften",
+    "url": "https://github.com/sanskrit-lexicon/PWK",
+    "tags": ["санскрит", "лексикография", "словарь", "pw", "CDSL"]
+  },
+  {
+    "id": "Mayrhofer 1986",
+    "author": "Mayrhofer M.",
+    "year": 1986,
+    "title": "Etymologisches Wörterbuch des Altindoarischen. Bd. I–III (1986–2001)",
+    "kind": "book",
+    "city": "Heidelberg",
+    "publisher": "Winter",
+    "tags": ["санскрит", "этимология", "словарь"]
+  },
+  {
+    "id": "Grassmann 1873",
+    "author": "Grassmann H.",
+    "year": 1873,
+    "title": "Wörterbuch zum Rig-Veda",
+    "kind": "book",
+    "city": "Leipzig",
+    "publisher": "Brockhaus",
+    "url": "https://github.com/sanskrit-lexicon/GRA",
+    "tags": ["веда", "лексикография", "словарь", "CDSL"]
+  },
+  {
+    "id": "Macdonell 1910",
+    "author": "Macdonell A. A.",
+    "year": 1910,
+    "title": "Vedic Grammar",
+    "kind": "book",
+    "city": "Strassburg",
+    "publisher": "Trübner",
+    "tags": ["веда", "грамматика"]
   }
 ]
