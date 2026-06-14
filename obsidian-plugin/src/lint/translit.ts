@@ -28,7 +28,8 @@ const DEVANAGARI_RE = /[ऀ-ॿ]/;
 // A dependent vowel sign / virama (U+093A–U+094D, U+0962, U+0963) with no
 // preceding consonant — an OCR artifact.
 const ORPHAN_MATRA_RE = /(?:^|[\s(«"'])[ऺ-्ॢॣ]/;
-const WORD_RE = /[\p{L}\p{M}]+(?:['’\-][\p{L}\p{M}]+)*/gu;
+export const WORD_PATTERN = "[\\p{L}\\p{M}]+(?:['’\\-][\\p{L}\\p{M}]+)*";
+const WORD_RE = new RegExp(WORD_PATTERN, "gu");
 // Harvard-Kyoto markers: a capital HK consonant after the first position, or a
 // doubled long vowel.
 const HK_MARKER_RE = /.[AIURTDNSGJMHLZ]|aa|ii|uu/;
@@ -50,7 +51,7 @@ export const FINDING_TYPES: FindingType[] = [
   "iast_in_cyrillic_word",
 ];
 
-function hasCyrillic(word: string): boolean {
+export function hasCyrillic(word: string): boolean {
   return CYRILLIC_RE.test(word);
 }
 
@@ -87,7 +88,7 @@ function ruStem(ru: string): string {
   return ru && (RU_VOWELS.includes(last) || last === "ь") ? ru.slice(0, -1) : ru;
 }
 
-function matchesRuTerm(word: string, termRu: string): boolean {
+export function matchesRuTerm(word: string, termRu: string): boolean {
   const w = word.toLowerCase();
   const stem = ruStem(termRu.toLowerCase());
   if (!w.startsWith(stem)) return false;

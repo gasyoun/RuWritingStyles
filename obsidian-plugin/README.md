@@ -20,11 +20,13 @@ implementation plan and milestones.
 
 ## Status
 
-**M1 — transliteration linter ported.** The `RuWritingStyles: Lint current note`
-command runs the deterministic transliteration linter (a faithful TypeScript port
-of the engine's `translit_lint.py`) on the active note and reports a summary
-(inline highlighting + side panel are M2; journal compliance is M3). The port is
-parity-tested against `rws lint-translit` — see [Testing](#testing).
+**M2 — inline UI.** Findings surface through the editor's native lint system
+(`@codemirror/lint`): wavy underlines, hover bubbles, the built-in problems panel,
+and F8 / next-diagnostic navigation, plus a status-bar count (`RWS ✗3 ⚠7`). Linting
+is continuous and debounced; the `RuWritingStyles: lint current note (show problems)`
+command force-relints and opens the problems panel. Journal compliance is M3. The
+deterministic linter underneath is the parity-tested port from M1 — see
+[Testing](#testing).
 
 ## Development
 

@@ -1,16 +1,26 @@
 import { Editor, MarkdownFileInfo, MarkdownView, Notice, Plugin } from "obsidian";
+import type { EditorView } from "@codemirror/view";
+import { forEachDiagnostic, forceLinting, openLintPanel } from "@codemirror/lint";
+import type { Diagnostic } from "@codemirror/lint";
 
-import { TERMS, JOURNALS } from "./assets.ts";
+import { JOURNALS, TERMS } from "./assets.ts";
 import { lintText } from "./lint/translit.ts";
-import type { Finding } from "./lint/types.ts";
+import { locateFindings } from "./lint/locate.ts";
+import type { JournalProfile, Term } from "./lint/types.ts";
+import {
+  RWS_SOURCE,
+  countRwsDiagnostics,
+  makeRwsLintExtension,
+} from "./ui/lint-extension.ts";
 
 /**
  * RuWritingStyles — Obsidian plugin.
  *
- * M1: the deterministic transliteration linter (a faithful TypeScript port of
- * the engine's translit_lint.py, parity-tested against `rws lint-translit`) runs
- * on the current note and reports a summary. Inline highlighting and the side
- * panel are M2; journal-compliance is M3. See docs/obsidian-plugin-plan.md.
+ * M2: findings surface through the editor's native lint system
+ * (@codemirror/lint) — wavy underlines, hover bubbles, the built-in problems
+ * panel, and F8 navigation. A status-bar item shows error/warning counts. The
+ * deterministic transliteration linter is the parity-tested port from M1.
+ * Journal-compliance is M3. See docs/obsidian-plugin-plan.md.
  */
 
 export interface RwsSettings {
@@ -28,38 +38,96 @@ export const DEFAULT_SETTINGS: RwsSettings = {
 
 export default class RuWritingStylesPlugin extends Plugin {
   settings: RwsSettings = DEFAULT_SETTINGS;
+  readonly terms: Term[] = TERMS;
+  private statusBar: HTMLElement | null = null;
 
   async onload(): Promise<void> {
     await this.loadSettings();
 
+    this.statusBar = this.addStatusBarItem();
+    this.statusBar.addClass("rws-statusbar");
+
+    // Native-lint editor extension: continuous (debounced) underlines + panel.
+    this.registerEditorExtension(
+      makeRwsLintExtension({
+        getLintConfig: () => ({ terms: this.terms, journal: this.currentJournal() }),
+        reportCounts: (errors, warnings) => this.setStatus(errors, warnings),
+      })
+    );
+
+    // Command: re-lint now and open the problems panel.
     this.addCommand({
       id: "lint-current-note",
-      name: "Lint current note (transliteration)",
-      editorCallback: (editor: Editor, _ctx: MarkdownView | MarkdownFileInfo) => {
-        this.lintEditor(editor);
-      },
+      name: "Lint current note (show problems)",
+      editorCallback: (editor: Editor, _ctx: MarkdownView | MarkdownFileInfo) =>
+        this.showProblems(editor),
     });
+
+    // Keep the status bar synced when switching or closing notes.
+    this.registerEvent(
+      this.app.workspace.on("active-leaf-change", () => this.refreshStatus())
+    );
+    this.refreshStatus();
   }
 
   onunload(): void {}
 
-  private lintEditor(editor: Editor): void {
-    const profile = JOURNALS[this.settings.journal] ?? null;
-    const result = lintText(editor.getValue(), TERMS, profile);
-    const findings = result.findings;
+  /** Resolve the active journal profile (or null for "none"). */
+  currentJournal(): JournalProfile | null {
+    return JOURNALS[this.settings.journal] ?? null;
+  }
 
+  /** Obsidian's Editor wraps a CM6 EditorView, exposed (untyped) as `.cm`. */
+  private cmOf(editor: Editor): EditorView | null {
+    return (editor as unknown as { cm?: EditorView }).cm ?? null;
+  }
+
+  private showProblems(editor: Editor): void {
+    const cm = this.cmOf(editor);
+    if (cm) {
+      forceLinting(cm);
+      openLintPanel(cm);
+    }
+    const text = editor.getValue();
+    const findings = lintText(text, this.terms, this.currentJournal()).findings;
     if (findings.length === 0) {
       new Notice("RuWritingStyles: транслитерация — замечаний нет.");
       return;
     }
-    const errors = findings.filter((f) => f.severity === "error").length;
-    const warnings = findings.length - errors;
-    new Notice(
-      `RuWritingStyles: ${findings.length} замечани${plural(findings.length)} ` +
-        `(${errors} ошиб., ${warnings} предупр.). Подробности — в консоли.`
+    // Most findings anchor to a range and show inline; surface any that don't
+    // rather than letting them vanish from the panel.
+    const located = locateFindings(text, findings, this.terms).filter(
+      (f) => f.from != null && f.to != null
+    ).length;
+    if (located < findings.length) {
+      new Notice(
+        `RuWritingStyles: ${findings.length} замечани${plural(findings.length)}; ` +
+          `${findings.length - located} без точной привязки и не показаны в тексте.`
+      );
+    }
+  }
+
+  private setStatus(errors: number, warnings: number): void {
+    if (!this.statusBar) return;
+    this.statusBar.setText(
+      errors === 0 && warnings === 0 ? "RWS ✓" : `RWS ✗${errors} ⚠${warnings}`
     );
-    // M2 will render these inline + in a side panel. For now, log them.
-    console.log("[RuWritingStyles] findings:", findings.map(describe));
+  }
+
+  /** Recount from the active note's editor (covers leaf switches). */
+  private refreshStatus(): void {
+    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+    const cm = view ? this.cmOf(view.editor) : null;
+    if (!cm) {
+      this.statusBar?.setText("");
+      return;
+    }
+    const collected: Diagnostic[] = [];
+    forEachDiagnostic(cm.state, (d) => {
+      if (d.source === RWS_SOURCE) collected.push(d);
+    });
+    const { errors, warnings } = countRwsDiagnostics(collected);
+    this.setStatus(errors, warnings);
   }
 
   async loadSettings(): Promise<void> {
@@ -71,11 +139,7 @@ export default class RuWritingStylesPlugin extends Plugin {
   }
 }
 
-function describe(f: Finding): string {
-  const where = f.fragment ? ` [${f.fragment}]` : f.term ? ` [${f.term}]` : "";
-  return `${f.severity} ${f.type}: ${f.message}${where}`;
-}
-
+/** Russian plural suffix for «замечание/замечания/замечаний». */
 function plural(n: number): string {
   const d = n % 10;
   const dd = n % 100;
