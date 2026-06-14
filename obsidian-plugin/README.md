@@ -20,7 +20,7 @@ implementation plan and milestones.
 
 ## Status
 
-**M4 — functional plugin complete (transliteration + journal + quick-fix).**
+**M5 — feature-complete; release automation in place.**
 Findings surface through the editor's native lint system (`@codemirror/lint`): wavy
 underlines, hover bubbles, the built-in problems panel, and F8 / next-diagnostic
 navigation, plus a status-bar count (`RWS ✗3 ⚠7`). Linting is continuous and
@@ -34,8 +34,9 @@ Missing-first-mention findings offer a one-click **"Вставить IAST"** qui
 inserts ` (iast)` from the term dictionary.
 
 Both the transliteration linter and the journal check are parity-tested ports of the
-engine — see [Testing](#testing). Remaining: **M5 packaging** (release zip, BRAT,
-community-plugin submission).
+engine — see [Testing](#testing). Releasing (tagging, BRAT, official submission) is
+covered in [`RELEASE.md`](RELEASE.md); official community submission needs a dedicated
+repo (a monorepo subdirectory can't be submitted directly).
 
 ## Development
 

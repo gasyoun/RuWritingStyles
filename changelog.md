@@ -2,6 +2,11 @@
 
 All notable changes to RuWritingStyles are documented here.
 
+## [2.10.1] - 2026-06-14
+### Added (Obsidian plugin M5 — release automation + packaging)
+- **`.github/workflows/release-obsidian-plugin.yml`** — on an `obsidian-v*` tag, builds the plugin and publishes a GitHub release with `main.js` / `manifest.json` / `styles.css` + a zip; `workflow_dispatch` runs a build+test smoke. The `obsidian-v` tag prefix keeps plugin releases distinct from the engine's versioning in this monorepo.
+- **`obsidian-plugin/RELEASE.md`** — packaging/versioning guide: the automated release flow, manual + BRAT install, and the community-submission path. Documents honestly that a monorepo subdirectory **cannot** be BRAT-installed or submitted to the community catalogue directly (Obsidian wants `manifest.json` at the repo root + bare version tags) → recommends a dedicated repo. The release tag, BRAT add, and community PR are author actions. Plugin is now feature-complete (M0–M5); build green, 36/36 parity tests pass.
+
 ## [2.10.0] - 2026-06-14
 ### Added (Obsidian plugin — deterministic checks inline in the editor, MVP M0–M4)
 - **`obsidian-plugin/`** — a TypeScript Obsidian plugin running the engine's deterministic checks inline:

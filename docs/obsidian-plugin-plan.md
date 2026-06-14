@@ -234,15 +234,21 @@ This turns "did the port stay faithful?" into a red/green check on every change.
 
 **Progress:** M0 ✅ · M1 ✅ (parity **14/14**) · M2 ✅ (native CM6 lint diagnostics +
 locator + status bar) · M3 ✅ (journal-compliance port + settings dropdown; engine
-extracted a pure `journal_compliance()` helper as the shared source of truth) ·
-M4 ✅ (IAST quick-fix + per-check toggles; **36/36** tests — parity + locate +
-journal + quickfix). **M5 (packaging) pending.**
+extracted a pure `journal_compliance()` helper) · M4 ✅ (IAST quick-fix + per-check
+toggles; **36/36** tests) · M5 ✅ (release automation + packaging guide). **All
+milestones shipped; remaining steps are author release actions (see below).**
 
-The **functional plugin (M0–M4) is complete.** The journal check reports, on the
-gúṇa article vs *Вестник СПбГУ*, length OK (12114/40000), abstract ru ✓ en ✗,
-keywords ru ✓ en ✗ — identical to the engine report. Journal gaps surface as native
-lint diagnostics (anchored to the first line) alongside the translit underlines;
-missing-first-mention findings offer a one-click "Вставить IAST" fix.
+The **plugin is feature-complete (M0–M5).** The journal check reports, on the gúṇa
+article vs *Вестник СПбГУ*, length OK (12114/40000), abstract ru ✓ en ✗, keywords
+ru ✓ en ✗ — identical to the engine report. Journal gaps surface as native lint
+diagnostics alongside the translit underlines; missing-first-mention findings offer
+a one-click "Вставить IAST" fix.
+
+**Author release actions (outward; not automated):** cut a release by pushing an
+`obsidian-v0.1.0` tag (the workflow builds + attaches the assets); for official
+community-directory submission, publish from a **dedicated repo** with root
+`manifest.json` (the monorepo subdirectory can't be submitted directly). Full
+steps + the dedicated-repo rationale: [`obsidian-plugin/RELEASE.md`](../obsidian-plugin/RELEASE.md).
 
 > **Development note:** the work runs in a dedicated git **worktree** on
 > `feat/obsidian-plugin` (an external actor repeatedly switches the main checkout's
@@ -255,7 +261,7 @@ missing-first-mention findings offer a one-click "Вставить IAST" fix.
 | **M2** ✅ | Inline UI | Findings render via `@codemirror/lint` (underlines + hover + problems panel + F8 nav); locator maps findings to editor ranges; status-bar counts. |
 | **M3** ✅ | Journal compliance | Journal dropdown drives `first_mention_rule`; length + abstract/keywords presence match the engine report on the gúṇa article (parity-tested via a pure `journal_compliance()` helper). |
 | **M4** ✅ | Quick-fix + settings | First-mention IAST insertion (CM6 lint action, dictionary-resolved); per-finding-type toggles. (Lint-on-save dropped — M2's native linter is already continuous + debounced, so it's redundant.) |
-| **M5** | Packaging | Release zip (`main.js`, `manifest.json`, `styles.css`); BRAT beta; community-plugin PR opened. |
+| **M5** ✅ | Packaging | Release workflow (tag `obsidian-v*` → builds + tests + attaches `main.js`/`manifest.json`/`styles.css` + zip) and [`RELEASE.md`](../obsidian-plugin/RELEASE.md) (manual/BRAT install + the dedicated-repo path for official submission). The release/tag, BRAT add, and community PR are author actions — outward + need the repo-structure decision. |
 
 M0–M3 are the MVP the author signed off on; M4–M5 are fast-follow.
 
