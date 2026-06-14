@@ -11,6 +11,8 @@ on:
 jobs:
   eval-smoke:
     runs-on: ubuntu-latest
+    env:
+      SUITE_ID: ${{ inputs.suite_id }}
 
     steps:
       - name: Check out repository
@@ -22,37 +24,37 @@ jobs:
           python-version: "3.12"
 
       - name: Run mock eval suite
-        run: python -m ruwritingstyles.cli eval-suite --provider mock --suite-id "${{ inputs.suite_id }}-baseline"
+        run: python -m ruwritingstyles.cli eval-suite --provider mock --suite-id "$SUITE_ID-baseline"
         env:
           PYTHONPATH: src
 
       - name: Run candidate mock eval suite with comparison
-        run: python -m ruwritingstyles.cli eval-suite --provider mock --suite-id "${{ inputs.suite_id }}" --compare-to "runs/${{ inputs.suite_id }}-baseline"
+        run: python -m ruwritingstyles.cli eval-suite --provider mock --suite-id "$SUITE_ID" --compare-to "runs/$SUITE_ID-baseline"
         env:
           PYTHONPATH: src
 
       - name: Validate eval suite
-        run: python -m ruwritingstyles.cli validate-eval-suite "runs/${{ inputs.suite_id }}"
+        run: python -m ruwritingstyles.cli validate-eval-suite "runs/$SUITE_ID"
         env:
           PYTHONPATH: src
 
       - name: Validate eval comparison
-        run: python -m ruwritingstyles.cli validate-eval-comparison "runs/${{ inputs.suite_id }}/comparison.json"
+        run: python -m ruwritingstyles.cli validate-eval-comparison "runs/$SUITE_ID/comparison.json"
         env:
           PYTHONPATH: src
 
       - name: Show eval status
-        run: python -m ruwritingstyles.cli eval-status "runs/${{ inputs.suite_id }}"
+        run: python -m ruwritingstyles.cli eval-status "runs/$SUITE_ID"
         env:
           PYTHONPATH: src
 
       - name: Show comparison status
-        run: python -m ruwritingstyles.cli eval-status "runs/${{ inputs.suite_id }}/comparison.json"
+        run: python -m ruwritingstyles.cli eval-status "runs/$SUITE_ID/comparison.json"
         env:
           PYTHONPATH: src
 
       - name: Export eval suite
-        run: python -m ruwritingstyles.cli export-eval-suite "runs/${{ inputs.suite_id }}"
+        run: python -m ruwritingstyles.cli export-eval-suite "runs/$SUITE_ID"
         env:
           PYTHONPATH: src
 
