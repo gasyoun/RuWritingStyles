@@ -6,7 +6,7 @@
 
 > 🚀 **Хотите прогнать свою статью через «Совет» стилей?** За пять шагов от установки до первой рецензии (с ключом DeepSeek) — [`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md).
 
-**Status**: v2.8.6 (Agentic Evolution) — поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, WebSocket-трассировка ("Thinking Trace"), выбираемые именованные советы (`rws councils`) и API для Obsidian/Word.
+**Status**: v2.9.0 (Agentic Evolution) — поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, WebSocket-трассировка ("Thinking Trace"), выбираемые именованные советы (`rws councils`) и API для Obsidian/Word.
 
 Границы реализованного (честная маркировка):
 
@@ -481,11 +481,11 @@ PYTHONPATH=src python -m ruwritingstyles.cli validate-run runs/readme-smoke
 Для real-provider запуска скопируйте `.env.example` в `.env`, заполните нужный ключ и проверьте readiness:
 
 ```bash
-PYTHONPATH=src python -m ruwritingstyles.cli provider-status --provider openai --strict
-PYTHONPATH=src python -m ruwritingstyles.cli run input.md --execute --provider openai --model gpt-5.5
+rws provider-status --provider deepseek --strict
+rws run статья.md --execute --provider deepseek --council sanskrit --journal vestnik-spbu
 ```
 
-Поддерживаемые реальные провайдеры: `openai`, `google`, `anthropic`, `openrouter`, `local`, `ollama`. Подробные сценарии лежат в [`docs/scenarios.md`](docs/scenarios.md), а короткий запуск - в [`docs/quickstart.md`](docs/quickstart.md).
+Основной провайдер — **`deepseek`** (см. [`QUICKSTART.ru.md`](docs/QUICKSTART.ru.md)); также поддерживаются `openai`, `google`, `anthropic`, `openrouter`, `local`, `ollama` и детерминированный `mock`. **Подробные рабочие сценарии** (этимология, журнал, ведийский период, самаса, сверка словарей) — в [`docs/USE_CASES.ru.md`](docs/USE_CASES.ru.md); карта всей документации — в [`docs/README.md`](docs/README.md).
 
 ## Документация разработки
 

@@ -7,6 +7,14 @@ All notable changes to RuWritingStyles are documented here.
 ### Changed
 - Released the current changelog state as version 1.
 
+## [2.9.0] - 2026-06-14
+### Added (P6 publish — documentation deepened)
+- **`docs/USE_CASES.ru.md`** — seven deep, command-level workflows for the Russian Sanskritology researcher (etymology-hypothesis check, journal preparation, Vedic vs Classical period, samāsa analysis, dictionary collation PW/MW/Apte, standalone transliteration, run/provider comparison), each *situation → command → what it returns*, grounded in the verified gúṇa run and using DeepSeek + `--council` + `--journal`.
+- **`docs/README.md`** — a curated documentation map (by audience: getting started / evidence / citation+AI / how-it-works / reviews / dev), taming the 35-file `docs/` sprawl — the backbone of the planned Russian docs site.
+- **`docs/methodology-paper-outline.md`** — a section-by-section skeleton for the P6 methodology paper, with the evidence (benchmark, case study, gold protocol) mapped to each claim and the open pre-submission tasks (expert annotation, N-run averaging).
+### Fixed
+- Stale provider lists in `README.md` and `docs/scenarios.md` now lead with **`deepseek`** (the primary backend) and surface `--council`/`--journal`; both point to the new deep use-cases doc. README links the new docs prominently.
+
 ## [2.8.6] - 2026-06-14
 ### Added (knowledge-base depth — quality item 4 / P5)
 - **Indological bibliography core** added to `knowledge/bibliography.json` (44 → 49): **Apte 1890** (*The Practical Sanskrit-English Dictionary* — was missing despite being cited in the P3 gúṇa article, so its citation can now ground), **Böhtlingk 1879** (kürzere Fassung / pw), **Mayrhofer 1986** (*Etymologisches Wörterbuch des Altindoarischen* — the standard etymological reference for the etymology styles), **Grassmann 1873** (*Wörterbuch zum Rig-Veda*), **Macdonell 1910** (*Vedic Grammar*). Added Cologne **CDSL** links (sanskrit-lexicon org repos) to Monier-Williams, Böhtlingk-Roth (PW), Apte, Böhtlingk-kürzere and Grassmann. Format-preserving edit; schema + cross-references still resolve.
