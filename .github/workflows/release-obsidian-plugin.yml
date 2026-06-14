@@ -1,0 +1,67 @@
+name: Release Obsidian plugin
+
+# Cuts a GitHub release for the Obsidian plugin that lives in obsidian-plugin/.
+# Trigger by pushing a tag like `obsidian-v0.1.0` (the `obsidian-v` prefix keeps
+# plugin releases distinct from any engine versioning in this monorepo). The tag
+# suffix must equal the plugin's manifest.json version. workflow_dispatch runs a
+# build+test smoke without creating a release.
+#
+# NOTE: official Obsidian community submission / BRAT expect manifest.json at the
+# repo root with a bare `x.y.z` tag — not possible from a monorepo subdirectory.
+# See obsidian-plugin/RELEASE.md for the dedicated-repo path.
+
+on:
+  push:
+    tags:
+      - "obsidian-v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: obsidian-plugin
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and test
+        run: |
+          npm run build
+          npm test
+
+      - name: Check tag matches manifest version
+        if: github.ref_type == 'tag'
+        run: |
+          MANIFEST=$(node -p "require('./manifest.json').version")
+          TAG="${GITHUB_REF_NAME#obsidian-v}"
+          echo "tag suffix: $TAG · manifest: $MANIFEST"
+          if [ "$TAG" != "$MANIFEST" ]; then
+            echo "::error::tag should be obsidian-v$MANIFEST, got $GITHUB_REF_NAME"
+            exit 1
+          fi
+
+      - name: Package release zip
+        if: github.ref_type == 'tag'
+        run: zip "ruwritingstyles-${GITHUB_REF_NAME}.zip" main.js manifest.json styles.css
+
+      - name: Create GitHub release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#obsidian-v}"
+          gh release create "$GITHUB_REF_NAME" \
+            main.js manifest.json styles.css "ruwritingstyles-${GITHUB_REF_NAME}.zip" \
+            --title "RuWritingStyles (Obsidian) $VERSION" \
+            --notes "Obsidian plugin $VERSION. Manual install: copy \`main.js\`, \`manifest.json\`, \`styles.css\` into \`<vault>/.obsidian/plugins/ruwritingstyles/\` and enable it. See [obsidian-plugin/RELEASE.md](https://github.com/gasyoun/RuWritingStyles/blob/main/obsidian-plugin/RELEASE.md)."
