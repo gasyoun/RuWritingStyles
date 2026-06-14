@@ -202,10 +202,12 @@ built-in toggleable problems panel, and F8 / next-diagnostic navigation.
 
 ## 8. Settings
 
-- **Journal profile**: `none` / `vya` / `ppv` / `vestnik-spbu`. Selecting one enables
-  the compliance section and sets `first_mention_rule`.
-- **Per-finding-type toggles** (turn off, e.g., `inconsistent_term_rendering`).
-- **Lint on save** (debounced; **off** by default).
+- **Journal profile** ✅ (M3): `none` / `vya` / `ppv` / `vestnik-spbu`. Selecting one
+  turns on the compliance check (length + abstract/keywords) and sets the
+  `first_mention_rule` for the translit linter. Changing it re-lints all open notes.
+- **Per-finding-type toggles** (M4): turn off, e.g., `inconsistent_term_rendering`.
+- **Lint on save** (M4; debounced; **off** by default). Linting is currently always-on
+  and debounced via the native linter, so this is a fast-follow refinement.
 - **(Tier 2, hidden until built)** Backend URL (`http://127.0.0.1:8000`) + bearer
   token (`RWS_API_TOKEN`) for the full audit command.
 
@@ -228,14 +230,21 @@ This turns "did the port stay faithful?" into a red/green check on every change.
 
 **Progress:** M0 ✅ (scaffold builds) · M1 ✅ (linter + segmentation ported, assets
 synced, drift check live, parity **14/14** green) · M2 ✅ (native CM6 lint diagnostics
-+ locator + status bar; **28/28** tests green — parity + locate). M3–M5 pending.
++ locator + status bar; parity + locate green) · M3 ✅ (journal-compliance port +
+settings dropdown; engine extracted a pure `journal_compliance()` helper as the
+shared source of truth; **32/32** tests green — parity + locate + journal). M4–M5 pending.
+
+The **MVP (M0–M3) is complete.** The journal check reports, on the gúṇa article vs
+*Вестник СПбГУ*, length OK (12114/40000), abstract ru ✓ en ✗, keywords ru ✓ en ✗ —
+identical to the engine report. Journal gaps surface as native lint diagnostics
+(anchored to the first line) alongside the translit underlines.
 
 | # | Milestone | Done when |
 |---|---|---|
-| **M0** | Scaffold | Plugin loads in Obsidian; `RWS: lint current note` exists as a no-op; build (`npm run build`) produces `main.js`. |
-| **M1** | Port linter + segmentation + asset sync | `parity.test.ts` green vs Python fixtures; `export_plugin_assets.py` + drift check in place. |
-| **M2** | Inline UI | Findings render via `@codemirror/lint` (underlines + hover + problems panel + F8 nav); locator maps findings to editor ranges; status-bar counts. |
-| **M3** | Journal compliance | Journal dropdown drives `first_mention_rule`; length + abstract/keywords presence match the engine report on the gúṇa article. |
+| **M0** ✅ | Scaffold | Plugin loads in Obsidian; `RWS: lint current note` exists as a no-op; build (`npm run build`) produces `main.js`. |
+| **M1** ✅ | Port linter + segmentation + asset sync | `parity.test.ts` green vs Python fixtures; `export_plugin_assets.py` + drift check in place. |
+| **M2** ✅ | Inline UI | Findings render via `@codemirror/lint` (underlines + hover + problems panel + F8 nav); locator maps findings to editor ranges; status-bar counts. |
+| **M3** ✅ | Journal compliance | Journal dropdown drives `first_mention_rule`; length + abstract/keywords presence match the engine report on the gúṇa article (parity-tested via a pure `journal_compliance()` helper). |
 | **M4** | Quick-fix + lint-on-save + polish | First-mention IAST insertion; debounced on-save lint; settings complete. |
 | **M5** | Packaging | Release zip (`main.js`, `manifest.json`, `styles.css`); BRAT beta; community-plugin PR opened. |
 
