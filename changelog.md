@@ -7,6 +7,11 @@ All notable changes to RuWritingStyles are documented here.
 ### Changed
 - Released the current changelog state as version 1.
 
+## [2.8.4] - 2026-06-14
+### Added (journal-profile pass — quality item 2)
+- **`rws run --journal <id>`** applies a journal profile inline (no project dir needed): it writes the resolved profile into the run's context, so the verifier, transliteration linter, and report all honour it. Unknown ids fail with the available list.
+- **The report's journal-compliance section now *checks* requirements instead of echoing them** — a per-language presence check for the required abstract and keywords (`report._journal_section`). On the P3 gúṇa article vs *Вестник СПбГУ* it correctly reports `Аннотация (ru, en): ru ✓, en ⚠ нет` / `Ключевые слова (ru, en): ru ✓, en ⚠ нет` — a real submission gap (missing English abstract + keywords), caught deterministically. `tests/test_journal_run.py` (3); `docs/cli.md` + the P3 case study updated.
+
 ## [2.8.3] - 2026-06-14
 ### Changed (tighten revision for short notes — quality item 1)
 - `revision.py` gained a load-bearing **"Editing discipline"** block: touch only the spans named in accepted council decisions, copy every other span **verbatim**, make the smallest change that resolves each finding, and don't materially lengthen the text. Re-running the over-editing gold cases on `deepseek-chat` shows the effect is real and large where it mattered — `sanskrit-pseudo-etymology` char-delta **0.67 → 0.03**, `samasa` 0.29 → 0.20.

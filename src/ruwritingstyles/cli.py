@@ -143,6 +143,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Optional project directory to store shared stylistic context.",
     )
     run.add_argument(
+        "--journal",
+        help="Apply a journal profile by id (see `rws journals`), e.g. vestnik-spbu — "
+             "checks length/citation/transliteration/abstract against that journal.",
+    )
+    run.add_argument(
         "--interactive",
         "-i",
         action="store_true",
@@ -1100,6 +1105,25 @@ def cmd_run(args: argparse.Namespace) -> int:
         context_path = project_dir / "project-context.json"
         if context_path.exists():
             (run_dir / "project-context.json").write_text(context_path.read_text(encoding="utf-8"), encoding="utf-8")
+
+    journal_id = getattr(args, "journal", None)
+    if journal_id:
+        # Inject a journal profile directly (no project dir needed): verification,
+        # the transliteration linter, and the report read it from the run context.
+        from .journals import load_journal_preset, list_journal_presets
+        preset = load_journal_preset(repo_root, journal_id)
+        if preset is None:
+            available = ", ".join(list_journal_presets(repo_root)) or "(none)"
+            raise SystemExit(f"unknown journal '{journal_id}'. Available: {available}")
+        ctx_path = run_dir / "project-context.json"
+        ctx: dict[str, Any] = {}
+        if ctx_path.exists():
+            try:
+                ctx = json.loads(ctx_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                ctx = {}
+        ctx["journal_profile"] = preset
+        ctx_path.write_text(json.dumps(ctx, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     return _execute_run_pipeline(repo_root, run_dir, args, manifest, model_policy)
 

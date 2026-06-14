@@ -497,10 +497,19 @@ This writes a `journal_profile` block into `.rws-project/project-context.json`
   citation format, transliteration scheme, abstract/keyword languages);
 - tunes the transliteration linter (`first_mention_rule` decides whether a
   missing IAST gloss is required);
-- adds a journal-compliance section to `report.md` (character count vs limit).
+- adds a journal-compliance section to `report.md` — character count vs limit,
+  citation format, transliteration scheme, **and a per-language presence check**
+  for the required abstract and keywords (e.g. `Аннотация (ru, en): ru ✓, en ⚠ нет`).
 
-`rws lint-translit article.md --journal vya` applies a profile to a one-off
-lint without a project.
+For a one-off run without setting up a project, apply a profile inline:
+
+```bash
+rws run article.md --provider deepseek --execute --council sanskrit --journal vestnik-spbu
+```
+
+`--journal <id>` writes the profile into the run's context, so the verifier,
+the transliteration linter, and the report all honour it. `rws lint-translit
+article.md --journal vya` likewise applies a profile to a one-off lint.
 
 ## Corpus Deep Retrieval (FTS5)
 

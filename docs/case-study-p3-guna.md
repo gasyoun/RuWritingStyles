@@ -71,3 +71,22 @@ council **caught every planted problem with correct, well-argued findings**, sur
 real omissions, kept revision proportionate, and did not flood the draft with noise. This is
 the first concrete evidence that the pipeline produces philologically credible reviews on
 real material — the strongest result of the "measure quality" workstream so far.
+
+## Addendum — vestnik-spbu journal-compliance pass
+
+The P3 run targeted *Вестник СПбГУ* but skipped its journal profile. Re-running with
+`--journal vestnik-spbu` (a new flag — no project dir needed) produces the compliance
+section, which now **checks** (not just echoes) the journal's requirements:
+
+```
+## Соответствие журналу: Вестник СПбГУ. Востоковедение и африканистика
+- Объем: 12114 / 40000 знаков — OK
+- Список литературы: GOST-R-7.0.100-2018
+- Транслитерация: IAST
+- Аннотация (ru, en): ru ✓, en ⚠ нет
+- Ключевые слова (ru, en): ru ✓, en ⚠ нет
+```
+
+It correctly flags that the draft has a Russian abstract and keywords but is **missing the
+English abstract and keywords** the journal requires — a real, actionable submission gap,
+caught deterministically (no provider call).

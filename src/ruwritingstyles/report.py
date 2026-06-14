@@ -71,10 +71,28 @@ def _journal_section(run_dir: Path) -> str:
         lines.append(f"- Список литературы: {profile['citation_format']}")
     if profile.get("transliteration_scheme"):
         lines.append(f"- Транслитерация: {profile['transliteration_scheme']}")
+
+    # Verify the required abstract / keywords are actually present per language,
+    # rather than only echoing the requirement.
+    doc_text = ""
+    for cand in ("revised.md", "normalized.md", "original.md"):
+        candidate = run_dir / cand
+        if candidate.exists():
+            doc_text = candidate.read_text(encoding="utf-8")
+            break
+    low = doc_text.lower()
+    markers = {
+        "abstract_required": {"ru": ("аннотац", "резюме"), "en": ("abstract",)},
+        "keywords_required": {"ru": ("ключевые слова",), "en": ("keywords", "key words")},
+    }
     for key, label in (("abstract_required", "Аннотация"), ("keywords_required", "Ключевые слова")):
         langs = profile.get(key)
         if isinstance(langs, list) and langs:
-            lines.append(f"- {label}: {', '.join(langs)}")
+            parts = [
+                f"{lang} {'✓' if any(m in low for m in markers[key].get(lang, ())) else '⚠ нет'}"
+                for lang in langs
+            ]
+            lines.append(f"- {label} ({', '.join(langs)}): {', '.join(parts)}")
     return "\n".join(lines)
 
 
