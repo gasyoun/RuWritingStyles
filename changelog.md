@@ -7,6 +7,10 @@ All notable changes to RuWritingStyles are documented here.
 ### Changed
 - Released the current changelog state as version 1.
 
+## [2.9.1] - 2026-06-14
+### Added (P6 publish — Claude style gallery)
+- **`docs/STYLE_GALLERY.ru.md`** + generator **`tools/generate_style_gallery.py`** — a catalogue of all **39** styles grouped by school, each linking to its `.md` on GitHub (full blob URL) as the shareable **Claude Custom Style**: open → copy → paste into Claude → Settings → Custom styles (the Raw button gives the copyable text). There is no API to mint claude.ai Custom-Style share URLs, so the prompt file *is* the shareable artifact; titles come from the passport `name` for clean, consistent labels. Regenerable; all 39 links verified to resolve to real files. Linked from `README.md` (next to the styles table) and the docs index.
+
 ## [2.9.0] - 2026-06-14
 ### Added (P6 publish — documentation deepened)
 - **`docs/USE_CASES.ru.md`** — seven deep, command-level workflows for the Russian Sanskritology researcher (etymology-hypothesis check, journal preparation, Vedic vs Classical period, samāsa analysis, dictionary collation PW/MW/Apte, standalone transliteration, run/provider comparison), each *situation → command → what it returns*, grounded in the verified gúṇa run and using DeepSeek + `--council` + `--journal`.

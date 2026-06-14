@@ -6,7 +6,7 @@
 
 > 🚀 **Хотите прогнать свою статью через «Совет» стилей?** За пять шагов от установки до первой рецензии (с ключом DeepSeek) — [`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md).
 
-**Status**: v2.9.0 (Agentic Evolution) — поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, WebSocket-трассировка ("Thinking Trace"), выбираемые именованные советы (`rws councils`) и API для Obsidian/Word.
+**Status**: v2.9.1 (Agentic Evolution) — поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, WebSocket-трассировка ("Thinking Trace"), выбираемые именованные советы (`rws councils`) и API для Obsidian/Word.
 
 Границы реализованного (честная маркировка):
 
@@ -76,6 +76,8 @@
 > Пиши по стилю [`ClaudeStyles/zaliznyak-novgorod-style.md`][zaliznyak-novgorod]: сначала источник и датировка, затем графика, языковой признак, возможные альтернативы и осторожный вывод. Разбери форму `...` из берестяной грамоты.
 
 ## Все созданные стили
+
+> 🎨 **Галерея со ссылками для прямого использования** (открыть → скопировать → вставить в Claude Custom Style): [`docs/STYLE_GALLERY.ru.md`](docs/STYLE_GALLERY.ru.md) — все 39 стилей, сгруппированные по школам.
 
 | Файл | Стиль | Для чего нужен | Главная интонация |
 |---|---|---|---|
