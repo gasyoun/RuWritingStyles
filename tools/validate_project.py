@@ -155,6 +155,34 @@ def check_cross_references(manifest_data: dict[str, Any]) -> list[str]:
     return errors
 
 
+def check_plugin_assets_sync() -> list[str]:
+    """The Obsidian plugin ships byte-for-byte copies of the term dictionary and
+    journal profiles (obsidian-plugin/src/assets/), synced from knowledge/ by
+    tools/export_plugin_assets.py. Fail if they drift so the plugin's linter can
+    never diverge from the engine's data. No-op if the plugin dir is absent."""
+    plugin_root = ROOT / "obsidian-plugin"
+    if not plugin_root.exists():
+        return []
+    assets = plugin_root / "src" / "assets"
+    pairs = [(ROOT / "knowledge" / "sanskrit-terms.json", assets / "sanskrit-terms.json")]
+    journals_dir = ROOT / "knowledge" / "journals"
+    if journals_dir.exists():
+        for preset in sorted(journals_dir.glob("*.json")):
+            pairs.append((preset, assets / "journals" / preset.name))
+
+    errors: list[str] = []
+    hint = "run python tools/export_plugin_assets.py"
+    for src, dst in pairs:
+        if not dst.exists():
+            errors.append(f"missing plugin asset {dst.relative_to(ROOT).as_posix()} ({hint})")
+        elif src.read_bytes() != dst.read_bytes():
+            errors.append(
+                f"plugin asset {dst.relative_to(ROOT).as_posix()} differs from "
+                f"{src.relative_to(ROOT).as_posix()} ({hint})"
+            )
+    return errors
+
+
 def main() -> int:
     print(f"Validating RuWritingStyles repository at {ROOT}")
 
@@ -226,6 +254,14 @@ def main() -> int:
             print(f"  Passports reference unknown sources: {', '.join(extra)}")
         fail("ClaudeStyles and manifest passports are out of sync")
     ok("ClaudeStyles and manifest passports are in sync")
+
+    plugin_asset_errors = check_plugin_assets_sync()
+    if plugin_asset_errors:
+        for err in plugin_asset_errors:
+            print(f"  {err}")
+        fail("Obsidian plugin assets are out of sync with knowledge/")
+    if (ROOT / "obsidian-plugin").exists():
+        ok("Obsidian plugin assets are in sync with knowledge/")
 
     print("\nSUCCESS: Repository validation passed")
     return 0

@@ -20,9 +20,11 @@ implementation plan and milestones.
 
 ## Status
 
-**M0 — scaffold.** The plugin loads and registers the
-`RuWritingStyles: Lint current note` command (currently a no-op stub). The ported
-linter lands in M1–M3.
+**M1 — transliteration linter ported.** The `RuWritingStyles: Lint current note`
+command runs the deterministic transliteration linter (a faithful TypeScript port
+of the engine's `translit_lint.py`) on the active note and reports a summary
+(inline highlighting + side panel are M2; journal compliance is M3). The port is
+parity-tested against `rws lint-translit` — see [Testing](#testing).
 
 ## Development
 
@@ -31,7 +33,15 @@ cd obsidian-plugin
 npm install
 npm run build          # type-check + bundle to main.js
 npm run dev            # watch mode
+npm test               # parity test vs the Python engine (Node 24+)
 ```
+
+## Testing
+
+`npm test` runs `test/parity.test.ts` (Node's native runner): it lints the
+fixtures with the TypeScript port and asserts the findings + summary are
+identical to the golden output of the engine's `rws lint-translit`. Regenerate
+the golden fixtures from the engine with `python tools/export_lint_fixtures.py`.
 
 To test in Obsidian, symlink or copy this folder's `manifest.json`, `main.js`, and
 `styles.css` into `<vault>/.obsidian/plugins/ruwritingstyles/`, then enable the plugin

@@ -1,0 +1,27 @@
+{
+  "status": "completed",
+  "findings": [
+    {
+      "span_id": "p002",
+      "type": "iast_in_cyrillic_word",
+      "message": "Смешение кириллицы и латиницы внутри словоформы: «бхāшья».",
+      "severity": "error",
+      "fragment": "бхāшья"
+    }
+  ],
+  "summary": {
+    "segments_checked": 3,
+    "iast_word_count": 1,
+    "hk_word_count": 0,
+    "schemes_detected": [
+      "iast"
+    ],
+    "finding_counts": {
+      "mixed_transliteration_scheme": 0,
+      "inconsistent_term_rendering": 0,
+      "missing_iast_on_first_mention": 0,
+      "devanagari_nfc_issue": 0,
+      "iast_in_cyrillic_word": 1
+    }
+  }
+}

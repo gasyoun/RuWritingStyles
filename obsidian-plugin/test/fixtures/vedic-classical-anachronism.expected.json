@@ -1,0 +1,32 @@
+{
+  "status": "completed",
+  "findings": [
+    {
+      "span_id": "h001",
+      "type": "missing_iast_on_first_mention",
+      "message": "Первое упоминание термина «ригведа» без IAST в скобках: ожидается «ригведа (ṛgveda)».",
+      "severity": "warning",
+      "term": "ригведа"
+    },
+    {
+      "span_id": "p002",
+      "type": "missing_iast_on_first_mention",
+      "message": "Первое упоминание термина «сандхи» без IAST в скобках: ожидается «сандхи (sandhi)».",
+      "severity": "warning",
+      "term": "сандхи"
+    }
+  ],
+  "summary": {
+    "segments_checked": 3,
+    "iast_word_count": 0,
+    "hk_word_count": 0,
+    "schemes_detected": [],
+    "finding_counts": {
+      "mixed_transliteration_scheme": 0,
+      "inconsistent_term_rendering": 0,
+      "missing_iast_on_first_mention": 2,
+      "devanagari_nfc_issue": 0,
+      "iast_in_cyrillic_word": 0
+    }
+  }
+}
