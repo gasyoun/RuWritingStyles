@@ -197,17 +197,21 @@ built-in toggleable problems panel, and F8 / next-diagnostic navigation.
 - Findings that can't be anchored to a range (rare; e.g. document-level journal
   findings in M3) are reported via a Notice rather than shown inline, so they don't
   silently vanish.
-- **Quick-fix (M4):** for `missing_iast_on_first_mention`, a lint `action` to insert
-  ` (iast)` after the first mention from the term dictionary.
+- **Quick-fix** ✅ (M4): for `missing_iast_on_first_mention`, a lint `action`
+  ("Вставить IAST") inserts ` (iast)` after the first mention, resolving the IAST
+  from the term dictionary (`lint/quickfix.ts`; null for unknown terms — never
+  fabricates).
 
 ## 8. Settings
 
 - **Journal profile** ✅ (M3): `none` / `vya` / `ppv` / `vestnik-spbu`. Selecting one
   turns on the compliance check (length + abstract/keywords) and sets the
   `first_mention_rule` for the translit linter. Changing it re-lints all open notes.
-- **Per-finding-type toggles** (M4): turn off, e.g., `inconsistent_term_rendering`.
-- **Lint on save** (M4; debounced; **off** by default). Linting is currently always-on
-  and debounced via the native linter, so this is a fast-follow refinement.
+- **Per-finding-type toggles** ✅ (M4): turn off, e.g., `inconsistent_term_rendering`;
+  the linter, the status bar, and the command Notice all respect them.
+- **Lint on save** — **dropped.** M2's native linter is already continuous and
+  debounced, so a save-triggered mode would be redundant; the per-check toggles are
+  the useful control instead.
 - **(Tier 2, hidden until built)** Backend URL (`http://127.0.0.1:8000`) + bearer
   token (`RWS_API_TOKEN`) for the full audit command.
 
@@ -228,16 +232,21 @@ This turns "did the port stay faithful?" into a red/green check on every change.
 
 ## 10. Milestones (with acceptance criteria)
 
-**Progress:** M0 ✅ (scaffold builds) · M1 ✅ (linter + segmentation ported, assets
-synced, drift check live, parity **14/14** green) · M2 ✅ (native CM6 lint diagnostics
-+ locator + status bar; parity + locate green) · M3 ✅ (journal-compliance port +
-settings dropdown; engine extracted a pure `journal_compliance()` helper as the
-shared source of truth; **32/32** tests green — parity + locate + journal). M4–M5 pending.
+**Progress:** M0 ✅ · M1 ✅ (parity **14/14**) · M2 ✅ (native CM6 lint diagnostics +
+locator + status bar) · M3 ✅ (journal-compliance port + settings dropdown; engine
+extracted a pure `journal_compliance()` helper as the shared source of truth) ·
+M4 ✅ (IAST quick-fix + per-check toggles; **36/36** tests — parity + locate +
+journal + quickfix). **M5 (packaging) pending.**
 
-The **MVP (M0–M3) is complete.** The journal check reports, on the gúṇa article vs
-*Вестник СПбГУ*, length OK (12114/40000), abstract ru ✓ en ✗, keywords ru ✓ en ✗ —
-identical to the engine report. Journal gaps surface as native lint diagnostics
-(anchored to the first line) alongside the translit underlines.
+The **functional plugin (M0–M4) is complete.** The journal check reports, on the
+gúṇa article vs *Вестник СПбГУ*, length OK (12114/40000), abstract ru ✓ en ✗,
+keywords ru ✓ en ✗ — identical to the engine report. Journal gaps surface as native
+lint diagnostics (anchored to the first line) alongside the translit underlines;
+missing-first-mention findings offer a one-click "Вставить IAST" fix.
+
+> **Development note:** the work runs in a dedicated git **worktree** on
+> `feat/obsidian-plugin` (an external actor repeatedly switches the main checkout's
+> HEAD to `main`; the worktree isolates the plugin work and locks the branch).
 
 | # | Milestone | Done when |
 |---|---|---|
@@ -245,7 +254,7 @@ identical to the engine report. Journal gaps surface as native lint diagnostics
 | **M1** ✅ | Port linter + segmentation + asset sync | `parity.test.ts` green vs Python fixtures; `export_plugin_assets.py` + drift check in place. |
 | **M2** ✅ | Inline UI | Findings render via `@codemirror/lint` (underlines + hover + problems panel + F8 nav); locator maps findings to editor ranges; status-bar counts. |
 | **M3** ✅ | Journal compliance | Journal dropdown drives `first_mention_rule`; length + abstract/keywords presence match the engine report on the gúṇa article (parity-tested via a pure `journal_compliance()` helper). |
-| **M4** | Quick-fix + lint-on-save + polish | First-mention IAST insertion; debounced on-save lint; settings complete. |
+| **M4** ✅ | Quick-fix + settings | First-mention IAST insertion (CM6 lint action, dictionary-resolved); per-finding-type toggles. (Lint-on-save dropped — M2's native linter is already continuous + debounced, so it's redundant.) |
 | **M5** | Packaging | Release zip (`main.js`, `manifest.json`, `styles.css`); BRAT beta; community-plugin PR opened. |
 
 M0–M3 are the MVP the author signed off on; M4–M5 are fast-follow.
