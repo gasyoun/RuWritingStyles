@@ -7,6 +7,13 @@ All notable changes to RuWritingStyles are documented here.
 ### Changed
 - Released the current changelog state as version 1.
 
+## [2.9.2] - 2026-06-14
+### Fixed (README top blocks refreshed to reality at v2.9.x)
+- **Stale "Границы реализованного" item.** The Obsidian/Word line claimed the plugins were "запланированы на v2.5.0" — long overtaken (v2.5.0 shipped CLI corpus Deep Retrieval, not plugins). Now states honestly that only the FastAPI API layer exists; the plugins remain prototypes, deferred to an author release decision, no longer tied to a version. The Deep Retrieval line now notes it is reachable from the CLI (`rws corpus-status` / `corpus-ingest` / `corpus-search`).
+- **Stale roadmap tail.** The single `[ ] v2.5.0 (Next)` bullet predated everything from v2.5–v2.9. Added a "Sanskrit DH — public Russian-Sanskritology resource on DeepSeek" block tracing the actual shipped sequence (v2.5.0 corpus CLI → v2.5.x eval/gold protocol + security review → v2.6.0 named councils → v2.7.0 archival DH metadata → v2.8.0 DeepSeek provider → v2.8.1–2.8.2 benchmark + gúṇa case study → v2.8.3–2.8.4 revision discipline + journal compliance → v2.8.5–2.8.6 Russian quickstart + knowledge base → v2.9.0–2.9.1 docs + style gallery), ending with the open author release actions (Zenodo DOI, methodology paper).
+- **Documentation links.** The "Документация разработки" list now leads with the curated map [`docs/README.md`](docs/README.md) and surfaces the new curated docs: [`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md), [`docs/USE_CASES.ru.md`](docs/USE_CASES.ru.md), [`docs/benchmark.md`](docs/benchmark.md), [`docs/case-study-p3-guna.md`](docs/case-study-p3-guna.md).
+- **Status line** now leads with the primary provider (**DeepSeek**) and surfaces `--journal`. Version bumped (`pyproject.toml`, `styles/manifest.yml`, README status) to 2.9.2. The large style tables below were not touched.
+
 ## [2.9.1] - 2026-06-14
 ### Added (P6 publish — Claude style gallery)
 - **`docs/STYLE_GALLERY.ru.md`** + generator **`tools/generate_style_gallery.py`** — a catalogue of all **39** styles grouped by school, each linking to its `.md` on GitHub (full blob URL) as the shareable **Claude Custom Style**: open → copy → paste into Claude → Settings → Custom styles (the Raw button gives the copyable text). There is no API to mint claude.ai Custom-Style share URLs, so the prompt file *is* the shareable artifact; titles come from the passport `name` for clean, consistent labels. Regenerable; all 39 links verified to resolve to real files. Linked from `README.md` (next to the styles table) and the docs index.
