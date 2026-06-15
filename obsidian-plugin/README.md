@@ -4,16 +4,20 @@ Inline, **deterministic** philological checks for Russian Sanskrit-studies notes
 ported from the [RuWritingStyles](https://github.com/gasyoun/RuWritingStyles) engine.
 Runs entirely inside Obsidian — **no Python, no server, no API key.**
 
-The MVP surfaces, on the current note:
+The MVP surfaces, on the current note (no Python, no server, no API key):
 
 - **Transliteration linting** — missing IAST on a term's first mention, IAST/Cyrillic
   hybrid words, mixed IAST ↔ Harvard-Kyoto schemes, inconsistent term rendering,
   Devanagari NFC problems. (Port of the engine's `translit_lint.py`.)
 - **Journal compliance** — length vs the journal limit, and presence of the required
   abstract / keywords per language. (Port of the engine's report journal section.)
+- **IAST quick-fix** — one-click insertion of the dictionary IAST after a flagged
+  first mention.
 
-The full multi-agent **Council audit** (an LLM pipeline) is a Tier-2 follow-on that
-talks to the engine's local FastAPI; it is not part of the MVP.
+**Tier 2 — full Council audit** (opt-in, needs the engine + a provider key): the
+`Full council audit (run on engine)` command sends the note to the local engine
+(`rws web`), runs the multi-agent Council, and writes the revised text to a sibling
+note. Configure the engine URL / token / provider in settings.
 
 See [`docs/obsidian-plugin-plan.md`](../docs/obsidian-plugin-plan.md) for the full
 implementation plan and milestones.

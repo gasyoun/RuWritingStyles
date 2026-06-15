@@ -235,8 +235,10 @@ This turns "did the port stay faithful?" into a red/green check on every change.
 **Progress:** M0 ✅ · M1 ✅ (parity **14/14**) · M2 ✅ (native CM6 lint diagnostics +
 locator + status bar) · M3 ✅ (journal-compliance port + settings dropdown; engine
 extracted a pure `journal_compliance()` helper) · M4 ✅ (IAST quick-fix + per-check
-toggles; **36/36** tests) · M5 ✅ (release automation + packaging guide). **All
-milestones shipped; remaining steps are author release actions (see below).**
+toggles) · M5 ✅ (release automation + packaging guide) · **Tier 2 ✅ first cut**
+(text-body intake on `/runs/execute` + a Council-audit command; **41/41** tests).
+**All milestones shipped; remaining = author release actions (see below) + Tier-2
+refinements (§11).**
 
 The **plugin is feature-complete (M0–M5).** The journal check reports, on the gúṇa
 article vs *Вестник СПбГУ*, length OK (12114/40000), abstract ru ✓ en ✗, keywords
@@ -267,17 +269,45 @@ M0–M3 are the MVP the author signed off on; M4–M5 are fast-follow.
 
 ## 11. Future work
 
-### Full Council audit (Tier 2)
+### Full Council audit (Tier 2) — ✅ shipped (first cut)
 
-Command **`RWS: run full audit`** → `POST /runs/execute` on the local engine, subscribe
-`/ws/{run_id}` for the live "Thinking Trace", then read `/runs/{run_id}` artifacts and
-render findings + `revised.md` with an **accept-into-note** action.
+Command **`Full council audit (run on engine)`** → `POST /runs/execute` on the local
+engine, poll `/runs/{run_id}` until terminal, then write the engine's `revised.md` to a
+**sibling note** (non-destructive) with a summary (council decisions / verification
+verdict / warnings / length delta).
 
-**Backend change required (flagged now):** `POST /runs/execute` currently takes an
-`input_path` confined to `RWS_INPUT_ROOT` (repo root by default) — it cannot ingest an
-arbitrary note's *text*. Tier 2 needs either a **text-body intake** on `/runs/execute`
-(or a new `/runs/execute-text`) or a documented temp-file-under-allowed-root flow. This
-is the single API addition the plugin would drive; it is out of MVP scope.
+- **Backend (done):** `POST /runs/execute` now accepts a **text body** (`text` +
+  `filename`) in addition to `input_path`. Text mode reads nothing from disk, so it's
+  not subject to the input_path allowlist; bounded by `RWS_MAX_TEXT_CHARS`.
+  `tests/test_api_text_intake.py`.
+- **Client (done):** `src/tier2/audit-core.ts` (pure, unit-tested — **16 tests**) +
+  `audit.ts` (Obsidian requestUrl + vault + modal). Settings: engine URL (scheme-
+  validated), optional bearer token, provider (default `deepseek`, validated), profile.
+  The user invoking the command is the authorization to send the draft to the provider.
+- **Hardened** (two Ultracode review/verify workflows, 2026-06-14): typed HTTP errors +
+  a pure `shouldAbortPolling` state machine (fast exit on 404/4xx/transient-exhaustion,
+  not a silent 15-min timeout); non-JSON-200 guard on Obsidian's throwing `resp.json`
+  getter; response-shape validation; `needs_human_review` treated as terminal;
+  immediate first poll; concurrent-audit guard; try/catch around `vault.modify`;
+  warnings listed in the modal; provider/profile + URL validation. 8 adversarially-
+  confirmed bugs fixed.
+- **Requires** the engine running (`rws web`) + a provider key. The live round-trip is
+  not headless-testable; all request/parse/classify/poll-decision logic is unit-tested.
+
+**Refinements done:** ✅ journal pass-through (`POST /runs/execute` takes a `journal`
+preset id → run's `project-context.json` → honoured by the pipeline); ✅ **live
+"Thinking Trace"** — a best-effort WebSocket to `/ws/{run_id}` (http→ws/https→wss,
+token as `?token=`, binary-frame-guarded) feeds the progress Notice between polls
+(polling stays authoritative); ✅ **per-change (diff) accept** — a pure LCS line-diff
+(`diffLines`/`reconstruct`, EOL-preserving, round-trip tested) drives a modal that
+lists each change hunk with a toggle and applies the selected subset via
+`vault.modify` (whole-note + sibling-note fallbacks). Both hardened by an adversarial
+fan-out (8 confirmed bugs fixed: binary frames, the in-progress-guard race, CRLF
+flattening, trace-clobbering, missing-original fallback, …).
+
+**Still open (optional polish):** finer than line-level (intra-line/word) diff; a
+"Test connection" button; reflecting the engine's own `revision.json applied_changes`
+(span-level + rationale) instead of a recomputed line diff.
 
 ### Word / Office.js add-in
 

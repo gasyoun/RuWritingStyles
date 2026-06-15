@@ -10,6 +10,8 @@ import { checkJournal, summarizeJournal } from "./lint/journal.ts";
 import { RwsSettingTab } from "./settings.ts";
 import { FINDING_TYPES } from "./lint/types.ts";
 import type { FindingType, JournalProfile, Term } from "./lint/types.ts";
+import { runCouncilAudit } from "./tier2/audit.ts";
+import type { AuditSettings } from "./tier2/audit.ts";
 import {
   RWS_SOURCE,
   countRwsDiagnostics,
@@ -34,6 +36,11 @@ export interface RwsSettings {
    *  (Linting is continuous and debounced via the native linter, so a separate
    *  "lint on save" toggle would be redundant — these toggles are what's useful.) */
   checks: Record<FindingType, boolean>;
+  /** Tier 2 (full Council audit) — the local engine endpoint + auth + provider. */
+  backendUrl: string;
+  apiToken: string;
+  auditProvider: string;
+  auditProfile: string;
 }
 
 function allChecksEnabled(): Record<FindingType, boolean> {
@@ -43,6 +50,10 @@ function allChecksEnabled(): Record<FindingType, boolean> {
 export const DEFAULT_SETTINGS: RwsSettings = {
   journal: "none",
   checks: allChecksEnabled(),
+  backendUrl: "http://127.0.0.1:8000",
+  apiToken: "",
+  auditProvider: "deepseek",
+  auditProfile: "researcher",
 };
 
 export default class RuWritingStylesPlugin extends Plugin {
@@ -78,6 +89,17 @@ export default class RuWritingStylesPlugin extends Plugin {
         this.showProblems(editor),
     });
 
+    // Tier 2: full Council audit via the local engine (sends the note to the
+    // configured provider — the user invoking this command is the authorization).
+    this.addCommand({
+      id: "council-audit",
+      name: "Full council audit (run on engine)",
+      editorCallback: (editor: Editor, ctx: MarkdownView | MarkdownFileInfo) => {
+        const file = ctx instanceof MarkdownView ? ctx.file : ctx.file ?? null;
+        void runCouncilAudit(this.app, file, editor.getValue(), this.auditSettings());
+      },
+    });
+
     // Keep the status bar synced when switching or closing notes.
     this.registerEvent(
       this.app.workspace.on("active-leaf-change", () => this.refreshStatus())
@@ -90,6 +112,17 @@ export default class RuWritingStylesPlugin extends Plugin {
   /** Resolve the active journal profile (or null for "none"). */
   currentJournal(): JournalProfile | null {
     return JOURNALS[this.settings.journal] ?? null;
+  }
+
+  /** The Tier-2 engine connection settings (incl. the selected journal). */
+  auditSettings(): AuditSettings {
+    return {
+      backendUrl: this.settings.backendUrl,
+      apiToken: this.settings.apiToken,
+      provider: this.settings.auditProvider,
+      profile: this.settings.auditProfile,
+      journal: this.settings.journal,
+    };
   }
 
   /** Obsidian's Editor wraps a CM6 EditorView, exposed (untyped) as `.cm`. */

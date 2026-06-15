@@ -60,6 +60,8 @@ from .provider_status import provider_statuses, provider_statuses_json
 from .runs import create_prepare_run, list_runs as list_run_ids, load_run_artifact
 from .segment import read_document, normalize_document, segment_markdown
 from .providers import provider_from_name
+from .journals import list_journal_presets, load_journal_preset
+from .project import set_journal_profile
 import argparse
 import json
 
@@ -239,10 +241,15 @@ async def get_run_concordance(run_id: str):
 
 
 class RunRequest(BaseModel):
-    input_path: str
+    # Provide EITHER `text` (inline document body — preferred for editor clients
+    # like the Obsidian plugin) OR `input_path` (a server-side file, allowlisted).
+    input_path: str | None = None
+    text: str | None = None
+    filename: str | None = None  # label for the run id / source (text mode)
     provider: str = "google"
     model: str | None = None
     profile: str = "researcher"
+    journal: str | None = None  # journal preset id; honoured by the pipeline
     execute: bool = True
 
 
@@ -256,24 +263,62 @@ def _input_root(repo_root: Path) -> Path:
     return root.resolve()
 
 
-@app.post("/runs/execute")
-async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
-    repo_root = repo_root_from()
+def _max_text_chars() -> int:
+    """Cap on an inline `text` submission, to bound memory/cost. Override with
+    RWS_MAX_TEXT_CHARS."""
+    try:
+        return int(os.environ.get("RWS_MAX_TEXT_CHARS", "300000"))
+    except ValueError:
+        return 300000
+
+
+def _resolve_execute_input(req: "RunRequest", repo_root: Path) -> tuple[Path, str]:
+    """Resolve an execute request to (label_path, original_text).
+
+    Text mode (`req.text`) reads nothing from disk — the body IS the document — so
+    it is not subject to the input_path allowlist; the label_path is virtual, used
+    only for the run-id slug and the source label. File mode keeps the S3 allowlist.
+    """
+    if req.text is not None:
+        if len(req.text) > _max_text_chars():
+            raise HTTPException(
+                status_code=413,
+                detail=f"text exceeds {_max_text_chars()} characters",
+            )
+        # Virtual label only (never created / read); strip any directory parts.
+        label = Path(req.filename or "obsidian-note.md").name or "obsidian-note.md"
+        return repo_root / "runs" / label, req.text
+
+    if not req.input_path:
+        raise HTTPException(status_code=400, detail="provide either 'text' or 'input_path'")
+
     input_path = Path(req.input_path).expanduser()
     if not input_path.is_absolute():
         input_path = repo_root / input_path
     input_path = input_path.resolve()
-
-    # S3: confine reads to the allowed root so a caller cannot make the server
-    # read an arbitrary local file (e.g. /etc/passwd, ~/.ssh/...).
-    allowed_root = _input_root(repo_root)
-    if not _within(allowed_root, input_path):
+    if not _within(_input_root(repo_root), input_path):
         raise HTTPException(status_code=403, detail="input_path is outside the allowed root")
-
     if not input_path.exists():
         raise HTTPException(status_code=404, detail=f"Input file not found at: {req.input_path}")
+    return input_path, read_document(input_path)
 
-    original_text = read_document(input_path)
+
+@app.post("/runs/execute")
+async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
+    repo_root = repo_root_from()
+    input_path, original_text = _resolve_execute_input(req, repo_root)
+
+    # Resolve the journal preset (if any) before creating the run so an unknown
+    # id fails cleanly without leaving an orphan run directory.
+    journal_profile = None
+    if req.journal:
+        journal_profile = load_journal_preset(repo_root, req.journal)
+        if not journal_profile:
+            raise HTTPException(
+                status_code=400,
+                detail=f"unknown journal '{req.journal}'; available: {list_journal_presets(repo_root)}",
+            )
+
     manifest = load_manifest(repo_root)
     model_policy = load_model_policy(repo_root)
 
@@ -291,6 +336,11 @@ async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
         provider=req.provider,
         profile=req.profile,
     )
+
+    # The pipeline (verifier / translit linter / report) honours the journal via
+    # resolve_journal_profile(run_dir) → run_dir/project-context.json.
+    if journal_profile:
+        set_journal_profile(run_dir, journal_profile)
 
     if req.execute:
         import asyncio
