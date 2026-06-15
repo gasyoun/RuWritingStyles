@@ -35,6 +35,10 @@ jobs:
   plugin:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: obsidian-plugin
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -43,9 +47,24 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: "24"
+          cache: npm
+          cache-dependency-path: obsidian-plugin/package-lock.json
+
+      # Strict install from the lockfile — no --legacy-peer-deps escape hatch.
+      # Fails on any peer-dependency conflict (e.g. a future obsidian bump whose
+      # exact @codemirror/* peers no longer match our ranges) or an out-of-sync
+      # lockfile, so a breaking dependabot bump is caught here instead of on main.
+      - name: Install plugin deps (strict, from lockfile)
+        run: npm ci
+
+      # tsc type-check + esbuild bundle → main.js. Catches type/build regressions
+      # (e.g. a typescript bump that turns deprecated tsconfig options into errors)
+      # before they reach main.
+      - name: Build plugin (tsc + esbuild)
+        run: npm run build
 
       # Enforces TS↔Python parity of the deterministic checks (transliteration
       # linter + journal compliance): the tests compare the plugin's output to
-      # golden fixtures regenerated from the Python engine. Pure check — no install.
+      # golden fixtures regenerated from the Python engine.
       - name: Obsidian plugin parity tests (TS ↔ Python)
-        run: npm --prefix obsidian-plugin test
+        run: npm test
