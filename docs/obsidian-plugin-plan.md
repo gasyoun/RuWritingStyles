@@ -294,13 +294,20 @@ verdict / warnings / length delta).
 - **Requires** the engine running (`rws web`) + a provider key. The live round-trip is
   not headless-testable; all request/parse/classify/poll-decision logic is unit-tested.
 
-**Refinements done:** ✅ inline accept/reject — the result opens a modal (apply to the
-note via `vault.modify` / save to a sibling note / cancel); ✅ journal pass-through —
-`POST /runs/execute` takes a `journal` preset id, written into the run's
-`project-context.json` so the pipeline honours it.
+**Refinements done:** ✅ journal pass-through (`POST /runs/execute` takes a `journal`
+preset id → run's `project-context.json` → honoured by the pipeline); ✅ **live
+"Thinking Trace"** — a best-effort WebSocket to `/ws/{run_id}` (http→ws/https→wss,
+token as `?token=`, binary-frame-guarded) feeds the progress Notice between polls
+(polling stays authoritative); ✅ **per-change (diff) accept** — a pure LCS line-diff
+(`diffLines`/`reconstruct`, EOL-preserving, round-trip tested) drives a modal that
+lists each change hunk with a toggle and applies the selected subset via
+`vault.modify` (whole-note + sibling-note fallbacks). Both hardened by an adversarial
+fan-out (8 confirmed bugs fixed: binary frames, the in-progress-guard race, CRLF
+flattening, trace-clobbering, missing-original fallback, …).
 
-**Still open:** live "Thinking Trace" via `/ws/{run_id}` (currently polls `/runs/{id}`);
-finer-grained per-change (diff) accept rather than whole-note replace.
+**Still open (optional polish):** finer than line-level (intra-line/word) diff; a
+"Test connection" button; reflecting the engine's own `revision.json applied_changes`
+(span-level + rationale) instead of a recomputed line diff.
 
 ### Word / Office.js add-in
 
