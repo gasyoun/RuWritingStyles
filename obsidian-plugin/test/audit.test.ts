@@ -19,6 +19,7 @@ import {
   auditHeaders,
   classifyHttpStatus,
   countChangeHunks,
+  detectEol,
   diffLines,
   executeBody,
   formatTraceMessage,
@@ -224,6 +225,17 @@ test("reconstruct: selective accept mixes original and revised per hunk", () => 
   assert.equal(reconstruct(hunks, acceptedSet(0)), "line1\nLINE-2\nline3\nline4");
   // accept only the second
   assert.equal(reconstruct(hunks, acceptedSet(1)), "line1\nline2\nline3\nline4-new");
+});
+
+test("reconstruct preserves CRLF when given the original's eol", () => {
+  const origCrlf = "a\r\nb\r\nc";
+  const revCrlf = "a\r\nB\r\nc";
+  const hunks = diffLines(origCrlf, revCrlf);
+  // default LF would flatten CRLF; passing the detected eol keeps it
+  assert.equal(reconstruct(hunks, allChangeIndices(hunks), "\r\n"), "a\r\nB\r\nc");
+  assert.equal(reconstruct(hunks, acceptedSet(), "\r\n"), "a\r\nb\r\nc");
+  assert.equal(detectEol(origCrlf), "\r\n");
+  assert.equal(detectEol("a\nb"), "\n");
 });
 
 test("diffLines handles pure insert / pure delete / identical", () => {

@@ -285,10 +285,21 @@ export function countChangeHunks(hunks: DiffHunk[]): number {
   return hunks.filter((h) => h.kind === "change").length;
 }
 
+/** The line ending of a text (CRLF if any is present, else LF) — so a
+ *  reconstructed document preserves the note's original EOL convention. */
+export function detectEol(text: string): "\r\n" | "\n" {
+  return text.includes("\r\n") ? "\r\n" : "\n";
+}
+
 /** Rebuild the text taking the revised side for accepted change hunks (by their
  *  0-based change-hunk index) and the original side for the rest. Accept-all →
- *  the revised text; accept-none → the original. */
-export function reconstruct(hunks: DiffHunk[], acceptedChangeIndices: Set<number>): string {
+ *  the revised text; accept-none → the original. `eol` preserves the note's line
+ *  ending (diffLines normalizes to LF internally). */
+export function reconstruct(
+  hunks: DiffHunk[],
+  acceptedChangeIndices: Set<number>,
+  eol: string = "\n"
+): string {
   const out: string[] = [];
   let changeIdx = 0;
   for (const h of hunks) {
@@ -299,5 +310,5 @@ export function reconstruct(hunks: DiffHunk[], acceptedChangeIndices: Set<number
       changeIdx++;
     }
   }
-  return out.join("\n");
+  return out.join(eol);
 }

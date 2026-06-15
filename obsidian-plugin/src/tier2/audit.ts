@@ -22,6 +22,7 @@ import {
   baseUrl,
   classifyHttpStatus,
   countChangeHunks,
+  detectEol,
   diffLines,
   executeBody,
   formatTraceMessage,
@@ -124,15 +125,19 @@ function openTrace(settings: AuditSettings, runId: string, onLine: (line: string
   try {
     socket = new WebSocket(wsUrl(settings, runId));
     socket.onmessage = (ev: MessageEvent) => {
+      // The engine sends JSON text frames; ignore any binary frame (String(Blob)
+      // would corrupt to "[object Blob]").
+      if (typeof ev.data !== "string") return;
       try {
-        const line = formatTraceMessage(JSON.parse(String(ev.data)));
+        const line = formatTraceMessage(JSON.parse(ev.data));
         if (line) onLine(line);
       } catch {
         /* ignore non-JSON frames */
       }
     };
     socket.onerror = () => {
-      /* best-effort; the poll loop is authoritative */
+      // Best-effort; the poll loop is authoritative. Surface for debugging only.
+      console.warn("RuWritingStyles: live trace WebSocket unavailable; polling continues.");
     };
   } catch {
     socket = null;
@@ -205,6 +210,7 @@ export async function runCouncilAudit(
     let details: RunDetails | null = null;
     let abortReason: AbortReason = "timeout";
     let consecutiveFailures = 0;
+    let lastStatus: string | undefined;
 
     for (let attempt = 1; attempt <= MAX_POLL_ATTEMPTS; attempt++) {
       let status: string | undefined;
@@ -226,10 +232,20 @@ export async function runCouncilAudit(
         if (abortReason === "completed") details = current;
         break;
       }
-      progress.setMessage(`RuWritingStyles: Совет (${runId}) — ${status ?? "…"}`);
+      // Update the Notice only on a status change, so the live WS trace lines
+      // (which arrive between polls) aren't immediately clobbered.
+      if (status && status !== lastStatus) {
+        lastStatus = status;
+        progress.setMessage(`RuWritingStyles: Совет (${runId}) — ${status}`);
+      }
       // Poll the first attempt immediately; space out the rest.
       if (attempt < MAX_POLL_ATTEMPTS) await sleep(POLL_INTERVAL_MS);
     }
+
+    // Run is over: stop the live trace and clear the progress Notice before
+    // dispatching the result (so neither lingers behind the modal).
+    closeTrace();
+    progress.hide();
 
     if (!details) {
       new Notice(abortMessage(abortReason, runId, base), 12000);
@@ -239,7 +255,8 @@ export async function runCouncilAudit(
       new Notice(`RuWritingStyles: прогон ${runId} завершился ошибкой — см. логи движка.`, 12000);
       return;
     }
-    presentResult(app, file, details, details.status === "needs_human_review");
+    // Await the modal so a second audit can't start while it's open.
+    await presentResult(app, file, details, details.status === "needs_human_review");
   } finally {
     closeTrace();
     progress.hide();
@@ -247,18 +264,22 @@ export async function runCouncilAudit(
   }
 }
 
+/** Open the result modal; resolves when the user dismisses it (so the caller can
+ *  hold the audit-in-progress guard until then). */
 function presentResult(
   app: App,
   file: TFile | null,
   details: RunDetails,
   needsReview: boolean
-): void {
+): Promise<void> {
   const revised = details.revised_text ?? "";
   if (!revised.trim()) {
     new Notice(`RuWritingStyles: ${summarizeRun(details)}. Правка не получена.`, 12000);
-    return;
+    return Promise.resolve();
   }
-  new AuditResultModal(app, file, details, needsReview).open();
+  return new Promise<void>((resolve) => {
+    new AuditResultModal(app, file, details, needsReview, resolve).open();
+  });
 }
 
 /** Apply the revision into the original note (recoverable via Ctrl+Z / file
@@ -293,23 +314,35 @@ async function writeSiblingNote(app: App, file: TFile | null, revised: string, d
   }
 }
 
-/** Max change hunks to render with a toggle; any beyond this stay accepted. */
-const MAX_RENDERED_HUNKS = 40;
+/** Max change hunks to render with a toggle; any beyond this stay accepted (with
+ *  a note). High enough that real notes are shown in full. */
+const MAX_RENDERED_HUNKS = 200;
 
 /** Accept/reject dialog for a finished Council audit, with per-change toggles. */
 class AuditResultModal extends Modal {
+  private readonly original: string;
+  private readonly revised: string;
+  private readonly eol: string;
+  /** True when there's no usable original to diff against → offer whole-note apply. */
+  private readonly wholeOnly: boolean;
   private readonly hunks: DiffHunk[];
   /** Per change-hunk acceptance (indexed by change-hunk order); default all on. */
   private readonly accepted: boolean[];
+  private resolved = false;
 
   constructor(
     app: App,
     private readonly file: TFile | null,
     private readonly details: RunDetails,
-    private readonly needsReview: boolean
+    private readonly needsReview: boolean,
+    private readonly onResolve: () => void
   ) {
     super(app);
-    this.hunks = diffLines(details.original_text ?? "", details.revised_text ?? "");
+    this.original = details.original_text ?? "";
+    this.revised = details.revised_text ?? "";
+    this.eol = detectEol(this.original);
+    this.wholeOnly = this.original.trim() === "";
+    this.hunks = diffLines(this.original, this.revised);
     this.accepted = new Array(countChangeHunks(this.hunks)).fill(true);
   }
 
@@ -338,8 +371,34 @@ class AuditResultModal extends Modal {
       }
     }
 
-    const revised = this.details.revised_text ?? "";
+    const revised = this.revised;
     const changeCount = this.accepted.length;
+
+    // No usable original to diff against (the engine didn't return original_text):
+    // a per-change diff would be meaningless, so offer a whole-note apply.
+    if (this.wholeOnly) {
+      contentEl.createEl("p", {
+        text: "Оригинальный текст не получен от движка — доступно применение правки целиком.",
+      });
+      new Setting(contentEl)
+        .addButton((btn) =>
+          btn
+            .setButtonText("Применить к заметке (полностью)")
+            .setCta()
+            .onClick(async () => {
+              this.close();
+              await applyToNote(this.app, this.file, revised, this.details);
+            })
+        )
+        .addButton((btn) =>
+          btn.setButtonText("В отдельную заметку").onClick(async () => {
+            this.close();
+            await writeSiblingNote(this.app, this.file, revised, this.details);
+          })
+        )
+        .addButton((btn) => btn.setButtonText("Отмена").onClick(() => this.close()));
+      return;
+    }
 
     if (changeCount === 0) {
       contentEl.createEl("p", { text: "Изменений нет — правка совпадает с заметкой." });
@@ -366,7 +425,7 @@ class AuditResultModal extends Modal {
               if (on) set.add(i);
             });
             this.close();
-            await applyToNote(this.app, this.file, reconstruct(this.hunks, set), this.details);
+            await applyToNote(this.app, this.file, reconstruct(this.hunks, set, this.eol), this.details);
           })
       )
       .addButton((btn) =>
@@ -417,5 +476,9 @@ class AuditResultModal extends Modal {
 
   onClose(): void {
     this.contentEl.empty();
+    if (!this.resolved) {
+      this.resolved = true;
+      this.onResolve();
+    }
   }
 }
