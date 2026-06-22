@@ -49,6 +49,9 @@
 - [`architecture-review-2026-06.md`](architecture-review-2026-06.md) — архитектура конвейера.
 - [`methodology-paper-outline.md`](methodology-paper-outline.md) — скелет методологической
   статьи о проекте (для публикации).
+- [`ars-integration-notes.md`](ars-integration-notes.md) — что заимствовать у Academic
+  Research Skills (CC BY-NC 4.0) без конфликта с нашей Apache-2.0: правовая позиция
+  (переосмыслять методы, не копировать файлы, указывать авторство) + пять приоритетных заимствований.
 
 ## Разработка и развёртывание
 

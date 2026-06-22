@@ -2,6 +2,10 @@
 
 All notable changes to RuWritingStyles are documented here.
 
+## [2.10.2] - 2026-06-22
+### Added (docs — ARS borrow plan + license stance)
+- **`docs/ars-integration-notes.md`** — a plan for what RuWritingStyles can profitably borrow from [Academic Research Skills (ARS)](https://github.com/Imbad0202/academic-research-skills), the CC BY-NC 4.0 Claude Code research-pipeline plugin. Records the **license interaction up front**: ARS is CC BY-NC 4.0, this repo is Apache-2.0, so the two **do not mix per-file** — the chosen stance is *re-implement ARS's methods/protocols (ideas aren't copyrightable), do not copy ARS files, attribute generously anyway*. Includes ready-to-paste attribution blocks for `SOURCES.md` and `CITATION.cff`, deferred until the first borrow lands. Five ranked borrows, each mapped to an existing module: (1) **claim-faithfulness citation audit** → `citations.py`/`verification.py` (unblocks the Phase-1 presence-only grounding gap); (2) **reviewer calibration (FNR/FPR vs gold)** → `evals.py` + `GOLD_PROTOCOL.md` (unblocks the empty `docs/benchmark.md`, roadmap P2); (3) **multi-reviewer council** (EIC + 3 + Devil's Advocate, editorial-decision letter, re-review mode) → `council.py`/`peer_review.py` (F1 named councils); (4) **Russian "AI-tells" writing-quality check** → `styleguide.py`/`profiling.py`; (5) **Claude Code plugin packaging** → distribution play (roadmap 2.8). Planning-only; no code or borrow yet.
+
 ## [2.10.1] - 2026-06-14
 ### Added (Obsidian plugin M5 — release automation + packaging)
 - **`.github/workflows/release-obsidian-plugin.yml`** — on an `obsidian-v*` tag, builds the plugin and publishes a GitHub release with `main.js` / `manifest.json` / `styles.css` + a zip; `workflow_dispatch` runs a build+test smoke. The `obsidian-v` tag prefix keeps plugin releases distinct from the engine's versioning in this monorepo.
