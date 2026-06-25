@@ -519,5 +519,16 @@
     "city": "Strassburg",
     "publisher": "Trübner",
     "tags": ["веда", "грамматика"]
+  },
+  {
+    "id": "Bassett 2026",
+    "author": "Bassett M. A., Bradshaw W., Bornsztejn H., Hogg A., Murdoch K., Pearce B., Webber C.",
+    "year": 2026,
+    "title": "Heads we win, tails you lose: AI detectors in education",
+    "kind": "article",
+    "journal": "Journal of Higher Education Policy and Management",
+    "pages": "1–16",
+    "url": "https://doi.org/10.1080/1360080X.2026.2622146",
+    "tags": ["ИИ", "детекторы ИИ", "академическая этика", "генеративный ИИ", "раскрытие"]
   }
 ]

@@ -52,6 +52,9 @@
 - [`ars-integration-notes.md`](ars-integration-notes.md) — что заимствовать у Academic
   Research Skills (CC BY-NC 4.0) без конфликта с нашей Apache-2.0: правовая позиция
   (переосмыслять методы, не копировать файлы, указывать авторство) + пять приоритетных заимствований.
+- [`ajs-comparison-notes.md`](ajs-comparison-notes.md) — сравнение с Awesome-Journal-Skills
+  (MIT, Stanford REAP): не конкурент и не донор методов, но образец для расширения схемы
+  профилей журналов (`knowledge/journals/`).
 
 ## Разработка и развёртывание
 

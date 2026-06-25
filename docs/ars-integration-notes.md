@@ -149,6 +149,15 @@ paragraph length, monotonous rhythm) + Style Calibration that learns voice from 
 English) as a deterministic check, complementing the style passports. Squarely in our wheelhouse;
 re-implement, don't copy (ARS's list is English).
 
+> **⚠️ Design guardrail (Bassett et al. 2026, [doi:10.1080/1360080X.2026.2622146](https://doi.org/10.1080/1360080X.2026.2622146)).**
+> This check is the one place RuWritingStyles edges toward detector-like heuristics, and AI
+> detectors are exactly what that paper shows to be unverifiable and unfair. So the AI-tells
+> check must stay a **style-quality signal** — flag clichés / monotonous rhythm to *improve the
+> prose* — and must **never** be framed as an origin classifier, an "is this AI?" score, or an
+> accusation tool. It produces editing suggestions for the author, not a verdict on authorship.
+> This keeps the feature consistent with [AI_DISCLOSURE.md](AI_DISCLOSURE.md)'s
+> disclose-don't-detect stance.
+
 ### 5. Plugin packaging for distribution
 
 **ARS:** ships via `/plugin marketplace add … && /plugin install …`
@@ -194,4 +203,6 @@ sanctioned pattern.
 
 - Do not vendor ARS markdown into the Apache tree without the `third_party/ars/` carve-out above.
 - Do not adopt ARS's English writing-quality / anti-tell wordlists as-is — Russian patterns differ.
+- Do not let the AI-tells check (#4) become an AI-detector / authorship verdict — it is a
+  style-quality signal only (Bassett et al. 2026; see the guardrail under borrow #4).
 - Do not assume ARS's `ANTHROPIC_API_KEY`-first defaults; our primary provider is DeepSeek.
