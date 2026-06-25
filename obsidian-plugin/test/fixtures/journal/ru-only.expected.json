@@ -10,7 +10,10 @@
   "abstract": [
     {
       "lang": "ru",
-      "present": true
+      "present": true,
+      "words": 1,
+      "max": 200,
+      "over": 0
     },
     {
       "lang": "en",

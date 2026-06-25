@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -60,6 +61,39 @@ def render_run_report(run_dir: Path) -> str:
 ABSTRACT_MARKERS = {"ru": ("аннотац", "резюме"), "en": ("abstract",)}
 KEYWORDS_MARKERS = {"ru": ("ключевые слова",), "en": ("keywords", "key words")}
 
+# A "word" is a maximal run of letters/digits (underscore excluded). Mirrored in
+# the Obsidian port as /[\p{L}\p{N}]+/u — keep the two definitions equivalent.
+_WORD_RE = re.compile(r"[^\W_]+", re.UNICODE)
+
+
+def _abstract_word_count(text: str, low: str, markers: tuple) -> int:
+    """Count words in an abstract body for one language.
+
+    Locates the first marker, takes the paragraph it opens (up to the next blank
+    line), drops the label token (e.g. «Аннотация.»), and counts word runs.
+    Tuned for the inline «**Аннотация.** текст…» style used by the target
+    journals. An abstract placed under its own heading with a blank line before
+    the body is under-counted (only the heading sits in the block) — that is
+    safe, because the limit is a *maximum*, so under-counting can never raise a
+    false over-limit warning. Mirrored in obsidian-plugin/src/lint/journal.ts.
+    """
+    best: tuple | None = None
+    for m in markers:
+        pos = low.find(m)
+        if pos != -1 and (best is None or pos < best[0]):
+            best = (pos, len(m))
+    if best is None:
+        return 0
+    idx, mlen = best
+    end = text.find("\n\n", idx)
+    block = text[idx:] if end == -1 else text[idx:end]
+    j, n = mlen, len(block)
+    while j < n and block[j].isalpha():  # rest of the label word
+        j += 1
+    while j < n and not block[j].isalnum():  # punctuation / emphasis / space
+        j += 1
+    return len(_WORD_RE.findall(block[j:]))
+
 
 def journal_compliance(text: str, profile: dict) -> dict:
     """Pure journal-compliance check shared by the report and the Obsidian port.
@@ -87,15 +121,25 @@ def journal_compliance(text: str, profile: dict) -> dict:
             "max": max_chars,
             "over": max(0, current - max_chars),
         }
-    for key, markers, out in (
-        ("abstract_required", ABSTRACT_MARKERS, "abstract"),
-        ("keywords_required", KEYWORDS_MARKERS, "keywords"),
-    ):
-        langs = profile.get(key)
-        if isinstance(langs, list):
-            for lang in langs:
-                present = any(m in low for m in markers.get(lang, ()))
-                result[out].append({"lang": lang, "present": present})
+    max_words = profile.get("abstract_max_words")
+    has_word_limit = isinstance(max_words, int) and max_words > 0
+    abstract_langs = profile.get("abstract_required")
+    if isinstance(abstract_langs, list):
+        for lang in abstract_langs:
+            markers = ABSTRACT_MARKERS.get(lang, ())
+            present = any(m in low for m in markers)
+            item = {"lang": lang, "present": present}
+            if has_word_limit and present:
+                words = _abstract_word_count(text, low, markers)
+                item["words"] = words
+                item["max"] = max_words
+                item["over"] = max(0, words - max_words)
+            result["abstract"].append(item)
+    keyword_langs = profile.get("keywords_required")
+    if isinstance(keyword_langs, list):
+        for lang in keyword_langs:
+            present = any(m in low for m in KEYWORDS_MARKERS.get(lang, ()))
+            result["keywords"].append({"lang": lang, "present": present})
     return result
 
 
@@ -126,7 +170,13 @@ def _journal_section(run_dir: Path) -> str:
     for label, items in (("Аннотация", comp["abstract"]), ("Ключевые слова", comp["keywords"])):
         if items:
             langs = [it["lang"] for it in items]
-            parts = [f"{it['lang']} {'✓' if it['present'] else '⚠ нет'}" for it in items]
+            parts = []
+            for it in items:
+                mark = "✓" if it["present"] else "⚠ нет"
+                if "words" in it:
+                    wflag = "OK" if it["over"] == 0 else f"⚠ +{it['over']} сверх лимита"
+                    mark = f"{mark} ({it['words']}/{it['max']} слов — {wflag})"
+                parts.append(f"{it['lang']} {mark}")
             lines.append(f"- {label} ({', '.join(langs)}): {', '.join(parts)}")
     return "\n".join(lines)
 

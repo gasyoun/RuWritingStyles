@@ -47,6 +47,11 @@ CASES = [
      "profile": {"id": "tiny", "name": "Tiny", "max_chars": 50,
                  "abstract_required": [], "keywords_required": []},
      "text": "# Заголовок\n\n" + "слово " * 40},
+    # Abstract word limit — body of 7 words against a max of 5 (over by 2).
+    {"name": "abstract-over-words",
+     "profile": {"id": "tiny-abs", "name": "Tiny Abs", "abstract_required": ["ru"],
+                 "abstract_max_words": 5, "keywords_required": []},
+     "text": "# T\n\n**Аннотация.** один два три четыре пять шесть семь.\n\nТекст.\n"},
 ]
 
 

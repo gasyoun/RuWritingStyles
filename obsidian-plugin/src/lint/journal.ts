@@ -8,6 +8,7 @@
 
 import type {
   JournalCompliance,
+  JournalLangCheck,
   JournalProfile,
   Severity,
 } from "./types.ts";
@@ -21,6 +22,35 @@ const KEYWORDS_MARKERS: Record<string, string[]> = {
   ru: ["ключевые слова"],
   en: ["keywords", "key words"],
 };
+
+// A "word" is a maximal run of letters/digits — mirrors the engine's
+// _WORD_RE = /[^\W_]+/u in report.py. Keep the two definitions equivalent.
+const WORD_RE = /[\p{L}\p{N}]+/gu;
+const ALPHA_RE = /\p{L}/u;
+const ALNUM_RE = /[\p{L}\p{N}]/u;
+
+/** Count words in an abstract body for one language — a faithful port of the
+ *  engine's report._abstract_word_count(). Tuned for the inline
+ *  «**Аннотация.** текст…» style; an abstract under its own heading with a
+ *  blank line before the body is under-counted, which is safe for a maximum. */
+function abstractWordCount(text: string, low: string, markers: string[]): number {
+  let idx = -1;
+  let mlen = 0;
+  for (const m of markers) {
+    const pos = low.indexOf(m);
+    if (pos !== -1 && (idx === -1 || pos < idx)) {
+      idx = pos;
+      mlen = m.length;
+    }
+  }
+  if (idx === -1) return 0;
+  const end = text.indexOf("\n\n", idx);
+  const block = end === -1 ? text.slice(idx) : text.slice(idx, end);
+  let j = mlen;
+  while (j < block.length && ALPHA_RE.test(block[j])) j++; // rest of the label word
+  while (j < block.length && !ALNUM_RE.test(block[j])) j++; // punctuation / emphasis / space
+  return (block.slice(j).match(WORD_RE) ?? []).length;
+}
 
 /** Run the journal-compliance check, or null when no journal is selected. */
 export function checkJournal(
@@ -51,9 +81,21 @@ export function checkJournal(
     };
   }
 
+  const maxWords =
+    typeof profile.abstract_max_words === "number" && profile.abstract_max_words > 0
+      ? profile.abstract_max_words
+      : null;
   for (const lang of profile.abstract_required ?? []) {
     const markers = ABSTRACT_MARKERS[lang] ?? [];
-    comp.abstract.push({ lang, present: markers.some((m) => low.includes(m)) });
+    const present = markers.some((m) => low.includes(m));
+    const item: JournalLangCheck = { lang, present };
+    if (maxWords !== null && present) {
+      const words = abstractWordCount(normalized, low, markers);
+      item.words = words;
+      item.max = maxWords;
+      item.over = Math.max(0, words - maxWords);
+    }
+    comp.abstract.push(item);
   }
   for (const lang of profile.keywords_required ?? []) {
     const markers = KEYWORDS_MARKERS[lang] ?? [];
@@ -85,6 +127,13 @@ export function journalGaps(comp: JournalCompliance): JournalGap[] {
         severity: "warning",
         message: `Нет аннотации на языке «${a.lang}» (требует «${comp.name}»).`,
       });
+    } else if (a.over && a.over > 0) {
+      gaps.push({
+        severity: "warning",
+        message:
+          `Аннотация «${a.lang}» — ${a.words} слов, превышает лимит журнала ` +
+          `«${comp.name}» (${a.max}) на ${a.over}.`,
+      });
     }
   }
   for (const k of comp.keywords) {
@@ -110,7 +159,13 @@ export function summarizeJournal(comp: JournalCompliance): string {
   if (comp.abstract.length) {
     parts.push(
       "аннотация " +
-        comp.abstract.map((a) => `${a.lang} ${a.present ? "✓" : "✗"}`).join(" ")
+        comp.abstract
+          .map((a) => {
+            const base = `${a.lang} ${a.present ? "✓" : "✗"}`;
+            if (a.words === undefined) return base;
+            return `${base} (${a.words}/${a.max}${a.over ? ` +${a.over}` : " ✓"})`;
+          })
+          .join(" ")
     );
   }
   if (comp.keywords.length) {

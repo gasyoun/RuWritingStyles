@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 from ruwritingstyles.cli import build_parser
-from ruwritingstyles.report import _journal_section
+from ruwritingstyles.report import _journal_section, journal_compliance
 
 PROFILE = {
     "id": "test-journal",
@@ -51,6 +51,52 @@ class JournalComplianceSectionTests(unittest.TestCase):
         ))
         self.assertIn("ru ✓, en ✓", section)
         self.assertNotIn("⚠ нет", section)
+
+
+class AbstractWordCountTests(unittest.TestCase):
+    def test_counts_words_and_flags_over_limit(self) -> None:
+        profile = {"name": "J", "abstract_required": ["ru"], "abstract_max_words": 5}
+        comp = journal_compliance(
+            "# T\n\n**Аннотация.** один два три четыре пять шесть.\n\nТекст.\n", profile
+        )
+        self.assertEqual(
+            comp["abstract"][0],
+            {"lang": "ru", "present": True, "words": 6, "max": 5, "over": 1},
+        )
+
+    def test_within_limit_reports_zero_over(self) -> None:
+        profile = {"name": "J", "abstract_required": ["ru"], "abstract_max_words": 200}
+        comp = journal_compliance("**Аннотация.** один два три.\n\nX.\n", profile)
+        item = comp["abstract"][0]
+        self.assertEqual(item["words"], 3)
+        self.assertEqual(item["over"], 0)
+
+    def test_no_word_fields_without_limit(self) -> None:
+        # Profiles without abstract_max_words keep the original presence-only shape.
+        comp = journal_compliance("**Аннотация.** один два.", {"name": "J", "abstract_required": ["ru"]})
+        self.assertEqual(comp["abstract"][0], {"lang": "ru", "present": True})
+
+    def test_absent_abstract_has_no_word_fields(self) -> None:
+        profile = {"name": "J", "abstract_required": ["en"], "abstract_max_words": 200}
+        comp = journal_compliance("**Аннотация.** только русская.\n\nX.\n", profile)
+        self.assertEqual(comp["abstract"][0], {"lang": "en", "present": False})
+
+    def test_section_renders_word_count(self) -> None:
+        profile = {
+            "id": "j", "name": "J", "max_chars": 40000,
+            "abstract_required": ["ru"], "abstract_max_words": 5, "keywords_required": [],
+        }
+        d = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: __import__("shutil").rmtree(d, ignore_errors=True))
+        (d / "project-context.json").write_text(
+            json.dumps({"journal_profile": profile}, ensure_ascii=False), encoding="utf-8"
+        )
+        (d / "normalized.md").write_text(
+            "# T\n\n**Аннотация.** один два три четыре пять шесть.\n", encoding="utf-8"
+        )
+        section = _journal_section(d)
+        self.assertIn("6/5 слов", section)
+        self.assertIn("+1 сверх лимита", section)
 
 
 if __name__ == "__main__":

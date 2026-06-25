@@ -51,21 +51,27 @@ RuWritingStyles' journal layer is thin — 3 presets
 capture**, observed across hundreds of venues. Candidate fields to lift from AJS's structure
 (re-implemented for our deterministic checks, not copied):
 
+- **abstract word limit** — ✅ **SHIPPED (v2.10.4).** `abstract_max_words` is now a checkable
+  field: [report.py](../src/ruwritingstyles/report.py)'s `journal_compliance` extracts the abstract
+  body per language and counts words; over-limit is flagged in the report and the Obsidian panel.
+  Backfilled on [vestnik-spbu.json](../knowledge/journals/vestnik-spbu.json) (`200`), converting
+  the old prose note "расширенная, до 200 слов" into an enforced rule. The gúṇa article reports
+  114/200 — OK. This was the concrete trigger that motivated the whole AJS comparison.
 - **structure / section order** — required sections and their order (e.g. IMRaD vs. humanities
-  free-form), so the report can flag a missing/mis-ordered section.
-- **abstract constraints** — not just *which languages* but **word/char limits** and structured
-  vs. unstructured (Вестник СПбГУ already wants "расширенная, до 200 слов" — currently only prose
-  in `notes`, not a checkable field).
-- **keywords constraints** — min/max count.
+  free-form), so the report can flag a missing/mis-ordered section. *(not yet built)*
+- **keywords constraints** — min/max count. *(not yet built)*
 - **figures/tables** — formatting/caption rules (low priority for philology, but cheap to model).
 - **reviewer-response template** — AJS ships these per venue; maps to a future RuWritingStyles
   "rebuttal helper" rather than the review pipeline.
 
-**Upgrade path (when picked up):** extend `journal-profile.schema.json` with optional
-`abstract_max_words`, `keywords_min` / `keywords_max`, `required_sections` (array); teach
-[report.py](../src/ruwritingstyles/report.py)'s `journal_compliance` to check them deterministically
-(same pattern as the existing abstract/keyword-presence check); backfill the 3 presets. Pure
-deterministic layer, no provider call — fits the existing `--journal` machinery exactly.
+**Pattern for the remaining fields (prose note → enforced rule):** add the optional field to
+`journal-profile.schema.json`; teach [report.py](../src/ruwritingstyles/report.py)'s
+`journal_compliance` to check it deterministically (no provider call); **mirror it in the Obsidian
+port** [obsidian-plugin/src/lint/journal.ts](../obsidian-plugin/src/lint/journal.ts) +
+[types.ts](../obsidian-plugin/src/lint/types.ts) and regenerate fixtures
+(`python tools/export_journal_fixtures.py`); backfill the presets. The `abstract_max_words` commit
+is the worked example to copy — note the engine↔TS parity obligation enforced by
+`obsidian-plugin/test/journal.test.ts`.
 
 ## Do-not-do
 

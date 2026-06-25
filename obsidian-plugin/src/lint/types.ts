@@ -21,6 +21,7 @@ export interface JournalProfile {
   transliteration_scheme?: string;
   first_mention_rule?: string;
   abstract_required?: string[];
+  abstract_max_words?: number;
   keywords_required?: string[];
   notes?: string;
 }
@@ -66,10 +67,16 @@ export interface Finding {
   to?: number;
 }
 
-/** Presence of a required abstract/keywords block in one language. */
+/** Presence of a required abstract/keywords block in one language. The word
+ *  fields are present only for abstracts when the profile sets
+ *  `abstract_max_words` and the block is present. */
 export interface JournalLangCheck {
   lang: string;
   present: boolean;
+  words?: number;
+  max?: number;
+  /** words over the limit; 0 = within limit. */
+  over?: number;
 }
 
 export interface JournalLength {
