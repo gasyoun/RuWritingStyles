@@ -1,6 +1,6 @@
 # Borrowing from Academic Research Skills (ARS) — integration notes
 
-**Status:** plan / not yet started · **Author of note:** Claude Code session 2026-06-22 · **Decision owner:** M. Gasūns
+**Status:** first non-provider scaffold landed 2026-06-26 · **Author of note:** Claude Code session 2026-06-22 · **Decision owner:** M. Gasūns
 
 ## What ARS is
 
@@ -102,6 +102,12 @@ hallucinated ([docs/case-study-phase1.md](case-study-phase1.md)).
 the ref resolves). Adds HIGH-WARN classes to `verification.schema.json`. **Unblocks** the Phase-1
 citation-grounding gap. No ARS files copied.
 
+**First scaffold landed 2026-06-26:** [`claim-faithfulness-audit.md`](claim-faithfulness-audit.md)
+defines the local packet/workflow, and
+[`claim-faithfulness-audit.schema.json`](../schemas/claim-faithfulness-audit.schema.json)
+validates claim-level support status, locator, severity, rationale, and reviewer action. This is
+still a protocol scaffold, not a provider run over unpublished text.
+
 ### 2. Reviewer calibration → fill `benchmark.md`
 
 **ARS:** measures its own false-negative / false-positive rate against a user-supplied gold set —
@@ -115,6 +121,10 @@ is empty.
 
 **Upgrade:** adopt ARS's FNR/FPR-against-gold methodology as the protocol for the DeepSeek council
 benchmark. Plugs straight into the existing gold cases. **Unblocks P2.**
+
+**First scaffold landed 2026-06-26:** [`reviewer-calibration-protocol.md`](reviewer-calibration-protocol.md)
+defines true/false positive and false-negative measurements, reviewer agreement, and the gate
+before claim-faithfulness warnings feed the main verification report.
 
 ### 3. Multi-reviewer council design for the `indology` cluster
 

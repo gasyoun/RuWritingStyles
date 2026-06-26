@@ -2,6 +2,11 @@
 
 All notable changes to RuWritingStyles are documented here.
 
+## [2.10.5] - 2026-06-26
+### Added (CLI parity test + ARS scaffold)
+- **CLI/CI parity guard:** added `tests/test_cli_reports.py`, a hermetic CLI-level regression test that runs `rws run` in a temporary repo fixture and verifies the CLI path emits `report.md`, `summary.html`, `report.tex`, `references.bib`, and `references-gost.md`.
+- **First ARS borrow scaffold:** added `docs/claim-faithfulness-audit.md`, `docs/reviewer-calibration-protocol.md`, `schemas/claim-faithfulness-audit.schema.json`, and schema tests. This re-implements ARS-inspired claim-support and reviewer-calibration protocols without copying ARS files or running a provider over unpublished text. Attribution is now recorded in `SOURCES.md` and `CITATION.cff`.
+
 ## [2.10.4] - 2026-06-25
 ### Added (journal compliance — enforceable abstract word limit)
 - **`abstract_max_words` is now a checkable journal-profile field** — the first concrete borrow from the [Awesome-Journal-Skills](docs/ajs-comparison-notes.md) comparison. Вестник СПбГУ's requirement, previously only prose in the profile's `notes` ("расширенная, до 200 слов"), is now an enforced rule on [`knowledge/journals/vestnik-spbu.json`](knowledge/journals/vestnik-spbu.json) (`abstract_max_words: 200`).

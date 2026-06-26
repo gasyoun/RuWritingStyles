@@ -40,3 +40,13 @@ keywords:
 #   - type: doi
 #     value: 10.5281/zenodo.XXXXXXX
 #     description: "Concept DOI (all versions)"
+references:
+  - type: software
+    title: "Academic Research Skills for Claude Code"
+    authors:
+      - alias: Imbad0202
+    version: "3.13.0"
+    license: CC-BY-NC-4.0
+    doi: 10.5281/zenodo.20696614
+    repository-code: "https://github.com/Imbad0202/academic-research-skills"
+    notes: "Design/protocol donor for citation-faithfulness audit and reviewer calibration. Methods re-implemented, not copied."
