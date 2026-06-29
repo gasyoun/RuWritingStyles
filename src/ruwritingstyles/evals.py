@@ -168,12 +168,24 @@ def run_eval_case(
         )
         write_revision_diff(run_dir)
         verification = create_verification_bundle(repo_root=repo_root, run_dir=run_dir)
-        execute_verification_artifact(
-            repo_root=repo_root,
-            verification_path=verification.verification_json,
-            provider=provider,
-            model=model,
-        )
+        try:
+            execute_verification_artifact(
+                repo_root=repo_root,
+                verification_path=verification.verification_json,
+                provider=provider,
+                model=model,
+            )
+        except Exception as exc:  # provider timeout / transport error on verify
+            # A failed verify stage must not abort the whole case before
+            # _write_eval_result, nor leave a status-less verification.json
+            # (which downstream defaults to "missing"). Record an honest,
+            # complete verdict instead.
+            _ensure_verification_status(
+                verification.verification_json,
+                note=f"verify stage did not complete: {type(exc).__name__}: {exc}",
+            )
+        else:
+            _ensure_verification_status(verification.verification_json)
 
         impact = create_impact_bundle(repo_root=repo_root, run_dir=run_dir)
         execute_impact_artifact(
@@ -482,6 +494,33 @@ def _scoring_int_or_none(data: dict[str, Any], key: str) -> int | None:
     scoring = data.get("scoring") if isinstance(data.get("scoring"), dict) else {}
     value = scoring.get(key)
     return int(value) if isinstance(value, int) else None
+
+
+def _ensure_verification_status(path: Path, *, note: str | None = None) -> None:
+    """Guarantee verification.json carries a usable ``status``.
+
+    The fact-checking loop overwrites verification.json with bare
+    ``{"warnings": [...]}`` feedback between iterations, and a timed-out or
+    failed verify stage can leave the file status-less. Either way a downstream
+    reader (``_write_eval_result``) would default the status to ``"missing"`` —
+    an unscoreable plumbing artifact rather than an honest verdict. Repair a
+    status-less doc to ``needs_human_review`` (the verification could not be
+    completed automatically) and record why in ``warnings`` so a strict-fidelity
+    case still fails on the unconfirmed fidelity rather than passing silently.
+    """
+    try:
+        doc = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    except (json.JSONDecodeError, OSError):
+        doc = {}
+    if not isinstance(doc, dict):
+        doc = {}
+    if str(doc.get("status") or "").strip():
+        return
+    doc["status"] = "needs_human_review"
+    warnings = list(doc.get("warnings") or [])
+    warnings.append(note or "verification incomplete; status defaulted to needs_human_review")
+    doc["warnings"] = warnings
+    path.write_text(json.dumps(doc, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def _write_eval_result(
