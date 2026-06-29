@@ -90,6 +90,31 @@ temperature=0 / голосования). Это методологическая
 **не ослаблялся** (это было бы подгонкой золотого протокола) — калибровать ли его под
 длину входа, решает автор.
 
+## Прогон 2026-06-29: 2/5 (deepseek-chat)
+
+Повторный прогон 5 нон-детерминированных GOLD_SANSKRIT кейсов. Детекция осталась 5/5;
+ревизионная точность улучшилась — `sanskrit-pseudo-etymology` теперь укладывается в
+лимиты; `samasa-misclassification` стабильно проходит второй раз. Новая находка:
+`karaka-not-padezh` и `commentary-layer-mix` вернули `verification_status: missing` —
+верификационный шаг не записал результат (вероятно, race condition при фоновом запуске
+или DeepSeek truncation на стадии verify).
+
+| Кейс | Поймал | Верификация | Δ строк | Δ символов | Зачёт |
+|---|---|---|---|---|---|
+| sanskrit-pseudo-etymology | ✅ `unsupported_sanskrit_etymology` | needs_human_review | 0.10 | 0.19 | ✅ |
+| karaka-not-padezh | ✅ `mistranslated_native_term` | **missing** | 0.38 | **0.76** | ❌ |
+| vedic-classical-anachronism | ✅ `anachronistic_sanskrit_period` | passed | **0.57** | **0.54** | ❌ |
+| samasa-misclassification | ✅ `wrong_samasa_type` | passed | **0.60** | 0.37 | ✅ |
+| commentary-layer-mix | ✅ `missing_commentary_layer` | **missing** | **0.54** | **1.83** | ❌ |
+
+**Детекция: 5/5. Diff-fidelity: 2/5. Общий зачёт: 2/5** (был 1/5 на 2026-06-14).
+
+Паттерн провалов не изменился: модель переписывает слишком много символов
+(`commentary-layer-mix` Δ=1.83 — почти удваивает объём входа). `vedic-classical-anachronism`
+вплотную к границе (Δ=0.54 при лимите 0.5). `verification_status: missing` у двух кейсов —
+новый симптом, требует диагностики в `evals.py` (`_write_eval_result` не вызвался при
+фоновом прогоне или DeepSeek timeout на стадии verify).
+
 ## Как воспроизвести
 
 ```bash
