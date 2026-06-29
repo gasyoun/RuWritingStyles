@@ -72,6 +72,30 @@ class DeepSeekProviderTests(unittest.TestCase):
             with self.assertRaises(ProviderError):
                 DeepSeekProvider(api_key="k").generate_json(_request())
 
+    def test_truncated_content_retries_once_then_succeeds(self) -> None:
+        # A 200 whose content is truncated mid-JSON (flaky-network failure mode
+        # that crashed an eval case at the review stage) must be retried once;
+        # the complete second response then parses. Regression guard for that.
+        truncated = _ok(text='{"style_id": "lidova-commentary",')  # cut off mid-object
+        complete = _ok(text='{"ok": true}')
+        with patch.object(
+            providers, "_post_json_with_retries", side_effect=[truncated, complete]
+        ) as post:
+            provider = DeepSeekProvider(api_key="k")
+            result = provider.generate_json(_request())
+        self.assertEqual(result, {"ok": True})
+        self.assertEqual(post.call_count, 2)  # retried exactly once
+        self.assertIn("truncated_json", provider.retry_telemetry()["retry_statuses"])
+
+    def test_truncated_content_twice_raises_after_one_retry(self) -> None:
+        truncated = _ok(text='{"style_id":')  # truncated on both attempts
+        with patch.object(
+            providers, "_post_json_with_retries", side_effect=[truncated, truncated]
+        ) as post:
+            with self.assertRaises(ProviderError):
+                DeepSeekProvider(api_key="k").generate_json(_request())
+        self.assertEqual(post.call_count, 2)  # one retry, then give up (no infinite loop)
+
     def test_factory_resolves_deepseek(self) -> None:
         with patch.dict(os.environ, {"DEEPSEEK_API_KEY": "k"}):
             self.assertIsInstance(provider_from_name("deepseek"), DeepSeekProvider)
