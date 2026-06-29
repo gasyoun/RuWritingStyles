@@ -900,35 +900,53 @@ class DeepSeekProvider(BaseProvider):
         }
 
         telemetry = ProviderRetryTelemetry()
+        # _post_json_with_retries retries transport/5xx errors, but a 200 whose
+        # *content* is truncated mid-JSON (common on a flaky network) parses as
+        # valid HTTP yet fails json.loads(content). That is transient too — retry
+        # the whole call once before giving up, so one truncated response does not
+        # crash the caller (e.g. an eval case dying at the review stage).
+        text = ""
+        last_exc: json.JSONDecodeError | None = None
         try:
-            data = _post_json_with_retries(
-                provider_name="DeepSeek",
-                url=self.endpoint,
-                body=body,
-                headers={
-                    "Authorization": f"Bearer {self.api_key}",
-                    "Content-Type": "application/json",
-                },
-                telemetry=telemetry,
-            )
+            for content_attempt in range(2):  # one retry on truncated content
+                data = _post_json_with_retries(
+                    provider_name="DeepSeek",
+                    url=self.endpoint,
+                    body=body,
+                    headers={
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json",
+                    },
+                    telemetry=telemetry,
+                )
+
+                usage = data.get("usage", {})
+                self._set_usage(ProviderUsage(
+                    input_tokens=usage.get("prompt_tokens", 0),
+                    output_tokens=usage.get("completion_tokens", 0),
+                    total_tokens=usage.get("total_tokens", 0),
+                ))
+
+                if "choices" not in data or not data["choices"]:
+                    raise ProviderError(f"DeepSeek response missing choices: {data}")
+
+                text = data["choices"][0]["message"]["content"]
+                try:
+                    return json.loads(text)
+                except json.JSONDecodeError as exc:
+                    last_exc = exc
+                    if content_attempt == 0:
+                        telemetry.record("truncated_json", 0.0)
+                        continue
+                    raise ProviderError(
+                        f"DeepSeek response did not contain parseable JSON: {text[:500]}"
+                    ) from exc
         finally:
             self._set_retry_telemetry(telemetry)
-
-        usage = data.get("usage", {})
-        self._set_usage(ProviderUsage(
-            input_tokens=usage.get("prompt_tokens", 0),
-            output_tokens=usage.get("completion_tokens", 0),
-            total_tokens=usage.get("total_tokens", 0),
-        ))
-
-        if "choices" not in data or not data["choices"]:
-            raise ProviderError(f"DeepSeek response missing choices: {data}")
-
-        text = data["choices"][0]["message"]["content"]
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError as exc:
-            raise ProviderError(f"DeepSeek response did not contain parseable JSON: {text[:500]}") from exc
+        # The loop returns on success or raises on the second parse failure.
+        raise ProviderError(
+            f"DeepSeek response did not contain parseable JSON: {text[:500]}"
+        ) from last_exc
 
 
 def provider_from_name(name: str) -> BaseProvider:
