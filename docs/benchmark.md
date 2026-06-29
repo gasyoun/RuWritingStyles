@@ -115,6 +115,30 @@ temperature=0 / голосования). Это методологическая
 новый симптом, требует диагностики в `evals.py` (`_write_eval_result` не вызвался при
 фоновом прогоне или DeepSeek timeout на стадии verify).
 
+## Прогон 2026-06-29 (после фикса `verification_status: missing`): 3/5 (deepseek-chat)
+
+После [PR #51](https://github.com/gasyoun/RuWritingStyles/pull/51) (try/except вокруг
+verify-стадии + `_ensure_verification_status`) — повторный живой прогон 5 золотых кейсов на
+deepseek-chat. **Симптом `missing` устранён полностью:** каждый кейс возвращает реальный статус.
+
+| Кейс | Поймал | Верификация | diff_ok | Зачёт |
+|---|---|---|---|---|
+| sanskrit-pseudo-etymology | ✅ `unsupported_sanskrit_etymology` | passed | ✅ | ✅ |
+| samasa-misclassification | ✅ `wrong_samasa_type` | passed | ✅ | ✅ |
+| commentary-layer-mix | ✅ `missing_commentary_layer` | passed | ✅ | ✅ |
+| karaka-not-padezh | ✅ `mistranslated_native_term` | **passed** (был `missing`) | ❌ | ❌ |
+| vedic-classical-anachronism | ✅ `anachronistic_sanskrit_period` | needs_human_review (был `missing`-класс) | ❌ | ❌ |
+
+**Детекция: 5/5. Общий зачёт: 3/5** (был 2/5). Оба оставшихся провала — известный рычаг
+«ревизия переписывает слишком много» (`diff_within_limits: False`), не плумбинг и не детекция.
+
+**Заметка о флакки-сети.** В батч-прогоне всех пяти кейсов `commentary-layer-mix` один раз
+упал на стадии **review** с обрезанным JSON DeepSeek (truncation); повторный точечный прогон
+прошёл чисто (зачёт ✅) → падение транзиентное (сеть), а не детерминированный баг.
+Низкоприоритетный follow-up: распространить try/except-устойчивость на остальные LLM-стадии
+(review/council/revision/impact), чтобы обрезанный ответ деградировал в `needs_human_review`,
+а не валил весь кейс.
+
 ## Как воспроизвести
 
 ```bash
