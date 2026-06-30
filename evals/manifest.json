@@ -807,11 +807,13 @@
         "zalizniak-zametki"
       ],
       "expected_risks": [
-        "unsupported_sanskrit_etymology"
+        "unsupported_sanskrit_etymology",
+        "unsupported_etymology"
       ],
       "scoring": {
         "required_finding_types": [
-          "unsupported_sanskrit_etymology"
+          "unsupported_sanskrit_etymology",
+          "unsupported_etymology"
         ],
         "min_required_matches": 1,
         "strict_fidelity": false
