@@ -139,6 +139,28 @@ deepseek-chat. **Симптом `missing` устранён полностью:**
 (review/council/revision/impact), чтобы обрезанный ответ деградировал в `needs_human_review`,
 а не валил весь кейс.
 
+## Прогон 2026-06-30: 0/5 — подтверждение недетерминизма + новый тип провала
+
+Точечный прогон всех 5 нон-детерминированных GOLD\_SANSKRIT кейсов на `deepseek-chat`.
+
+| Кейс | Поймал | Верификация | Δ символов | Зачёт |
+|---|---|---|---|---|
+| sanskrit-pseudo-etymology | ❌ несовпадение метки: нашёл `unsupported_etymology`, ожидалось `unsupported_sanskrit_etymology` | needs_human_review | **0.00** ✅ | ❌ |
+| karaka-not-padezh | ✅ `mistranslated_native_term` | passed | **1.745** | ❌ |
+| vedic-classical-anachronism | ✅ `anachronistic_sanskrit_period` | passed | **0.586** | ❌ |
+| samasa-misclassification | ✅ `wrong_samasa_type` | passed | **0.542** | ❌ |
+| commentary-layer-mix | ✅ `missing_commentary_layer` | passed | **0.613** | ❌ |
+
+**Детекция: 4/5. Общий зачёт: 0/5** (был 3/5 вчера).
+
+**Два независимых источника провалов:**
+
+1. **Diff-fidelity (4 кейса)** — модель по-прежнему переписывает короткие заглушки (~300–450 знаков) сверх лимита `max_char_delta_ratio = 0.5`. Паттерн устойчив; три кейса, прошедших вчера (`samasa`, `commentary-layer-mix`), сегодня провалились из-за недетерминизма DeepSeek. Единственный надёжный способ убрать этот рычаг — либо ужесточить `revision`-промпт ещё раз, либо calibrate лимит под длину входа (решение за автором).
+
+2. **Несовпадение метки типа находки (1 кейс, новый)** — `sanskrit-pseudo-etymology` нашёл концептуально верную проблему (5 находок, включая `unsupported_etymology`, `accidental_similarity`, `weak_historical_inference`), но использовал метку `unsupported_etymology` вместо ожидаемого `unsupported_sanskrit_etymology`. Ревизия при этом минимальна (Δ=0.0). Это **НЕ** провал детекции — провал точного совпадения строки в скорере. Варианты исправления: (a) ослабить скорер до substring-совпадения `unsupported.*etymology`; (b) добавить `unsupported_etymology` как принимаемый alias в манифесте кейса; (c) ждать — при следующем прогоне модель может выдать точную метку (недетерминизм).
+
+**Вывод о надёжности метрики.** Разброс 0/5 → 3/5 → 0/5 за три прогона при неизменном коде подтверждает, что single-run accuracy бесполезна как метрика. Надёжная оценка требует ≥5 прогонов с усреднением или temperature=0 (если DeepSeek поддерживает детерминизм на chat-endpoint).
+
 ## Как воспроизвести
 
 ```bash
