@@ -27,17 +27,24 @@
 ## Цитирование и использование ИИ
 
 - [`../CITATION.cff`](../CITATION.cff) — как цитировать («Cite this repository»).
+- [`zenodo-doi-steps.md`](zenodo-doi-steps.md) — кнопки автора для минтинга Zenodo-DOI и
+  готовый патч в `CITATION.cff`/README после его получения.
 - [`AI_DISCLOSURE.md`](AI_DISCLOSURE.md) — готовые формулы декларации ИИ для статьи (рус./англ.).
 - [`../metadata/dublin-core.xml`](../metadata/dublin-core.xml) — метаданные паспортов (DCMI).
 
 ## Как это устроено
 
+- [`ENGINE.md`](ENGINE.md) — инженерная документация движка: возможности, 17 филологических
+  школ-кластеров, контракт артефактов, быстрый старт CLI, feedback loop (вынесено из README).
 - [`philological-feedback-loop.md`](philological-feedback-loop.md) — идея «Совета» и петли
   обратной связи.
 - [`agent-protocol.md`](agent-protocol.md) — протокол: как стили проверяют документ,
   отвечают друг другу, синтезируют правку.
 - [`style-contract.md`](style-contract.md) — контракт паспорта стиля.
-- [`roadmap-sanskrit-dh.md`](roadmap-sanskrit-dh.md) — дорожная карта Sanskrit/DH (фазы 0–4).
+- [`roadmap-2026-q3.md`](roadmap-2026-q3.md) — **актуальная единственная дорожная карта**
+  (Доверенный бенчмарк, фазы B1/B2/R1/R2). Прежние поколения (`roadmap.md`,
+  `roadmap-sanskrit-dh.md`, `../GEMINI_ROADMAP.md`, `provider-roadmaps.md`) помечены
+  архивными шапками.
 
 ## Рецензии (для рецензентов кода)
 
@@ -47,8 +54,10 @@
   паспортов и сохранение голоса стиля по конвейеру.
 - [`data-schema-review-2026-06.md`](data-schema-review-2026-06.md) — слой данных и схем.
 - [`architecture-review-2026-06.md`](architecture-review-2026-06.md) — архитектура конвейера.
-- [`methodology-paper-outline.md`](methodology-paper-outline.md) — скелет методологической
-  статьи о проекте (для публикации).
+- [`methodology-paper-draft.ru.md`](methodology-paper-draft.ru.md) — **полный русский
+  черновик** методологической статьи «Совет филологов» (A29, 3/5) с усреднёнными числами
+  бенчмарка (0.48→0.92) и кейсом *guṇa*; [`methodology-paper-outline.md`](methodology-paper-outline.md)
+  — исходный скелет; [`paper-pack/`](paper-pack/) — cover letter + чек-лист площадок.
 - [`ars-integration-notes.md`](ars-integration-notes.md) — что заимствовать у Academic
   Research Skills (CC BY-NC 4.0) без конфликта с нашей Apache-2.0: правовая позиция
   (переосмыслять методы, не копировать файлы, указывать авторство) + пять приоритетных заимствований.

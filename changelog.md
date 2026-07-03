@@ -3,6 +3,10 @@
 All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
+### Changed (publication pass — Zenodo/paper/docs consolidation, roadmap-2026-q3 Phase R2, H075)
+- **Zenodo/citation metadata release-ready.** [`CITATION.cff`](CITATION.cff) + [`.zenodo.json`](.zenodo.json) now carry the canonical byline (Gasūns, Mārcis · ORCID 0000-0003-4513-884X · Independent scholar · gasyoun@ya.ru), version bumped to 2.12.0. Author steps to mint the DOI and a ready-to-apply `CITATION.cff`/README patch are in [`docs/zenodo-doi-steps.md`](docs/zenodo-doi-steps.md). Release v2.12.0 already published on GitHub.
+- **Methodology-paper pack.** [`docs/methodology-paper-outline.md`](docs/methodology-paper-outline.md) expanded into a full Russian draft [`docs/methodology-paper-draft.ru.md`](docs/methodology-paper-draft.ru.md) built on the H072/H073 averaged benchmark numbers (pass-rate 0.48→0.92, detection 0.96, diff-fidelity 13/25→0/25) and the *guṇa* case study; submission pack ([`docs/paper-pack/cover-letter.md`](docs/paper-pack/cover-letter.md) + [`docs/paper-pack/venue-checklist.md`](docs/paper-pack/venue-checklist.md)). Registered as **A29** (readiness 2/5→3/5) in `Uprava/ARTICLES.md` (paper already had a stable ID — bumped, not re-minted).
+- **Docs consolidation.** Archival headers on the three superseded roadmap generations ([`docs/roadmap.md`](docs/roadmap.md), [`docs/roadmap-sanskrit-dh.md`](docs/roadmap-sanskrit-dh.md), [`GEMINI_ROADMAP.md`](GEMINI_ROADMAP.md), [`docs/provider-roadmaps.md`](docs/provider-roadmaps.md)) pointing to the canonical [`docs/roadmap-2026-q3.md`](docs/roadmap-2026-q3.md); deleted the two dated `docs/style-gallery-20260510-*.md` mock duplicates (STYLE_GALLERY.ru.md is canonical); split the README — the human-facing style catalogue stays, engine internals moved to [`docs/ENGINE.md`](docs/ENGINE.md) with a README pointer; refreshed the [`docs/README.md`](docs/README.md) map and README status line to v2.12.0.
 
 ## [2.12.0] - 2026-07-03
 ### Changed (over-rewrite fixed by construction — span-patch reconstruction, roadmap-2026-q3 Phase B2, H073)

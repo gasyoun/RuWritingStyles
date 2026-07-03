@@ -1,5 +1,9 @@
 # Gemini Agent Roadmap: RuWritingStyles
 
+> **АРХИВ (помечено 2026-07-03, фаза R2).** Историческое провайдер-специфичное
+> поколение roadmap. Актуальная единственная дорожная карта —
+> [`docs/roadmap-2026-q3.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-2026-q3.md).
+
 *Персонализировано на основе https://github.com/codejunkie99/agent-roadmap-2026 и внутренних docs/ 2026-05-08.*
 
 
