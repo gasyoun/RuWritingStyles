@@ -3,8 +3,8 @@
   "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/revision-output.schema.json",
   "title": "RuWritingStyles revision provider output",
   "type": "object",
-  "required": ["run_id", "status", "revised_document", "applied_changes", "unresolved"],
-  "additionalProperties": false,
+  "required": ["run_id", "status", "applied_changes", "unresolved"],
+  "additionalProperties": true,
   "properties": {
     "run_id": {
       "type": "string"
@@ -14,12 +14,35 @@
       "enum": ["completed"]
     },
     "revised_document": {
-      "type": "string"
+      "type": "string",
+      "description": "Legacy/advisory only. The engine ignores this field and reconstructs revised.md from applied_changes; it is accepted but never used."
     },
     "applied_changes": {
       "type": "array",
       "items": {
-        "type": "object"
+        "type": "object",
+        "required": ["span_id", "replacement_text"],
+        "properties": {
+          "span_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "replacement_text": {
+            "type": "string"
+          },
+          "source_findings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "change_type": {
+            "type": "string"
+          },
+          "explanation": {
+            "type": "string"
+          }
+        }
       }
     },
     "unresolved": {

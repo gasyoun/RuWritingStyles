@@ -36,6 +36,11 @@ def create_revision_bundle(*, repo_root: Path, run_dir: Path) -> RevisionBundle:
     if resolution_path.exists():
         resolution_json = resolution_path.read_text(encoding="utf-8")
 
+    segments_json = ""
+    segments_path = run_dir / "segments.json"
+    if segments_path.exists():
+        segments_json = _render_span_map(segments_path.read_text(encoding="utf-8"))
+
     prompt_path.write_text(
         _render_prompt(
             repo_root=repo_root,
@@ -44,6 +49,7 @@ def create_revision_bundle(*, repo_root: Path, run_dir: Path) -> RevisionBundle:
             normalized_text=normalized_text,
             council_json=council_path.read_text(encoding="utf-8"),
             resolution_json=resolution_json,
+            segments_json=segments_json,
         ),
         encoding="utf-8",
     )
@@ -70,6 +76,32 @@ def create_revision_bundle(*, repo_root: Path, run_dir: Path) -> RevisionBundle:
     return RevisionBundle(revision_json=revision_path, prompt_md=prompt_path)
 
 
+def _render_span_map(segments_json: str) -> str:
+    """Reduce segments.json to a compact {span_id, type, text} span map.
+
+    The synthesizer needs to see the exact current text of each span so its
+    `replacement_text` covers the whole span; it does not need metrics or line
+    numbers (the engine owns line placement during reconstruction)."""
+    try:
+        doc = json.loads(segments_json)
+    except json.JSONDecodeError:
+        return ""
+    spans = []
+    for segment in doc.get("segments", []) if isinstance(doc, dict) else []:
+        if not isinstance(segment, dict):
+            continue
+        spans.append(
+            {
+                "span_id": segment.get("span_id"),
+                "type": segment.get("type"),
+                "text": segment.get("text"),
+            }
+        )
+    if not spans:
+        return ""
+    return json.dumps(spans, ensure_ascii=False, indent=2)
+
+
 def _render_prompt(
     *,
     repo_root: Path,
@@ -78,6 +110,7 @@ def _render_prompt(
     normalized_text: str,
     council_json: str,
     resolution_json: str = "",
+    segments_json: str = "",
 ) -> str:
     resolution_section = ""
     if resolution_json:
@@ -91,24 +124,49 @@ The following resolutions represent final human decisions that override automate
 ```
 """
 
+    segments_section = ""
+    if segments_json:
+        segments_section = f"""
+## Segments (span map)
+
+Each object is one addressable span with its **exact current text**. To change a
+span, return the span's `span_id` and the FULL rewritten text of that span as
+`replacement_text` (the engine substitutes the whole span). Do NOT return spans
+you are not changing.
+
+```json
+{segments_json.strip()}
+```
+"""
+
     return f"""# Revision Request
 
 You are the RuWritingStyles synthesizer.
 
-Use the council decisions to produce a **minimally edited** version of the document.
+Apply the accepted council decisions as **per-span patches**. You do NOT rewrite or
+re-emit the whole document — the engine reconstructs `revised.md` by copying every
+untouched span byte-for-byte from the source and substituting only the spans you
+return in `applied_changes`. Fidelity of untouched text is therefore guaranteed by
+the engine; your job is only the surgical replacements.
 
-## Editing discipline (load-bearing — the revision is judged on fidelity to the source)
+## Editing discipline (load-bearing)
 
-- Touch ONLY the spans named in accepted (or accepted-with-modification) council decisions.
-  Every other span MUST be copied into `revised_document` **verbatim, character for
-  character** — do not rephrase, reorder, "polish", expand, or re-translate untouched text.
-- Make the **smallest** change that resolves each accepted finding: add a short caveat, a
-  citation marker, an IAST gloss, or correct the specific claim. Do **not** rewrite the
-  surrounding sentence or paragraph to accommodate a local fix.
-- Keep the document's length close to the original. A targeted correction must not materially
-  lengthen the text; if your `revised_document` is noticeably longer than the source, you are
-  over-editing — pull back to surgical changes.
-- Do not add unsupported facts, and do not hide unresolved issues (put them in `unresolved`).
+- Return an `applied_changes` entry ONLY for a span named in an accepted (or
+  accepted-with-modification) council decision. Every span you omit is preserved
+  exactly — so omit anything you are not deliberately changing.
+- For each change, `replacement_text` is the FULL new text of that one span, making
+  the **smallest** edit that resolves the accepted finding: add a short caveat, a
+  citation marker, an IAST gloss, or correct the specific claim. Do **not** expand,
+  re-translate, or "polish" the rest of the span; keep its length close to the
+  original.
+- **Hard length budget (engine-enforced):** the total character growth of ALL your
+  replacements together must stay well under 40% of the document length, and each
+  `replacement_text` should stay close to its span's original length. The engine
+  REJECTS oversized patches — the span is then left completely unchanged and the
+  finding lands in `unresolved` — so an over-long "improvement" achieves nothing.
+  A short targeted insertion always beats a rewrite.
+- Do not add unsupported facts, and do not hide unresolved issues (put them in
+  `unresolved`).
 
 ## Run
 
@@ -123,10 +181,10 @@ Return a JSON object with this shape:
 {{
   "run_id": "{run_id}",
   "status": "completed",
-  "revised_document": "Full revised Markdown document.",
   "applied_changes": [
     {{
       "span_id": "p014",
+      "replacement_text": "The full rewritten text of span p014 only.",
       "source_findings": ["finding-001"],
       "change_type": "strengthen_argument",
       "explanation": "What changed and why."
@@ -141,15 +199,19 @@ Return a JSON object with this shape:
 }}
 ```
 
-Only apply accepted or accepted-with-modification council decisions. Preserve the author's factual claims unless the council explicitly marks them as unsupported. If the council is still `prompt_ready` and has no decisions, return the original document unchanged and explain that no completed council decisions were available.
-{resolution_section}
+Only apply accepted or accepted-with-modification council decisions. Preserve the
+author's factual claims unless the council explicitly marks them as unsupported. If
+the council is still `prompt_ready` and has no decisions, return an empty
+`applied_changes` list (the engine then reproduces the original document unchanged)
+and note in `unresolved` that no completed council decisions were available.
+{resolution_section}{segments_section}
 ## Council JSON
 
 ```json
 {council_json.strip()}
 ```
 
-## Normalized Document
+## Normalized Document (reference only — do not re-emit)
 
 ```markdown
 {normalized_text.strip()}

@@ -9,6 +9,7 @@ from typing import Any
 
 from .provider_log import append_provider_log
 from .providers import BaseProvider, ProviderRequest, load_schema
+from .reconstruct import govern_changes, reconstruct_revised
 from . import hooks
 
 
@@ -147,12 +148,41 @@ Your task is to revise the following snippet based on the Socratic Council's fin
         ),
     )
     revised_path = revision_path.parent / "revised.md"
-    revised_text = str(output.get("revised_document", normalized_text))
+    applied_changes = output.get("applied_changes", [])
+    if not isinstance(applied_changes, list):
+        applied_changes = []
+    # Span-patch reconstruction: assemble revised.md from segments.json order,
+    # copying untouched spans byte-for-byte and substituting only changed spans.
+    # The model's own `revised_document` (if any) is intentionally ignored so
+    # diff-fidelity is true by construction, not by prompt discipline.
+    segments_doc = _load_json(revision_path.parent / "segments.json")
+    segments = segments_doc.get("segments", []) if isinstance(segments_doc, dict) else []
+    # Growth governor: live models over-rewrite inside the span too (a 291-char
+    # paragraph comes back as an 864-char essay), so patches that would blow the
+    # document-level fidelity budget are rejected — their spans stay untouched
+    # and the rejection is surfaced in `unresolved` for human review.
+    accepted_changes, rejected_changes = govern_changes(normalized_text, segments, applied_changes)
+    revised_text = reconstruct_revised(normalized_text, segments, accepted_changes)
     revised_path.write_text(revised_text, encoding="utf-8")
     revision["status"] = "completed"
     revision["revised_document_path"] = _repo_relative(repo_root, revised_path)
-    revision["applied_changes"] = output.get("applied_changes", [])
-    revision["unresolved"] = output.get("unresolved", [])
+    revision["applied_changes"] = accepted_changes
+    unresolved = output.get("unresolved", [])
+    if not isinstance(unresolved, list):
+        unresolved = []
+    for change in rejected_changes:
+        unresolved.append(
+            {
+                "span_id": change.get("span_id"),
+                "reason": (
+                    "revision patch rejected by the growth governor: "
+                    + str(change.get("rejection_reason") or "over budget")
+                ),
+            }
+        )
+    revision["unresolved"] = unresolved
+    if rejected_changes:
+        revision["rejected_changes"] = rejected_changes
     _write_json(revision_path, revision)
     return revised_text
 

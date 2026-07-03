@@ -61,6 +61,7 @@ def validate_run_dir(run_dir: Path) -> ValidationResult:
                 _validate_council(data, review_paths, messages)
             elif artifact == "revision.json":
                 _validate_revision_spans(data, span_ids, messages)
+                _validate_revision_reconstruction(run_dir, data, segments, messages)
     translit_path = run_dir / "translit-lint.json"
     if translit_path.exists():
         translit = _load_json(translit_path, messages)
@@ -281,6 +282,33 @@ def _validate_revision_spans(data: dict[str, Any], span_ids: set[str], messages:
                 messages.append(
                     f"revision.json applied_changes[{index}] references unknown span_id {span!r}"
                 )
+
+
+def _validate_revision_reconstruction(
+    run_dir: Path, data: dict[str, Any], segments: Any, messages: list[str]
+) -> None:
+    """revised.md must be a faithful span-patch reconstruction of normalized.md.
+
+    Every span not named in ``applied_changes`` must be byte-identical to the
+    source; each changed span must hold exactly its ``replacement_text``. Because
+    the engine builds revised.md this way, a mismatch means the artifact was
+    hand-edited or produced by a stale code path — the fidelity invariant broke."""
+    if data.get("status") != "completed":
+        return
+    normalized_path = run_dir / "normalized.md"
+    revised_path = run_dir / "revised.md"
+    if not normalized_path.exists() or not revised_path.exists():
+        return
+    segment_list = segments.get("segments", []) if isinstance(segments, dict) else []
+    changes = data.get("applied_changes")
+    if not isinstance(changes, list):
+        return
+    from .reconstruct import reconstruction_errors
+
+    normalized_text = normalized_path.read_text(encoding="utf-8")
+    revised_text = revised_path.read_text(encoding="utf-8")
+    for message in reconstruction_errors(normalized_text, segment_list, changes, revised_text):
+        messages.append(f"revision.json {message}")
 
 
 def _validate_common_status(data: dict[str, Any], messages: list[str], artifact: str) -> None:

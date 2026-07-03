@@ -41,11 +41,28 @@
     "applied_changes": {
       "type": "array",
       "items": {
-        "type": "object"
+        "type": "object",
+        "required": ["span_id", "replacement_text"],
+        "properties": {
+          "span_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "replacement_text": {
+            "type": "string"
+          }
+        }
       }
     },
     "unresolved": {
       "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "rejected_changes": {
+      "type": "array",
+      "description": "Patches rejected by the engine's growth governor (document-level fidelity budget). Their spans stay untouched; each entry carries rejection_reason.",
       "items": {
         "type": "object"
       }
