@@ -2,6 +2,8 @@
 
 All notable changes to RuWritingStyles are documented here.
 
+## [Unreleased]
+
 ## [2.12.1] - 2026-07-03
 ### Changed (publication pass — Zenodo/paper/docs consolidation, roadmap-2026-q3 Phase R2, H075)
 - **Zenodo/citation metadata release-ready.** [`CITATION.cff`](CITATION.cff) + [`.zenodo.json`](.zenodo.json) now carry the canonical byline (Gasūns, Mārcis · ORCID 0000-0003-4513-884X · Independent scholar · gasyoun@ya.ru), version bumped to 2.12.0. Author steps to mint the DOI and a ready-to-apply `CITATION.cff`/README patch are in [`docs/zenodo-doi-steps.md`](docs/zenodo-doi-steps.md). Release v2.12.0 already published on GitHub.
