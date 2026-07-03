@@ -125,6 +125,17 @@ rws eval-run --case pseudo-etymology --provider openai --model gpt-5
 
 `eval-result.json` includes finding types, matched expected risks, verification status, diff magnitude metrics, and a minimal pass/fail scoring block from `evals/manifest.json`.
 
+## Aggregate over N runs (`--repeat`)
+
+Real providers are non-deterministic, so a single run's pass/fail is noise. `--repeat N` runs the case N times and writes a statistically meaningful aggregate:
+
+```bash
+rws eval-run --case sanskrit-pseudo-etymology --provider deepseek --repeat 5
+rws eval-suite --provider deepseek --repeat 5   # every case, N times
+```
+
+Each writes `runs/<agg-id>/eval-aggregate.json` (+ `eval-aggregate.md`) with per-case **pass-rate**, **detection-rate** (expected risk caught, independent of diff limits), **diff-ok rate**, `verification_status` distribution, and **mean/σ/min/max** of `char_delta_ratio` / `changed_line_ratio` / finding count. Validate with `rws validate-eval-aggregate runs/<agg-id>`. For reproducibility experiments set `RWS_DEEPSEEK_TEMPERATURE=0`.
+
 ## Run The Eval Suite
 
 ```bash
