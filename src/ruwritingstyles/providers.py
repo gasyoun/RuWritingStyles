@@ -1055,8 +1055,10 @@ def _post_json_with_retries(
     body: dict[str, Any],
     headers: dict[str, str],
     telemetry: ProviderRetryTelemetry | None = None,
-    timeout: int = 120,
+    timeout: int | None = None,
 ) -> dict[str, Any]:
+    if timeout is None:
+        timeout = _provider_timeout_seconds()
     attempts = _provider_attempt_count()
     delay = _provider_retry_delay()
     encoded = json.dumps(body).encode("utf-8")
@@ -1092,6 +1094,13 @@ def _post_json_with_retries(
         delay *= 2
     raise last_error or ProviderError(f"{provider_name} API request failed")
 
+
+def _provider_timeout_seconds() -> int:
+    """Per-request HTTP timeout (default 120s). Heavier models (deepseek-v4-pro)
+    can exceed 120s on the council/verification stages — set
+    RWS_PROVIDER_TIMEOUT_SECONDS to widen without touching call sites."""
+    try: return max(1, int(os.environ.get("RWS_PROVIDER_TIMEOUT_SECONDS", "120")))
+    except ValueError: return 120
 
 def _provider_attempt_count() -> int:
     try: return max(1, int(os.environ.get("RWS_PROVIDER_MAX_ATTEMPTS", "3")))
