@@ -3,6 +3,8 @@
 All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
+
+## [2.12.0] - 2026-07-03
 ### Changed (over-rewrite fixed by construction — span-patch reconstruction, roadmap-2026-q3 Phase B2, H073)
 - **The revision stage no longer trusts the model to re-emit the whole document.** The synthesizer now returns only per-span `applied_changes` (each `{span_id, replacement_text, …}`) and the engine reconstructs `revised.md` itself from `segments.json` order — untouched spans are copied **byte-for-byte** from `normalized.md`, only changed spans are substituted. Diff-fidelity is now true **by construction**, killing the dominant gold-eval failure mode (revision over-rewriting, `char_delta_ratio` up to 1.83 on ~300–450-char stubs vs cap 0.5), which was confirmed stochastic across `deepseek-v4-flash` and `deepseek-v4-pro` and survived `temperature=0` (see [`docs/benchmark.md`](docs/benchmark.md)). New module [`src/ruwritingstyles/reconstruct.py`](src/ruwritingstyles/reconstruct.py) (`reconstruct_revised`, `reconstruction_errors`); a zero-change revision reproduces `normalized.md` byte-identically.
 - **Revision prompt rewritten** ([`src/ruwritingstyles/revision.py`](src/ruwritingstyles/revision.py)): requests per-span patches (with a compact `{span_id, type, text}` span map injected from `segments.json`) instead of a full revised document; the "re-emit the whole document verbatim" discipline block is replaced by "return only the spans you change."
