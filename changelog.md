@@ -2,7 +2,7 @@
 
 All notable changes to RuWritingStyles are documented here.
 
-## [Unreleased]
+## [2.12.1] - 2026-07-03
 ### Changed (publication pass — Zenodo/paper/docs consolidation, roadmap-2026-q3 Phase R2, H075)
 - **Zenodo/citation metadata release-ready.** [`CITATION.cff`](CITATION.cff) + [`.zenodo.json`](.zenodo.json) now carry the canonical byline (Gasūns, Mārcis · ORCID 0000-0003-4513-884X · Independent scholar · gasyoun@ya.ru), version bumped to 2.12.0. Author steps to mint the DOI and a ready-to-apply `CITATION.cff`/README patch are in [`docs/zenodo-doi-steps.md`](docs/zenodo-doi-steps.md). Release v2.12.0 already published on GitHub.
 - **Methodology-paper pack.** [`docs/methodology-paper-outline.md`](docs/methodology-paper-outline.md) expanded into a full Russian draft [`docs/methodology-paper-draft.ru.md`](docs/methodology-paper-draft.ru.md) built on the H072/H073 averaged benchmark numbers (pass-rate 0.48→0.92, detection 0.96, diff-fidelity 13/25→0/25) and the *guṇa* case study; submission pack ([`docs/paper-pack/cover-letter.md`](docs/paper-pack/cover-letter.md) + [`docs/paper-pack/venue-checklist.md`](docs/paper-pack/venue-checklist.md)). Registered as **A29** (readiness 2/5→3/5) in `Uprava/ARTICLES.md` (paper already had a stable ID — bumped, not re-minted).
