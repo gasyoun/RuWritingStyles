@@ -1,0 +1,55 @@
+name: Release
+
+# Dedicated-repo release for the Obsidian community directory / BRAT.
+# Trigger by pushing a BARE version tag (`0.1.0`, no prefix) that equals
+# manifest.json's version. The bare tag + root manifest.json are what
+# obsidianmd/obsidian-releases and BRAT expect. workflow_dispatch runs a
+# build+test smoke without creating a release.
+
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install (strict, from lockfile)
+        run: npm ci
+
+      - name: Build and test
+        run: |
+          npm run build
+          npm test
+
+      - name: Verify tag matches manifest version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          MANIFEST="$(node -p "require('./manifest.json').version")"
+          if [ "$TAG" != "$MANIFEST" ]; then
+            echo "Tag $TAG != manifest version $MANIFEST"; exit 1
+          fi
+
+      - name: Create release with plugin assets
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --notes "RuWritingStyles Obsidian plugin $TAG. See the monorepo changelog: https://github.com/gasyoun/RuWritingStyles/blob/main/changelog.md" \
+            main.js manifest.json styles.css

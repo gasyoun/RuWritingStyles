@@ -18,10 +18,15 @@
   ],
   "author": "M. Yu. Gasuns",
   "license": "Apache-2.0",
+  "comment:codemirror": "obsidian 1.13.1 pins its @codemirror/* peers to EXACT versions (state 6.5.0, view 6.38.6). @codemirror/lint is pinned to 6.9.0 because 6.9.1+ require @codemirror/view ^6.42.0, which conflicts with obsidian's 6.38.6 peer. The overrides below force a single copy of state/view across the whole tree so lint cannot nest a second (newer) copy, which otherwise yields duplicate-type errors in tsc. When bumping obsidian, re-read its peerDependencies and keep all three @codemirror/* in lockstep (and re-check the max lint version whose view range still admits the new view).",
+  "overrides": {
+    "@codemirror/state": "6.5.0",
+    "@codemirror/view": "6.38.6"
+  },
   "devDependencies": {
-    "@codemirror/lint": "^6.9.7",
-    "@codemirror/state": "^6.7.0",
-    "@codemirror/view": "^6.43.4",
+    "@codemirror/lint": "6.9.0",
+    "@codemirror/state": "6.5.0",
+    "@codemirror/view": "6.38.6",
     "@types/node": "^26.0.1",
     "builtin-modules": "^5.3.0",
     "esbuild": "^0.28.1",

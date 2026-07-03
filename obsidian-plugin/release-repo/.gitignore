@@ -1,0 +1,4 @@
+node_modules/
+*.log
+.DS_Store
+# main.js IS committed here — Obsidian loads it and release assets ship it.
