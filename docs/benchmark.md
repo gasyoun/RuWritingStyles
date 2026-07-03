@@ -168,7 +168,7 @@ deepseek-chat. **Симптом `missing` устранён полностью:**
 харнесс `rws eval-run --repeat N` (агрегат `eval-aggregate.json`). Модель:
 `deepseek-chat`, который API DeepSeek на 2026-07-03 **резолвит в
 `deepseek-v4-flash`** (см. «Открытие об алиасах моделей» ниже). Прогон выполнен
-Claude Fable 5 (`claude-fable-5`), 2026-07-03.
+Claude Opus 4.8 (`claude-opus-4-8`), 2026-07-03.
 
 | Кейс | Pass-rate | Detection-rate | Diff-ok | Δ символов (mean±σ) | min…max Δ | Верификация |
 |---|---:|---:|---:|---:|---:|---|
@@ -237,7 +237,7 @@ Claude Fable 5 (`claude-fable-5`), 2026-07-03.
 сравнительный проход; первый кейс успел пройти N=3 до коррекции объёма).
 Прогон остановлен после двух зависаний v4-pro (см. ниже). Все прогоны —
 `RWS_PROVIDER_TIMEOUT_SECONDS=300`, все стадии на `deepseek-v4-pro`,
-2026-07-03, Claude Fable 5 (`claude-fable-5`).
+2026-07-03, Claude Opus 4.8 (`claude-opus-4-8`).
 
 | Кейс | Pass | Detection | Δ символов | Верификация |
 |---|---:|---:|---:|---|
