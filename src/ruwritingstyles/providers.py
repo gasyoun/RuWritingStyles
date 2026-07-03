@@ -898,6 +898,13 @@ class DeepSeekProvider(BaseProvider):
             "messages": [{"role": "user", "content": provider_request.prompt}],
             "response_format": {"type": "json_object"},
         }
+        # Optional temperature pin (RWS_DEEPSEEK_TEMPERATURE). Used by the eval
+        # reproducibility probe: a temperature=0 route is the cheapest way to cut
+        # the single-run non-determinism that makes gold accuracy oscillate. Left
+        # unset by default so normal runs keep the DeepSeek chat default.
+        temperature = _deepseek_temperature()
+        if temperature is not None:
+            body["temperature"] = temperature
 
         telemetry = ProviderRetryTelemetry()
         # _post_json_with_retries retries transport/5xx errors, but a 200 whose
@@ -947,6 +954,16 @@ class DeepSeekProvider(BaseProvider):
         raise ProviderError(
             f"DeepSeek response did not contain parseable JSON: {text[:500]}"
         ) from last_exc
+
+
+def _deepseek_temperature() -> float | None:
+    raw = os.environ.get("RWS_DEEPSEEK_TEMPERATURE")
+    if raw is None or not str(raw).strip():
+        return None
+    try:
+        return float(raw)
+    except ValueError:
+        return None
 
 
 def provider_from_name(name: str) -> BaseProvider:
@@ -1038,8 +1055,10 @@ def _post_json_with_retries(
     body: dict[str, Any],
     headers: dict[str, str],
     telemetry: ProviderRetryTelemetry | None = None,
-    timeout: int = 120,
+    timeout: int | None = None,
 ) -> dict[str, Any]:
+    if timeout is None:
+        timeout = _provider_timeout_seconds()
     attempts = _provider_attempt_count()
     delay = _provider_retry_delay()
     encoded = json.dumps(body).encode("utf-8")
@@ -1062,10 +1081,26 @@ def _post_json_with_retries(
             last_error = ProviderError(f"{provider_name} API request failed: {exc}")
             if attempt == attempts: raise last_error from exc
             if telemetry is not None: telemetry.record("url_error", sleep_for)
+        except (TimeoutError, OSError) as exc:
+            # urlopen's timeout wraps CONNECT-phase timeouts in URLError, but a
+            # socket timeout while READING the response body (chunked transfer)
+            # escapes as a bare TimeoutError/OSError — observed live 2026-07-03
+            # killing an entire N=5 benchmark batch mid-case. Same transient
+            # class as url_error: retry it.
+            last_error = ProviderError(f"{provider_name} API read failed: {exc}")
+            if attempt == attempts: raise last_error from exc
+            if telemetry is not None: telemetry.record("read_timeout", sleep_for)
         time.sleep(sleep_for)
         delay *= 2
     raise last_error or ProviderError(f"{provider_name} API request failed")
 
+
+def _provider_timeout_seconds() -> int:
+    """Per-request HTTP timeout (default 120s). Heavier models (deepseek-v4-pro)
+    can exceed 120s on the council/verification stages — set
+    RWS_PROVIDER_TIMEOUT_SECONDS to widen without touching call sites."""
+    try: return max(1, int(os.environ.get("RWS_PROVIDER_TIMEOUT_SECONDS", "120")))
+    except ValueError: return 120
 
 def _provider_attempt_count() -> int:
     try: return max(1, int(os.environ.get("RWS_PROVIDER_MAX_ATTEMPTS", "3")))

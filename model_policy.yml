@@ -137,11 +137,17 @@ providers:
       balanced:
         id: deepseek-chat
         status: stable
-        note: "DeepSeek V3, OpenAI-compatible JSON mode. Fast/cheap default."
+        note: "OpenAI-compatible JSON mode. Fast/cheap default. As of 2026-07-03 the /models endpoint resolves deepseek-chat to deepseek-v4-flash."
       reasoner:
         id: deepseek-reasoner
+        status: deprecated_alias
+        note: "As of 2026-07-03 deepseek-reasoner ALSO resolves to deepseek-v4-flash (no longer a distinct reasoning model) — verified live via /v1/chat/completions returning model=deepseek-v4-flash. For a genuinely heavier judgement route use deepseek-v4-pro below. See docs/benchmark.md."
+      heavy:
+        id: deepseek-v4-pro
         status: stable
-        note: "DeepSeek R1, deeper reasoning for the heavier judgement stages."
+        note: "The genuinely heavier DeepSeek model exposed by /models (2026-07-03). Used on council/verification as the heavier judgement route (replaces the now-aliased deepseek-reasoner)."
+    eval_context:
+      note: "For reproducible eval runs set RWS_DEEPSEEK_TEMPERATURE=0 (the DeepSeek chat endpoint accepts it). See the temperature=0 probe in docs/benchmark.md; the N=5 benchmark itself runs at the default temperature to measure real non-determinism."
     task_routes:
       architecture:
         model: deepseek-chat
@@ -153,13 +159,13 @@ providers:
         model: deepseek-chat
         reasoning: medium
       council:
-        model: deepseek-reasoner
+        model: deepseek-v4-pro
         reasoning: high
       synthesis:
         model: deepseek-chat
         reasoning: medium
       verification:
-        model: deepseek-reasoner
+        model: deepseek-v4-pro
         reasoning: high
 
   anthropic:

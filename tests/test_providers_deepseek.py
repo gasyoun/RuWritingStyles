@@ -96,6 +96,38 @@ class DeepSeekProviderTests(unittest.TestCase):
                 DeepSeekProvider(api_key="k").generate_json(_request())
         self.assertEqual(post.call_count, 2)  # one retry, then give up (no infinite loop)
 
+    def test_temperature_env_pins_temperature(self) -> None:
+        # RWS_DEEPSEEK_TEMPERATURE=0 (the eval reproducibility probe) must be
+        # sent in the request body; unset must leave the body without it.
+        with patch.dict(os.environ, {"RWS_DEEPSEEK_TEMPERATURE": "0"}), patch.object(
+            providers, "_post_json_with_retries", return_value=_ok()
+        ) as post:
+            DeepSeekProvider(api_key="k").generate_json(_request())
+        self.assertEqual(post.call_args.kwargs["body"]["temperature"], 0.0)
+        with patch.object(providers, "_post_json_with_retries", return_value=_ok()) as post:
+            DeepSeekProvider(api_key="k").generate_json(_request())
+        self.assertNotIn("temperature", post.call_args.kwargs["body"])
+
+    def test_read_timeout_is_retried(self) -> None:
+        # A socket timeout while READING the response body escapes urlopen as a
+        # bare TimeoutError (not URLError) — observed live 2026-07-03 killing a
+        # whole benchmark batch. _post_json_with_retries must retry it.
+        ok_response = unittest.mock.MagicMock()
+        ok_response.read.return_value = b'{"choices": [{"message": {"content": "{}"}}]}'
+        ok_response.__enter__ = lambda s: ok_response
+        ok_response.__exit__ = lambda s, *a: False
+        with patch.object(
+            providers.request, "urlopen", side_effect=[TimeoutError("read timed out"), ok_response]
+        ) as urlopen, patch.object(providers.time, "sleep"):
+            data = providers._post_json_with_retries(
+                provider_name="DeepSeek",
+                url="https://api.deepseek.com/v1/chat/completions",
+                body={},
+                headers={},
+            )
+        self.assertEqual(urlopen.call_count, 2)
+        self.assertIn("choices", data)
+
     def test_factory_resolves_deepseek(self) -> None:
         with patch.dict(os.environ, {"DEEPSEEK_API_KEY": "k"}):
             self.assertIsInstance(provider_from_name("deepseek"), DeepSeekProvider)

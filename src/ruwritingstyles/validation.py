@@ -120,6 +120,66 @@ def validate_eval_comparison_file(comparison_path: Path) -> ValidationResult:
     return ValidationResult(ok=not messages, messages=tuple(messages))
 
 
+def validate_eval_aggregate_file(aggregate_path: Path) -> ValidationResult:
+    """Validate an eval-aggregate.json artifact (schema + recomputed statistics)."""
+    aggregate_path = aggregate_path.resolve()
+    if aggregate_path.is_dir():
+        aggregate_path = aggregate_path / "eval-aggregate.json"
+    messages: list[str] = []
+    repo_root = _repo_root_from_artifact(aggregate_path)
+    schema_store = _load_schema_store(repo_root, messages)
+    data = _load_json(aggregate_path, messages)
+    if isinstance(data, dict):
+        _validate_with_schema(
+            data, "eval-aggregate.schema.json", aggregate_path.name, schema_store, messages
+        )
+        _validate_eval_aggregate_result(repo_root, data, messages)
+    elif data is not None:
+        messages.append(f"{aggregate_path.name} must contain a JSON object")
+    return ValidationResult(ok=not messages, messages=tuple(messages))
+
+
+def _validate_eval_aggregate_result(repo_root: Path, data: dict[str, Any], messages: list[str]) -> None:
+    cases = data.get("cases")
+    if not isinstance(cases, list):
+        messages.append("eval-aggregate.json cases must be a list")
+        return
+    if data.get("case_count") != len(cases):
+        messages.append("eval-aggregate.json case_count does not match cases length")
+
+    for index, case in enumerate(cases):
+        if not isinstance(case, dict):
+            messages.append(f"eval-aggregate.json cases[{index}] must be an object")
+            continue
+        label = str(case.get("case_id") or f"cases[{index}]")
+        runs = case.get("runs") if isinstance(case.get("runs"), list) else []
+        if case.get("repeat") != len(runs):
+            messages.append(f"eval-aggregate.json {label} repeat does not match runs length")
+        pass_count = sum(1 for row in runs if isinstance(row, dict) and row.get("passed") is True)
+        detection_count = sum(1 for row in runs if isinstance(row, dict) and row.get("detected") is True)
+        if case.get("pass_count") != pass_count:
+            messages.append(f"eval-aggregate.json {label} pass_count does not match runs")
+        if case.get("detection_count") != detection_count:
+            messages.append(f"eval-aggregate.json {label} detection_count does not match runs")
+        expected_rate = round(pass_count / max(1, len(runs)), 6)
+        if isinstance(case.get("pass_rate"), (int, float)) and abs(float(case["pass_rate"]) - expected_rate) > 0.000001:
+            messages.append(f"eval-aggregate.json {label} pass_rate does not match pass_count/repeat")
+        distribution = case.get("verification_status_distribution")
+        if isinstance(distribution, dict):
+            recomputed: dict[str, int] = {}
+            for row in runs:
+                if isinstance(row, dict):
+                    status = str(row.get("verification_status") or "missing")
+                    recomputed[status] = recomputed.get(status, 0) + 1
+            if distribution != recomputed:
+                messages.append(f"eval-aggregate.json {label} verification_status_distribution does not match runs")
+        for row in runs:
+            if isinstance(row, dict):
+                result_path = _repo_path(repo_root, row.get("result_path"))
+                if result_path is not None and not result_path.exists():
+                    messages.append(f"eval-aggregate.json {label} references missing result_path {result_path}")
+
+
 def validate_provider_status_file(status_path: Path) -> ValidationResult:
     status_path = status_path.resolve()
     messages: list[str] = []

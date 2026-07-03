@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/eval-aggregate.schema.json",
+  "title": "RuWritingStyles N-run eval aggregate",
+  "description": "Aggregate of repeated eval runs (one case or the whole suite): pass-rate, detection-rate, verification distribution, and mean/stdev of diff metrics over N executions.",
+  "type": "object",
+  "required": [
+    "kind",
+    "aggregate_id",
+    "scope",
+    "provider",
+    "model",
+    "repeat",
+    "case_count",
+    "mean_pass_rate",
+    "cases"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "kind": { "type": "string", "const": "eval-aggregate" },
+    "aggregate_id": { "type": "string", "minLength": 1 },
+    "scope": { "type": "string", "enum": ["case", "suite"] },
+    "provider": { "type": "string" },
+    "model": { "type": "string" },
+    "repeat": { "type": "integer", "minimum": 1 },
+    "case_count": { "type": "integer", "minimum": 0 },
+    "mean_pass_rate": { "type": "number", "minimum": 0 },
+    "mean_detection_rate": { "type": "number", "minimum": 0 },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "repeat",
+          "pass_count",
+          "pass_rate",
+          "detection_count",
+          "detection_rate",
+          "diff_ok_count",
+          "diff_ok_rate",
+          "verification_status_distribution",
+          "metrics",
+          "runs"
+        ],
+        "properties": {
+          "case_id": { "type": "string" },
+          "repeat": { "type": "integer", "minimum": 0 },
+          "pass_count": { "type": "integer", "minimum": 0 },
+          "pass_rate": { "type": "number", "minimum": 0 },
+          "detection_count": { "type": "integer", "minimum": 0 },
+          "detection_rate": { "type": "number", "minimum": 0 },
+          "diff_ok_count": { "type": "integer", "minimum": 0 },
+          "diff_ok_rate": { "type": "number", "minimum": 0 },
+          "verification_status_distribution": { "type": "object" },
+          "metrics": { "type": "object" },
+          "runs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["run_id", "run_dir", "result_path", "passed", "verification_status"],
+              "properties": {
+                "run_id": { "type": "string" },
+                "run_dir": { "type": "string" },
+                "result_path": { "type": "string" },
+                "passed": { "type": "boolean" },
+                "detected": { "type": "boolean" },
+                "diff_within_limits": { "type": "boolean" },
+                "verification_status": { "type": "string" },
+                "required_match_count": { "type": "integer", "minimum": 0 },
+                "finding_count": { "type": "integer", "minimum": 0 }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

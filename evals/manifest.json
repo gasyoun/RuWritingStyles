@@ -812,9 +812,14 @@
       ],
       "scoring": {
         "required_finding_types": [
-          "unsupported_sanskrit_etymology",
-          "unsupported_etymology"
+          "unsupported_sanskrit_etymology"
         ],
+        "accepted_finding_aliases": {
+          "unsupported_sanskrit_etymology": [
+            "unsupported_etymology",
+            "pseudo_etymology"
+          ]
+        },
         "min_required_matches": 1,
         "strict_fidelity": false
       },
@@ -839,6 +844,12 @@
         "required_finding_types": [
           "mistranslated_native_term"
         ],
+        "accepted_finding_aliases": {
+          "mistranslated_native_term": [
+            "karaka_case_conflation",
+            "conflated_grammatical_category"
+          ]
+        },
         "min_required_matches": 1,
         "strict_fidelity": false
       },
@@ -863,6 +874,12 @@
         "required_finding_types": [
           "anachronistic_sanskrit_period"
         ],
+        "accepted_finding_aliases": {
+          "anachronistic_sanskrit_period": [
+            "vedic_classical_anachronism",
+            "anachronism"
+          ]
+        },
         "min_required_matches": 1,
         "strict_fidelity": false
       },
@@ -887,6 +904,12 @@
         "required_finding_types": [
           "wrong_samasa_type"
         ],
+        "accepted_finding_aliases": {
+          "wrong_samasa_type": [
+            "misclassified_compound",
+            "samasa_misclassification"
+          ]
+        },
         "min_required_matches": 1,
         "strict_fidelity": false
       },
@@ -912,6 +935,12 @@
         "required_finding_types": [
           "missing_commentary_layer"
         ],
+        "accepted_finding_aliases": {
+          "missing_commentary_layer": [
+            "commentary_layer_mix",
+            "conflated_commentary_and_root_text"
+          ]
+        },
         "min_required_matches": 1,
         "strict_fidelity": false
       },
