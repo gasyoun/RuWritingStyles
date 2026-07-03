@@ -14,12 +14,14 @@ abstract: >-
   by named council (general / sanskrit / indology).
 type: software
 authors:
-  - family-names: Gasuns
-    given-names: "M. Yu."
-    email: gasyoun@gmail.com
+  - family-names: Gasūns
+    given-names: Mārcis
+    email: gasyoun@ya.ru
+    affiliation: Independent scholar
+    orcid: "https://orcid.org/0000-0003-4513-884X"
     alias: gasyoun
-version: 2.9.1
-date-released: "2026-06-14"
+version: 2.12.0
+date-released: "2026-07-03"
 license: Apache-2.0
 repository-code: "https://github.com/gasyoun/RuWritingStyles"
 url: "https://github.com/gasyoun/RuWritingStyles"
