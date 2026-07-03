@@ -32,6 +32,13 @@
                 "type": "array",
                 "items": { "type": "string" }
               },
+              "accepted_finding_aliases": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              },
               "min_required_matches": { "type": "integer" },
               "allowed_verification_statuses": {
                 "type": "array",

@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import re
+import statistics
 from typing import Any
 
 from .config import load_manifest, load_model_policy
@@ -47,6 +48,7 @@ class EvalCase:
     max_char_delta_ratio: float
     strict_fidelity: bool
     max_finding_count: int | None
+    accepted_finding_aliases: dict[str, tuple[str, ...]]
     metadata: dict[str, Any]
 
 
@@ -311,6 +313,251 @@ def run_eval_suite(
     return EvalSuiteResult(suite_dir=suite_dir, result_path=result_path, report_path=report_path)
 
 
+@dataclass(frozen=True)
+class EvalAggregateResult:
+    """Summary of an N-run aggregate over one case or the whole suite."""
+
+    aggregate_dir: Path
+    result_path: Path
+    report_path: Path
+    data: dict[str, Any]
+
+
+def run_eval_repeat(
+    *,
+    repo_root: Path,
+    case_id: str,
+    provider_name: str = "mock",
+    model: str | None = None,
+    repeat: int = 5,
+    aggregate_id: str | None = None,
+    deliberate: bool = False,
+) -> EvalAggregateResult:
+    """Run one eval case ``repeat`` times and write an aggregate artifact.
+
+    Single-run gold accuracy oscillates on unchanged code because DeepSeek is
+    non-deterministic; N-run averaging turns the noisy per-run pass/fail into a
+    pass-rate with spread. See docs/benchmark.md and evals/GOLD_PROTOCOL.md."""
+    repeat = max(1, int(repeat))
+    case = _find_case(repo_root, case_id)  # validates the id up front
+    actual_id = aggregate_id or _make_aggregate_id(provider_name, f"agg-{case.case_id}")
+    aggregate_dir = repo_root / "runs" / actual_id
+    aggregate_dir.mkdir(parents=True, exist_ok=False)
+
+    rows: list[dict[str, Any]] = []
+    for index in range(1, repeat + 1):
+        run_id = f"{actual_id}-r{index:02d}"
+        result = run_eval_case(
+            repo_root=repo_root,
+            case_id=case.case_id,
+            provider_name=provider_name,
+            model=model,
+            run_id=run_id,
+            deliberate=deliberate,
+        )
+        rows.append(_aggregate_run_row(repo_root, run_id, result))
+
+    case_stats = _aggregate_case_stats(case.case_id, rows)
+    data = _build_aggregate(
+        aggregate_id=actual_id,
+        provider_name=provider_name,
+        model=model,
+        repeat=repeat,
+        scope="case",
+        case_stats=[case_stats],
+    )
+    return _write_aggregate(repo_root, aggregate_dir, data)
+
+
+def run_eval_suite_repeat(
+    *,
+    repo_root: Path,
+    provider_name: str = "mock",
+    model: str | None = None,
+    repeat: int = 5,
+    aggregate_id: str | None = None,
+    deliberate: bool = False,
+) -> EvalAggregateResult:
+    """Run every eval case ``repeat`` times and write one suite-level aggregate."""
+    repeat = max(1, int(repeat))
+    actual_id = aggregate_id or _make_aggregate_id(provider_name, "aggsuite")
+    aggregate_dir = repo_root / "runs" / actual_id
+    aggregate_dir.mkdir(parents=True, exist_ok=False)
+
+    case_stats: list[dict[str, Any]] = []
+    for case in load_eval_cases(repo_root):
+        rows: list[dict[str, Any]] = []
+        for index in range(1, repeat + 1):
+            run_id = f"{actual_id}-{case.case_id}-r{index:02d}"
+            result = run_eval_case(
+                repo_root=repo_root,
+                case_id=case.case_id,
+                provider_name=provider_name,
+                model=model,
+                run_id=run_id,
+                deliberate=deliberate,
+            )
+            rows.append(_aggregate_run_row(repo_root, run_id, result))
+        case_stats.append(_aggregate_case_stats(case.case_id, rows))
+
+    data = _build_aggregate(
+        aggregate_id=actual_id,
+        provider_name=provider_name,
+        model=model,
+        repeat=repeat,
+        scope="suite",
+        case_stats=case_stats,
+    )
+    return _write_aggregate(repo_root, aggregate_dir, data)
+
+
+def _make_aggregate_id(provider_name: str, kind: str) -> str:
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+    provider_slug = re.sub(r"[^a-zA-Z0-9]+", "-", provider_name).strip("-").lower() or "provider"
+    return f"{timestamp}-{kind}-{provider_slug}"
+
+
+def _aggregate_run_row(repo_root: Path, run_id: str, result: EvalRunResult) -> dict[str, Any]:
+    data = _load_json(result.result_path)
+    scoring = data.get("scoring") if isinstance(data.get("scoring"), dict) else {}
+    diff = data.get("diff_metrics") if isinstance(data.get("diff_metrics"), dict) else {}
+    match_count = int(scoring.get("required_match_count") or 0)
+    min_required = int(scoring.get("min_required_matches") or 1)
+    return {
+        "run_id": run_id,
+        "run_dir": _repo_relative(repo_root, result.run_dir),
+        "result_path": _repo_relative(repo_root, result.result_path),
+        "passed": bool(scoring.get("passed")),
+        "detected": match_count >= min_required,
+        "diff_within_limits": bool(scoring.get("diff_within_limits")),
+        "verification_status": str(data.get("verification_status") or "missing"),
+        "required_match_count": match_count,
+        "finding_count": int(data.get("finding_count") or 0),
+        "changed_line_ratio": diff.get("changed_line_ratio"),
+        "char_delta_ratio": diff.get("char_delta_ratio"),
+    }
+
+
+def _stat_summary(values: list[Any]) -> dict[str, Any]:
+    numbers = [float(v) for v in values if isinstance(v, (int, float))]
+    if not numbers:
+        return {"n": 0, "mean": None, "stdev": None, "min": None, "max": None}
+    return {
+        "n": len(numbers),
+        "mean": round(statistics.fmean(numbers), 6),
+        "stdev": round(statistics.pstdev(numbers), 6) if len(numbers) > 1 else 0.0,
+        "min": round(min(numbers), 6),
+        "max": round(max(numbers), 6),
+    }
+
+
+def _aggregate_case_stats(case_id: str, rows: list[dict[str, Any]]) -> dict[str, Any]:
+    n = len(rows)
+    pass_count = sum(1 for row in rows if row["passed"])
+    detection_count = sum(1 for row in rows if row["detected"])
+    diff_ok_count = sum(1 for row in rows if row["diff_within_limits"])
+    distribution: dict[str, int] = {}
+    for row in rows:
+        status = row["verification_status"]
+        distribution[status] = distribution.get(status, 0) + 1
+    denom = max(1, n)
+    return {
+        "case_id": case_id,
+        "repeat": n,
+        "pass_count": pass_count,
+        "pass_rate": round(pass_count / denom, 6),
+        "detection_count": detection_count,
+        "detection_rate": round(detection_count / denom, 6),
+        "diff_ok_count": diff_ok_count,
+        "diff_ok_rate": round(diff_ok_count / denom, 6),
+        "verification_status_distribution": distribution,
+        "metrics": {
+            "char_delta_ratio": _stat_summary([row["char_delta_ratio"] for row in rows]),
+            "changed_line_ratio": _stat_summary([row["changed_line_ratio"] for row in rows]),
+            "finding_count": _stat_summary([row["finding_count"] for row in rows]),
+        },
+        "runs": rows,
+    }
+
+
+def _build_aggregate(
+    *,
+    aggregate_id: str,
+    provider_name: str,
+    model: str | None,
+    repeat: int,
+    scope: str,
+    case_stats: list[dict[str, Any]],
+) -> dict[str, Any]:
+    pass_rates = [case["pass_rate"] for case in case_stats]
+    detection_rates = [case["detection_rate"] for case in case_stats]
+    return {
+        "kind": "eval-aggregate",
+        "aggregate_id": aggregate_id,
+        "scope": scope,
+        "provider": provider_name,
+        "model": model or "",
+        "repeat": repeat,
+        "case_count": len(case_stats),
+        "mean_pass_rate": round(statistics.fmean(pass_rates), 6) if pass_rates else 0.0,
+        "mean_detection_rate": round(statistics.fmean(detection_rates), 6) if detection_rates else 0.0,
+        "cases": case_stats,
+    }
+
+
+def _write_aggregate(repo_root: Path, aggregate_dir: Path, data: dict[str, Any]) -> EvalAggregateResult:
+    result_path = aggregate_dir / "eval-aggregate.json"
+    result_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    report_path = aggregate_dir / "eval-aggregate.md"
+    report_path.write_text(render_eval_aggregate_report(data), encoding="utf-8")
+    return EvalAggregateResult(
+        aggregate_dir=aggregate_dir, result_path=result_path, report_path=report_path, data=data
+    )
+
+
+def render_eval_aggregate_report(data: dict[str, Any]) -> str:
+    """Render a Markdown report for eval-aggregate.json."""
+    lines = [
+        f"# Eval Aggregate: {data.get('aggregate_id') or ''}",
+        "",
+        f"- Scope: `{data.get('scope') or ''}`",
+        f"- Provider: `{data.get('provider') or ''}`",
+        f"- Model: `{data.get('model') or ''}`",
+        f"- Repeat (N): {data.get('repeat') or 0}",
+        f"- Cases: {data.get('case_count') or 0}",
+        f"- Mean pass-rate: {data.get('mean_pass_rate')}",
+        f"- Mean detection-rate: {data.get('mean_detection_rate')}",
+        "",
+        "| Case | N | Pass-rate | Detection-rate | Diff-ok rate | char_delta mean±σ | Verification |",
+        "|---|---:|---:|---:|---:|---:|---|",
+    ]
+    for case in data.get("cases", []):
+        if not isinstance(case, dict):
+            continue
+        char = case.get("metrics", {}).get("char_delta_ratio", {})
+        char_cell = "-"
+        if isinstance(char.get("mean"), (int, float)):
+            char_cell = f"{char['mean']}±{char.get('stdev')}"
+        dist = case.get("verification_status_distribution", {})
+        dist_cell = ", ".join(f"{k}:{v}" for k, v in sorted(dist.items())) or "-"
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    _cell(str(case.get("case_id") or "")),
+                    _cell(str(case.get("repeat") or 0)),
+                    _cell(f"{case.get('pass_count')}/{case.get('repeat')} ({case.get('pass_rate')})"),
+                    _cell(f"{case.get('detection_count')}/{case.get('repeat')} ({case.get('detection_rate')})"),
+                    _cell(str(case.get("diff_ok_rate"))),
+                    _cell(char_cell),
+                    _cell(dist_cell),
+                ]
+            )
+            + " |"
+        )
+    return "\n".join(lines) + "\n"
+
+
 def render_eval_suite_report(suite: dict[str, Any]) -> str:
     """Render a Markdown report for eval-suite-result.json."""
 
@@ -452,8 +699,30 @@ def _case(repo_root: Path, data: dict[str, Any]) -> EvalCase:
         max_char_delta_ratio=_scoring_float(data, "max_char_delta_ratio", 0.5),
         strict_fidelity=_scoring_bool(data, "strict_fidelity", False),
         max_finding_count=_scoring_int_or_none(data, "max_finding_count"),
+        accepted_finding_aliases=_accepted_finding_aliases(data),
         metadata=dict(data.get("metadata", {})),
     )
+
+
+def _accepted_finding_aliases(data: dict[str, Any]) -> dict[str, tuple[str, ...]]:
+    """Per-case alias policy: map a canonical required finding type to extra
+    finding-type labels that count as the same match. Lets a model that emits a
+    conceptually-correct but differently-worded label (e.g. ``unsupported_etymology``
+    for ``unsupported_sanskrit_etymology``) score without loosening the gold
+    protocol into substring matching. See evals/GOLD_PROTOCOL.md."""
+    scoring = data.get("scoring") if isinstance(data.get("scoring"), dict) else {}
+    raw = scoring.get("accepted_finding_aliases")
+    if not isinstance(raw, dict):
+        return {}
+    result: dict[str, tuple[str, ...]] = {}
+    for canonical, aliases in raw.items():
+        if not isinstance(canonical, str):
+            continue
+        if isinstance(aliases, list):
+            result[canonical] = tuple(str(item) for item in aliases if item)
+        elif isinstance(aliases, str) and aliases:
+            result[canonical] = (aliases,)
+    return result
 
 
 def _required_finding_types(data: dict[str, Any]) -> tuple[str, ...]:
@@ -523,6 +792,24 @@ def _ensure_verification_status(path: Path, *, note: str | None = None) -> None:
     path.write_text(json.dumps(doc, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def match_required_finding_types(
+    required_finding_types: tuple[str, ...] | list[str],
+    accepted_finding_aliases: dict[str, tuple[str, ...]],
+    finding_types: set[str] | frozenset[str],
+) -> list[str]:
+    """Return the canonical required types satisfied by ``finding_types``.
+
+    A canonical type is satisfied when it — or any of its per-case accepted
+    aliases — appears among the produced finding types. This keeps the gold
+    scorer from being brittle to a model that emits a conceptually-correct but
+    differently-worded label, without loosening scoring into substring matching."""
+    return sorted(
+        canonical
+        for canonical in required_finding_types
+        if {canonical, *accepted_finding_aliases.get(canonical, ())}.intersection(finding_types)
+    )
+
+
 def _write_eval_result(
     *,
     repo_root: Path,
@@ -535,7 +822,9 @@ def _write_eval_result(
     matched = sorted(set(case.expected_risks).intersection(finding_types))
     verification = _load_json(run_dir / "verification.json")
     verification_status = str(verification.get("status") or "missing")
-    required_matches = sorted(set(case.required_finding_types).intersection(finding_types))
+    required_matches = match_required_finding_types(
+        case.required_finding_types, case.accepted_finding_aliases, finding_types
+    )
     diff_metrics = calculate_revision_diff_metrics(run_dir)
     diff_within_limits = (
         diff_metrics["changed_line_ratio"] <= case.max_changed_line_ratio

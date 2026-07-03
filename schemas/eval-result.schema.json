@@ -39,7 +39,7 @@
     },
     "provider": {
       "type": "string",
-      "enum": ["mock", "openai", "google", "anthropic", "openrouter"]
+      "enum": ["mock", "openai", "google", "anthropic", "openrouter", "deepseek", "local", "ollama"]
     },
     "model": {
       "type": "string"

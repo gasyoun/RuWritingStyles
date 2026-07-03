@@ -31,7 +31,15 @@ from .profiling import calculate_bloom_stats, calculate_methodological_compass
 from .council import create_council_bundle
 from .council_summary import load_council_summary, render_council_summary
 from .diff import write_revision_diff
-from .evals import compare_eval_suites, load_eval_cases, render_eval_suite_comparison, run_eval_case, run_eval_suite
+from .evals import (
+    compare_eval_suites,
+    load_eval_cases,
+    render_eval_suite_comparison,
+    run_eval_case,
+    run_eval_repeat,
+    run_eval_suite,
+    run_eval_suite_repeat,
+)
 from .execution import (
     execute_council_artifact,
     execute_review_artifact,
@@ -55,6 +63,7 @@ from .bias import run_bias_audit
 from .runs import create_prepare_run
 from .segment import normalize_document, read_document, segment_markdown
 from .validation import (
+    validate_eval_aggregate_file,
     validate_eval_comparison_file,
     validate_eval_suite_dir,
     validate_provider_status_file,
@@ -486,6 +495,17 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Enable multi-turn deliberation (style agents debate each other).",
     )
+    eval_run.add_argument(
+        "--repeat",
+        type=int,
+        default=1,
+        help="Run the case N independent times and write an aggregate (pass-rate, "
+             "detection-rate, mean/σ of diff metrics) to runs/<agg-id>/eval-aggregate.json.",
+    )
+    eval_run.add_argument(
+        "--aggregate-id",
+        help="Optional deterministic aggregate id (directory name) when --repeat > 1.",
+    )
     _add_provider_args(eval_run)
     eval_run.set_defaults(func=cmd_eval_run)
 
@@ -511,6 +531,17 @@ def build_parser() -> argparse.ArgumentParser:
         "--deliberate",
         action="store_true",
         help="Enable multi-turn deliberation (style agents debate each other).",
+    )
+    eval_suite.add_argument(
+        "--repeat",
+        type=int,
+        default=1,
+        help="Run every case N independent times and write a suite-level aggregate "
+             "to runs/<agg-id>/eval-aggregate.json (statistically meaningful pass-rate).",
+    )
+    eval_suite.add_argument(
+        "--aggregate-id",
+        help="Optional deterministic aggregate id (directory name) when --repeat > 1.",
     )
     _add_provider_args(eval_suite)
     eval_suite.set_defaults(func=cmd_eval_suite)
@@ -786,6 +817,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="Comparison JSON path, for example runs/<suite>/comparison.json.",
     )
     validate_eval_comparison.set_defaults(func=cmd_validate_eval_comparison)
+
+    validate_eval_aggregate = subparsers.add_parser(
+        "validate-eval-aggregate",
+        help="Validate an eval-aggregate.json artifact (from eval-run/eval-suite --repeat N).",
+    )
+    validate_eval_aggregate.add_argument(
+        "aggregate",
+        type=Path,
+        help="Aggregate directory or eval-aggregate.json, for example runs/<agg-id>.",
+    )
+    validate_eval_aggregate.set_defaults(func=cmd_validate_eval_aggregate)
 
     validate_provider_status = subparsers.add_parser(
         "validate-provider-status",
@@ -1895,6 +1937,25 @@ def cmd_eval_run(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     if args.require_provider_ready:
         _require_provider_ready(args.provider)
+    repeat = getattr(args, "repeat", 1) or 1
+    if repeat > 1:
+        aggregate = run_eval_repeat(
+            repo_root=repo_root,
+            case_id=args.case,
+            provider_name=args.provider,
+            model=args.model,
+            repeat=repeat,
+            aggregate_id=getattr(args, "aggregate_id", None),
+            deliberate=args.deliberate,
+        )
+        case = aggregate.data["cases"][0]
+        print(f"created {aggregate.aggregate_dir.relative_to(repo_root)}")
+        print(f"eval aggregate {aggregate.result_path.relative_to(repo_root)}")
+        print(f"eval aggregate report {aggregate.report_path.relative_to(repo_root)}")
+        print(f"repeat: {aggregate.data['repeat']}")
+        print(f"pass-rate: {case['pass_count']}/{case['repeat']} ({case['pass_rate']})")
+        print(f"detection-rate: {case['detection_count']}/{case['repeat']} ({case['detection_rate']})")
+        return 0
     result = run_eval_case(
         repo_root=repo_root,
         case_id=args.case,
@@ -1912,6 +1973,24 @@ def cmd_eval_suite(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     if args.require_provider_ready:
         _require_provider_ready(args.provider)
+    repeat = getattr(args, "repeat", 1) or 1
+    if repeat > 1:
+        aggregate = run_eval_suite_repeat(
+            repo_root=repo_root,
+            provider_name=args.provider,
+            model=args.model,
+            repeat=repeat,
+            aggregate_id=getattr(args, "aggregate_id", None),
+            deliberate=args.deliberate,
+        )
+        print(f"created {aggregate.aggregate_dir.relative_to(repo_root)}")
+        print(f"eval aggregate {aggregate.result_path.relative_to(repo_root)}")
+        print(f"eval aggregate report {aggregate.report_path.relative_to(repo_root)}")
+        print(f"repeat: {aggregate.data['repeat']}")
+        print(f"cases: {aggregate.data['case_count']}")
+        print(f"mean pass-rate: {aggregate.data['mean_pass_rate']}")
+        print(f"mean detection-rate: {aggregate.data['mean_detection_rate']}")
+        return 0
     result = run_eval_suite(
         repo_root=repo_root,
         provider_name=args.provider,
@@ -2418,6 +2497,17 @@ def cmd_validate_eval_comparison(args: argparse.Namespace) -> int:
     result = validate_eval_comparison_file(comparison)
     if result.ok:
         print("OK eval comparison artifact valid")
+        return 0
+    for message in result.messages:
+        print(f"FAIL {message}", file=sys.stderr)
+    return 1
+
+
+def cmd_validate_eval_aggregate(args: argparse.Namespace) -> int:
+    aggregate = args.aggregate if args.aggregate.is_absolute() else (Path.cwd() / args.aggregate)
+    result = validate_eval_aggregate_file(aggregate)
+    if result.ok:
+        print("OK eval aggregate artifact valid")
         return 0
     for message in result.messages:
         print(f"FAIL {message}", file=sys.stderr)

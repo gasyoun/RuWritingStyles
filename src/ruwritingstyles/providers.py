@@ -898,6 +898,13 @@ class DeepSeekProvider(BaseProvider):
             "messages": [{"role": "user", "content": provider_request.prompt}],
             "response_format": {"type": "json_object"},
         }
+        # Optional temperature pin (RWS_DEEPSEEK_TEMPERATURE). Used by the eval
+        # reproducibility probe: a temperature=0 route is the cheapest way to cut
+        # the single-run non-determinism that makes gold accuracy oscillate. Left
+        # unset by default so normal runs keep the DeepSeek chat default.
+        temperature = _deepseek_temperature()
+        if temperature is not None:
+            body["temperature"] = temperature
 
         telemetry = ProviderRetryTelemetry()
         # _post_json_with_retries retries transport/5xx errors, but a 200 whose
@@ -947,6 +954,16 @@ class DeepSeekProvider(BaseProvider):
         raise ProviderError(
             f"DeepSeek response did not contain parseable JSON: {text[:500]}"
         ) from last_exc
+
+
+def _deepseek_temperature() -> float | None:
+    raw = os.environ.get("RWS_DEEPSEEK_TEMPERATURE")
+    if raw is None or not str(raw).strip():
+        return None
+    try:
+        return float(raw)
+    except ValueError:
+        return None
 
 
 def provider_from_name(name: str) -> BaseProvider:
