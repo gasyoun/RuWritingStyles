@@ -56,24 +56,37 @@ requires the plugin repo to have **`manifest.json` at its root** and releases ta
 with the **bare version** (`0.1.0`, no prefix), one plugin per repo. That is not
 possible from this monorepo subdirectory.
 
-**Recommended:** publish from a **dedicated repo**, e.g. `gasyoun/ruwritingstyles-obsidian`:
+**Recommended:** publish from a **dedicated repo**, e.g. `gasyoun/ruwritingstyles-obsidian`.
+The scaffold and sync are prepared:
 
-1. Create the repo; mirror this folder's contents to its root (`manifest.json`,
-   `versions.json`, `main.js` via its own build, `styles.css`, `README.md`, source).
-2. Keep this monorepo folder as the dev source; sync to the dedicated repo on release
-   (a small `git subtree`/rsync step, or copy-on-release).
-3. In the dedicated repo, tag bare `0.1.0` and let its release workflow attach the
-   three files.
-4. Open the submission PR per the
-   [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Submit+your+plugin).
+- Dedicated-repo templates live in
+  [obsidian-plugin/release-repo/](https://github.com/gasyoun/RuWritingStyles/tree/main/obsidian-plugin/release-repo)
+  (root `README.md`, `.gitignore`, and a bare-tag `.github/workflows/release.yml`).
+- [tools/sync_plugin_release_repo.py](https://github.com/gasyoun/RuWritingStyles/blob/main/tools/sync_plugin_release_repo.py)
+  materializes the whole dedicated-repo layout (root `manifest.json` / `main.js` /
+  `styles.css` / `versions.json` + `src/` + `test/` + the templates) into a clone.
 
-These steps need your GitHub identity and a structural decision, so they are left as
+```sh
+# 0. build so main.js is current
+cd obsidian-plugin && npm ci && npm run build && cd ..
+python tools/sync_plugin_release_repo.py --check          # verify build + version alignment
+# 1. create the dedicated repo (your GitHub identity), clone it next to this repo
+#    gh repo create gasyoun/ruwritingstyles-obsidian --public
+# 2. sync monorepo -> dedicated repo root
+python tools/sync_plugin_release_repo.py ../ruwritingstyles-obsidian
+# 3. in the dedicated repo: commit, then tag BARE 0.1.0 (release workflow attaches assets)
+#    cd ../ruwritingstyles-obsidian && git add -A && git commit -m "release 0.1.0" && git tag 0.1.0 && git push --tags
+# 4. open the submission PR per the plugin guidelines:
+#    https://docs.obsidian.md/Plugins/Releasing/Submit+your+plugin
+```
+
+Steps 1–4 need your GitHub identity and a structural decision, so they are left as
 deliberate manual actions — they are **not** automated here.
 
 ## Pre-submission checklist
 
 - [ ] `npm run build` is green and `main.js` is produced
-- [ ] `npm test` is green (36 tests)
+- [ ] `npm test` is green (59 tests)
 - [ ] versions aligned across `manifest.json` / `versions.json` / `package.json`
 - [ ] `manifest.json` `description` ≤ ~250 chars, no "Obsidian"/"plugin" in the name
 - [ ] `isDesktopOnly` correct (this plugin is `false` — pure TS, mobile-capable)

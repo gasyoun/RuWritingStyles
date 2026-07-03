@@ -32,7 +32,28 @@ jobs:
       - name: Run tests
         run: python -m unittest discover -s tests
 
+  # Detects whether the Obsidian plugin subtree changed so the (heavier) Node
+  # build/test only runs when it actually needs to. Python-only pushes skip the
+  # plugin job entirely instead of paying for an npm install + tsc + esbuild.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      plugin: ${{ steps.filter.outputs.plugin }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Detect changed paths
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            plugin:
+              - 'obsidian-plugin/**'
+              - '.github/workflows/ci.yml'
+
   plugin:
+    needs: changes
+    if: needs.changes.outputs.plugin == 'true'
     runs-on: ubuntu-latest
 
     defaults:
