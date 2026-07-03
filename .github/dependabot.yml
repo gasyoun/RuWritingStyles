@@ -35,3 +35,13 @@ updates:
       time: "08:00"
       timezone: Europe/Moscow
     open-pull-requests-limit: 5
+    # obsidian pins its @codemirror/* peers to EXACT versions, so obsidian and the
+    # @codemirror/* packages must move together or npm ci ERESOLVEs. Group them into
+    # a single PR (and let the `plugin` CI job's strict `npm ci` gate reject any
+    # combination whose peers no longer align) instead of independent bumps that
+    # each break the lockfile. See obsidian-plugin/package.json "comment:codemirror".
+    groups:
+      codemirror-obsidian:
+        patterns:
+          - "obsidian"
+          - "@codemirror/*"
