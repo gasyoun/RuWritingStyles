@@ -127,6 +127,28 @@ class WriteFinalManuscriptTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 write_final_manuscript(run_dir)
 
+    def test_falls_back_to_reconstructed_revised_md(self) -> None:
+        # Post span-patch: the engine records revised_document_path (not inline
+        # revised_document) and writes revised.md. write_final_manuscript must
+        # read the reconstructed file.
+        with tempfile.TemporaryDirectory() as tmp:
+            run_dir = _make_run_dir(Path(tmp))
+            (run_dir / "revision.json").write_text(
+                json.dumps(
+                    {
+                        "run_id": "test-run",
+                        "status": "completed",
+                        "revised_document_path": f"runs/test-run/revised.md",
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
+            (run_dir / "revised.md").write_text("Reconstructed final.\n", encoding="utf-8")
+            final_path = write_final_manuscript(run_dir)
+            self.assertEqual(final_path.read_text(encoding="utf-8"), "Reconstructed final.\n")
+
 
 # ---------------------------------------------------------------------------
 # hooks.py tests

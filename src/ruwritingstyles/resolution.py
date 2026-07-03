@@ -82,9 +82,19 @@ def write_final_manuscript(run_dir: Path) -> Path:
             f"Revision status is '{rev_data.get('status')}', expected 'completed'."
         )
 
+    # Since the span-patch reconstruction, the engine no longer stores the whole
+    # revised document inline in revision.json — it writes revised.md and records
+    # `revised_document_path`. Prefer an inline `revised_document` when present
+    # (legacy artifacts / direct callers), else read the reconstructed file.
     revised_text = rev_data.get("revised_document", "")
     if not revised_text:
-        raise ValueError("No revised_document content found in revision.json.")
+        rel_path = rev_data.get("revised_document_path")
+        if isinstance(rel_path, str) and rel_path:
+            candidate = run_dir / Path(rel_path).name
+            if candidate.exists():
+                revised_text = candidate.read_text(encoding="utf-8")
+    if not revised_text:
+        raise ValueError("No revised document content found (revision.json / revised.md).")
 
     final_path = run_dir / "final.md"
     final_path.write_text(revised_text, encoding="utf-8")
