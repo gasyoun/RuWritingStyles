@@ -1079,6 +1079,15 @@ def _post_json_with_retries(
             last_error = ProviderError(f"{provider_name} API request failed: {exc}")
             if attempt == attempts: raise last_error from exc
             if telemetry is not None: telemetry.record("url_error", sleep_for)
+        except (TimeoutError, OSError) as exc:
+            # urlopen's timeout wraps CONNECT-phase timeouts in URLError, but a
+            # socket timeout while READING the response body (chunked transfer)
+            # escapes as a bare TimeoutError/OSError — observed live 2026-07-03
+            # killing an entire N=5 benchmark batch mid-case. Same transient
+            # class as url_error: retry it.
+            last_error = ProviderError(f"{provider_name} API read failed: {exc}")
+            if attempt == attempts: raise last_error from exc
+            if telemetry is not None: telemetry.record("read_timeout", sleep_for)
         time.sleep(sleep_for)
         delay *= 2
     raise last_error or ProviderError(f"{provider_name} API request failed")
