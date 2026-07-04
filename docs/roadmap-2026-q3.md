@@ -43,7 +43,7 @@ security-review закрыт. Узкое место сместилось:
 
 ## Фаза B1 — Eval-harness: статистически осмысленный бенчмарк
 
-Handoff: [H072](https://github.com/gasyoun/Uprava/blob/main/handoffs/H072_RWS_eval_harness_nrun.md) · выполняется первой.
+Handoff: [H072](https://github.com/gasyoun/Uprava/blob/main/handoffs/H072-Fable_RuWritingStyles_RWS_eval_harness_nrun_03.07.26.md) · выполняется первой.
 
 - [ ] `rws eval-run --repeat N` (или `eval-suite --repeat`): N независимых прогонов кейса,
       агрегат `eval-aggregate.json` — pass-rate, среднее/σ по Δ-метрикам, разброс детекции.
@@ -63,7 +63,7 @@ Handoff: [H072](https://github.com/gasyoun/Uprava/blob/main/handoffs/H072_RWS_ev
 
 ## Фаза B2 — Span-patch-реконструкция ревизии (архитектурный фикс)
 
-Handoff: [H073](https://github.com/gasyoun/Uprava/blob/main/handoffs/H073_RWS_span_patch_reconstruction.md) · после B1 (harness измеряет эффект).
+Handoff: [H073](https://github.com/gasyoun/Uprava/blob/main/handoffs/H073-Fable_RuWritingStyles_RWS_span_patch_reconstruction_03.07.26.md) · после B1 (harness измеряет эффект).
 
 - [ ] `revision.py`: LLM выдаёт только per-span замены (`applied_changes` со span_id +
       replacement); полный `revised.md` собирает движок — нетронутые сегменты копируются
@@ -81,7 +81,7 @@ diff-провалах; регресс-suite mock зелёный.
 
 ## Фаза R1 — Obsidian-плагин: CI и релизный репозиторий
 
-Handoff: [H074](https://github.com/gasyoun/Uprava/blob/main/handoffs/H074_RWS_obsidian_plugin_ci_release.md) · независима, можно параллельно с B1/B2.
+Handoff: [H074](https://github.com/gasyoun/Uprava/blob/main/handoffs/H074-Opus_RuWritingStyles_RWS_obsidian_plugin_ci_release_03.07.26.md) · независима, можно параллельно с B1/B2.
 
 - [ ] Починить `npm install` на main (dependabot peer-конфликт `obsidian@1.13.1` ↔
       `@codemirror/state`); закрепить рабочую матрицу зависимостей.
@@ -98,7 +98,7 @@ Handoff: [H074](https://github.com/gasyoun/Uprava/blob/main/handoffs/H074_RWS_ob
 
 ## Фаза R2 — Публикационный проход (после B1+B2)
 
-Handoff: [H075](https://github.com/gasyoun/Uprava/blob/main/handoffs/H075_RWS_publish_pass.md) · последняя — статья зависит от чисел B1/B2.
+Handoff: [H075](https://github.com/gasyoun/Uprava/blob/main/handoffs/H075-Opus_RuWritingStyles_RWS_publish_pass_03.07.26.md) · последняя — статья зависит от чисел B1/B2.
 
 - [ ] **Zenodo DOI**: первый GitHub-релиз (v2.11.x с B1+B2 в changelog) → DOI →
       вписать в [CITATION.cff](https://github.com/gasyoun/RuWritingStyles/blob/main/CITATION.cff)
