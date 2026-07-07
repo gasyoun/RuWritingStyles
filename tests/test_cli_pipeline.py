@@ -179,6 +179,23 @@ class ModelPolicyTests(unittest.TestCase):
         self.assertEqual(route.mode_value, "medium")
         self.assertEqual(main(["model-routes", "--provider", "openai", "--task", "style_review"]), 0)
 
+    def test_model_routes_cover_every_provider_with_task_routes(self) -> None:
+        # Regression: the provider matcher was a hardcoded alternation and silently
+        # dropped deepseek's routes, so resolve_model fell back to gpt-5.5.
+        routes = load_model_routes(ROOT)
+        deepseek_review = next(
+            route for route in routes if route.provider == "deepseek" and route.task == "style_review"
+        )
+        self.assertEqual(deepseek_review.model, "deepseek-chat")
+        deepseek_council = next(
+            route for route in routes if route.provider == "deepseek" and route.task == "council"
+        )
+        self.assertEqual(deepseek_council.model, "deepseek-v4-pro")
+        providers_with_routes = {route.provider for route in routes}
+        self.assertLessEqual(
+            {"openai", "google", "anthropic", "openrouter", "deepseek"}, providers_with_routes
+        )
+
     def test_provider_statuses_do_not_expose_keys(self) -> None:
         statuses = provider_statuses(
             {
