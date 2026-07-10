@@ -11,7 +11,7 @@ After the run, grade detection: did the council flag each seed, and with which f
 ## Seed 1 — shaky / unsupported etymology (§ 2)
 
 > «Слово *guṇa* восходит к индоевропейскому корню *gʷenǝ- «вить, скручивать» и
-> закономерно соответствует латинскому *funis* «верёвка» и греческому *χορδή* «струна»:
+> закономерно соответствует латинскому *funis* «веревка» и греческому *χορδή* «струна»:
 > переход начального лабиовелярного в латинский *f* и греческий придыхательный регулярен…»
 
 **Why it's wrong:** fabricated. The actual etymology of *guṇa* is uncertain (Mayrhofer);
@@ -36,7 +36,7 @@ deterministic `translit_lint`.
 
 ## Seed 3 — anachronism / impossible source-claim (§ 3)
 
-> «Характерно, что Бётлингк и Рот при расположении значений *guṇa* **опирались на
+> «Характерно, что Бетлингк и Рот при расположении значений *guṇa* **опирались на
 > практический словарь Апте**, заимствовав у него рубрикацию…»
 
 **Why it's wrong:** chronological impossibility. PW (Böhtlingk–Roth) is **1855–1875**;
