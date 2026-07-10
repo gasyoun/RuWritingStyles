@@ -1,6 +1,6 @@
 # Дорожная карта Q3 2026 — «Доверенный бенчмарк» (канонический план)
 
-_Created: 03-07-2026 · Last updated: 03-07-2026_
+_Created: 03-07-2026 · Last updated: 11-07-2026_
 
 **Статус: принята.** Четыре решения зафиксированы автором 03-07-2026 (сессия Fable 5,
 `claude-fable-5`):
@@ -43,19 +43,20 @@ security-review закрыт. Узкое место сместилось:
 
 ## Фаза B1 — Eval-harness: статистически осмысленный бенчмарк
 
-Handoff: [H072](https://github.com/gasyoun/Uprava/blob/main/handoffs/H072-Fable_RuWritingStyles_RWS_eval_harness_nrun_03.07.26.md) · выполняется первой.
+Handoff: [H072](https://github.com/gasyoun/Uprava/blob/main/handoffs/H072-Fable_RuWritingStyles_RWS_eval_harness_nrun_03.07.26.md) · **✅ выполнена — v2.11.0 (03-07-2026)**.
 
-- [ ] `rws eval-run --repeat N` (или `eval-suite --repeat`): N независимых прогонов кейса,
+- [x] `rws eval-run --repeat N` (или `eval-suite --repeat`): N независимых прогонов кейса,
       агрегат `eval-aggregate.json` — pass-rate, среднее/σ по Δ-метрикам, разброс детекции.
-- [ ] Политика меток скорера: alias-список в манифесте кейса (начато в `7dbbcc4`
+- [x] Политика меток скорера: alias-список в манифесте кейса (начато в `7dbbcc4`
       для `unsupported_etymology`) — довести до всех 5 золотых кейсов, задокументировать
       в [GOLD_PROTOCOL.md](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/GOLD_PROTOCOL.md).
-- [ ] Temperature=0-проба: поддерживает ли `deepseek-chat` детерминизм; если да —
-      закрепить в `model_policy.yml` для eval-контекста.
-- [ ] Полный платный протокол: 5 золотых кейсов × N=5 на `deepseek-chat` + один
-      сравнительный прогон с `deepseek-reasoner` на council/verify (маршрут уже описан
-      в `model_policy.yml`, но никогда не тестировался).
-- [ ] Заполнить [benchmark.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/benchmark.md)
+- [x] Temperature=0-проба: поддерживает ли `deepseek-chat` детерминизм — **нет**
+      (детекция воспроизводима, текст ревизии — нет), усреднение по N остается обязательным.
+- [x] Полный платный протокол: 5 золотых кейсов × N=5 на `deepseek-chat` выполнен
+      (pass-rate 0.48, detection 0.96). Сравнение с `deepseek-reasoner` оказалось
+      невозможным — алиас разрешается в тот же `deepseek-v4-flash`; сравнение с
+      `deepseek-v4-pro` частичное (3/5, два зависших запроса) — остаток ушел в residue.
+- [x] Заполнить [benchmark.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/benchmark.md)
       усредненными числами с доверительными интервалами — это доказательная база статьи.
 
 Критерий готовности: benchmark.md сообщает pass-rate ± разброс по ≥5 прогонам;
@@ -63,65 +64,108 @@ Handoff: [H072](https://github.com/gasyoun/Uprava/blob/main/handoffs/H072-Fable_
 
 ## Фаза B2 — Span-patch-реконструкция ревизии (архитектурный фикс)
 
-Handoff: [H073](https://github.com/gasyoun/Uprava/blob/main/handoffs/H073-Fable_RuWritingStyles_RWS_span_patch_reconstruction_03.07.26.md) · после B1 (harness измеряет эффект).
+Handoff: [H073](https://github.com/gasyoun/Uprava/blob/main/handoffs/H073-Fable_RuWritingStyles_RWS_span_patch_reconstruction_03.07.26.md) · **✅ выполнена — v2.12.0 (03-07-2026)**.
 
-- [ ] `revision.py`: LLM выдает только per-span замены (`applied_changes` со span_id +
+- [x] `revision.py`: LLM выдает только per-span замены (`applied_changes` со span_id +
       replacement); полный `revised.md` собирает движок — нетронутые сегменты копируются
-      байт-в-байт из `segments.json`/`normalized.md`.
-- [ ] Diff-fidelity становится верной **по построению**: измененные символы = только
-      принятые спаны. Лимиты в eval остаются как страховка, но перестают быть лотереей.
-- [ ] Обратная совместимость: схема `revision.schema.json`, `validate-run`,
-      плагинный diff-accept (он уже работает от line-diff — переключить на
-      engine-предоставленные changes, пункт «optional» из плана Tier-2).
-- [ ] Ре-бенчмарк по протоколу B1 до/после — ожидание: diff-провалы → ~0, зачет
-      определяется детекцией и верификацией.
+      байт-в-байт из `segments.json`/`normalized.md` (новый модуль `reconstruct.py`).
+- [x] Diff-fidelity становится верной **по построению**: измененные символы = только
+      принятые спаны. Плюс найденный вживую второй рычаг — **growth-губернатор**
+      (`govern_changes`, бюджет роста `RWS_REVISION_MAX_GROWTH_RATIO`): span-patch без
+      него давал 0/5 на karaka (модель пере-пишет внутри спана).
+- [x] Обратная совместимость: схема `revision.schema.json`, `validate-run`
+      (реконструкционный инвариант `_validate_revision_reconstruction`).
+- [x] Ре-бенчмарк по протоколу B1 до/после: pass-rate **0.48 → 0.92**, diff-провалы
+      **13/25 → 0/25** — критерий готовности (≥ 4/5 при нулевых diff-провалах) выполнен.
 
 Критерий готовности: N=5 усредненный зачет золотых кейсов ≥ 4/5, при нулевых
 diff-провалах; регресс-suite mock зеленый.
 
 ## Фаза R1 — Obsidian-плагин: CI и релизный репозиторий
 
-Handoff: [H074](https://github.com/gasyoun/Uprava/blob/main/handoffs/H074-Opus_RuWritingStyles_RWS_obsidian_plugin_ci_release_03.07.26.md) · независима, можно параллельно с B1/B2.
+Handoff: [H074](https://github.com/gasyoun/Uprava/blob/main/handoffs/H074-Opus_RuWritingStyles_RWS_obsidian_plugin_ci_release_03.07.26.md) · **✅ выполнена — v2.12.0 (03-07-2026)**, кроме кнопок автора.
 
-- [ ] Починить `npm install` на main (dependabot peer-конфликт `obsidian@1.13.1` ↔
-      `@codemirror/state`); закрепить рабочую матрицу зависимостей.
-- [ ] CI-job для плагина (build + 59 тестов) в
-      [ci.yml](https://github.com/gasyoun/RuWritingStyles/blob/main/.github/workflows/ci.yml) —
-      сейчас CI Python-only, и сломанные bump-ы не ловятся.
-- [ ] Подготовить выделенный релизный репозиторий `gasyoun/ruwritingstyles-obsidian`
-      (root-manifest, bare-теги) по
-      [RELEASE.md](https://github.com/gasyoun/RuWritingStyles/blob/main/obsidian-plugin/RELEASE.md);
-      монорепозиторная папка остается dev-источником.
-- [ ] Кнопки автора: пуш тега `obsidian-v0.1.0`; PR в obsidianmd/obsidian-releases; BRAT.
+- [x] Починить `npm install` на main (dependabot peer-конфликт `obsidian@1.13.1` ↔
+      `@codemirror/state`); закрепить рабочую матрицу зависимостей (`overrides` +
+      сгруппированный dependabot).
+- [x] CI-job для плагина (build + 59 тестов) в
+      [ci.yml](https://github.com/gasyoun/RuWritingStyles/blob/main/.github/workflows/ci.yml),
+      path-filtered через `dorny/paths-filter`.
+- [x] Подготовить выделенный релизный репозиторий: каркас
+      [obsidian-plugin/release-repo/](https://github.com/gasyoun/RuWritingStyles/tree/main/obsidian-plugin/release-repo)
+      + [tools/sync_plugin_release_repo.py](https://github.com/gasyoun/RuWritingStyles/blob/main/tools/sync_plugin_release_repo.py)
+      (синк проверен: standalone build + 59/59).
+- [ ] **Кнопки автора (открыто)**: создать `gasyoun/ruwritingstyles-obsidian`, пуш тега
+      `obsidian-v0.1.0`; PR в obsidianmd/obsidian-releases; BRAT.
 
 Критерий готовности: CI ловит ломающий bump; из релизного репо ставится рабочий плагин.
 
 ## Фаза R2 — Публикационный проход (после B1+B2)
 
-Handoff: [H075](https://github.com/gasyoun/Uprava/blob/main/handoffs/H075-Opus_RuWritingStyles_RWS_publish_pass_03.07.26.md) · последняя — статья зависит от чисел B1/B2.
+Handoff: [H075](https://github.com/gasyoun/Uprava/blob/main/handoffs/H075-Opus_RuWritingStyles_RWS_publish_pass_03.07.26.md) · **✅ выполнена — v2.12.1 (03-07-2026)**, кроме кнопки DOI.
 
-- [ ] **Zenodo DOI**: первый GitHub-релиз (v2.11.x с B1+B2 в changelog) → DOI →
-      вписать в [CITATION.cff](https://github.com/gasyoun/RuWritingStyles/blob/main/CITATION.cff)
-      и README. Кнопка автора: включить репозиторий в Zenodo и подтвердить релиз.
-- [ ] **Пакет методологической статьи**: развернуть
-      [methodology-paper-outline.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/methodology-paper-outline.md)
-      в черновик с реальными усредненными числами; байлайн/CITATION/cover letter —
-      по `/paper-submission-pack`; зарегистрировать статью в
-      [ARTICLES.md](https://github.com/gasyoun/Uprava/blob/main/ARTICLES.md) (новый Axx).
-- [ ] **Консолидация docs**: пометить три старых поколения roadmap архивными шапками;
-      удалить датированные дубликаты style-gallery; README разделить — каталог стилей
-      (человеческий) vs движок (инженерный) — каталог остается в README, движок уходит
-      в `docs/ENGINE.md` со ссылкой.
+- [ ] **Zenodo DOI**: метаданные release-ready ([CITATION.cff](https://github.com/gasyoun/RuWritingStyles/blob/main/CITATION.cff),
+      [.zenodo.json](https://github.com/gasyoun/RuWritingStyles/blob/main/.zenodo.json),
+      шаги в [docs/zenodo-doi-steps.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/zenodo-doi-steps.md));
+      релиз v2.12.0 опубликован. **Открыта кнопка автора**: включить репозиторий в
+      Zenodo, подтвердить релиз, вписать DOI.
+- [x] **Пакет методологической статьи**: черновик
+      [methodology-paper-draft.ru.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/methodology-paper-draft.ru.md)
+      с усредненными числами H072/H073 + [docs/paper-pack/](https://github.com/gasyoun/RuWritingStyles/tree/main/docs/paper-pack);
+      зарегистрирована как **A29** (3/5) в
+      [ARTICLES.md](https://github.com/gasyoun/Uprava/blob/main/ARTICLES.md);
+      венью решено 04-07-2026 — «Вестник СПбГУ. Востоковедение и африканистика».
+- [x] **Консолидация docs**: архивные шапки на трех старых поколениях roadmap;
+      удалены датированные дубликаты style-gallery; README разделен — каталог стилей
+      остался, движок ушел в [docs/ENGINE.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/ENGINE.md).
 
-Критерий готовности: DOI разрешается; черновик статьи со всеми числами; одна
-каноническая дорожная карта.
+Критерий готовности: DOI разрешается (**открыто — кнопка автора**); черновик статьи со
+всеми числами ✅; одна каноническая дорожная карта ✅.
+
+---
+
+## Итог квартала (11-07-2026)
+
+Все четыре фазы выполнены за один проход 03-07-2026 (v2.11.0 → v2.12.1): pass-rate
+золотых кейсов **0.48 → 0.92** при нулевых diff-провалах, плагин собирается и гоняет
+59/59, статья A29 на 3/5 с решенным венью. Открытыми остались только **две кнопки
+автора** (Zenodo DOI; релизный репозиторий плагина + тег + BRAT/community-PR) и
+инженерный остаток, вошедший в следующую фазу ниже.
+
+## Фаза N — пост-Q3: совет как навык, A29 к подаче, верификатор и остаток
+
+Handoff: [H588](https://github.com/gasyoun/Uprava/blob/main/handoffs/H588-Fable_RuWritingStyles_rws_post_q3_council_skill_a29_11.07.26.md)
+· принята автором 11-07-2026 (пять направлений одобрены разом; платные прогоны — в
+прежнем бюджете N=5-протокола; второй аннотатор золотого набора — **вторая
+ИИ-модель с раскрытием** по [docs/AI_DISCLOSURE.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/AI_DISCLOSURE.md)).
+
+- [ ] **N1 — «Ученый совет» как навык (skill)**: упаковать конвейер совета в
+      вызываемый Claude Code-навык (`/rws-council` или родовое имя) — вход: файл
+      статьи + совет (`general`/`sanskrit`/`indology`), выход: находки/рецензия;
+      двойник существующих `/sanskrit-council`·`/zaliznyak-council`, но поверх
+      реального движка `rws run`. Регистрация в SKILLS_INDEX + синк в Codex-двойник.
+- [ ] **N2 — A29 к подаче (3/5 → 4/5)**: протокол ≥2-аннотаторной разметки золотых
+      кейсов — второй аннотатор = вторая ИИ-модель (иная, чем скорер), сравнение
+      каппой/процентом согласия, расхождения решает человек; вписать раздел
+      annotation-agreement в черновик; финальная вычитка под требования Вестника СПбГУ.
+- [ ] **N3 — F4-вторая половина**: коммитменты стилей (obligations из паспортов) в
+      промпт верификатора; эффект измерить N=5-протоколом до/после (платно, бюджет
+      одобрен).
+- [ ] **N4 — eval-остаток инфраструктуры**: (а) маршруты `model_policy.yml` реально
+      потребляются eval-путем (сейчас stage-модели задаются одним `--model` на кейс);
+      (б) жесткий wall-clock-дедлайн на запрос (трюкающее соединение переживает любой
+      socket-timeout — причина зависаний v4-pro); (в) добить сравнение `deepseek-v4-pro`
+      до 5/5 кейсов; (г) прибрать `scratch/paid_benchmark.py` (в тулзу или удалить).
+- [ ] **N5 — F2/F5-курирование паспортов**: слабейшие из 39 паспортов по данным
+      corpus-audit — доменная доводка, эффект виден в N=5-прогоне (сцепляется с N3).
+
+Порядок: N2 первым (ближайший внешний дедлайн — статья), N1 параллельно (независим),
+N3+N5 одним измерительным циклом, N4 по ходу (дедлайн — до первого платного прогона).
 
 ## Вне квартала (паркинг)
 
 Пополнение приватного корпуса (Елизаренкова/Топоров/Вертоградова/Иванов — сканы дает
-автор), F2/F5-курирование паспортов (доменные решения), F4-вторая половина (коммитменты
-стилей в промпт верификатора — требует eval-прохода, естественно ложится ПОСЛЕ B1),
-gc-запрос в GitHub Support по dangling-объектам до-purge истории.
+автор), gc-запрос в GitHub Support по dangling-объектам до-purge истории.
 
 ---
 
