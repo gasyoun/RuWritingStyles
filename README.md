@@ -85,7 +85,7 @@
 
 Более точная формула:
 
-> Пиши по стилю [`ClaudeStyles/zaliznyak-novgorod-style.md`][zaliznyak-novgorod]: сначала источник и датировка, затем графика, языковой признак, возможные альтернативы и осторожный вывод. Разбери форму `...` из берестяной грамоты.
+> Пиши по стилю [`ClaudeStyles/zalizniak-novgorod-style.md`][zalizniak-novgorod]: сначала источник и датировка, затем графика, языковой признак, возможные альтернативы и осторожный вывод. Разбери форму `...` из берестяной грамоты.
 
 ## Все созданные стили
 
@@ -97,7 +97,7 @@
 | [`ClaudeStyles/zalizniak-enklitiki-style.md`][zalizniak-enklitiki] | [Зализняк-энклитики][zalizniak-enklitiki] | Реконструкция скрытого грамматического механизма по корпусу древних памятников. | Историко-грамматическая доказательность, терминологическая строгость, умеренная полемика. |
 | [`ClaudeStyles/zalizniak-udarenie-style.md`][zalizniak-udarenie] | [Зализняк-ударение][zalizniak-udarenie] | Историческая акцентология: парадигмы, рукописные данные, диалектные и поздние варианты. | Словарно-научная осторожность, внимание к надежности свидетельств. |
 | [`ClaudeStyles/zalizniak-shkolnikov_1-style.md`][zalizniak-shkolnikov] | [Зализняк-школьников_1][zalizniak-shkolnikov] | Объяснение сложной лингвистики школьникам, студентам и неспециалистам. | Ясность, уважение к читателю, доступность без упрощения. |
-| [`ClaudeStyles/zaliznyak-novgorod-style.md`][zaliznyak-novgorod] | [Зализняк-новгород][zaliznyak-novgorod] | Анализ древненовгородского диалекта, берестяных грамот, графики, датировки и корпусных параллелей. | Техническая точность, осторожная работа с источником. |
+| [`ClaudeStyles/zalizniak-novgorod-style.md`][zalizniak-novgorod] | [Зализняк-новгород][zalizniak-novgorod] | Анализ древненовгородского диалекта, берестяных грамот, графики, датировки и корпусных параллелей. | Техническая точность, осторожная работа с источником. |
 | [`ClaudeStyles/zalizniak-imennoe-style.md`][zalizniak-imennoe] | [Зализняк-именное][zalizniak-imennoe] | Формальное описание русского именного словоизменения: лексема, словоформа, парадигма, правила синтеза форм. | Сухая алгоритмическая ясность, классификационная строгость. |
 | [`ClaudeStyles/zalizniak-slovo-style.md`][zalizniak-slovo] | [Зализняк-слово][zalizniak-slovo] | Разбор подлинности древнего памятника и баланса аргументов за и против. | Судебно-филологическая проверка фактов, системности и веса доказательств. |
 | [`ClaudeStyles/zalizniak-zametki-style.md`][zalizniak-zametki] | [Зализняк-заметки][zalizniak-zametki] | Популярная критика любительской лингвистики, псевдоэтимологий, обратного чтения и произвольных звуковых замен. | Понятная научная полемика с точной иронией. |
@@ -128,7 +128,7 @@
 | [Зализняк-энклитики][zalizniak-enklitiki] | [`ClaudeStyles/zalizniak-enklitiki-style.md`][zalizniak-enklitiki] | [`2008_Zalizniak_Enklitiki.pdf`][src-enklitiki-pdf], [`2008_Zalizniak_Enklitiki.txt`][src-enklitiki-txt]. |
 | [Зализняк-ударение][zalizniak-udarenie] | [`ClaudeStyles/zalizniak-udarenie-style.md`][zalizniak-udarenie] | [`zaliznyak_drevnerusskoe_udarenie_2019__izd.pdf`][src-udarenie-pdf], [`zaliznyak_drevnerusskoe_udarenie_2019__izd.txt`][src-udarenie-txt]. |
 | [Зализняк-школьников_1][zalizniak-shkolnikov] | [`ClaudeStyles/zalizniak-shkolnikov_1-style.md`][zalizniak-shkolnikov] | Общий корпус Зализняка: [`Zalizniak_Tom1_2026.pdf`][src-zalizniak-tom1-pdf]. |
-| [Зализняк-новгород][zaliznyak-novgorod] | [`ClaudeStyles/zaliznyak-novgorod-style.md`][zaliznyak-novgorod] | [`zaliznyak_drevnenovgorodsky_dialekt_2004.pdf`][src-novgorod-pdf], [`zaliznyak_drevnenovgorodsky_dialekt_2004.txt`][src-novgorod-txt]. |
+| [Зализняк-новгород][zalizniak-novgorod] | [`ClaudeStyles/zalizniak-novgorod-style.md`][zalizniak-novgorod] | [`zaliznyak_drevnenovgorodsky_dialekt_2004.pdf`][src-novgorod-pdf], [`zaliznyak_drevnenovgorodsky_dialekt_2004.txt`][src-novgorod-txt]. |
 | [Зализняк-именное][zalizniak-imennoe] | [`ClaudeStyles/zalizniak-imennoe-style.md`][zalizniak-imennoe] | [`zalizniak_russkoe_imennoe_slovoizmenenie_2002_text.pdf`][src-imennoe-pdf], [`zalizniak_russkoe_imennoe_slovoizmenenie_2002_text.txt`][src-imennoe-txt]. |
 | [Зализняк-слово][zalizniak-slovo] | [`ClaudeStyles/zalizniak-slovo-style.md`][zalizniak-slovo] | [`AAZ_Slovo_2024.pdf`][src-slovo-pdf], [`AAZ_Slovo_2024.txt`][src-slovo-txt]. |
 | [Зализняк-заметки][zalizniak-zametki] | [`ClaudeStyles/zalizniak-zametki-style.md`][zalizniak-zametki] | [`AAZ_Zametki_2025.pdf`][src-zametki-pdf], [`AAZ_Zametki_2025.txt`][src-zametki-txt], [`AAZ_Zametki_2025-annotated.md`][src-zametki-annotated], [`AAZ_Zametki_2025-index.md`][src-zametki-index]. |
@@ -145,7 +145,7 @@
 | Построить формальную морфологическую модель. | [Зализняк-именное][zalizniak-imennoe] | Он мыслит словоформами, лексемами, парадигмами и алгоритмами вывода. |
 | Разобрать ударение в слове или типе слов. | [Зализняк-ударение][zalizniak-udarenie] | Он требует указать источник, парадигму и степень надежности реконструкции. |
 | Объяснить школьнику сложную лингвистическую вещь. | [Зализняк-школьников_1][zalizniak-shkolnikov] | Он начинает с простого примера и постепенно вводит термин. |
-| Работать с берестяной грамотой. | [Зализняк-новгород][zaliznyak-novgorod] | Он держит в поле зрения графику, датировку, диалектную черту и альтернативные объяснения. |
+| Работать с берестяной грамотой. | [Зализняк-новгород][zalizniak-novgorod] | Он держит в поле зрения графику, датировку, диалектную черту и альтернативные объяснения. |
 | Проверить гипотезу о древнем тексте. | [Зализняк-слово][zalizniak-slovo] | Он взвешивает системность языка, вероятность подделки и силу аргументов. |
 | Разобрать псевдоэтимологию из интернета. | [Зализняк-заметки][zalizniak-zametki] | Он показывает, почему внешнее сходство и игра с буквами не являются доказательством. |
 | Написать текст о ритуале, мифе или музейном предмете. | [Albedil-Sbornik][albedil-sbornik] | Он соединяет научное описание с культурной памятью и уважительной интонацией. |
@@ -181,7 +181,7 @@
 | [Зализняк-энклитики][zalizniak-enklitiki] | Скрытый механизм древнерусской фразы. | Корпусные данные, позицию частиц, различие живой и книжной нормы. | От старого упрощения к новому закону и его следствиям. | Для реконструкции правил по множеству малых признаков. |
 | [Зализняк-ударение][zalizniak-udarenie] | Акцентная парадигма и надежность данных. | Источник формы, место ударения, степень реконструкции. | От словарной формы к парадигме, затем к вариантам и оговоркам. | Для акцентологии и описания спорных форм. |
 | [Зализняк-школьников_1][zalizniak-shkolnikov] | Педагогическое объяснение. | Понимает ли читатель принцип, а не только термин. | От простого примера к скрытой трудности и правилу. | Для лекций, вводных объяснений, научпопа без снижения уровня. |
-| [Зализняк-новгород][zaliznyak-novgorod] | Диалектная система по берестяным грамотам. | Датировку, графику, написание, корпусные параллели, альтернативы. | От источника к признаку, затем к системному выводу. | Для древненовгородского материала и источниковедческой лингвистики. |
+| [Зализняк-новгород][zalizniak-novgorod] | Диалектная система по берестяным грамотам. | Датировку, графику, написание, корпусные параллели, альтернативы. | От источника к признаку, затем к системному выводу. | Для древненовгородского материала и источниковедческой лингвистики. |
 | [Зализняк-именное][zalizniak-imennoe] | Формальная морфология и алгоритм. | Лексему, словоформу, парадигму, грамматический разряд, схему вывода. | От терминов к классификации и синтезу форм. | Для словарей, морфологических моделей, машинно-понятных правил. |
 | [Зализняк-слово][zalizniak-slovo] | Подлинность памятника и вес аргументов. | Системность языка, вероятность имитации, баланс доводов. | От фактов и версий к проверке системности и итоговому весу. | Для споров о древних текстах, атрибуции и подделках. |
 | [Зализняк-заметки][zalizniak-zametki] | Псевдолингвистика и любительские этимологии. | Исторические формы, регулярные переходы, случайность созвучий, произвольные операции. | От привлекательной догадки к научному критерию и опровержению. | Для популярной полемики, разбора мифов о словах и языках. |
@@ -258,7 +258,7 @@
 
 > Представим, что два слова похожи: русское `дом` и какое-нибудь короткое слово в другом языке. Первое желание - сказать: они, наверное, родственники. Но лингвист сначала задает другой вопрос: похожи ли не только эти два слова, а целые ряды слов в тех же языках?
 
-### [Зализняк-новгород][zaliznyak-novgorod]
+### [Зализняк-новгород][zalizniak-novgorod]
 
 Подходит для древненовгородского материала и вообще для осторожного анализа древнего источника.
 
@@ -392,7 +392,7 @@
 
 > Похожесть - это только повод заинтересоваться. Два человека тоже могут быть похожи, но это еще не доказывает родство. Лингвист проверяет не одно слово, а целый ряд соответствий.
 
-В стиле [Зализняк-новгород][zaliznyak-novgorod]:
+В стиле [Зализняк-новгород][zalizniak-novgorod]:
 
 > Если сопоставление строится на древнем источнике, сначала нужно назвать сам источник, его датировку и особенности записи. Только после этого можно спрашивать, отражает ли написание языковую черту, позднюю норму, ошибку или случайное совпадение.
 
@@ -440,7 +440,7 @@
 | [Зализняк-именное][zalizniak-imennoe] | Нужно живое популярное объяснение для начинающих. | [Зализняк-школьников_1][zalizniak-shkolnikov]. |
 | [Зализняк-заметки][zalizniak-zametki] | Нужно нейтрально описать грамматическое правило без полемики. | [Зализняк-очерк][zalizniak-ocherk]. |
 | [Зализняк-слово][zalizniak-slovo] | Нужно разобрать обычное словоизменение, а не вопрос подлинности текста. | [Зализняк-именное][zalizniak-imennoe] или [Зализняк-очерк][zalizniak-ocherk]. |
-| [Зализняк-новгород][zaliznyak-novgorod] | Материал не связан с древними источниками, графикой или диалектом. | [Зализняк-очерк][zalizniak-ocherk] или [Tronsky-Readings][tronsky-readings]. |
+| [Зализняк-новгород][zalizniak-novgorod] | Материал не связан с древними источниками, графикой или диалектом. | [Зализняк-очерк][zalizniak-ocherk] или [Tronsky-Readings][tronsky-readings]. |
 | [Albedil-Sbornik][albedil-sbornik] | Нужно сухое техническое правило. | [Зализняк-очерк][zalizniak-ocherk] или [Зализняк-именное][zalizniak-imennoe]. |
 | [Лидова][lidova-commentary] | Нужно пословное текстологическое примечание к рукописи. | [Tronsky-Readings][tronsky-readings]. |
 | [Казанский][kazanskiy-korpus] | Нужно написать теплый юбилейный очерк о культурной традиции. | [Albedil-Sbornik][albedil-sbornik]. |
@@ -461,7 +461,7 @@
 
 ### Для древнего источника
 
-> Используй [`ClaudeStyles/zaliznyak-novgorod-style.md`][zaliznyak-novgorod]. Разбери форму `...` из источника `...`: датировка, графика, возможное произношение, диалектная черта, параллели, осторожный вывод.
+> Используй [`ClaudeStyles/zalizniak-novgorod-style.md`][zalizniak-novgorod]. Разбери форму `...` из источника `...`: датировка, графика, возможное произношение, диалектная черта, параллели, осторожный вывод.
 
 > Используй [`ClaudeStyles/tronsky-readings-style.md`][tronsky-readings]. Подготовь короткую филологическую заметку: источник, состояние вопроса, чтение, перевод, комментарий, альтернативные трактовки, вывод.
 
@@ -530,7 +530,7 @@ rws run статья.md --execute --provider deepseek --council sanskrit --journ
 - [Зализняк-именное][zalizniak-imennoe] - морфологический алгоритм.
 - [Зализняк-ударение][zalizniak-udarenie] - акцентная парадигма и надежность данных.
 - [Зализняк-энклитики][zalizniak-enklitiki] - скрытый закон древней фразы.
-- [Зализняк-новгород][zaliznyak-novgorod] - источник, графика и диалектная система.
+- [Зализняк-новгород][zalizniak-novgorod] - источник, графика и диалектная система.
 - [Зализняк-слово][zalizniak-slovo] - подлинность памятника и вес аргументов.
 - [Зализняк-заметки][zalizniak-zametki] - разоблачение псевдометода.
 - [Зализняк-школьников_1][zalizniak-shkolnikov] - сложное ясно, но строго.
@@ -573,7 +573,7 @@ RuWritingStyles — это не просто набор промптов, а п�
 [zalizniak-slovo]: ClaudeStyles/zalizniak-slovo-style.md
 [zalizniak-udarenie]: ClaudeStyles/zalizniak-udarenie-style.md
 [zalizniak-zametki]: ClaudeStyles/zalizniak-zametki-style.md
-[zaliznyak-novgorod]: ClaudeStyles/zaliznyak-novgorod-style.md
+[zalizniak-novgorod]: ClaudeStyles/zalizniak-novgorod-style.md
 [src-enklitiki-pdf]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/2008_Zalizniak_Enklitiki.pdf
 [src-enklitiki-txt]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/2008_Zalizniak_Enklitiki.txt
 [src-imennoe-pdf]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/zalizniak_russkoe_imennoe_slovoizmenenie_2002_text.pdf

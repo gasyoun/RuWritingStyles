@@ -29,7 +29,7 @@ is broken; all of it is drift between what the catalog *is* and what this author
   1:1 to 39 manifest passport entries (21 individual + 18 cluster-prompt); 0 orphans.
   [validate_project.py](tools/validate_project.py) compares the two sets for *equality*,
   so an unpaired `.md` or a dangling `source_prompt` fails CI. Spot-checked
-  zaliznyak-method, tronsky-readings, melchuk, elizarenkova-veda, lidova-commentary —
+  zalizniak-method, tronsky-readings, melchuk, elizarenkova-veda, lidova-commentary —
   each passport's `checks`/`limits` compress the `.md`'s actual demands without
   inventing methods or dropping load-bearing ones.
 - **Voice reaches the model verbatim at the stages that judge.** The review prompt
@@ -39,7 +39,7 @@ is broken; all of it is drift between what the catalog *is* and what this author
   ([review.py:179-224](src/ruwritingstyles/review.py:179)). Distinctiveness is fully
   preserved where a style forms and defends its opinion.
 - **The best passports are unmistakable.** ~16 of 21 encode a real signature:
-  `anti_amateur_linguistics` (zaliznyak-method), `formal_notation`/`semantic_decomposition`
+  `anti_amateur_linguistics` (zalizniak-method), `formal_notation`/`semantic_decomposition`
   (melchuk), `missing_apparatus`/`missing_alternative_interpretation` (tronsky),
   `anachronistic_sanskrit_period`/`missing_context_of_hymn` (elizarenkova-veda),
   `missing_sutra_reference`/`missing_commentary_layer` (panini-traditional). Swap the
@@ -48,7 +48,7 @@ is broken; all of it is drift between what the catalog *is* and what this author
 ## Findings (prioritized)
 
 ### F1 · The default council is pointed away from the project's subject. `HIGH`
-`mvp_style_ids` = [zaliznyak-method, zaliznyak-novgorod, tronsky-readings, melchuk,
+`mvp_style_ids` = [zalizniak-method, zalizniak-novgorod, tronsky-readings, melchuk,
 averintsev, gasparov] ([manifest.yml:5](styles/manifest.yml)). The project's whole
 purpose is **Russian scientific papers on Sanskrit linguistics**, and the MVP set
 contains **zero of the eight Sanskrit/indology styles** (elizarenkova-veda,
@@ -57,7 +57,7 @@ albedil-sbornik, kazanskiy-korpus). The default `rws run` council — what gets 
 in every smoke test and every quick pass — reviews Sanskrit prose with an Old-Novgorod
 dialectologist and a verse-theory metrician, while the people who actually know Vedic
 period boundaries and Pāṇinian commentary layers sit on the bench. This is the single
-highest-leverage change and it is one edited list. zaliznyak-method (general rigor,
+highest-leverage change and it is one edited list. zalizniak-method (general rigor,
 anti-pseudo-etymology) and tronsky-readings (apparatus/source criticism) transfer and
 should stay; the Sanskrit core (elizarenkova-veda, toporov-etym, panini-traditional)
 belongs in the default six. **This is your scholarly call — see the question at the end.**
@@ -156,7 +156,7 @@ preserved, not just probably (F4). F1 is the one that changes the product today.
 
 - **F1 — named councils.** Rather than swap the default (the author's choice was a *menu*),
   `styles/manifest.yml` now has a `councils:` block: `general` (= the historical MVP),
-  `sanskrit` (elizarenkova-veda, toporov-etym, panini-traditional, zaliznyak-method,
+  `sanskrit` (elizarenkova-veda, toporov-etym, panini-traditional, zalizniak-method,
   tronsky-readings, lidova-commentary), and `indology`. Selectable via `rws run --council
   <name>` (also `review`/`deliberate`); `rws councils` lists them. The default stays
   `mvp_style_ids` (= `general`) for back-compat. `validate_project` now fails if a council

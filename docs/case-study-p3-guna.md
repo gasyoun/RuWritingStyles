@@ -10,9 +10,9 @@ provider. Draft: [`examples/input/lexicography-guna.md`](../examples/input/lexic
 
 | Seed | Caught? | By | Finding type |
 |---|---|---|---|
-| 1 — fabricated IE etymology (§2, p016) | ✅ | toporov-etym (major), + zaliznyak-method | `unsupported_sanskrit_etymology` + `missing_source` |
+| 1 — fabricated IE etymology (§2, p016) | ✅ | toporov-etym (major), + zalizniak-method | `unsupported_sanskrit_etymology` + `missing_source` |
 | 2 — missing IAST on *vṛddhi*/*sandhi* (§4) | ✅✅ | deterministic `translit_lint` (named both planted terms) + toporov-etym | `missing_iast_on_first_mention` |
-| 3 — PW←Apte anachronism (§3, p019) | ✅ | tronsky-readings + zaliznyak-method | `unsupported_reading` + `logical_inconsistency` |
+| 3 — PW←Apte anachronism (§3, p019) | ✅ | tronsky-readings + zalizniak-method | `unsupported_reading` + `logical_inconsistency` |
 
 **3 / 3 detected**, each at the correct span, with on-target finding types and genuine
 explanations.
@@ -34,7 +34,7 @@ on the project's core subject, the council's judgement holds up.
 ### Seed 3 — caught as "illogical/unsupported," not literally "anachronism"
 
 The PW(1855–1875)←Apte(1890) impossibility was flagged at the right paragraph by
-zaliznyak-method as `logical_inconsistency` and tronsky-readings as `unsupported_reading`,
+zalizniak-method as `logical_inconsistency` and tronsky-readings as `unsupported_reading`,
 rather than a literal `anachronistic_sanskrit_period`. The *judgement* is correct (the
 claim contradicts the dates in the bibliography); only the label differs. Acceptable.
 
@@ -56,7 +56,7 @@ claim contradicts the dates in the bibliography); only the label differs. Accept
 - **No false-positive storm.** elizarenkova-veda returned 0 findings (correct — this is not
   a Vedic text); the others returned 3–5 each on a 22k-char article. Several non-seed
   findings are legitimate (the draft is deliberately light on inline citations, which
-  tronsky-readings/zaliznyak-method flag as `missing_source`/`missing_apparatus`).
+  tronsky-readings/zalizniak-method flag as `missing_source`/`missing_apparatus`).
 - **Findings are well-explained.** Each carries `finding` (prose), `suggestion`, `severity`,
   `confidence` — DeepSeek populated them substantively, in Russian.
 - **Verification verdict:** `needs_human_review` (12 warnings) — an appropriate status for a

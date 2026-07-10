@@ -20,7 +20,7 @@ After the run, grade detection: did the council flag each seed, and with which f
 "регулярен") is exactly the amateur-etymology pattern.
 **Expected finding types:** `unsupported_sanskrit_etymology`, `arbitrary_sound_change`,
 `accidental_similarity`, `unsupported_method`.
-**Best-placed styles:** toporov-etym, zalizniak-zametki, zaliznyak-method.
+**Best-placed styles:** toporov-etym, zalizniak-zametki, zalizniak-method.
 
 ## Seed 2 — missing IAST on first mention (§ 4)
 
@@ -45,7 +45,7 @@ checkable from the text itself. PW could not have drawn on a dictionary publishe
 years later.
 **Expected finding types:** `anachronistic_sanskrit_period`, an unsupported source-claim /
 `unsupported_reading`, `overstrong_conclusion`.
-**Best-placed styles:** tronsky-readings, zaliznyak-method, kazanskiy-korpus.
+**Best-placed styles:** tronsky-readings, zalizniak-method, kazanskiy-korpus.
 
 ## Scoring
 
@@ -54,9 +54,9 @@ years later.
 
 | Seed | Caught? | Finding type(s) | By which style(s) |
 |---|---|---|---|
-| 1 — etymology | ✅ | `unsupported_sanskrit_etymology`, `missing_source` | toporov-etym, zaliznyak-method |
+| 1 — etymology | ✅ | `unsupported_sanskrit_etymology`, `missing_source` | toporov-etym, zalizniak-method |
 | 2 — missing IAST | ✅✅ | `missing_iast_on_first_mention` | deterministic `translit_lint` (named *vṛddhi* + *sandhi*) + toporov-etym |
-| 3 — anachronism | ✅ | `unsupported_reading`, `logical_inconsistency` (correct judgement, label ≠ `anachronistic_sanskrit_period`) | tronsky-readings, zaliznyak-method |
+| 3 — anachronism | ✅ | `unsupported_reading`, `logical_inconsistency` (correct judgement, label ≠ `anachronistic_sanskrit_period`) | tronsky-readings, zalizniak-method |
 
 **3/3 caught.** Bonus: the linter found 2 *unintended* un-IAST'd terms (*sūtra*,
 *vyākaraṇa*) + a *guṇa*/*гуна* inconsistency — real omissions the author missed. No
