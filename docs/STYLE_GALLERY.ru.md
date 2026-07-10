@@ -26,8 +26,8 @@ Claude содержимое файла в начале диалога и поп�
 - [Зализняк-очерк](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/zalizniak-ocherk-style.md) — `zalizniak-ocherk`
 - [Зализняк-слово](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/zalizniak-slovo-style.md) — `zalizniak-slovo`
 - [Зализняк-заметки](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/zalizniak-zametki-style.md) — `zalizniak-zametki`
-- [А. А. Зализняк (Общий метод)](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/zaliznyak-method-style.md) — `zaliznyak-method`
-- [Зализняк-новгород](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/zaliznyak-novgorod-style.md) — `zaliznyak-novgorod`
+- [А. А. Зализняк (Общий метод)](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/zalizniak-method-style.md) — `zalizniak-method`
+- [Зализняк-новгород](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/zalizniak-novgorod-style.md) — `zalizniak-novgorod`
 
 ### Московская Семантическая Школа
 

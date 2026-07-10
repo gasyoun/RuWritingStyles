@@ -341,7 +341,7 @@
       "input": "examples/input/zaliznyak-evidence-hierarchy.md",
       "purpose": "Check if Zaliznyak agent protects the hierarchy of evidence (primary source over late dictionary).",
       "default_styles": [
-        "zaliznyak-method",
+        "zalizniak-method",
         "ling_iesh"
       ],
       "expected_risks": [

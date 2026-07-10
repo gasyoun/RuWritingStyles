@@ -1,6 +1,6 @@
-id: zaliznyak-novgorod
+id: zalizniak-novgorod
 name: Зализняк-новгород
-source_prompt: ClaudeStyles/zaliznyak-novgorod-style.md
+source_prompt: ClaudeStyles/zalizniak-novgorod-style.md
 role: source_critical_reviewer
 language: ru
 level: private

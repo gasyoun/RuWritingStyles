@@ -3,8 +3,8 @@ schema: "../schemas/style.schema.json"
 description: "Hierarchical index of RuWritingStyles style clusters and passports."
 
 mvp_style_ids:
-  - zaliznyak-method
-  - zaliznyak-novgorod
+  - zalizniak-method
+  - zalizniak-novgorod
   - tronsky-readings
   - melchuk
   - averintsev
@@ -17,8 +17,8 @@ mvp_style_ids:
 # does not cover — see docs/prompt-fidelity-review-2026-06.md (F1).
 councils:
   general:
-    - zaliznyak-method
-    - zaliznyak-novgorod
+    - zalizniak-method
+    - zalizniak-novgorod
     - tronsky-readings
     - melchuk
     - averintsev
@@ -27,7 +27,7 @@ councils:
     - elizarenkova-veda
     - toporov-etym
     - panini-traditional
-    - zaliznyak-method
+    - zalizniak-method
     - tronsky-readings
     - lidova-commentary
   indology:
@@ -115,11 +115,11 @@ passports:
     level: private
     cluster: ling_iesh
     source_prompt: ClaudeStyles/zalizniak-zametki-style.md
-  - id: zaliznyak-novgorod
-    path: styles/passports/zaliznyak-novgorod.yml
+  - id: zalizniak-novgorod
+    path: styles/passports/zalizniak-novgorod.yml
     level: private
     cluster: ling_iesh
-    source_prompt: ClaudeStyles/zaliznyak-novgorod-style.md
+    source_prompt: ClaudeStyles/zalizniak-novgorod-style.md
   - id: zalizniak-udarenie
     path: styles/passports/zalizniak-udarenie.yml
     level: private
@@ -179,11 +179,11 @@ passports:
     cluster: ling_mss
     source_prompt: ClaudeStyles/melchuk-style.md
     weight: 2.0
-  - id: zaliznyak-method
-    path: styles/passports/zaliznyak-method.yml
+  - id: zalizniak-method
+    path: styles/passports/zalizniak-method.yml
     level: private
     cluster: ling_iesh
-    source_prompt: ClaudeStyles/zaliznyak-method-style.md
+    source_prompt: ClaudeStyles/zalizniak-method-style.md
     weight: 2.0
   - id: lidova-commentary
     path: styles/passports/lidova-commentary.yml

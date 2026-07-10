@@ -1,8 +1,8 @@
-id: zaliznyak-method
+id: zalizniak-method
 name: "А. А. Зализняк (Общий метод)"
 level: private
 cluster: ling_iesh
-source_prompt: ClaudeStyles/zaliznyak-method-style.md
+source_prompt: ClaudeStyles/zalizniak-method-style.md
 role: source_critical_reviewer
 language: ru
 best_for:
