@@ -31,7 +31,7 @@ security-review закрыт. Узкое место сместилось:
 
 - **Метрика — шум.** Золотой набор дал 1/5 → 2/5 → 3/5 → **0/5** на неизменном коде
   ([benchmark.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/benchmark.md)).
-  Детекция стабильна (5/5 почти в каждом прогоне); зачёт хоронят два известных рычага —
+  Детекция стабильна (5/5 почти в каждом прогоне); зачет хоронят два известных рычага —
   недетерминизм DeepSeek (single-run accuracy бессмысленна) и над-переписывание коротких
   заглушек ревизией (Δ > 0.5 при лимите 0.5).
 - **Ревизия доверяет LLM копировать нетронутый текст дословно** — это и есть источник
@@ -56,7 +56,7 @@ Handoff: [H072](https://github.com/gasyoun/Uprava/blob/main/handoffs/H072-Fable_
       сравнительный прогон с `deepseek-reasoner` на council/verify (маршрут уже описан
       в `model_policy.yml`, но никогда не тестировался).
 - [ ] Заполнить [benchmark.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/benchmark.md)
-      усреднёнными числами с доверительными интервалами — это доказательная база статьи.
+      усредненными числами с доверительными интервалами — это доказательная база статьи.
 
 Критерий готовности: benchmark.md сообщает pass-rate ± разброс по ≥5 прогонам;
 повторный запуск протокола воспроизводит выводы (не обязательно числа).
@@ -65,19 +65,19 @@ Handoff: [H072](https://github.com/gasyoun/Uprava/blob/main/handoffs/H072-Fable_
 
 Handoff: [H073](https://github.com/gasyoun/Uprava/blob/main/handoffs/H073-Fable_RuWritingStyles_RWS_span_patch_reconstruction_03.07.26.md) · после B1 (harness измеряет эффект).
 
-- [ ] `revision.py`: LLM выдаёт только per-span замены (`applied_changes` со span_id +
+- [ ] `revision.py`: LLM выдает только per-span замены (`applied_changes` со span_id +
       replacement); полный `revised.md` собирает движок — нетронутые сегменты копируются
       байт-в-байт из `segments.json`/`normalized.md`.
-- [ ] Diff-fidelity становится верной **по построению**: изменённые символы = только
+- [ ] Diff-fidelity становится верной **по построению**: измененные символы = только
       принятые спаны. Лимиты в eval остаются как страховка, но перестают быть лотереей.
 - [ ] Обратная совместимость: схема `revision.schema.json`, `validate-run`,
       плагинный diff-accept (он уже работает от line-diff — переключить на
       engine-предоставленные changes, пункт «optional» из плана Tier-2).
-- [ ] Ре-бенчмарк по протоколу B1 до/после — ожидание: diff-провалы → ~0, зачёт
+- [ ] Ре-бенчмарк по протоколу B1 до/после — ожидание: diff-провалы → ~0, зачет
       определяется детекцией и верификацией.
 
-Критерий готовности: N=5 усреднённый зачёт золотых кейсов ≥ 4/5, при нулевых
-diff-провалах; регресс-suite mock зелёный.
+Критерий готовности: N=5 усредненный зачет золотых кейсов ≥ 4/5, при нулевых
+diff-провалах; регресс-suite mock зеленый.
 
 ## Фаза R1 — Obsidian-плагин: CI и релизный репозиторий
 
@@ -91,7 +91,7 @@ Handoff: [H074](https://github.com/gasyoun/Uprava/blob/main/handoffs/H074-Opus_R
 - [ ] Подготовить выделенный релизный репозиторий `gasyoun/ruwritingstyles-obsidian`
       (root-manifest, bare-теги) по
       [RELEASE.md](https://github.com/gasyoun/RuWritingStyles/blob/main/obsidian-plugin/RELEASE.md);
-      монорепозиторная папка остаётся dev-источником.
+      монорепозиторная папка остается dev-источником.
 - [ ] Кнопки автора: пуш тега `obsidian-v0.1.0`; PR в obsidianmd/obsidian-releases; BRAT.
 
 Критерий готовности: CI ловит ломающий bump; из релизного репо ставится рабочий плагин.
@@ -105,12 +105,12 @@ Handoff: [H075](https://github.com/gasyoun/Uprava/blob/main/handoffs/H075-Opus_R
       и README. Кнопка автора: включить репозиторий в Zenodo и подтвердить релиз.
 - [ ] **Пакет методологической статьи**: развернуть
       [methodology-paper-outline.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/methodology-paper-outline.md)
-      в черновик с реальными усреднёнными числами; байлайн/CITATION/cover letter —
+      в черновик с реальными усредненными числами; байлайн/CITATION/cover letter —
       по `/paper-submission-pack`; зарегистрировать статью в
       [ARTICLES.md](https://github.com/gasyoun/Uprava/blob/main/ARTICLES.md) (новый Axx).
 - [ ] **Консолидация docs**: пометить три старых поколения roadmap архивными шапками;
       удалить датированные дубликаты style-gallery; README разделить — каталог стилей
-      (человеческий) vs движок (инженерный) — каталог остаётся в README, движок уходит
+      (человеческий) vs движок (инженерный) — каталог остается в README, движок уходит
       в `docs/ENGINE.md` со ссылкой.
 
 Критерий готовности: DOI разрешается; черновик статьи со всеми числами; одна
@@ -118,7 +118,7 @@ Handoff: [H075](https://github.com/gasyoun/Uprava/blob/main/handoffs/H075-Opus_R
 
 ## Вне квартала (паркинг)
 
-Пополнение приватного корпуса (Елизаренкова/Топоров/Вертоградова/Иванов — сканы даёт
+Пополнение приватного корпуса (Елизаренкова/Топоров/Вертоградова/Иванов — сканы дает
 автор), F2/F5-курирование паспортов (доменные решения), F4-вторая половина (коммитменты
 стилей в промпт верификатора — требует eval-прохода, естественно ложится ПОСЛЕ B1),
 gc-запрос в GitHub Support по dangling-объектам до-purge истории.

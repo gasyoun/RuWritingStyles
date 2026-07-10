@@ -8,7 +8,7 @@
 - [`QUICKSTART.ru.md`](QUICKSTART.ru.md) — установка → ключ DeepSeek → первый прогон за
   пять шагов.
 - [`USE_CASES.ru.md`](USE_CASES.ru.md) — рабочие сценарии: этимология, подготовка к
-  журналу, ведийский период, самаса, сверка словарей, транслитерация. Команда → что вернёт.
+  журналу, ведийский период, самаса, сверка словарей, транслитерация. Команда → что вернет.
 - [`cli.md`](cli.md) — полный справочник команд `rws`.
 - [`STYLE_GALLERY.ru.md`](STYLE_GALLERY.ru.md) — галерея всех 39 стилей со ссылками на
   `.md` для использования как Claude Custom Style (открыть → скопировать → вставить).
@@ -49,13 +49,13 @@
 ## Рецензии (для рецензентов кода)
 
 - [`security-review-2026-06.md`](security-review-2026-06.md) — обзор веб-поверхности
-  (S1–S7 закрыты; default-deny авторизация; путь к публичному развёртыванию).
+  (S1–S7 закрыты; default-deny авторизация; путь к публичному развертыванию).
 - [`prompt-fidelity-review-2026-06.md`](prompt-fidelity-review-2026-06.md) — верность
   паспортов и сохранение голоса стиля по конвейеру.
 - [`data-schema-review-2026-06.md`](data-schema-review-2026-06.md) — слой данных и схем.
 - [`architecture-review-2026-06.md`](architecture-review-2026-06.md) — архитектура конвейера.
 - [`methodology-paper-draft.ru.md`](methodology-paper-draft.ru.md) — **полный русский
-  черновик** методологической статьи «Совет филологов» (A29, 3/5) с усреднёнными числами
+  черновик** методологической статьи «Совет филологов» (A29, 3/5) с усредненными числами
   бенчмарка (0.48→0.92) и кейсом *guṇa*; [`methodology-paper-outline.md`](methodology-paper-outline.md)
   — исходный скелет; [`paper-pack/`](paper-pack/) — cover letter + чек-лист площадок.
 - [`ars-integration-notes.md`](ars-integration-notes.md) — что заимствовать у Academic
@@ -65,10 +65,10 @@
   (MIT, Stanford REAP): не конкурент и не донор методов, но образец для расширения схемы
   профилей журналов (`knowledge/journals/`).
 
-## Разработка и развёртывание
+## Разработка и развертывание
 
 - [`obsidian-plugin-plan.md`](obsidian-plugin-plan.md) — план плагина для Obsidian:
-  MVP с лёгкими детерминированными проверками (порт линтера на TypeScript), полный
+  MVP с легкими детерминированными проверками (порт линтера на TypeScript), полный
   аудит «Совета» через локальный FastAPI как Tier 2.
 - [`deployment.md`](deployment.md), [`onboarding.md`](onboarding.md),
   [`adr-001-reject-langgraph.md`](adr-001-reject-langgraph.md),

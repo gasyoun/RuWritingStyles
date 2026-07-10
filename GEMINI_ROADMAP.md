@@ -116,13 +116,13 @@
 ### Выполнено в сессии v2.2.3 → v2.3.0 (рефакторинг):
 1. Устранена архитектурная ошибка CLI↔API: создан `resolution.py` (сервисный слой для `apply_resolution` и `write_final_manuscript`).
 2. CLI-команды `cmd_apply_resolution` и `cmd_finalize` переведены на делегирование к сервисному слою.
-3. `api.py`: CORS ограничен до localhost, middleware перенесён выше routes, удалён `argparse.Namespace` из API-эндпоинтов.
-4. `hooks.py`: переписан как набор функций модуля (без класса); credential detection заменён на anchored regex по форматам OpenAI/AWS/GitHub/Google; устранён опасный null-prune из `post_schema_validate`.
-5. `context_builder.py`: подключён к `verification.py` — knowledge passages и artifact preview теперь реально встраиваются в verification prompt.
+3. `api.py`: CORS ограничен до localhost, middleware перенесен выше routes, удален `argparse.Namespace` из API-эндпоинтов.
+4. `hooks.py`: переписан как набор функций модуля (без класса); credential detection заменен на anchored regex по форматам OpenAI/AWS/GitHub/Google; устранен опасный null-prune из `post_schema_validate`.
+5. `context_builder.py`: подключен к `verification.py` — knowledge passages и artifact preview теперь реально встраиваются в verification prompt.
 
 ### Выполнено в Sprint D (стабилизация CI):
 1. [x] **Committed gold baseline**: создан `evals/baselines/gold.json` на основе детерминированного mock-прогона (33 кейса).
-2. [x] **CI Golden Gate**: `scripts/ci-eval-gate.py` переведён в GOLD MODE (сравнение с `gold.json`).
+2. [x] **CI Golden Gate**: `scripts/ci-eval-gate.py` переведен в GOLD MODE (сравнение с `gold.json`).
 3. [x] **Bugfixes**: исправлен `FrozenInstanceError` в `hooks.py` и логика `strict` в `eval-regression`.
 4. [x] **Unit-тесты**: Unit-тесты для `hooks.py` и `resolution.py` добавлены в CI gate (44/44 OK).
 

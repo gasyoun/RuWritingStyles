@@ -1,7 +1,7 @@
 # Сценарии использования (агентный конвейер)
 
 Готовые рабочие процессы для исследователя-санскритолога: ситуация → команда →
-что вернёт конвейер. Все примеры — на провайдере **DeepSeek** (`--provider
+что вернет конвейер. Все примеры — на провайдере **DeepSeek** (`--provider
 deepseek`, ключ в `.env`); замените на `--provider mock` для бесплатной офлайн-
 проверки структуры. Команды проверены на реальном прогоне (см.
 [`case-study-p3-guna.md`](case-study-p3-guna.md)).
@@ -20,12 +20,12 @@ deepseek`, ключ в `.env`); замените на `--provider mock` для �
 rws run статья.md --provider deepseek --execute --styles toporov-etym,zalizniak-zametki
 ```
 
-**Что вернёт.** `toporov-etym` и «полемический» `zalizniak-zametki` дадут находки
+**Что вернет.** `toporov-etym` и «полемический» `zalizniak-zametki` дадут находки
 `unsupported_sanskrit_etymology`, `arbitrary_sound_change`, `accidental_similarity` —
-с разбором, почему соответствие ненадёжно (на gúṇa-кейсе модель сама напомнила, что
+с разбором, почему соответствие ненадежно (на gúṇa-кейсе модель сама напомнила, что
 лат. *funis* возводят к *bʰendʰ-*, а не к предложенному корню). Источник требуется:
 `missing_source` отправит вас к словарю (теперь в библиотеке есть **Mayrhofer 1986**,
-**Apte 1890**, **Monier-Williams 1899** со ссылками на Кёльнские словари).
+**Apte 1890**, **Monier-Williams 1899** со ссылками на Кельнские словари).
 
 ## 2. Подготовить статью к журналу (Вестник СПбГУ)
 
@@ -35,7 +35,7 @@ rws run статья.md --provider deepseek --execute --styles toporov-etym,zali
 rws run статья.md --provider deepseek --execute --council sanskrit --journal vestnik-spbu
 ```
 
-**Что вернёт.** Раздел «Соответствие журналу» в `report.md`: объём против лимита
+**Что вернет.** Раздел «Соответствие журналу» в `report.md`: объем против лимита
 (≤ 40000 знаков), формат ссылок (ГОСТ Р 7.0.100-2018), схема транслитерации (IAST) и
 **проверка наличия** аннотации и ключевых слов по языкам — например `Аннотация (ru,
 en): ru ✓, en ⚠ нет`, если не хватает английской аннотации. Список журналов:
@@ -50,7 +50,7 @@ en): ru ✓, en ⚠ нет`, если не хватает английской �
 rws run статья.md --provider deepseek --execute --styles elizarenkova-veda
 ```
 
-**Что вернёт.** `anachronistic_sanskrit_period`, `missing_context_of_hymn`,
+**Что вернет.** `anachronistic_sanskrit_period`, `missing_context_of_hymn`,
 `unsupported_semantization` — ведийский «рецензент» отметит анахронизмы периода и
 потребует контекст гимна. Для первого упоминания терминов проверяется русская
 передача + IAST.
@@ -63,7 +63,7 @@ rws run статья.md --provider deepseek --execute --styles elizarenkova-veda
 rws run разбор.md --provider deepseek --execute --styles samasa-manual,sanskrit-reader
 ```
 
-**Что вернёт.** `wrong_samasa_type`, `missing_vigraha`, `missing_example_or_exception` —
+**Что вернет.** `wrong_samasa_type`, `missing_vigraha`, `missing_example_or_exception` —
 требование определить тип через **vigraha** (аналитическое разложение, теперь в словаре
 терминов), а не «по виду», и привязать правило к разобранному примеру.
 
@@ -76,7 +76,7 @@ rws run разбор.md --provider deepseek --execute --styles samasa-manual,san
 rws run lexи.md --provider deepseek --execute --council indology --journal vestnik-spbu
 ```
 
-**Что вернёт.** Совет ловит логические и источниковые проблемы (`logical_inconsistency`,
+**Что вернет.** Совет ловит логические и источниковые проблемы (`logical_inconsistency`,
 `unsupported_reading`, `missing_source`) — например, утверждение, что более ранний
 словарь «опирался» на более поздний. Цитаты `Apte 1890`, `Boehtlingk Roth 1855`,
 `Monier-Williams 1899` теперь привязываются к библиографии и попадают в
@@ -91,7 +91,7 @@ rws run lexи.md --provider deepseek --execute --council indology --journal vest
 rws lint-translit статья.md --journal vestnik-spbu
 ```
 
-**Что вернёт.** Детерминированный список: `missing_iast_on_first_mention`,
+**Что вернет.** Детерминированный список: `missing_iast_on_first_mention`,
 `inconsistent_term_rendering`, смешение IAST/Харвард-Киото/кириллицы. Бесплатно, без сети.
 
 ## 7. Сравнить два прогона или двух провайдеров

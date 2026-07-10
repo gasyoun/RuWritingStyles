@@ -23,7 +23,7 @@ toporov-etym (DeepSeek) didn't just flag the etymology as "unsupported" — it p
 correct comparative-linguistic counter-argument:
 
 > «Утверждение о восхождении слова *guṇa* к ИЕ корню *gʷenǝ-* «вить, скручивать» с
-> соответствиями лат. *funis* и греч. *χορδή* ненадёжно. Во-первых, лат. *funis* обычно
+> соответствиями лат. *funis* и греч. *χορδή* ненадежно. Во-первых, лат. *funis* обычно
 > возводят к ИЕ *bʰendʰ-/*bʰondʰ-* (связывать), а не к *gʷenǝ-*; соответствие *gʷenǝ- > лат.
 > *f[unis]*…»
 

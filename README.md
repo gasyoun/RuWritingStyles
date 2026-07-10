@@ -6,7 +6,7 @@
 
 > 🚀 **Хотите прогнать свою статью через «Совет» стилей?** За пять шагов от установки до первой рецензии (с ключом DeepSeek) — [`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md).
 
-**Status**: v2.12.0 (Over-rewrite fixed by construction) — span-patch-реконструкция ревизии + growth-губернатор подняли усреднённый pass-rate золотых кейсов **0.48 → 0.92** при нулевых diff-провалах ([`docs/benchmark.md`](docs/benchmark.md)); статистически осмысленный eval-бенчмарк (`--repeat N` → усреднённый агрегат pass-rate/detection-rate ± σ), политика меток скорера (`accepted_finding_aliases`), основной провайдер **DeepSeek**, поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, выбираемые именованные советы (`rws councils`), проверка соответствия журналу (`--journal`), WebSocket-трассировка ("Thinking Trace") и API для Obsidian/Word.
+**Status**: v2.12.0 (Over-rewrite fixed by construction) — span-patch-реконструкция ревизии + growth-губернатор подняли усредненный pass-rate золотых кейсов **0.48 → 0.92** при нулевых diff-провалах ([`docs/benchmark.md`](docs/benchmark.md)); статистически осмысленный eval-бенчмарк (`--repeat N` → усредненный агрегат pass-rate/detection-rate ± σ), политика меток скорера (`accepted_finding_aliases`), основной провайдер **DeepSeek**, поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, выбираемые именованные советы (`rws councils`), проверка соответствия журналу (`--journal`), WebSocket-трассировка ("Thinking Trace") и API для Obsidian/Word.
 
 Границы реализованного (честная маркировка):
 
@@ -23,7 +23,7 @@
   релиза DOI добавляется в `CITATION.cff`.
 - **Использование ИИ в статье.** Готовые формулы для сноски/«Благодарностей» (рус./англ.) и
   объяснение роли ИИ в самом конвейере — в [`docs/AI_DISCLOSURE.md`](docs/AI_DISCLOSURE.md).
-  Кратко: ИИ — инструмент рецензирования, не соавтор; ответственность за текст несёт автор.
+  Кратко: ИИ — инструмент рецензирования, не соавтор; ответственность за текст несет автор.
 - **Метаданные Dublin Core.** Экспорт паспортов стилей в DCMI —
   [`metadata/dublin-core.xml`](metadata/dublin-core.xml), регенерируется
   `python tools/passports_to_dublin_core.py`.
@@ -47,8 +47,8 @@
 - [x] **v2.8.1–2.8.2**: первый бенчмарк на реальном провайдере и кейс-стади настоящей статьи (лексикография *guṇa*, совет `sanskrit` — все три заложенные проблемы пойманы) — [`docs/benchmark.md`](docs/benchmark.md), [`docs/case-study-p3-guna.md`](docs/case-study-p3-guna.md).
 - [x] **v2.8.3–2.8.4**: дисциплина правки для коротких заметок и проверка соответствия журналу (`rws run --journal <id>` — реальная проверка наличия аннотации и ключевых слов по языкам).
 - [x] **v2.8.5–2.8.6**: русский quickstart ([`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md)) и углубление базы знаний (индологическое ядро библиографии + ссылки CDSL).
-- [x] **v2.9.0–2.9.1**: углублённая документация ([`docs/USE_CASES.ru.md`](docs/USE_CASES.ru.md), карта [`docs/README.md`](docs/README.md)) и галерея стилей ([`docs/STYLE_GALLERY.ru.md`](docs/STYLE_GALLERY.ru.md)).
-- [ ] **Дальше (релизные действия автора)**: DOI на Zenodo (→ вписать в [`CITATION.cff`](CITATION.cff)), финализация и подача методологической статьи ([`docs/methodology-paper-outline.md`](docs/methodology-paper-outline.md)); плагин для Obsidian — план реализации (MVP: лёгкие детерминированные проверки) в [`docs/obsidian-plugin-plan.md`](docs/obsidian-plugin-plan.md).
+- [x] **v2.9.0–2.9.1**: углубленная документация ([`docs/USE_CASES.ru.md`](docs/USE_CASES.ru.md), карта [`docs/README.md`](docs/README.md)) и галерея стилей ([`docs/STYLE_GALLERY.ru.md`](docs/STYLE_GALLERY.ru.md)).
+- [ ] **Дальше (релизные действия автора)**: DOI на Zenodo (→ вписать в [`CITATION.cff`](CITATION.cff)), финализация и подача методологической статьи ([`docs/methodology-paper-outline.md`](docs/methodology-paper-outline.md)); плагин для Obsidian — план реализации (MVP: легкие детерминированные проверки) в [`docs/obsidian-plugin-plan.md`](docs/obsidian-plugin-plan.md).
 
 ## Навигация
 
@@ -108,12 +108,12 @@
 
 ### Индологический кластер (санскритология)
 
-Кластер `indology` собирает стили для русскоязычных научных текстов по санскриту. Общий принцип: при первом упоминании термин даётся в русской передаче и IAST, держится одна схема транслитерации, различаются ведийский / эпический / классический санскрит и слой коренного текста и комментария. Обобщающий профиль — [`ClaudeStyles/indology-style.md`][indology].
+Кластер `indology` собирает стили для русскоязычных научных текстов по санскриту. Общий принцип: при первом упоминании термин дается в русской передаче и IAST, держится одна схема транслитерации, различаются ведийский / эпический / классический санскрит и слой коренного текста и комментария. Обобщающий профиль — [`ClaudeStyles/indology-style.md`][indology].
 
 | Файл | Стиль | Для чего нужен | Главная интонация |
 |---|---|---|---|
 | [`ClaudeStyles/elizarenkova-veda-style.md`][elizarenkova-veda] | [Елизаренкова-веда][elizarenkova-veda] | Ведийская филология: разбор словоформы, ударения, синтаксиса гимна, осторожная семантизация. | Сдержанная точность с вниманием к поэтике гимна. |
-| [`ClaudeStyles/toporov-etym-style.md`][toporov-etym] | [Топоров-этимология][toporov-etym] | Этимология и семантическая реконструкция санскритских и индоевропейских лексем. | Широкий сравнительный фон, подчинённый регулярности. |
+| [`ClaudeStyles/toporov-etym-style.md`][toporov-etym] | [Топоров-этимология][toporov-etym] | Этимология и семантическая реконструкция санскритских и индоевропейских лексем. | Широкий сравнительный фон, подчиненный регулярности. |
 | [`ClaudeStyles/sanskrit-reader-style.md`][sanskrit-reader] | [Санскрит-ридер][sanskrit-reader] | Учебный разбор отрывка, комментированная хрестоматия для студентов. | Ясность без упрощения, уважение к читателю. |
 | [`ClaudeStyles/samasa-manual-style.md`][samasa-manual] | [Самаса-пособие][samasa-manual] | Грамматическое пособие по сложным словам: определение, классификация, правило, пример, исключение. | Сухая алгоритмическая ясность. |
 | [`ClaudeStyles/panini-traditional-style.md`][panini-traditional] | [Панини-традиция][panini-traditional] | Изложение грамматики с опорой на туземную традицию: сутра, вритти, пример. | Дисциплинированное описание категории изнутри традиции. |
@@ -506,8 +506,8 @@ rws run статья.md --execute --provider deepseek --council sanskrit --journ
 Точка входа — курированная карта документации [`docs/README.md`](docs/README.md), которая раскладывает 35+ файлов `docs/` по аудиториям (с чего начать / доказательная база / цитирование и ИИ / как устроено / рецензии / разработка). Ниже — ключевые документы.
 
 - [`docs/README.md`](docs/README.md) — курированная карта всей документации по аудиториям; основа будущего русского docs-сайта.
-- [`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md) — русский quickstart за пять шагов (установка → ключ DeepSeek в `.env` → первый прогон на готовом примере → своя статья с `--council sanskrit --journal vestnik-spbu` → чтение отчёта), плюс offline-путь без ключа.
-- [`docs/USE_CASES.ru.md`](docs/USE_CASES.ru.md) — семь развёрнутых командных сценариев русскоязычного санскритолога (этимология, подготовка к журналу, ведийский vs классический санскрит, самаса, сверка словарей PW/MW/Apte, транслитерация, сравнение прогонов): ситуация → команда → результат.
+- [`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md) — русский quickstart за пять шагов (установка → ключ DeepSeek в `.env` → первый прогон на готовом примере → своя статья с `--council sanskrit --journal vestnik-spbu` → чтение отчета), плюс offline-путь без ключа.
+- [`docs/USE_CASES.ru.md`](docs/USE_CASES.ru.md) — семь развернутых командных сценариев русскоязычного санскритолога (этимология, подготовка к журналу, ведийский vs классический санскрит, самаса, сверка словарей PW/MW/Apte, транслитерация, сравнение прогонов): ситуация → команда → результат.
 - [`docs/benchmark.md`](docs/benchmark.md) — реальные числа бенчмарка на DeepSeek (детекция / верификация / дисциплина правки) и методологические оговорки (недетерминированность, нужно усреднение по N прогонам).
 - [`docs/case-study-p3-guna.md`](docs/case-study-p3-guna.md) — кейс-стади настоящей статьи (лексикография *guṇa* для «Вестника СПбГУ»): совет `sanskrit` на `deepseek-chat` поймал все три заложенные проблемы на верных спанах.
 - [`docs/roadmap.md`](docs/roadmap.md) описывает развитие проекта от каталога стилей к агентной системе проверки и редакции документов.
@@ -554,7 +554,7 @@ rws run статья.md --execute --provider deepseek --council sanskrit --journ
 
 RuWritingStyles — это не просто набор промптов, а полноценная платформа для высокоточного филологического аудита и миграции текстов: мультиагентный «Совет», иерархическая таксономия из 17 филологических школ, контракт артефактов на JSON-схемах, Web/API-слой на FastAPI и eval-дисциплина.
 
-**Инженерная документация движка** (возможности, филологические школы-кластеры, быстрый старт CLI, feedback loop) вынесена в [`docs/ENGINE.md`](docs/ENGINE.md). Ниже README остаётся человеко-ориентированным каталогом стилей.
+**Инженерная документация движка** (возможности, филологические школы-кластеры, быстрый старт CLI, feedback loop) вынесена в [`docs/ENGINE.md`](docs/ENGINE.md). Ниже README остается человеко-ориентированным каталогом стилей.
 
 [albedil-sbornik]: ClaudeStyles/albedil-sbornik-style.md
 [kazanskiy-korpus]: ClaudeStyles/kazanskiy-korpus-style.md
