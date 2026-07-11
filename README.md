@@ -1,12 +1,14 @@
 # Каталог пользовательских стилей для Claude
 
+_Created: 03-05-2026 · Last updated: 11-07-2026_
+
 Этот README объясняет, какие пользовательские стили для Claude уже созданы, чем они отличаются и как ими пользоваться. Он рассчитан на человека, который впервые открыл эту папку и еще не знает, какой файл брать для своей задачи.
 
 Файл стиля - это `.md`-инструкция для Claude. Ее можно использовать двумя способами: загрузить или вставить в настройку Custom Style, либо временно дать Claude в начале диалога и попросить писать по этому профилю. Сами стили не являются пересказами исходных книг и статей. Это рабочие модели письма: тон, композиция, способ доказательства, тип примеров, допустимая терминология и запреты.
 
 > 🚀 **Хотите прогнать свою статью через «Совет» стилей?** За пять шагов от установки до первой рецензии (с ключом DeepSeek) — [`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md).
 
-**Status**: v2.12.0 (Over-rewrite fixed by construction) — span-patch-реконструкция ревизии + growth-губернатор подняли усредненный pass-rate золотых кейсов **0.48 → 0.92** при нулевых diff-провалах ([`docs/benchmark.md`](docs/benchmark.md)); статистически осмысленный eval-бенчмарк (`--repeat N` → усредненный агрегат pass-rate/detection-rate ± σ), политика меток скорера (`accepted_finding_aliases`), основной провайдер **DeepSeek**, поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, выбираемые именованные советы (`rws councils`), проверка соответствия журналу (`--journal`), WebSocket-трассировка ("Thinking Trace") и API для Obsidian/Word.
+**Status**: v2.13.0 (Verifier style commitments) — span-patch-реконструкция ревизии + growth-губернатор подняли усредненный pass-rate золотых кейсов **0.48 → 0.92** при нулевых diff-провалах ([`docs/benchmark.md`](docs/benchmark.md)); верификатор теперь получает стилевые обязательства прогона и выдает span-привязанные предупреждения о нарушениях (kill-switch `RWS_VERIFY_STYLE_COMMITMENTS=0`); двухэкспертная разметка золотого набора (`tools/gold_annotation.py` → согласие + κ Коэна, [`evals/annotation/`](evals/annotation/)); жесткий wall-clock-дедлайн на запрос к провайдеру (`RWS_PROVIDER_WALLCLOCK_SECONDS`) и маршрутизация моделей по стадиям в eval (`--routes` из `model_policy.yml`); статистически осмысленный eval-бенчмарк (`--repeat N` → усредненный агрегат pass-rate/detection-rate ± σ), политика меток скорера (`accepted_finding_aliases`), основной провайдер **DeepSeek**, поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, выбираемые именованные советы (`rws councils`), проверка соответствия журналу (`--journal`), WebSocket-трассировка ("Thinking Trace") и API для Obsidian/Word.
 
 Границы реализованного (честная маркировка):
 
@@ -48,6 +50,10 @@
 - [x] **v2.8.3–2.8.4**: дисциплина правки для коротких заметок и проверка соответствия журналу (`rws run --journal <id>` — реальная проверка наличия аннотации и ключевых слов по языкам).
 - [x] **v2.8.5–2.8.6**: русский quickstart ([`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md)) и углубление базы знаний (индологическое ядро библиографии + ссылки CDSL).
 - [x] **v2.9.0–2.9.1**: углубленная документация ([`docs/USE_CASES.ru.md`](docs/USE_CASES.ru.md), карта [`docs/README.md`](docs/README.md)) и галерея стилей ([`docs/STYLE_GALLERY.ru.md`](docs/STYLE_GALLERY.ru.md)).
+- [x] **v2.10.x**: журнальная проверка с лимитом слов аннотации (`abstract_max_words`), CLI/CI parity-guard, ARS-совместимые протоколы claim-faithfulness и калибровки рецензентов ([`SOURCES.md`](SOURCES.md)).
+- [x] **v2.11.0**: достоверный бенчмарк — N-прогонный eval-харнесс (`eval-run`/`eval-suite --repeat N` → `eval-aggregate.json`), политика алиасов скорера, температурный зонд DeepSeek.
+- [x] **v2.12.0–2.12.1**: over-rewrite побежден по построению — span-patch-реконструкция + growth-губернатор (pass-rate **0.48 → 0.92**), консолидация Zenodo/статьи/документации, движок вынесен в [`docs/ENGINE.md`](docs/ENGINE.md).
+- [x] **v2.13.0** (H588 Phase N): span-привязанные стилевые обязательства верификатора, двухэкспертная разметка золотого набора (согласие 24/25, κ Коэна), wall-clock-дедлайн провайдера, маршрутизация моделей `--routes`, обобщенный навык `/rws-council`, черновик методологической статьи в форме подачи (§4.6, EN Abstract/Keywords).
 - [ ] **Дальше (релизные действия автора)**: DOI на Zenodo (→ вписать в [`CITATION.cff`](CITATION.cff)), финализация и подача методологической статьи ([`docs/methodology-paper-outline.md`](docs/methodology-paper-outline.md)); плагин для Obsidian — план реализации (MVP: легкие детерминированные проверки) в [`docs/obsidian-plugin-plan.md`](docs/obsidian-plugin-plan.md).
 
 ## Навигация
@@ -602,4 +608,7 @@ RuWritingStyles — это не просто набор промптов, а п�
 [src-zametki-txt]: https://github.com/gasyoun/RuWritingStyles-corpus/blob/main/PDFtoTXT/AAZ_Zametki_2025.txt
 
 ---
+
+_Dr. Mārcis Gasūns_
+
 © 2026 RuWritingStyles Team
