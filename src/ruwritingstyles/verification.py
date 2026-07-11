@@ -129,6 +129,78 @@ def _render_journal_section(profile: Any, revised_text: str) -> str:
 """
 
 
+def _render_run_style_commitments(repo_root: Path, run_dir: Path) -> str:
+    """THIS run's style commitments for the verifier prompt (F4 second half).
+
+    The verifier historically saw only *project-level* commitments carried over
+    from previous documents; the run's own council `stylistic_commitments` and
+    the reviewing passports' `limits` (their binding obligations) never reached
+    it, so a run could not confirm the revision honored its own style verdict
+    (prompt-fidelity review F4, deferred half — activated in H588 N3 with a
+    measured before/after eval pass). Set RWS_VERIFY_STYLE_COMMITMENTS=0 to
+    restore the pre-H588 prompt."""
+    import os as _os
+    if _os.environ.get("RWS_VERIFY_STYLE_COMMITMENTS", "1") == "0":
+        return ""
+
+    lines: list[str] = []
+
+    council_path = run_dir / "council.json"
+    if council_path.exists():
+        try:
+            council = json.loads(council_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            council = {}
+        commitments = council.get("stylistic_commitments")
+        if isinstance(commitments, list) and commitments:
+            lines.append("Terminological decisions the council committed this run to:")
+            for c in commitments:
+                if isinstance(c, dict) and c.get("term"):
+                    lines.append(f"- `{c['term']}`: {c.get('decision', '')}")
+
+    style_limits: list[str] = []
+    reviews_dir = run_dir / "reviews"
+    if reviews_dir.exists():
+        for review_path in sorted(reviews_dir.glob("*.review.json")):
+            try:
+                review = json.loads(review_path.read_text(encoding="utf-8"))
+            except (json.JSONDecodeError, OSError):
+                continue
+            style_id = review.get("style_id")
+            if not style_id:
+                continue
+            passport_path = repo_root / "styles" / "passports" / f"{style_id}.yml"
+            if not passport_path.exists():
+                continue
+            try:
+                import yaml
+                passport = yaml.safe_load(passport_path.read_text(encoding="utf-8")) or {}
+            except Exception:
+                continue
+            limits = passport.get("limits")
+            if isinstance(limits, list) and limits:
+                for limit in limits:
+                    style_limits.append(f"- [{style_id}] {limit}")
+    if style_limits:
+        lines.append("")
+        lines.append("Binding obligations of the styles that reviewed this run "
+                     "(the revised text must not violate any of them):")
+        lines.extend(style_limits)
+
+    if not lines:
+        return ""
+    body = "\n".join(lines)
+    return f"""
+## Run Style Commitments (This Run)
+
+These commitments come from THIS run's council and the reviewing style passports.
+Verify the revised document honors each; report a violation as a warning naming
+the commitment and the offending span.
+
+{body}
+"""
+
+
 def _render_prompt(
     *,
     repo_root: Path,
@@ -178,6 +250,8 @@ The following rules were established in previous documents of this project. You 
 ```
 """
 
+    run_style_section = _render_run_style_commitments(repo_root, run_dir)
+
     journal_section = _render_journal_section(
         project_context.get("journal_profile"), revised_document_text
     )
@@ -224,6 +298,7 @@ Check whether the revised document preserves the source document's facts, argume
 **Style Consistency Mission**:
 Verify that all "Stylistic Commitments" provided below are correctly implemented in the revised text.
 {project_context_section}
+{run_style_section}
 {journal_section}
 {bib_section}
 {unified_context_block}

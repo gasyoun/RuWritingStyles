@@ -1,0 +1,68 @@
+{
+  "case_id": "vedic-classical-anachronism",
+  "provider": "deepseek (deepseek-v4-flash), runs 20260703-h073gov",
+  "raters": [
+    "A (mechanical scorer, eval-result.json)",
+    "B (Claude Fable 5, claude-fable-5, blind re-annotation 11-07-2026 per GOLD_PROTOCOL; scorer verdicts withheld during judgment)"
+  ],
+  "runs": [
+    {
+      "run": "20260703-h073gov-vedic-classical-anachronism-r01",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "anachronistic_sanskrit_period"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 1,
+      "rater_b_notes": "canonical type twice; FP: missing_source demanding IAST for 'аорист'/'сандхи' — international grammatical terms, not Sanskrit lexemes"
+    },
+    {
+      "run": "20260703-h073gov-vedic-classical-anachronism-r02",
+      "rater_a_detected": false,
+      "rater_a_matched_types": [],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": false,
+      "rater_b_false_positives": 0,
+      "rater_b_notes": "the anachronism IS substantively identified in both findings, but typed missing_source and unsupported_semantization — neither the canonical type nor a listed alias; a labeling miss, not a detection miss"
+    },
+    {
+      "run": "20260703-h073gov-vedic-classical-anachronism-r03",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "anachronistic_sanskrit_period"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 0,
+      "rater_b_notes": "canonical type twice, on-target"
+    },
+    {
+      "run": "20260703-h073gov-vedic-classical-anachronism-r04",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "anachronistic_sanskrit_period"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 0,
+      "rater_b_notes": "canonical type twice, on-target"
+    },
+    {
+      "run": "20260703-h073gov-vedic-classical-anachronism-r05",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "anachronistic_sanskrit_period"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 0,
+      "rater_b_notes": "canonical type twice, on-target"
+    }
+  ],
+  "caught": true,
+  "type_correct": false,
+  "false_positives": 1,
+  "agreement": 0.8,
+  "kappa": 0.0
+}

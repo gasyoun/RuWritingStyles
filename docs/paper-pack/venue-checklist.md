@@ -1,6 +1,6 @@
 # Venue checklist — «Совет филологов» (A29)
 
-_Created: 03-07-2026 · Last updated: 04-07-2026_
+_Created: 03-07-2026 · Last updated: 11-07-2026_
 
 > Чек-лист выбора площадки для методологической статьи
 > [`methodology-paper-draft.ru.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/methodology-paper-draft.ru.md).
@@ -28,15 +28,19 @@ _Created: 03-07-2026 · Last updated: 04-07-2026_
 ## Требования к рукописи («Вестник СПбГУ», RU)
 
 - [x] Язык финального текста: **RU**.
-- [ ] Аннотация: RU + **EN** (для «Вестника СПбГУ» англ. аннотация обязательна; лимит слов
+- [x] Аннотация: RU + **EN** (EN Abstract добавлен 11-07-2026; лимит слов
       проверяется `--journal vestnik-spbu`).
-- [ ] Ключевые слова: RU + EN.
-- [ ] Библиография: ГОСТ Р 7.0.100-2018 (RU-площадки) или стиль журнала (EN).
-- [ ] Байлайн: RU-площадки — «М. Ю. Гасунс»; EN — «Mārcis Gasūns»; аффилиация «независимый
-      исследователь / Independent scholar»; ORCID 0000-0003-4513-884X. Источник —
+- [x] Ключевые слова: RU + EN (EN Keywords добавлены 11-07-2026).
+- [ ] Библиография: ГОСТ Р 7.0.100-2018 (RU-площадки) — рабочий список черновика еще не
+      отформатирован по ГОСТ.
+- [x] Байлайн: «М. Ю. Гасунс» · независимый исследователь · ORCID 0000-0003-4513-884X —
+      в шапке черновика. Источник —
       [`Uprava/AUTHOR.md`](https://github.com/gasyoun/Uprava/blob/main/AUTHOR.md).
-- [ ] Декларация об ИИ (сноска/«Благодарности») — из
+- [x] Декларация об ИИ — §7 черновика (включая роль ИИ-разметчика B из §4.6), формулы из
       [`AI_DISCLOSURE.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/AI_DISCLOSURE.md).
+- [x] Двух-разметчиковая разметка золотого набора (блокер подачи) — выполнена 11-07-2026
+      (§4.6 черновика): согласие 24/25, единственное расхождение — на адъюдикации человека
+      ([`review-vedic-r02-adjudication.html`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/annotation/review-vedic-r02-adjudication.html)).
 - [ ] Data availability: ссылка на репозиторий + Zenodo-DOI (после минтинга — см. ниже).
 - [ ] Cover letter под площадку —
       [`cover-letter.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/paper-pack/cover-letter.md).

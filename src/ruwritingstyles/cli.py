@@ -496,6 +496,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Enable multi-turn deliberation (style agents debate each other).",
     )
     eval_run.add_argument(
+        "--routes",
+        action="store_true",
+        help="Resolve per-stage models from model_policy.yml task_routes (review/council/revision/verification) instead of one provider default; an explicit --model still wins.",
+    )
+    eval_run.add_argument(
         "--repeat",
         type=int,
         default=1,
@@ -531,6 +536,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--deliberate",
         action="store_true",
         help="Enable multi-turn deliberation (style agents debate each other).",
+    )
+    eval_suite.add_argument(
+        "--routes",
+        action="store_true",
+        help="Resolve per-stage models from model_policy.yml task_routes; an explicit --model still wins.",
     )
     eval_suite.add_argument(
         "--repeat",
@@ -1947,6 +1957,7 @@ def cmd_eval_run(args: argparse.Namespace) -> int:
             repeat=repeat,
             aggregate_id=getattr(args, "aggregate_id", None),
             deliberate=args.deliberate,
+            use_routes=getattr(args, "routes", False),
         )
         case = aggregate.data["cases"][0]
         print(f"created {aggregate.aggregate_dir.relative_to(repo_root)}")
@@ -1963,6 +1974,7 @@ def cmd_eval_run(args: argparse.Namespace) -> int:
         model=args.model,
         run_id=args.run_id,
         deliberate=args.deliberate,
+        use_routes=getattr(args, "routes", False),
     )
     print(f"created {result.run_dir.relative_to(repo_root)}")
     print(f"eval result {result.result_path.relative_to(repo_root)}")
@@ -1982,6 +1994,7 @@ def cmd_eval_suite(args: argparse.Namespace) -> int:
             repeat=repeat,
             aggregate_id=getattr(args, "aggregate_id", None),
             deliberate=args.deliberate,
+            use_routes=getattr(args, "routes", False),
         )
         print(f"created {aggregate.aggregate_dir.relative_to(repo_root)}")
         print(f"eval aggregate {aggregate.result_path.relative_to(repo_root)}")
@@ -1997,6 +2010,7 @@ def cmd_eval_suite(args: argparse.Namespace) -> int:
         model=args.model,
         suite_id=args.suite_id,
         deliberate=args.deliberate,
+        use_routes=getattr(args, "routes", False),
     )
     data = _load_json(result.result_path)
     print(f"created {result.suite_dir.relative_to(repo_root)}")
