@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path
 import re
+import threading
 import time
 from typing import Any
 from urllib.parse import quote
@@ -1068,8 +1069,15 @@ def _post_json_with_retries(
         sleep_for = delay
         req = request.Request(url, data=encoded, headers=headers, method="POST")
         try:
-            with request.urlopen(req, timeout=timeout) as response:
-                return json.loads(response.read().decode("utf-8"))
+            return _urlopen_json_with_deadline(req, timeout)
+        except _WallClockTimeout as exc:
+            # A trickling connection keeps read() alive past ANY socket timeout
+            # (each tiny chunk resets the timer) — observed live 2026-07-03 as
+            # deepseek-v4-pro requests hanging indefinitely (2 in ~8 case-runs).
+            # The daemon worker + join(deadline) below is the only hard stop.
+            last_error = ProviderError(f"{provider_name} API exceeded wall-clock deadline: {exc}")
+            if attempt == attempts: raise last_error from exc
+            if telemetry is not None: telemetry.record("wall_clock_deadline", sleep_for)
         except error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="replace")
             last_error = ProviderError(f"{provider_name} API error {exc.code}: {detail}")
@@ -1093,6 +1101,54 @@ def _post_json_with_retries(
         time.sleep(sleep_for)
         delay *= 2
     raise last_error or ProviderError(f"{provider_name} API request failed")
+
+
+class _WallClockTimeout(Exception):
+    """The whole request (connect + read) exceeded the hard wall-clock deadline."""
+
+
+def _urlopen_json_with_deadline(req: request.Request, timeout: int) -> dict[str, Any]:
+    """POST and parse JSON under a HARD wall-clock deadline.
+
+    The socket `timeout` only bounds each individual blocking operation; a
+    server that trickles bytes resets it forever. The request therefore runs
+    in a daemon worker thread and is abandoned outright when the wall-clock
+    deadline passes — the daemon flag keeps an abandoned read from blocking
+    interpreter exit. Deadline = RWS_PROVIDER_WALLCLOCK_SECONDS (default
+    2 × the socket timeout, so widening RWS_PROVIDER_TIMEOUT_SECONDS for
+    heavy models widens the wall too). Set it to 0 to disable the guard.
+    """
+    deadline = _provider_wallclock_seconds(timeout)
+    if deadline <= 0:
+        with request.urlopen(req, timeout=timeout) as response:
+            return json.loads(response.read().decode("utf-8"))
+
+    outcome: dict[str, Any] = {}
+
+    def _worker() -> None:
+        try:
+            with request.urlopen(req, timeout=timeout) as response:
+                outcome["result"] = json.loads(response.read().decode("utf-8"))
+        except BaseException as exc:  # re-raised typed in the caller's thread
+            outcome["error"] = exc
+
+    worker = threading.Thread(target=_worker, daemon=True, name="rws-provider-request")
+    worker.start()
+    worker.join(deadline)
+    if worker.is_alive():
+        raise _WallClockTimeout(f"no complete response within {deadline}s (socket timeout {timeout}s)")
+    if "error" in outcome:
+        raise outcome["error"]
+    return outcome["result"]
+
+
+def _provider_wallclock_seconds(timeout: int) -> int:
+    """Hard whole-request deadline; 0 disables. Defaults to 2 × socket timeout."""
+    raw = os.environ.get("RWS_PROVIDER_WALLCLOCK_SECONDS")
+    if raw is not None:
+        try: return max(0, int(raw))
+        except ValueError: pass
+    return timeout * 2
 
 
 def _provider_timeout_seconds() -> int:

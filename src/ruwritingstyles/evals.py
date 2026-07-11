@@ -85,6 +85,17 @@ def load_eval_cases(repo_root: Path) -> tuple[EvalCase, ...]:
     return tuple(_case(repo_root, item) for item in cases if isinstance(item, dict))
 
 
+# Pipeline stage -> model_policy.yml task_routes key. Only stages with a real
+# routed judgement burden are mapped; unmapped stages keep the provider default.
+_STAGE_ROUTE_TASKS = {
+    "review": "style_review",
+    "deliberation": "style_review",
+    "council": "council",
+    "revision": "synthesis",
+    "verification": "verification",
+}
+
+
 def run_eval_case(
     *,
     repo_root: Path,
@@ -93,6 +104,7 @@ def run_eval_case(
     model: str | None = None,
     run_id: str | None = None,
     deliberate: bool = False,
+    use_routes: bool = False,
 ) -> EvalRunResult:
     # Eval runs on the mock provider are deterministic and offline by intent;
     # keep the MockProvider's simulated tool calls from reaching the network.
@@ -102,6 +114,23 @@ def run_eval_case(
     manifest = load_manifest(repo_root)
     model_policy = load_model_policy(repo_root)
     provider = provider_from_name(provider_name)
+
+    def _stage_model(stage: str) -> str | None:
+        """Explicit --model wins; --routes resolves per stage from
+        model_policy.yml task_routes; default keeps the provider default
+        (the historical single-model behavior, kept for benchmark
+        comparability — see docs/benchmark.md)."""
+        if model is not None or not use_routes:
+            return model
+        task = _STAGE_ROUTE_TASKS.get(stage)
+        if task is None:
+            return None
+        return model_policy.resolve_model(task, provider_name)
+
+    stage_models = (
+        {stage: _stage_model(stage) for stage in _STAGE_ROUTE_TASKS}
+        if use_routes and model is None else None
+    )
 
     original_text = read_document(case.input_path)
     normalized_text = normalize_document(original_text)
@@ -131,7 +160,7 @@ def run_eval_case(
             repo_root=repo_root,
             review_path=bundle.review_json,
             provider=provider,
-            model=model,
+            model=_stage_model("review"),
         )
 
     if deliberate:
@@ -146,7 +175,7 @@ def run_eval_case(
                 repo_root=repo_root,
                 delib_path=bundle.deliberation_json,
                 provider=provider,
-                model=model,
+                model=_stage_model("deliberation"),
             )
 
     # Fact-Checking Loop (up to 3 iterations)
@@ -163,10 +192,10 @@ def run_eval_case(
             manifest=manifest,
             verification_feedback=verification_feedback,
         )
-        execute_council_artifact(repo_root=repo_root, council_path=council.council_json, provider=provider, model=model)
+        execute_council_artifact(repo_root=repo_root, council_path=council.council_json, provider=provider, model=_stage_model("council"))
         revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
         execute_revision_artifact(
-            repo_root=repo_root, revision_path=revision.revision_json, provider=provider, model=model
+            repo_root=repo_root, revision_path=revision.revision_json, provider=provider, model=_stage_model("revision")
         )
         write_revision_diff(run_dir)
         verification = create_verification_bundle(repo_root=repo_root, run_dir=run_dir)
@@ -175,7 +204,7 @@ def run_eval_case(
                 repo_root=repo_root,
                 verification_path=verification.verification_json,
                 provider=provider,
-                model=model,
+                model=_stage_model("verification"),
             )
         except Exception as exc:  # provider timeout / transport error on verify
             # A failed verify stage must not abort the whole case before
@@ -225,6 +254,7 @@ def run_eval_case(
         case=case,
         provider_name=provider.name,
         model=provider.effective_model(ProviderRequest(task="eval", prompt="", schema={}, metadata={}, model=model)),
+        stage_models=stage_models,
     )
     write_run_report(run_dir)
     from .runs import write_run_manifest
@@ -263,6 +293,7 @@ def run_eval_suite(
     model: str | None = None,
     suite_id: str | None = None,
     deliberate: bool = False,
+    use_routes: bool = False,
 ) -> EvalSuiteResult:
     actual_suite_id = suite_id or _make_suite_id(provider_name)
     suite_dir = repo_root / "runs" / actual_suite_id
@@ -278,6 +309,7 @@ def run_eval_suite(
             model=model,
             run_id=case_run_id,
             deliberate=deliberate,
+            use_routes=use_routes,
         )
         data = _load_json(result.result_path)
         scoring = data.get("scoring") if isinstance(data.get("scoring"), dict) else {}
@@ -332,6 +364,7 @@ def run_eval_repeat(
     repeat: int = 5,
     aggregate_id: str | None = None,
     deliberate: bool = False,
+    use_routes: bool = False,
 ) -> EvalAggregateResult:
     """Run one eval case ``repeat`` times and write an aggregate artifact.
 
@@ -354,6 +387,7 @@ def run_eval_repeat(
             model=model,
             run_id=run_id,
             deliberate=deliberate,
+            use_routes=use_routes,
         )
         rows.append(_aggregate_run_row(repo_root, run_id, result))
 
@@ -377,6 +411,7 @@ def run_eval_suite_repeat(
     repeat: int = 5,
     aggregate_id: str | None = None,
     deliberate: bool = False,
+    use_routes: bool = False,
 ) -> EvalAggregateResult:
     """Run every eval case ``repeat`` times and write one suite-level aggregate."""
     repeat = max(1, int(repeat))
@@ -396,6 +431,7 @@ def run_eval_suite_repeat(
                 model=model,
                 run_id=run_id,
                 deliberate=deliberate,
+                use_routes=use_routes,
             )
             rows.append(_aggregate_run_row(repo_root, run_id, result))
         case_stats.append(_aggregate_case_stats(case.case_id, rows))
@@ -817,6 +853,7 @@ def _write_eval_result(
     case: EvalCase,
     provider_name: str,
     model: str,
+    stage_models: dict[str, str | None] | None = None,
 ) -> Path:
     finding_types = _finding_types(run_dir)
     matched = sorted(set(case.expected_risks).intersection(finding_types))
@@ -848,6 +885,7 @@ def _write_eval_result(
         "input": _repo_relative(repo_root, case.input_path),
         "provider": provider_name,
         "model": model,
+        **({"stage_models": {k: v or "" for k, v in stage_models.items()}} if stage_models else {}),
         "styles": list(case.default_styles),
         "expected_risks": list(case.expected_risks),
         "finding_count": _finding_count(run_dir),

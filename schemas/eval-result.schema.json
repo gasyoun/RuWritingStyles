@@ -39,7 +39,16 @@
     },
     "provider": {
       "type": "string",
-      "enum": ["mock", "openai", "google", "anthropic", "openrouter", "deepseek", "local", "ollama"]
+      "enum": [
+        "mock",
+        "openai",
+        "google",
+        "anthropic",
+        "openrouter",
+        "deepseek",
+        "local",
+        "ollama"
+      ]
     },
     "model": {
       "type": "string"
@@ -78,7 +87,13 @@
     },
     "verification_status": {
       "type": "string",
-      "enum": ["prompt_ready", "passed", "needs_human_review", "failed", "missing"]
+      "enum": [
+        "prompt_ready",
+        "passed",
+        "needs_human_review",
+        "failed",
+        "missing"
+      ]
     },
     "diff_metrics": {
       "type": "object",
@@ -197,7 +212,12 @@
           "type": "array",
           "items": {
             "type": "string",
-            "enum": ["prompt_ready", "passed", "needs_human_review", "failed"]
+            "enum": [
+              "prompt_ready",
+              "passed",
+              "needs_human_review",
+              "failed"
+            ]
           }
         },
         "diff_within_limits": {
@@ -218,7 +238,10 @@
           "type": "boolean"
         },
         "max_finding_count": {
-          "type": ["integer", "null"],
+          "type": [
+            "integer",
+            "null"
+          ],
           "minimum": 0
         },
         "finding_count": {
@@ -228,6 +251,13 @@
         "finding_count_within_limits": {
           "type": "boolean"
         }
+      }
+    },
+    "stage_models": {
+      "type": "object",
+      "description": "Per-stage models when the eval ran with --routes (model_policy.yml task_routes); empty string = provider default.",
+      "additionalProperties": {
+        "type": "string"
       }
     }
   }
