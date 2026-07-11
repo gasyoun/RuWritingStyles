@@ -499,6 +499,11 @@ rws provider-status --provider deepseek --strict
 rws run статья.md --execute --provider deepseek --council sanskrit --journal vestnik-spbu
 ```
 
+Для сессий Claude Code / Codex тот же конвейер обернут в три навыка: `/rws-council`
+(универсальный вход: выбор совета + `--journal`), `/sanskrit-council` (фиксированная
+6-стилевая санскритская панель) и `/zaliznyak-council` (девять зализняковских паспортов) —
+см. [SKILLS_INDEX](https://github.com/gasyoun/github-spine/blob/main/SKILLS_INDEX.md).
+
 Основной провайдер — **`deepseek`** (см. [`QUICKSTART.ru.md`](docs/QUICKSTART.ru.md)); также поддерживаются `openai`, `google`, `anthropic`, `openrouter`, `local`, `ollama` и детерминированный `mock`. **Подробные рабочие сценарии** (этимология, журнал, ведийский период, самаса, сверка словарей) — в [`docs/USE_CASES.ru.md`](docs/USE_CASES.ru.md); карта всей документации — в [`docs/README.md`](docs/README.md).
 
 ## Документация разработки
