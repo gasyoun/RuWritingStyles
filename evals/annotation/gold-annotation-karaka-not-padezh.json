@@ -1,0 +1,70 @@
+{
+  "case_id": "karaka-not-padezh",
+  "provider": "deepseek (deepseek-v4-flash), runs 20260703-h073gov",
+  "raters": [
+    "A (mechanical scorer, eval-result.json)",
+    "B (Claude Fable 5, claude-fable-5, blind re-annotation 11-07-2026 per GOLD_PROTOCOL; scorer verdicts withheld during judgment)"
+  ],
+  "runs": [
+    {
+      "run": "20260703-h073gov-karaka-not-padezh-r01",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "mistranslated_native_term"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 0,
+      "rater_b_notes": "mistranslated_native_term twice, both squarely on the karaka=case conflation"
+    },
+    {
+      "run": "20260703-h073gov-karaka-not-padezh-r02",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "mistranslated_native_term"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 0,
+      "rater_b_notes": "canonical type present; secondary sutra-reference/attribution findings are legitimate passport checks"
+    },
+    {
+      "run": "20260703-h073gov-karaka-not-padezh-r03",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "mistranslated_native_term"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 0,
+      "rater_b_notes": "canonical type present, on-target"
+    },
+    {
+      "run": "20260703-h073gov-karaka-not-padezh-r04",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "mistranslated_native_term"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 0,
+      "rater_b_notes": "canonical type present twice; notes the six-karaka list is the Western case list, correct"
+    },
+    {
+      "run": "20260703-h073gov-karaka-not-padezh-r05",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "mistranslated_native_term"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 0,
+      "rater_b_notes": "canonical type present, on-target"
+    }
+  ],
+  "caught": true,
+  "type_correct": true,
+  "false_positives": 0,
+  "agreement": 1.0,
+  "kappa": 1.0
+}
