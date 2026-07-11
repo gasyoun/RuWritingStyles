@@ -3,6 +3,8 @@
 All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
+
+## [2.13.0] - 2026-07-11
 ### Added (verifier style commitments — F4 second half, measured, H588 Phase N3)
 - **The verifier now receives THIS run's style commitments** ([`src/ruwritingstyles/verification.py`](src/ruwritingstyles/verification.py)): the council's `stylistic_commitments` + the reviewing passports' `limits`, with instructions to report violations as span-anchored warnings. Kill switch: `RWS_VERIFY_STYLE_COMMITMENTS=0` restores the pre-H588 prompt. Tests: [`tests/test_verifier_style_commitments.py`](tests/test_verifier_style_commitments.py).
 - **Measured before/after on the 5×N=5 flash protocol** ([`docs/benchmark.md`](docs/benchmark.md)): pass 23/25→22/25, detection 24/25→23/25, diff-ok 25/25 both. The headline loss is a **correct** one: `karaka` r03's revision left the planted error verbatim and the commitment-armed verifier ruled `failed` with 4 substantive "Violates commitment" warnings — a run that previously could pass. The `commentary` 3/5 is review-stage detection noise causally untouched by N3 (its detection flip on unchanged code was documented 2026-06-14). Verdict: mechanism works, edit discipline untouched, pass-rate now more truthful; default ON (a human decides if the added strictness warrants flipping the default).
