@@ -11,6 +11,7 @@
     "transliteration_scheme": { "enum": ["IAST", "ISO-15919", "harvard-kyoto", "russian-only"] },
     "first_mention_rule": { "enum": ["ru+iast", "iast+ru", "ru-only", "iast-only", "none"] },
     "abstract_max_words": { "type": "integer", "minimum": 0 },
+    "keywords_max_words": { "type": "integer", "minimum": 0 },
     "abstract_required": { "type": "array", "items": { "type": "string" } },
     "keywords_required": { "type": "array", "items": { "type": "string" } },
     "notes": { "type": "string" }

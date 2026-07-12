@@ -9,6 +9,10 @@
   { "ru": "смрити", "iast": "smṛti", "source": "Kochergina 1987" },
   { "ru": "веда", "iast": "veda", "source": "Elizarenkova 1982", "proper_noun": true, "note": "название корпуса текстов; устоявшаяся русская передача (Веды)" },
   { "ru": "ригведа", "iast": "ṛgveda", "source": "Elizarenkova 1982", "proper_noun": true, "note": "название памятника; устоявшаяся русская передача (Ригведа)" },
+  { "ru": "атхарваведа", "iast": "atharvaveda", "source": "Elizarenkova 1982", "proper_noun": true, "note": "название памятника; устоявшаяся русская передача (Атхарваведа)" },
+  { "ru": "яджурведа", "iast": "yajurveda", "source": "Elizarenkova 1982", "proper_noun": true, "note": "название памятника; устоявшаяся русская передача (Яджурведа)" },
+  { "ru": "самаведа", "iast": "sāmaveda", "source": "Elizarenkova 1982", "proper_noun": true, "note": "название памятника; устоявшаяся русская передача (Самаведа)" },
+  { "ru": "бхагавадгита", "iast": "bhagavadgītā", "source": "Smirnov 1962", "proper_noun": true, "note": "название памятника; устоявшаяся русская передача (Бхагавадгита)" },
   { "ru": "упанишада", "iast": "upaniṣad", "source": "Kochergina 1987" },
   { "ru": "брахмана", "iast": "brāhmaṇa", "source": "Elizarenkova 1982", "note": "жанр; не путать с брахман (brahman)" },
   { "ru": "араньяка", "iast": "āraṇyaka", "source": "Kochergina 1987" },
@@ -59,5 +63,9 @@
   { "ru": "атманепада", "iast": "ātmanepada", "source": "Whitney 1889" },
   { "ru": "парасмайпада", "iast": "parasmaipada", "source": "Whitney 1889" },
   { "ru": "лакара", "iast": "lakāra", "source": "Tubb Boose 2007" },
-  { "ru": "виграха", "iast": "vigraha", "source": "Tubb Boose 2007", "note": "аналитическое разложение сложного слова (самаса)" }
+  { "ru": "виграха", "iast": "vigraha", "source": "Tubb Boose 2007", "note": "аналитическое разложение сложного слова (самаса)" },
+  { "ru": "анвая", "iast": "anvaya", "source": "Tubb Boose 2007", "note": "выстраивание слов стиха в прозаический порядок при разборе" },
+  { "ru": "мула", "iast": "mūla", "source": "Tubb Boose 2007", "note": "коренной текст, к которому пишется комментарий" },
+  { "ru": "пратипадика", "iast": "prātipadika", "source": "Kochergina 1987", "note": "именная основа до присоединения падежных окончаний" },
+  { "ru": "кшатрий", "iast": "kṣatriya", "source": "Kochergina 1987" }
 ]

@@ -76,6 +76,23 @@ class AbstractWordCountTests(unittest.TestCase):
         comp = journal_compliance("**Аннотация.** один два.", {"name": "J", "abstract_required": ["ru"]})
         self.assertEqual(comp["abstract"][0], {"lang": "ru", "present": True})
 
+    def test_keywords_word_limit_flags_over(self) -> None:
+        # Восток (Oriens): keywords capped at 10 words (keywords_max_words).
+        profile = {"name": "J", "keywords_required": ["ru"], "keywords_max_words": 3}
+        comp = journal_compliance(
+            "**Ключевые слова:** санскрит, лексикография, стиль, корпус.\n\nX.\n",
+            profile,
+        )
+        self.assertEqual(
+            comp["keywords"][0],
+            {"lang": "ru", "present": True, "words": 4, "max": 3, "over": 1},
+        )
+
+    def test_keywords_without_limit_keep_presence_only_shape(self) -> None:
+        profile = {"name": "J", "keywords_required": ["ru"]}
+        comp = journal_compliance("**Ключевые слова:** санскрит.\n", profile)
+        self.assertEqual(comp["keywords"][0], {"lang": "ru", "present": True})
+
     def test_absent_abstract_has_no_word_fields(self) -> None:
         profile = {"name": "J", "abstract_required": ["en"], "abstract_max_words": 200}
         comp = journal_compliance("**Аннотация.** только русская.\n\nX.\n", profile)
