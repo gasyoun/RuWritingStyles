@@ -8,7 +8,7 @@ Claude содержимое файла в начале диалога и поп�
 > Прямой текст для копирования — кнопка **Raw** на странице файла на GitHub
 > (или `https://raw.githubusercontent.com/gasyoun/RuWritingStyles/main/<путь>`).
 
-Всего стилей: **39**. Регенерируется: `python tools/generate_style_gallery.py`.
+Всего стилей: **40**. Регенерируется: `python tools/generate_style_gallery.py`.
 
 ## Отдельные стили (по школам/кластерам)
 
@@ -18,16 +18,17 @@ Claude содержимое файла в начале диалога и поп�
 - [Панини-традиция](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/panini-traditional-style.md) — `panini-traditional`
 - [Самаса-пособие](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/samasa-manual-style.md) — `samasa-manual`
 - [Санскрит-ридер](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/sanskrit-reader-style.md) — `sanskrit-reader`
+- [Смирнов-Махабхарата](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/smirnov-mahabharata-style.md) — `smirnov-mahabharata`
 - [Топоров-этимология](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/toporov-etym-style.md) — `toporov-etym`
 
 ### Историко-этимологическая школа
 
 - [Tronsky-Readings](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/tronsky-readings-style.md) — `tronsky-readings`
+- [А. А. Зализняк (Общий метод)](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/zalizniak-method-style.md) — `zalizniak-method`
+- [Зализняк-новгород](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/zalizniak-novgorod-style.md) — `zalizniak-novgorod`
 - [Зализняк-очерк](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/zalizniak-ocherk-style.md) — `zalizniak-ocherk`
 - [Зализняк-слово](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/zalizniak-slovo-style.md) — `zalizniak-slovo`
 - [Зализняк-заметки](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/zalizniak-zametki-style.md) — `zalizniak-zametki`
-- [А. А. Зализняк (Общий метод)](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/zalizniak-method-style.md) — `zalizniak-method`
-- [Зализняк-новгород](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/zalizniak-novgorod-style.md) — `zalizniak-novgorod`
 
 ### Московская Семантическая Школа
 

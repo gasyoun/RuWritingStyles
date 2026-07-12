@@ -95,7 +95,7 @@ _Created: 03-05-2026 · Last updated: 11-07-2026_
 
 ## Все созданные стили
 
-> 🎨 **Галерея со ссылками для прямого использования** (открыть → скопировать → вставить в Claude Custom Style): [`docs/STYLE_GALLERY.ru.md`](docs/STYLE_GALLERY.ru.md) — все 39 стилей, сгруппированные по школам.
+> 🎨 **Галерея со ссылками для прямого использования** (открыть → скопировать → вставить в Claude Custom Style): [`docs/STYLE_GALLERY.ru.md`](docs/STYLE_GALLERY.ru.md) — все 40 стилей, сгруппированные по школам.
 
 | Файл | Стиль | Для чего нужен | Главная интонация |
 |---|---|---|---|
@@ -123,6 +123,7 @@ _Created: 03-05-2026 · Last updated: 11-07-2026_
 | [`ClaudeStyles/sanskrit-reader-style.md`][sanskrit-reader] | [Санскрит-ридер][sanskrit-reader] | Учебный разбор отрывка, комментированная хрестоматия для студентов. | Ясность без упрощения, уважение к читателю. |
 | [`ClaudeStyles/samasa-manual-style.md`][samasa-manual] | [Самаса-пособие][samasa-manual] | Грамматическое пособие по сложным словам: определение, классификация, правило, пример, исключение. | Сухая алгоритмическая ясность. |
 | [`ClaudeStyles/panini-traditional-style.md`][panini-traditional] | [Панини-традиция][panini-traditional] | Изложение грамматики с опорой на туземную традицию: сутра, вритти, пример. | Дисциплинированное описание категории изнутри традиции. |
+| [`ClaudeStyles/smirnov-mahabharata-style.md`][smirnov-mahabharata] | [Смирнов-Махабхарата][smirnov-mahabharata] | Эпический перевод с полным аппаратом: введение-обрамление, ритмическая строка, примечания с разночтениями изданий, толковый словарь реалий. | Повествовательная ровность введения, протокольная строгость примечаний. |
 
 ## Исходные материалы
 
@@ -139,6 +140,7 @@ _Created: 03-05-2026 · Last updated: 11-07-2026_
 | [Зализняк-слово][zalizniak-slovo] | [`ClaudeStyles/zalizniak-slovo-style.md`][zalizniak-slovo] | [`AAZ_Slovo_2024.pdf`][src-slovo-pdf], [`AAZ_Slovo_2024.txt`][src-slovo-txt]. |
 | [Зализняк-заметки][zalizniak-zametki] | [`ClaudeStyles/zalizniak-zametki-style.md`][zalizniak-zametki] | [`AAZ_Zametki_2025.pdf`][src-zametki-pdf], [`AAZ_Zametki_2025.txt`][src-zametki-txt], [`AAZ_Zametki_2025-annotated.md`][src-zametki-annotated], [`AAZ_Zametki_2025-index.md`][src-zametki-index]. |
 | [Albedil-Sbornik][albedil-sbornik] | [`ClaudeStyles/albedil-sbornik-style.md`][albedil-sbornik] | Опорный индологический материал: [`Smirnoff_Mahabharata_2025.pdf`][src-smirnoff-pdf], [`Smirnoff_Mahabharata_2025.txt`][src-smirnoff-txt], [`Tubb-ScholasticSans-2007.txt`][src-tubb-txt]. |
+| [Смирнов-Махабхарата][smirnov-mahabharata] | [`ClaudeStyles/smirnov-mahabharata-style.md`][smirnov-mahabharata] | [`Smirnoff_Mahabharata_2025.pdf`][src-smirnoff-pdf], [`Smirnoff_Mahabharata_2025.txt`][src-smirnoff-txt] (перевод, введение, примечания, толковый словарь Б. Л. Смирнова). |
 | [Казанский][kazanskiy-korpus] | [`ClaudeStyles/kazanskiy-korpus-style.md`][kazanskiy-korpus] | Сборник с материалом Н. Н. Казанского: [`2025_1а_Part 1-1.pdf`][src-tronsky-pdf], [`2025_1а_Part 1-1.txt`][src-tronsky-txt]. |
 | [Лидова][lidova-commentary] | [`ClaudeStyles/lidova-commentary-style.md`][lidova-commentary] | Опорные материалы по комментарию и санскритской ученой традиции: [`2025_1а_Part 1-1.pdf`][src-tronsky-pdf], [`2025_1а_Part 1-1.txt`][src-tronsky-txt], [`Tubb-ScholasticSans-2007.txt`][src-tubb-txt]. |
 | [Tronsky-Readings][tronsky-readings] | [`ClaudeStyles/tronsky-readings-style.md`][tronsky-readings] | [`2025_1а_Part 1-1.pdf`][src-tronsky-pdf], [`2025_1а_Part 1-1.txt`][src-tronsky-txt]. |
@@ -577,6 +579,7 @@ RuWritingStyles — это не просто набор промптов, а п�
 [sanskrit-reader]: ClaudeStyles/sanskrit-reader-style.md
 [samasa-manual]: ClaudeStyles/samasa-manual-style.md
 [panini-traditional]: ClaudeStyles/panini-traditional-style.md
+[smirnov-mahabharata]: ClaudeStyles/smirnov-mahabharata-style.md
 [zalizniak-enklitiki]: ClaudeStyles/zalizniak-enklitiki-style.md
 [zalizniak-imennoe]: ClaudeStyles/zalizniak-imennoe-style.md
 [zalizniak-ocherk]: ClaudeStyles/zalizniak-ocherk-style.md
