@@ -1,6 +1,6 @@
 # Каталог пользовательских стилей для Claude
 
-_Created: 03-05-2026 · Last updated: 11-07-2026_
+_Created: 03-05-2026 · Last updated: 12-07-2026_
 
 Этот README объясняет, какие пользовательские стили для Claude уже созданы, чем они отличаются и как ими пользоваться. Он рассчитан на человека, который впервые открыл эту папку и еще не знает, какой файл брать для своей задачи.
 
@@ -8,7 +8,7 @@ _Created: 03-05-2026 · Last updated: 11-07-2026_
 
 > 🚀 **Хотите прогнать свою статью через «Совет» стилей?** За пять шагов от установки до первой рецензии (с ключом DeepSeek) — [`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md).
 
-**Status**: v2.13.0 (Verifier style commitments) — span-patch-реконструкция ревизии + growth-губернатор подняли усредненный pass-rate золотых кейсов **0.48 → 0.92** при нулевых diff-провалах ([`docs/benchmark.md`](docs/benchmark.md)); верификатор теперь получает стилевые обязательства прогона и выдает span-привязанные предупреждения о нарушениях (kill-switch `RWS_VERIFY_STYLE_COMMITMENTS=0`); двухэкспертная разметка золотого набора (`tools/gold_annotation.py` → согласие + κ Коэна, [`evals/annotation/`](evals/annotation/)); жесткий wall-clock-дедлайн на запрос к провайдеру (`RWS_PROVIDER_WALLCLOCK_SECONDS`) и маршрутизация моделей по стадиям в eval (`--routes` из `model_policy.yml`); статистически осмысленный eval-бенчмарк (`--repeat N` → усредненный агрегат pass-rate/detection-rate ± σ), политика меток скорера (`accepted_finding_aliases`), основной провайдер **DeepSeek**, поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, выбираемые именованные советы (`rws councils`), проверка соответствия журналу (`--journal`), WebSocket-трассировка ("Thinking Trace") и API для Obsidian/Word.
+**Status**: v2.14.0 (Фаза O — широкий подъём) — маршрутизированный v4-pro N=5 бенчмарк (detection **0.92** стабильна третьей конфигурацией подряд, diff-ok **25/25** по построению, узкое место переехало в строгость судьи — [`docs/benchmark.md`](docs/benchmark.md)); статья A29 контентно submission-ready (ГОСТ-библиография, EN abstract 198/200, оба варианта адъюдикации подготовлены); 40-й стиль `smirnov-mahabharata` (корпусный, эпический перевод с аппаратом) + доводка `sanskrit-reader` (анвая, mūla/комментарий); профиль «Восток (Oriens)» с реальными требованиями + проверка `keywords_max_words`; детерминированный фикс `missing_iast_on_first_mention` (заголовок ≠ первое упоминание); span-patch-реконструкция ревизии + growth-губернатор подняли усредненный pass-rate золотых кейсов **0.48 → 0.92** при нулевых diff-провалах; верификатор теперь получает стилевые обязательства прогона и выдает span-привязанные предупреждения о нарушениях (kill-switch `RWS_VERIFY_STYLE_COMMITMENTS=0`); двухэкспертная разметка золотого набора (`tools/gold_annotation.py` → согласие + κ Коэна, [`evals/annotation/`](evals/annotation/)); жесткий wall-clock-дедлайн на запрос к провайдеру (`RWS_PROVIDER_WALLCLOCK_SECONDS`) и маршрутизация моделей по стадиям в eval (`--routes` из `model_policy.yml`); статистически осмысленный eval-бенчмарк (`--repeat N` → усредненный агрегат pass-rate/detection-rate ± σ), политика меток скорера (`accepted_finding_aliases`), основной провайдер **DeepSeek**, поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, выбираемые именованные советы (`rws councils`), проверка соответствия журналу (`--journal`), WebSocket-трассировка ("Thinking Trace") и API для Obsidian/Word.
 
 Границы реализованного (честная маркировка):
 
@@ -54,6 +54,7 @@ _Created: 03-05-2026 · Last updated: 11-07-2026_
 - [x] **v2.11.0**: достоверный бенчмарк — N-прогонный eval-харнесс (`eval-run`/`eval-suite --repeat N` → `eval-aggregate.json`), политика алиасов скорера, температурный зонд DeepSeek.
 - [x] **v2.12.0–2.12.1**: over-rewrite побежден по построению — span-patch-реконструкция + growth-губернатор (pass-rate **0.48 → 0.92**), консолидация Zenodo/статьи/документации, движок вынесен в [`docs/ENGINE.md`](docs/ENGINE.md).
 - [x] **v2.13.0** (H588 Phase N): span-привязанные стилевые обязательства верификатора, двухэкспертная разметка золотого набора (согласие 24/25, κ Коэна), wall-clock-дедлайн провайдера, маршрутизация моделей `--routes`, обобщенный навык `/rws-council`, черновик методологической статьи в форме подачи (§4.6, EN Abstract/Keywords).
+- [x] **v2.14.0** (H770 Фаза O): маршрутизированный v4-pro N=5 бенчмарк (0.72/0.92/25-25 — строгость судьи как новая ось, [`docs/benchmark.md`](docs/benchmark.md) + §4.7 статьи), A29 контентно submission-ready (ГОСТ-«Литература», варианты адъюдикации, EN abstract 198/200, финальное Zenodo-описание), корпус проиндексирован (FTS5) + 40-й стиль `smirnov-mahabharata` + доводка `sanskrit-reader`, профиль «Восток (Oriens)» + `keywords_max_words`, детерминированный фикс `missing_iast_on_first_mention`.
 - [ ] **Дальше (релизные действия автора)**: DOI на Zenodo (→ вписать в [`CITATION.cff`](CITATION.cff)), финализация и подача методологической статьи ([`docs/methodology-paper-outline.md`](docs/methodology-paper-outline.md)); плагин для Obsidian — план реализации (MVP: легкие детерминированные проверки) в [`docs/obsidian-plugin-plan.md`](docs/obsidian-plugin-plan.md).
 
 ## Навигация
@@ -95,7 +96,7 @@ _Created: 03-05-2026 · Last updated: 11-07-2026_
 
 ## Все созданные стили
 
-> 🎨 **Галерея со ссылками для прямого использования** (открыть → скопировать → вставить в Claude Custom Style): [`docs/STYLE_GALLERY.ru.md`](docs/STYLE_GALLERY.ru.md) — все 39 стилей, сгруппированные по школам.
+> 🎨 **Галерея со ссылками для прямого использования** (открыть → скопировать → вставить в Claude Custom Style): [`docs/STYLE_GALLERY.ru.md`](docs/STYLE_GALLERY.ru.md) — все 40 стилей, сгруппированные по школам.
 
 | Файл | Стиль | Для чего нужен | Главная интонация |
 |---|---|---|---|
@@ -123,6 +124,7 @@ _Created: 03-05-2026 · Last updated: 11-07-2026_
 | [`ClaudeStyles/sanskrit-reader-style.md`][sanskrit-reader] | [Санскрит-ридер][sanskrit-reader] | Учебный разбор отрывка, комментированная хрестоматия для студентов. | Ясность без упрощения, уважение к читателю. |
 | [`ClaudeStyles/samasa-manual-style.md`][samasa-manual] | [Самаса-пособие][samasa-manual] | Грамматическое пособие по сложным словам: определение, классификация, правило, пример, исключение. | Сухая алгоритмическая ясность. |
 | [`ClaudeStyles/panini-traditional-style.md`][panini-traditional] | [Панини-традиция][panini-traditional] | Изложение грамматики с опорой на туземную традицию: сутра, вритти, пример. | Дисциплинированное описание категории изнутри традиции. |
+| [`ClaudeStyles/smirnov-mahabharata-style.md`][smirnov-mahabharata] | [Смирнов-Махабхарата][smirnov-mahabharata] | Эпический перевод с полным аппаратом: введение-обрамление, ритмическая строка, примечания с разночтениями изданий, толковый словарь реалий. | Повествовательная ровность введения, протокольная строгость примечаний. |
 
 ## Исходные материалы
 
@@ -139,6 +141,7 @@ _Created: 03-05-2026 · Last updated: 11-07-2026_
 | [Зализняк-слово][zalizniak-slovo] | [`ClaudeStyles/zalizniak-slovo-style.md`][zalizniak-slovo] | [`AAZ_Slovo_2024.pdf`][src-slovo-pdf], [`AAZ_Slovo_2024.txt`][src-slovo-txt]. |
 | [Зализняк-заметки][zalizniak-zametki] | [`ClaudeStyles/zalizniak-zametki-style.md`][zalizniak-zametki] | [`AAZ_Zametki_2025.pdf`][src-zametki-pdf], [`AAZ_Zametki_2025.txt`][src-zametki-txt], [`AAZ_Zametki_2025-annotated.md`][src-zametki-annotated], [`AAZ_Zametki_2025-index.md`][src-zametki-index]. |
 | [Albedil-Sbornik][albedil-sbornik] | [`ClaudeStyles/albedil-sbornik-style.md`][albedil-sbornik] | Опорный индологический материал: [`Smirnoff_Mahabharata_2025.pdf`][src-smirnoff-pdf], [`Smirnoff_Mahabharata_2025.txt`][src-smirnoff-txt], [`Tubb-ScholasticSans-2007.txt`][src-tubb-txt]. |
+| [Смирнов-Махабхарата][smirnov-mahabharata] | [`ClaudeStyles/smirnov-mahabharata-style.md`][smirnov-mahabharata] | [`Smirnoff_Mahabharata_2025.pdf`][src-smirnoff-pdf], [`Smirnoff_Mahabharata_2025.txt`][src-smirnoff-txt] (перевод, введение, примечания, толковый словарь Б. Л. Смирнова). |
 | [Казанский][kazanskiy-korpus] | [`ClaudeStyles/kazanskiy-korpus-style.md`][kazanskiy-korpus] | Сборник с материалом Н. Н. Казанского: [`2025_1а_Part 1-1.pdf`][src-tronsky-pdf], [`2025_1а_Part 1-1.txt`][src-tronsky-txt]. |
 | [Лидова][lidova-commentary] | [`ClaudeStyles/lidova-commentary-style.md`][lidova-commentary] | Опорные материалы по комментарию и санскритской ученой традиции: [`2025_1а_Part 1-1.pdf`][src-tronsky-pdf], [`2025_1а_Part 1-1.txt`][src-tronsky-txt], [`Tubb-ScholasticSans-2007.txt`][src-tubb-txt]. |
 | [Tronsky-Readings][tronsky-readings] | [`ClaudeStyles/tronsky-readings-style.md`][tronsky-readings] | [`2025_1а_Part 1-1.pdf`][src-tronsky-pdf], [`2025_1а_Part 1-1.txt`][src-tronsky-txt]. |
@@ -577,6 +580,7 @@ RuWritingStyles — это не просто набор промптов, а п�
 [sanskrit-reader]: ClaudeStyles/sanskrit-reader-style.md
 [samasa-manual]: ClaudeStyles/samasa-manual-style.md
 [panini-traditional]: ClaudeStyles/panini-traditional-style.md
+[smirnov-mahabharata]: ClaudeStyles/smirnov-mahabharata-style.md
 [zalizniak-enklitiki]: ClaudeStyles/zalizniak-enklitiki-style.md
 [zalizniak-imennoe]: ClaudeStyles/zalizniak-imennoe-style.md
 [zalizniak-ocherk]: ClaudeStyles/zalizniak-ocherk-style.md

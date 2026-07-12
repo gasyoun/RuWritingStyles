@@ -1,0 +1,533 @@
+{
+  "started": "2026-07-12 13:21:21",
+  "protocol": "h770-routed-v4pro",
+  "routes": "council/verification=deepseek-v4-pro, others=deepseek-chat",
+  "routed": {
+    "repeat": 5,
+    "use_routes": true,
+    "cases": [
+      {
+        "case_id": "sanskrit-pseudo-etymology",
+        "repeat": 5,
+        "pass_count": 3,
+        "pass_rate": 0.6,
+        "detection_count": 4,
+        "detection_rate": 0.8,
+        "diff_ok_count": 5,
+        "diff_ok_rate": 1.0,
+        "verification_status_distribution": {
+          "passed": 3,
+          "needs_human_review": 1,
+          "failed": 1
+        },
+        "metrics": {
+          "char_delta_ratio": {
+            "n": 5,
+            "mean": 0.257589,
+            "stdev": 0.104855,
+            "min": 0.053571,
+            "max": 0.345982
+          },
+          "changed_line_ratio": {
+            "n": 5,
+            "mean": 0.463268,
+            "stdev": 0.168998,
+            "min": 0.222222,
+            "max": 0.6
+          },
+          "finding_count": {
+            "n": 5,
+            "mean": 7.6,
+            "stdev": 1.019804,
+            "min": 6.0,
+            "max": 9.0
+          }
+        },
+        "runs": [
+          {
+            "run_id": "gold-v4pro-routed-h770-sanskrit-pseudo-etymology-r01",
+            "run_dir": "runs/gold-v4pro-routed-h770-sanskrit-pseudo-etymology-r01",
+            "result_path": "runs/gold-v4pro-routed-h770-sanskrit-pseudo-etymology-r01/eval-result.json",
+            "passed": true,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "passed",
+            "required_match_count": 1,
+            "finding_count": 8,
+            "changed_line_ratio": 0.6,
+            "char_delta_ratio": 0.314732
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-sanskrit-pseudo-etymology-r02",
+            "run_dir": "runs/gold-v4pro-routed-h770-sanskrit-pseudo-etymology-r02",
+            "result_path": "runs/gold-v4pro-routed-h770-sanskrit-pseudo-etymology-r02/eval-result.json",
+            "passed": false,
+            "detected": false,
+            "diff_within_limits": true,
+            "verification_status": "needs_human_review",
+            "required_match_count": 0,
+            "finding_count": 6,
+            "changed_line_ratio": 0.294118,
+            "char_delta_ratio": 0.303571
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-sanskrit-pseudo-etymology-r03",
+            "run_dir": "runs/gold-v4pro-routed-h770-sanskrit-pseudo-etymology-r03",
+            "result_path": "runs/gold-v4pro-routed-h770-sanskrit-pseudo-etymology-r03/eval-result.json",
+            "passed": true,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "passed",
+            "required_match_count": 1,
+            "finding_count": 8,
+            "changed_line_ratio": 0.6,
+            "char_delta_ratio": 0.345982
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-sanskrit-pseudo-etymology-r04",
+            "run_dir": "runs/gold-v4pro-routed-h770-sanskrit-pseudo-etymology-r04",
+            "result_path": "runs/gold-v4pro-routed-h770-sanskrit-pseudo-etymology-r04/eval-result.json",
+            "passed": false,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "failed",
+            "required_match_count": 1,
+            "finding_count": 7,
+            "changed_line_ratio": 0.222222,
+            "char_delta_ratio": 0.270089
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-sanskrit-pseudo-etymology-r05",
+            "run_dir": "runs/gold-v4pro-routed-h770-sanskrit-pseudo-etymology-r05",
+            "result_path": "runs/gold-v4pro-routed-h770-sanskrit-pseudo-etymology-r05/eval-result.json",
+            "passed": true,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "passed",
+            "required_match_count": 1,
+            "finding_count": 9,
+            "changed_line_ratio": 0.6,
+            "char_delta_ratio": 0.053571
+          }
+        ]
+      },
+      {
+        "case_id": "karaka-not-padezh",
+        "repeat": 5,
+        "pass_count": 2,
+        "pass_rate": 0.4,
+        "detection_count": 5,
+        "detection_rate": 1.0,
+        "diff_ok_count": 5,
+        "diff_ok_rate": 1.0,
+        "verification_status_distribution": {
+          "needs_human_review": 2,
+          "failed": 3
+        },
+        "metrics": {
+          "char_delta_ratio": {
+            "n": 5,
+            "mean": 0.091484,
+            "stdev": 0.117088,
+            "min": 0.021898,
+            "max": 0.323601
+          },
+          "changed_line_ratio": {
+            "n": 5,
+            "mean": 0.147712,
+            "stdev": 0.073203,
+            "min": 0.111111,
+            "max": 0.294118
+          },
+          "finding_count": {
+            "n": 5,
+            "mean": 4.4,
+            "stdev": 0.489898,
+            "min": 4.0,
+            "max": 5.0
+          }
+        },
+        "runs": [
+          {
+            "run_id": "gold-v4pro-routed-h770-karaka-not-padezh-r01",
+            "run_dir": "runs/gold-v4pro-routed-h770-karaka-not-padezh-r01",
+            "result_path": "runs/gold-v4pro-routed-h770-karaka-not-padezh-r01/eval-result.json",
+            "passed": true,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "needs_human_review",
+            "required_match_count": 1,
+            "finding_count": 4,
+            "changed_line_ratio": 0.294118,
+            "char_delta_ratio": 0.323601
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-karaka-not-padezh-r02",
+            "run_dir": "runs/gold-v4pro-routed-h770-karaka-not-padezh-r02",
+            "result_path": "runs/gold-v4pro-routed-h770-karaka-not-padezh-r02/eval-result.json",
+            "passed": true,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "needs_human_review",
+            "required_match_count": 1,
+            "finding_count": 5,
+            "changed_line_ratio": 0.111111,
+            "char_delta_ratio": 0.026764
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-karaka-not-padezh-r03",
+            "run_dir": "runs/gold-v4pro-routed-h770-karaka-not-padezh-r03",
+            "result_path": "runs/gold-v4pro-routed-h770-karaka-not-padezh-r03/eval-result.json",
+            "passed": false,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "failed",
+            "required_match_count": 1,
+            "finding_count": 5,
+            "changed_line_ratio": 0.111111,
+            "char_delta_ratio": 0.06326
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-karaka-not-padezh-r04",
+            "run_dir": "runs/gold-v4pro-routed-h770-karaka-not-padezh-r04",
+            "result_path": "runs/gold-v4pro-routed-h770-karaka-not-padezh-r04/eval-result.json",
+            "passed": false,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "failed",
+            "required_match_count": 1,
+            "finding_count": 4,
+            "changed_line_ratio": 0.111111,
+            "char_delta_ratio": 0.021898
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-karaka-not-padezh-r05",
+            "run_dir": "runs/gold-v4pro-routed-h770-karaka-not-padezh-r05",
+            "result_path": "runs/gold-v4pro-routed-h770-karaka-not-padezh-r05/eval-result.json",
+            "passed": false,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "failed",
+            "required_match_count": 1,
+            "finding_count": 4,
+            "changed_line_ratio": 0.111111,
+            "char_delta_ratio": 0.021898
+          }
+        ]
+      },
+      {
+        "case_id": "vedic-classical-anachronism",
+        "repeat": 5,
+        "pass_count": 4,
+        "pass_rate": 0.8,
+        "detection_count": 5,
+        "detection_rate": 1.0,
+        "diff_ok_count": 5,
+        "diff_ok_rate": 1.0,
+        "verification_status_distribution": {
+          "passed": 4,
+          "failed": 1
+        },
+        "metrics": {
+          "char_delta_ratio": {
+            "n": 5,
+            "mean": 0.134555,
+            "stdev": 0.081018,
+            "min": 0.015707,
+            "max": 0.230366
+          },
+          "changed_line_ratio": {
+            "n": 5,
+            "mean": 0.515406,
+            "stdev": 0.09248,
+            "min": 0.333333,
+            "max": 0.571429
+          },
+          "finding_count": {
+            "n": 5,
+            "mean": 2.0,
+            "stdev": 0.0,
+            "min": 2.0,
+            "max": 2.0
+          }
+        },
+        "runs": [
+          {
+            "run_id": "gold-v4pro-routed-h770-vedic-classical-anachronism-r01",
+            "run_dir": "runs/gold-v4pro-routed-h770-vedic-classical-anachronism-r01",
+            "result_path": "runs/gold-v4pro-routed-h770-vedic-classical-anachronism-r01/eval-result.json",
+            "passed": true,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "passed",
+            "required_match_count": 1,
+            "finding_count": 2,
+            "changed_line_ratio": 0.571429,
+            "char_delta_ratio": 0.164921
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-vedic-classical-anachronism-r02",
+            "run_dir": "runs/gold-v4pro-routed-h770-vedic-classical-anachronism-r02",
+            "result_path": "runs/gold-v4pro-routed-h770-vedic-classical-anachronism-r02/eval-result.json",
+            "passed": true,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "passed",
+            "required_match_count": 1,
+            "finding_count": 2,
+            "changed_line_ratio": 0.571429,
+            "char_delta_ratio": 0.065445
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-vedic-classical-anachronism-r03",
+            "run_dir": "runs/gold-v4pro-routed-h770-vedic-classical-anachronism-r03",
+            "result_path": "runs/gold-v4pro-routed-h770-vedic-classical-anachronism-r03/eval-result.json",
+            "passed": true,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "passed",
+            "required_match_count": 1,
+            "finding_count": 2,
+            "changed_line_ratio": 0.529412,
+            "char_delta_ratio": 0.015707
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-vedic-classical-anachronism-r04",
+            "run_dir": "runs/gold-v4pro-routed-h770-vedic-classical-anachronism-r04",
+            "result_path": "runs/gold-v4pro-routed-h770-vedic-classical-anachronism-r04/eval-result.json",
+            "passed": true,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "passed",
+            "required_match_count": 1,
+            "finding_count": 2,
+            "changed_line_ratio": 0.571429,
+            "char_delta_ratio": 0.196335
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-vedic-classical-anachronism-r05",
+            "run_dir": "runs/gold-v4pro-routed-h770-vedic-classical-anachronism-r05",
+            "result_path": "runs/gold-v4pro-routed-h770-vedic-classical-anachronism-r05/eval-result.json",
+            "passed": false,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "failed",
+            "required_match_count": 1,
+            "finding_count": 2,
+            "changed_line_ratio": 0.333333,
+            "char_delta_ratio": 0.230366
+          }
+        ]
+      },
+      {
+        "case_id": "samasa-misclassification",
+        "repeat": 5,
+        "pass_count": 5,
+        "pass_rate": 1.0,
+        "detection_count": 5,
+        "detection_rate": 1.0,
+        "diff_ok_count": 5,
+        "diff_ok_rate": 1.0,
+        "verification_status_distribution": {
+          "passed": 1,
+          "needs_human_review": 4
+        },
+        "metrics": {
+          "char_delta_ratio": {
+            "n": 5,
+            "mean": 0.147742,
+            "stdev": 0.093435,
+            "min": 0.0,
+            "max": 0.258065
+          },
+          "changed_line_ratio": {
+            "n": 5,
+            "mean": 0.195,
+            "stdev": 0.118743,
+            "min": 0.0,
+            "max": 0.375
+          },
+          "finding_count": {
+            "n": 5,
+            "mean": 3.4,
+            "stdev": 1.019804,
+            "min": 2.0,
+            "max": 5.0
+          }
+        },
+        "runs": [
+          {
+            "run_id": "gold-v4pro-routed-h770-samasa-misclassification-r01",
+            "run_dir": "runs/gold-v4pro-routed-h770-samasa-misclassification-r01",
+            "result_path": "runs/gold-v4pro-routed-h770-samasa-misclassification-r01/eval-result.json",
+            "passed": true,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "passed",
+            "required_match_count": 1,
+            "finding_count": 3,
+            "changed_line_ratio": 0.375,
+            "char_delta_ratio": 0.258065
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-samasa-misclassification-r02",
+            "run_dir": "runs/gold-v4pro-routed-h770-samasa-misclassification-r02",
+            "result_path": "runs/gold-v4pro-routed-h770-samasa-misclassification-r02/eval-result.json",
+            "passed": true,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "needs_human_review",
+            "required_match_count": 1,
+            "finding_count": 5,
+            "changed_line_ratio": 0.2,
+            "char_delta_ratio": 0.229032
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-samasa-misclassification-r03",
+            "run_dir": "runs/gold-v4pro-routed-h770-samasa-misclassification-r03",
+            "result_path": "runs/gold-v4pro-routed-h770-samasa-misclassification-r03/eval-result.json",
+            "passed": true,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "needs_human_review",
+            "required_match_count": 1,
+            "finding_count": 3,
+            "changed_line_ratio": 0.2,
+            "char_delta_ratio": 0.158065
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-samasa-misclassification-r04",
+            "run_dir": "runs/gold-v4pro-routed-h770-samasa-misclassification-r04",
+            "result_path": "runs/gold-v4pro-routed-h770-samasa-misclassification-r04/eval-result.json",
+            "passed": true,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "needs_human_review",
+            "required_match_count": 1,
+            "finding_count": 2,
+            "changed_line_ratio": 0.0,
+            "char_delta_ratio": 0.0
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-samasa-misclassification-r05",
+            "run_dir": "runs/gold-v4pro-routed-h770-samasa-misclassification-r05",
+            "result_path": "runs/gold-v4pro-routed-h770-samasa-misclassification-r05/eval-result.json",
+            "passed": true,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "needs_human_review",
+            "required_match_count": 1,
+            "finding_count": 4,
+            "changed_line_ratio": 0.2,
+            "char_delta_ratio": 0.093548
+          }
+        ]
+      },
+      {
+        "case_id": "commentary-layer-mix",
+        "repeat": 5,
+        "pass_count": 4,
+        "pass_rate": 0.8,
+        "detection_count": 4,
+        "detection_rate": 0.8,
+        "diff_ok_count": 5,
+        "diff_ok_rate": 1.0,
+        "verification_status_distribution": {
+          "needs_human_review": 3,
+          "passed": 2
+        },
+        "metrics": {
+          "char_delta_ratio": {
+            "n": 5,
+            "mean": 0.235366,
+            "stdev": 0.062135,
+            "min": 0.185976,
+            "max": 0.353659
+          },
+          "changed_line_ratio": {
+            "n": 5,
+            "mean": 0.303809,
+            "stdev": 0.110673,
+            "min": 0.2,
+            "max": 0.5
+          },
+          "finding_count": {
+            "n": 5,
+            "mean": 6.8,
+            "stdev": 0.748331,
+            "min": 6.0,
+            "max": 8.0
+          }
+        },
+        "runs": [
+          {
+            "run_id": "gold-v4pro-routed-h770-commentary-layer-mix-r01",
+            "run_dir": "runs/gold-v4pro-routed-h770-commentary-layer-mix-r01",
+            "result_path": "runs/gold-v4pro-routed-h770-commentary-layer-mix-r01/eval-result.json",
+            "passed": true,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "needs_human_review",
+            "required_match_count": 1,
+            "finding_count": 7,
+            "changed_line_ratio": 0.2,
+            "char_delta_ratio": 0.204268
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-commentary-layer-mix-r02",
+            "run_dir": "runs/gold-v4pro-routed-h770-commentary-layer-mix-r02",
+            "result_path": "runs/gold-v4pro-routed-h770-commentary-layer-mix-r02/eval-result.json",
+            "passed": true,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "needs_human_review",
+            "required_match_count": 1,
+            "finding_count": 6,
+            "changed_line_ratio": 0.2,
+            "char_delta_ratio": 0.185976
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-commentary-layer-mix-r03",
+            "run_dir": "runs/gold-v4pro-routed-h770-commentary-layer-mix-r03",
+            "result_path": "runs/gold-v4pro-routed-h770-commentary-layer-mix-r03/eval-result.json",
+            "passed": true,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "passed",
+            "required_match_count": 1,
+            "finding_count": 7,
+            "changed_line_ratio": 0.333333,
+            "char_delta_ratio": 0.192073
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-commentary-layer-mix-r04",
+            "run_dir": "runs/gold-v4pro-routed-h770-commentary-layer-mix-r04",
+            "result_path": "runs/gold-v4pro-routed-h770-commentary-layer-mix-r04/eval-result.json",
+            "passed": false,
+            "detected": false,
+            "diff_within_limits": true,
+            "verification_status": "passed",
+            "required_match_count": 0,
+            "finding_count": 8,
+            "changed_line_ratio": 0.285714,
+            "char_delta_ratio": 0.240854
+          },
+          {
+            "run_id": "gold-v4pro-routed-h770-commentary-layer-mix-r05",
+            "run_dir": "runs/gold-v4pro-routed-h770-commentary-layer-mix-r05",
+            "result_path": "runs/gold-v4pro-routed-h770-commentary-layer-mix-r05/eval-result.json",
+            "passed": true,
+            "detected": true,
+            "diff_within_limits": true,
+            "verification_status": "needs_human_review",
+            "required_match_count": 1,
+            "finding_count": 6,
+            "changed_line_ratio": 0.5,
+            "char_delta_ratio": 0.353659
+          }
+        ]
+      }
+    ]
+  },
+  "finished": "2026-07-12 15:36:57"
+}

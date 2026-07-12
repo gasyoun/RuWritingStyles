@@ -11,10 +11,13 @@ best_for:
   - учебный разбор санскритского отрывка
   - комментированная хрестоматия
   - пояснение грамматической темы для студентов
-  - пословный разбор и связный перевод
+  - пословный разбор, анвая и связный перевод
+  - чтение комментария (mūla / bhāṣya) со студентами
 
 checks:
   - translation_replaces_analysis
+  - missing_anvaya_construe
+  - mula_commentary_layer_blur
   - undefined_term
   - register_drift_to_academic
   - missing_iast_on_first_mention
@@ -43,5 +46,5 @@ provenance:
   sources:
     - "Kochergina 1987"
     - "Tubb Boose 2007"
-  derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника"
-  derivation_date: "2026-06"
+  derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника; доводка 2026-07 по корпусному тексту Tubb-ScholasticSans-2007 (анвая, mūla/комментарий)"
+  derivation_date: "2026-07"

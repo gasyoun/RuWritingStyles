@@ -1,0 +1,50 @@
+id: smirnov-mahabharata
+name: Смирнов-Махабхарата
+source_prompt: ClaudeStyles/smirnov-mahabharata-style.md
+role: commentary_reviewer
+language: ru
+level: private
+cluster: indology
+extends: cluster:indology
+
+best_for:
+  - эпический перевод (Махабхарата, Рамаяна)
+  - переводческий аппарат (введение, примечания, толковый словарь)
+  - разночтения изданий и сопоставление переводов
+  - ритмико-строфическая организация перевода
+  - реалии и имена в устоявшейся русской передаче
+
+checks:
+  - broken_verse_structure
+  - unmarked_omission_or_insertion
+  - missing_edition_variant_note
+  - missing_realia_gloss
+  - apparatus_commentary_mix
+  - naturalized_name_replaced
+
+limits:
+  - не заменяет критическое издание и текстологию оригинала
+  - не оценивает философскую интерпретацию по существу — только ее отделенность от текстологии
+  - не должен требовать IAST внутри поэтической строки
+
+review_mode:
+  rewrite_allowed: false
+  requires_span_ids: true
+  output_format: findings_json
+
+council:
+  can_reply_to:
+    - translation
+    - source
+    - sanskrit_terminology
+    - composition
+  should_defer:
+    - vedic_form
+    - domain_claim_outside_indology
+
+provenance:
+  sources:
+    - "Smirnov 1962"
+    - "Smirnov 2025"
+  derived_by: "RuWritingStyles project — аналитическая модель письма по корпусному тексту (Smirnoff_Mahabharata_2025), не пересказ источника"
+  derivation_date: "2026-07"

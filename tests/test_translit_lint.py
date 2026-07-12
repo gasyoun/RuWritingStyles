@@ -65,6 +65,30 @@ class FirstMentionTests(unittest.TestCase):
         result = lint_text(text, TERMS)
         self.assertNotIn("missing_iast_on_first_mention", types_of(result))
 
+    def test_heading_mention_with_glossed_prose_is_clean(self) -> None:
+        # H588 N2 rater-B false positive: «# О слове мокша» consumed the
+        # first-mention slot, so the properly glossed first prose mention
+        # still produced a finding on the heading span.
+        text = "# О слове бхашья\n\nЖанр бхашьи (bhāṣya) сложился рано."
+        result = lint_text(text, TERMS)
+        self.assertNotIn("missing_iast_on_first_mention", types_of(result))
+
+    def test_heading_mention_does_not_relocate_prose_finding(self) -> None:
+        # A heading never carries the gloss; an unglossed first PROSE mention
+        # must still be flagged — on the prose span, not the heading.
+        text = "# О слове бхашья\n\nЖанр бхашьи сложился рано."
+        result = lint_text(text, TERMS)
+        flagged = [f for f in result["findings"] if f["type"] == "missing_iast_on_first_mention"]
+        self.assertEqual(len(flagged), 1)
+        self.assertEqual(flagged[0]["term"], "бхашья")
+        self.assertTrue(flagged[0]["span_id"].startswith("p"), flagged[0]["span_id"])
+
+    def test_heading_only_mention_is_clean(self) -> None:
+        # A term that appears only in a heading has no prose mention to gloss.
+        text = "# О слове бхашья\n\nЗдесь обсуждаются другие вопросы."
+        result = lint_text(text, TERMS)
+        self.assertNotIn("missing_iast_on_first_mention", types_of(result))
+
 
 class SchemeMixTests(unittest.TestCase):
     def test_iast_plus_harvard_kyoto_is_flagged(self) -> None:

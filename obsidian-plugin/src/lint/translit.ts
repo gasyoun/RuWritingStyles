@@ -130,9 +130,15 @@ export function lintSegments(
   for (const t of terms) termSkeletons.set(skeleton(t.iast), t);
 
   const ruSeen = new Map<string, string[]>();
+  // Headings never carry a parenthetical gloss, so the first-mention
+  // requirement anchors at the first PROSE mention — a heading occurrence
+  // must neither fire nor consume the first-mention slot (parity with
+  // translit_lint.py, H588 N2 rater-B false positives).
+  const ruSeenProse = new Map<string, string[]>();
   const iastSeen = new Map<string, string[]>();
   for (const t of terms) {
     ruSeen.set(t.ru, []);
+    ruSeenProse.set(t.ru, []);
     iastSeen.set(t.ru, []);
   }
   const firstMentionFlagged = new Set<string>();
@@ -142,6 +148,7 @@ export function lintSegments(
   for (const seg of prose) {
     const spanId = seg.span_id;
     const text = seg.text;
+    const isHeading = spanId.startsWith("h");
 
     if (DEVANAGARI_RE.test(text)) {
       if (text !== text.normalize("NFC")) {
@@ -201,7 +208,9 @@ export function lintSegments(
       const ruHit = loweredWords.some((w) => hasCyrillic(w) && matchesRuTerm(w, ru));
       if (ruHit) {
         ruSeen.get(ru)!.push(spanId);
-        const firstEver = ruSeen.get(ru)!.length === 1 && iastSeen.get(ru)!.length === 0;
+        if (isHeading) continue;
+        ruSeenProse.get(ru)!.push(spanId);
+        const firstEver = ruSeenProse.get(ru)!.length === 1 && iastSeen.get(ru)!.length === 0;
         if (
           requireIastFirstMention &&
           !properNouns.has(ru) &&

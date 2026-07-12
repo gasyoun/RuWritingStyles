@@ -37,6 +37,7 @@ councils:
     - sanskrit-reader
     - samasa-manual
     - lidova-commentary
+    - smirnov-mahabharata
 
 clusters:
   - id: ling_iesh
@@ -217,6 +218,11 @@ passports:
     level: private
     cluster: indology
     source_prompt: ClaudeStyles/panini-traditional-style.md
+  - id: smirnov-mahabharata
+    path: styles/passports/smirnov-mahabharata.yml
+    level: private
+    cluster: indology
+    source_prompt: ClaudeStyles/smirnov-mahabharata-style.md
   - id: indology
     path: styles/clusters/indology.yml
     level: cluster

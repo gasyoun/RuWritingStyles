@@ -262,12 +262,15 @@
     <dc:subject>Санскрит-ридер</dc:subject>
     <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
     <dc:publisher>RuWritingStyles</dc:publisher>
-    <dc:description>clarity_reviewer; учебный разбор санскритского отрывка; комментированная хрестоматия; пояснение грамматической темы для студентов; пословный разбор и связный перевод</dc:description>
+    <dc:description>clarity_reviewer; учебный разбор санскритского отрывка; комментированная хрестоматия; пояснение грамматической темы для студентов; пословный разбор, анвая и связный перевод; чтение комментария (mūla / bhāṣya) со студентами</dc:description>
     <dc:subject>учебный разбор санскритского отрывка</dc:subject>
     <dc:subject>комментированная хрестоматия</dc:subject>
     <dc:subject>пояснение грамматической темы для студентов</dc:subject>
-    <dc:subject>пословный разбор и связный перевод</dc:subject>
+    <dc:subject>пословный разбор, анвая и связный перевод</dc:subject>
+    <dc:subject>чтение комментария (mūla / bhāṣya) со студентами</dc:subject>
     <dc:subject>translation_replaces_analysis</dc:subject>
+    <dc:subject>missing_anvaya_construe</dc:subject>
+    <dc:subject>mula_commentary_layer_blur</dc:subject>
     <dc:subject>undefined_term</dc:subject>
     <dc:subject>register_drift_to_academic</dc:subject>
     <dc:subject>missing_iast_on_first_mention</dc:subject>
@@ -278,8 +281,39 @@
     <dc:source>ClaudeStyles/sanskrit-reader-style.md</dc:source>
     <dc:source>Kochergina 1987</dc:source>
     <dc:source>Tubb Boose 2007</dc:source>
-    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
-    <dc:date>2026-06</dc:date>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника; доводка 2026-07 по корпусному тексту Tubb-ScholasticSans-2007 (анвая, mūla/комментарий)</dc:contributor>
+    <dc:date>2026-07</dc:date>
+    <dc:relation>cluster:indology</dc:relation>
+    <dc:relation>cluster:indology</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="smirnov-mahabharata">
+    <dc:identifier>smirnov-mahabharata</dc:identifier>
+    <dc:title>Смирнов-Махабхарата</dc:title>
+    <dc:subject>Смирнов-Махабхарата</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>commentary_reviewer; эпический перевод (Махабхарата, Рамаяна); переводческий аппарат (введение, примечания, толковый словарь); разночтения изданий и сопоставление переводов; ритмико-строфическая организация перевода; реалии и имена в устоявшейся русской передаче</dc:description>
+    <dc:subject>эпический перевод (Махабхарата, Рамаяна)</dc:subject>
+    <dc:subject>переводческий аппарат (введение, примечания, толковый словарь)</dc:subject>
+    <dc:subject>разночтения изданий и сопоставление переводов</dc:subject>
+    <dc:subject>ритмико-строфическая организация перевода</dc:subject>
+    <dc:subject>реалии и имена в устоявшейся русской передаче</dc:subject>
+    <dc:subject>broken_verse_structure</dc:subject>
+    <dc:subject>unmarked_omission_or_insertion</dc:subject>
+    <dc:subject>missing_edition_variant_note</dc:subject>
+    <dc:subject>missing_realia_gloss</dc:subject>
+    <dc:subject>apparatus_commentary_mix</dc:subject>
+    <dc:subject>naturalized_name_replaced</dc:subject>
+    <dc:subject>indology</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/smirnov-mahabharata-style.md</dc:source>
+    <dc:source>Smirnov 1962</dc:source>
+    <dc:source>Smirnov 2025</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма по корпусному тексту (Smirnoff_Mahabharata_2025), не пересказ источника</dc:contributor>
+    <dc:date>2026-07</dc:date>
     <dc:relation>cluster:indology</dc:relation>
     <dc:relation>cluster:indology</dc:relation>
     <dc:rights>Apache-2.0</dc:rights>
@@ -392,6 +426,62 @@
     <dc:source>Zaliznyak 2002</dc:source>
     <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
     <dc:date>2026-05</dc:date>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="zalizniak-method">
+    <dc:identifier>zalizniak-method</dc:identifier>
+    <dc:title>А. А. Зализняк (Общий метод)</dc:title>
+    <dc:subject>А. А. Зализняк (Общий метод)</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>source_critical_reviewer; доказательная лингвистика; морфология; историческая грамматика; борьба с лженаукой</dc:description>
+    <dc:subject>доказательная лингвистика</dc:subject>
+    <dc:subject>морфология</dc:subject>
+    <dc:subject>историческая грамматика</dc:subject>
+    <dc:subject>борьба с лженаукой</dc:subject>
+    <dc:subject>evidentiary_base</dc:subject>
+    <dc:subject>logical_consistency</dc:subject>
+    <dc:subject>historical_continuity</dc:subject>
+    <dc:subject>anti_amateur_linguistics</dc:subject>
+    <dc:subject>clarity_of_explanation</dc:subject>
+    <dc:subject>ling_iesh</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/zalizniak-method-style.md</dc:source>
+    <dc:source>Zaliznyak 2002</dc:source>
+    <dc:source>Zaliznyak 2004</dc:source>
+    <dc:source>Зализняк А. А. Из заметок о любительской лингвистике</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-05</dc:date>
+    <dc:relation>cluster:ling_iesh</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
+  <record id="zalizniak-novgorod">
+    <dc:identifier>zalizniak-novgorod</dc:identifier>
+    <dc:title>Зализняк-новгород</dc:title>
+    <dc:subject>Зализняк-новгород</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>source_critical_reviewer; древненовгородский диалект; берестяные грамоты; графика и написание; датировка источника; корпусные параллели</dc:description>
+    <dc:subject>древненовгородский диалект</dc:subject>
+    <dc:subject>берестяные грамоты</dc:subject>
+    <dc:subject>графика и написание</dc:subject>
+    <dc:subject>датировка источника</dc:subject>
+    <dc:subject>корпусные параллели</dc:subject>
+    <dc:subject>missing_source_date</dc:subject>
+    <dc:subject>missing_graphics_analysis</dc:subject>
+    <dc:subject>dialect_claim_unchecked</dc:subject>
+    <dc:subject>missing_corpus_parallel</dc:subject>
+    <dc:subject>iesh</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/zalizniak-novgorod-style.md</dc:source>
+    <dc:source>Zaliznyak 2004</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
+    <dc:date>2026-05</dc:date>
+    <dc:relation>cluster:iesh</dc:relation>
     <dc:rights>Apache-2.0</dc:rights>
   </record>
   <record id="zalizniak-ocherk">
@@ -526,62 +616,6 @@
     <dc:language>ru</dc:language>
     <dc:source>ClaudeStyles/zalizniak-zametki-style.md</dc:source>
     <dc:source>Зализняк А. А. Из заметок о любительской лингвистике (2010; переизд. 2025)</dc:source>
-    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
-    <dc:date>2026-05</dc:date>
-    <dc:relation>cluster:iesh</dc:relation>
-    <dc:rights>Apache-2.0</dc:rights>
-  </record>
-  <record id="zalizniak-method">
-    <dc:identifier>zalizniak-method</dc:identifier>
-    <dc:title>А. А. Зализняк (Общий метод)</dc:title>
-    <dc:subject>А. А. Зализняк (Общий метод)</dc:subject>
-    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
-    <dc:publisher>RuWritingStyles</dc:publisher>
-    <dc:description>source_critical_reviewer; доказательная лингвистика; морфология; историческая грамматика; борьба с лженаукой</dc:description>
-    <dc:subject>доказательная лингвистика</dc:subject>
-    <dc:subject>морфология</dc:subject>
-    <dc:subject>историческая грамматика</dc:subject>
-    <dc:subject>борьба с лженаукой</dc:subject>
-    <dc:subject>evidentiary_base</dc:subject>
-    <dc:subject>logical_consistency</dc:subject>
-    <dc:subject>historical_continuity</dc:subject>
-    <dc:subject>anti_amateur_linguistics</dc:subject>
-    <dc:subject>clarity_of_explanation</dc:subject>
-    <dc:subject>ling_iesh</dc:subject>
-    <dc:type>Text</dc:type>
-    <dc:format>text/markdown</dc:format>
-    <dc:language>ru</dc:language>
-    <dc:source>ClaudeStyles/zalizniak-method-style.md</dc:source>
-    <dc:source>Zaliznyak 2002</dc:source>
-    <dc:source>Zaliznyak 2004</dc:source>
-    <dc:source>Зализняк А. А. Из заметок о любительской лингвистике</dc:source>
-    <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
-    <dc:date>2026-05</dc:date>
-    <dc:relation>cluster:ling_iesh</dc:relation>
-    <dc:rights>Apache-2.0</dc:rights>
-  </record>
-  <record id="zalizniak-novgorod">
-    <dc:identifier>zalizniak-novgorod</dc:identifier>
-    <dc:title>Зализняк-новгород</dc:title>
-    <dc:subject>Зализняк-новгород</dc:subject>
-    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
-    <dc:publisher>RuWritingStyles</dc:publisher>
-    <dc:description>source_critical_reviewer; древненовгородский диалект; берестяные грамоты; графика и написание; датировка источника; корпусные параллели</dc:description>
-    <dc:subject>древненовгородский диалект</dc:subject>
-    <dc:subject>берестяные грамоты</dc:subject>
-    <dc:subject>графика и написание</dc:subject>
-    <dc:subject>датировка источника</dc:subject>
-    <dc:subject>корпусные параллели</dc:subject>
-    <dc:subject>missing_source_date</dc:subject>
-    <dc:subject>missing_graphics_analysis</dc:subject>
-    <dc:subject>dialect_claim_unchecked</dc:subject>
-    <dc:subject>missing_corpus_parallel</dc:subject>
-    <dc:subject>iesh</dc:subject>
-    <dc:type>Text</dc:type>
-    <dc:format>text/markdown</dc:format>
-    <dc:language>ru</dc:language>
-    <dc:source>ClaudeStyles/zalizniak-novgorod-style.md</dc:source>
-    <dc:source>Zaliznyak 2004</dc:source>
     <dc:contributor>RuWritingStyles project — аналитическая модель письма, не пересказ источника</dc:contributor>
     <dc:date>2026-05</dc:date>
     <dc:relation>cluster:iesh</dc:relation>

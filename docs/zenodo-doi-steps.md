@@ -1,6 +1,13 @@
 # Zenodo DOI — author steps + ready-to-apply patch
 
-_Created: 03-07-2026 · Last updated: 03-07-2026_
+_Created: 03-07-2026 · Last updated: 12-07-2026_
+
+> **12-07-2026:** финальное описание депозита уже вписано в
+> [`.zenodo.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/.zenodo.json)
+> (включая измеренные числа бенчмарка 0.48 → 0.92 и двух-разметчиковую разметку) — при
+> включении репозитория Zenodo возьмет его автоматически, руками ничего вписывать не
+> нужно. Свежий релиз для п. 3 уже есть — используйте последний релиз H770 (v2.14.x), а
+> не патч-тег v2.12.1. Клик заморожен до 15-07 (org-wide freeze).
 
 > Релиз **v2.12.0 уже опубликован на GitHub**
 > ([releases](https://github.com/gasyoun/RuWritingStyles/releases)). Метаданные архива

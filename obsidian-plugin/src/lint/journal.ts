@@ -97,9 +97,23 @@ export function checkJournal(
     }
     comp.abstract.push(item);
   }
+  const kwMaxWords =
+    typeof profile.keywords_max_words === "number" && profile.keywords_max_words > 0
+      ? profile.keywords_max_words
+      : null;
   for (const lang of profile.keywords_required ?? []) {
     const markers = KEYWORDS_MARKERS[lang] ?? [];
-    comp.keywords.push({ lang, present: markers.some((m) => low.includes(m)) });
+    const present = markers.some((m) => low.includes(m));
+    const item: JournalLangCheck = { lang, present };
+    if (kwMaxWords !== null && present) {
+      // Same block logic as the abstract — journals phrase the limit in words
+      // («не может превышать 10 слов» — Восток/Oriens). Mirrors report.py.
+      const words = abstractWordCount(normalized, low, markers);
+      item.words = words;
+      item.max = kwMaxWords;
+      item.over = Math.max(0, words - kwMaxWords);
+    }
+    comp.keywords.push(item);
   }
   return comp;
 }
@@ -142,6 +156,13 @@ export function journalGaps(comp: JournalCompliance): JournalGap[] {
         severity: "warning",
         message: `Нет ключевых слов на языке «${k.lang}» (требует «${comp.name}»).`,
       });
+    } else if (k.over && k.over > 0) {
+      gaps.push({
+        severity: "warning",
+        message:
+          `Ключевые слова «${k.lang}» — ${k.words} слов, превышает лимит журнала ` +
+          `«${comp.name}» (${k.max}) на ${k.over}.`,
+      });
     }
   }
   return gaps;
@@ -171,7 +192,13 @@ export function summarizeJournal(comp: JournalCompliance): string {
   if (comp.keywords.length) {
     parts.push(
       "ключевые слова " +
-        comp.keywords.map((k) => `${k.lang} ${k.present ? "✓" : "✗"}`).join(" ")
+        comp.keywords
+          .map((k) => {
+            const base = `${k.lang} ${k.present ? "✓" : "✗"}`;
+            if (k.words === undefined) return base;
+            return `${base} (${k.words}/${k.max}${k.over ? ` +${k.over}` : " ✓"})`;
+          })
+          .join(" ")
     );
   }
   return `${comp.name}: ${parts.join("; ")}`;

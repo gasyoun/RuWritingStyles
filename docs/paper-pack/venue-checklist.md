@@ -1,6 +1,6 @@
 # Venue checklist — «Совет филологов» (A29)
 
-_Created: 03-07-2026 · Last updated: 11-07-2026_
+_Created: 03-07-2026 · Last updated: 12-07-2026_
 
 > Чек-лист выбора площадки для методологической статьи
 > [`methodology-paper-draft.ru.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/methodology-paper-draft.ru.md).
@@ -31,8 +31,12 @@ _Created: 03-07-2026 · Last updated: 11-07-2026_
 - [x] Аннотация: RU + **EN** (EN Abstract добавлен 11-07-2026; лимит слов
       проверяется `--journal vestnik-spbu`).
 - [x] Ключевые слова: RU + EN (EN Keywords добавлены 11-07-2026).
-- [ ] Библиография: ГОСТ Р 7.0.100-2018 (RU-площадки) — рабочий список черновика еще не
-      отформатирован по ГОСТ.
+- [x] Библиография: ГОСТ Р 7.0.100-2018 — список «Литература» черновика отформатирован
+      по ГОСТ 12-07-2026 (кириллический блок перед латинским, DOI/даты обращения); каждая
+      inline-цитата (Author Year) имеет запись в
+      [`knowledge/bibliography.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/knowledge/bibliography.json)
+      (добавлены Feinstein & Cicchetti 1990, ARS, ГОСТ, CDSL), так что привязка цитат
+      проверяет саму статью.
 - [x] Байлайн: «М. Ю. Гасунс» · независимый исследователь · ORCID 0000-0003-4513-884X —
       в шапке черновика. Источник —
       [`Uprava/AUTHOR.md`](https://github.com/gasyoun/Uprava/blob/main/AUTHOR.md).
@@ -40,7 +44,9 @@ _Created: 03-07-2026 · Last updated: 11-07-2026_
       [`AI_DISCLOSURE.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/AI_DISCLOSURE.md).
 - [x] Двух-разметчиковая разметка золотого набора (блокер подачи) — выполнена 11-07-2026
       (§4.6 черновика): согласие 24/25, единственное расхождение — на адъюдикации человека
-      ([`review-vedic-r02-adjudication.html`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/annotation/review-vedic-r02-adjudication.html)).
+      ([`review-vedic-r02-adjudication.html`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/annotation/review-vedic-r02-adjudication.html));
+      оба варианта вердикта готовы к вставке в §4.6 —
+      [`vedic-r02-adjudication-verdict-variants.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/paper-pack/vedic-r02-adjudication-verdict-variants.md).
 - [ ] Data availability: ссылка на репозиторий + Zenodo-DOI (после минтинга — см. ниже).
 - [ ] Cover letter под площадку —
       [`cover-letter.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/paper-pack/cover-letter.md).

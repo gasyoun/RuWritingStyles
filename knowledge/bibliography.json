@@ -530,5 +530,57 @@
     "pages": "1–16",
     "url": "https://doi.org/10.1080/1360080X.2026.2622146",
     "tags": ["ИИ", "детекторы ИИ", "академическая этика", "генеративный ИИ", "раскрытие"]
+  },
+  {
+    "id": "Smirnov 2025",
+    "author": "Смирнов Б. Л.",
+    "year": 2025,
+    "title": "Махабхарата. Выпуск I. Две поэмы из III книги: «Сказание о Нале», «Величие супружеской верности» : перевод с санскрита, введение, примечания и толковый словарь",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Издательский Дом «Русская Философия»",
+    "pages": "256",
+    "tags": ["Махабхарата", "эпос", "перевод", "Смирнов"]
+  },
+  {
+    "id": "Feinstein Cicchetti 1990",
+    "author": "Feinstein A. R., Cicchetti D. V.",
+    "year": 1990,
+    "title": "High agreement but low kappa: I. The problems of two paradoxes",
+    "kind": "article",
+    "journal": "Journal of Clinical Epidemiology",
+    "volume": "43",
+    "number": "6",
+    "pages": "543–549",
+    "url": "https://doi.org/10.1016/0895-4356(90)90158-L",
+    "tags": ["каппа Коэна", "согласие разметчиков", "методология оценки"]
+  },
+  {
+    "id": "Imbad0202 2026",
+    "author": "Imbad0202",
+    "year": 2026,
+    "title": "Academic Research Skills for Claude Code : v3.13.0",
+    "kind": "web",
+    "url": "https://doi.org/10.5281/zenodo.20696614",
+    "tags": ["ИИ", "рецензирование", "донор методов", "CC BY-NC 4.0"]
+  },
+  {
+    "id": "GOST R 7.0.100-2018",
+    "author": "Росстандарт",
+    "year": 2018,
+    "title": "ГОСТ Р 7.0.100-2018. Библиографическая запись. Библиографическое описание. Общие требования и правила составления",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Стандартинформ",
+    "tags": ["ГОСТ", "библиография", "оформление"]
+  },
+  {
+    "id": "CDSL 2026",
+    "author": "Cologne Digital Sanskrit Dictionaries",
+    "year": 2026,
+    "title": "Cologne Digital Sanskrit Dictionaries (CDSL)",
+    "kind": "web",
+    "url": "https://www.sanskrit-lexicon.uni-koeln.de/",
+    "tags": ["санскрит", "лексикография", "словари", "CDSL"]
   }
 ]

@@ -135,11 +135,23 @@ def journal_compliance(text: str, profile: dict) -> dict:
                 item["max"] = max_words
                 item["over"] = max(0, words - max_words)
             result["abstract"].append(item)
+    kw_max_words = profile.get("keywords_max_words")
+    has_kw_limit = isinstance(kw_max_words, int) and kw_max_words > 0
     keyword_langs = profile.get("keywords_required")
     if isinstance(keyword_langs, list):
         for lang in keyword_langs:
-            present = any(m in low for m in KEYWORDS_MARKERS.get(lang, ()))
-            result["keywords"].append({"lang": lang, "present": present})
+            markers = KEYWORDS_MARKERS.get(lang, ())
+            present = any(m in low for m in markers)
+            item = {"lang": lang, "present": present}
+            if has_kw_limit and present:
+                # Same block logic as the abstract: journals phrase the limit in
+                # words («не может превышать 10 слов» — Восток/Oriens), so count
+                # word runs in the keywords block, label excluded.
+                words = _abstract_word_count(text, low, markers)
+                item["words"] = words
+                item["max"] = kw_max_words
+                item["over"] = max(0, words - kw_max_words)
+            result["keywords"].append(item)
     return result
 
 

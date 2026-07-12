@@ -23,6 +23,7 @@ export interface JournalProfile {
   abstract_required?: string[];
   abstract_max_words?: number;
   keywords_required?: string[];
+  keywords_max_words?: number;
   notes?: string;
 }
 

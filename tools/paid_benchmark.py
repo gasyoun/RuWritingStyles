@@ -46,7 +46,7 @@ def _log(msg: str) -> None:
     print(f"[{time.strftime('%H:%M:%S')}] {msg}", flush=True)
 
 
-def run_group(label: str, model: str | None, repeat: int) -> list[dict]:
+def run_group(label: str, model: str | None, repeat: int, use_routes: bool = False) -> list[dict]:
     cases = []
     for case_id in GOLD:
         agg_id = f"gold-{label}-{case_id}"
@@ -70,6 +70,7 @@ def run_group(label: str, model: str | None, repeat: int) -> list[dict]:
                     model=model,
                     repeat=repeat,
                     aggregate_id=agg_id,
+                    use_routes=use_routes,
                 )
                 break
             except Exception as exc:
@@ -155,5 +156,25 @@ def main() -> None:
     _log(f"WROTE {out}")
 
 
+def main_h770() -> None:
+    """H770 O4 protocol (author-approved 12-07-2026): the routed v4-pro run.
+
+    5 GOLD cases x N=5 with model_policy task routes (H588 N4 wiring):
+    council + verification on deepseek-v4-pro, review/synthesis on
+    deepseek-chat (v4-flash) — the production routing users actually get.
+    Resumable per-case via the existing aggregate check in run_group().
+    """
+    summary: dict = {"started": time.strftime("%Y-%m-%d %H:%M:%S"),
+                     "protocol": "h770-routed-v4pro",
+                     "routes": "council/verification=deepseek-v4-pro, others=deepseek-chat"}
+    summary["routed"] = {"repeat": 5, "use_routes": True,
+                         "cases": run_group("v4pro-routed-h770", None, 5, use_routes=True)}
+    summary["finished"] = time.strftime("%Y-%m-%d %H:%M:%S")
+    out = REPO_ROOT / "scratch" / "benchmark_summary_h770.json"
+    out.parent.mkdir(exist_ok=True)
+    out.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+    _log(f"WROTE {out}")
+
+
 if __name__ == "__main__":
-    main()
+    main_h770() if "--h770" in sys.argv else main()
