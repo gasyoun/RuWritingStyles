@@ -170,6 +170,16 @@ Handoff: [H588](https://github.com/gasyoun/Uprava/blob/main/handoffs/H588-Fable_
 
 ## Фаза O — пост-N: широкий подъём по всем осям (v4-pro-бенчмарк, корпус, паспорта, A29 к подаче)
 
+**✅ ВЫПОЛНЕНА 12-07-2026 (Fable 5 `claude-fable-5`, v2.14.0).** Оговорки исполнения:
+адъюдикация vedic-r02 — оба вердикта подготовлены вставляемо
+([vedic-r02-adjudication-verdict-variants.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/paper-pack/vedic-r02-adjudication-verdict-variants.md)),
+вписание в §4.6 ждёт решения человека; корпус на диске оказался Зализняк-центричным
+(+ Смирнов/Tubb) — обещанных решением №3 текстов Елизаренковой/Топорова/Вертоградовой/
+Иванова в `../RuWritingStyles-corpus/PDFtoTXT` НЕТ, доводка паспортов адаптирована к
+фактическому корпусу (новый голос `smirnov-mahabharata`, доводка `sanskrit-reader` по
+Tubb); v4-pro-прогон — маршрутизированный (судья на v4-pro), 0.72/0.92/25-25, разбор в
+[benchmark.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/benchmark.md).
+
 Handoff: [H770](https://github.com/gasyoun/Uprava/blob/main/handoffs/H770-Fable_RuWritingStyles_rws-post-n-axis-uplift_12.07.26.md)
 · принята автором 12-07-2026 (сессия сбора решений — Opus 4.8 `claude-opus-4-8`;
 исполнитель — Fable 5 `claude-fable-5`). Четыре решения автора:
@@ -184,46 +194,46 @@ Handoff: [H770](https://github.com/gasyoun/Uprava/blob/main/handoffs/H770-Fable_
    адъюдикации, финальное Zenodo-описание); клики остаются за автором.
 
 ### O1 — A29 к подаче (4/5 → 5/5) + текст автор-кнопок
-- [ ] ГОСТ-оформление библиографии черновика
+- [x] ГОСТ-оформление библиографии черновика
       ([methodology-paper-draft.ru.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/methodology-paper-draft.ru.md)) —
       движок уже даёт `references-gost.md` (ГОСТ Р 7.0.100-2018); привести список
       литературы статьи к нему, вставляемо.
-- [ ] Адъюдикация vedic-r02
+- [x] Адъюдикация vedic-r02
       ([review-vedic-r02-adjudication.html](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/annotation/review-vedic-r02-adjudication.html)) —
       Fable готовит формулировку вердикта (обе трактовки), **решение принимает человек**;
       вписать в §4.6.
-- [ ] Финальная вычитка под Вестник СПбГУ
+- [x] Финальная вычитка под Вестник СПбГУ
       ([venue-checklist.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/paper-pack/venue-checklist.md));
       полировка EN abstract/keywords.
-- [ ] Финальный вставляемый текст Zenodo-описания
+- [x] Финальный вставляемый текст Zenodo-описания
       ([zenodo-doi-steps.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/zenodo-doi-steps.md)).
-- [ ] `/articles-update` A29 → 5/5 (контентно submission-ready; остаются только
+- [x] `/articles-update` A29 → 5/5 (контентно submission-ready; остаются только
       автор-кнопки).
 
 ### O2 — корпус-driven доводка паспортов (разблокировано)
-- [ ] `rws corpus-ingest` засеянного корпуса; `rws corpus-status` подтверждает индекс
+- [x] `rws corpus-ingest` засеянного корпуса; `rws corpus-status` подтверждает индекс
       (приватный `../RuWritingStyles-corpus/PDFtoTXT`, тексты сюда не коммитятся).
-- [ ] corpus-audit → слабейшие indology-паспорта; доводка против реального текста
+- [x] corpus-audit → слабейшие indology-паспорта; доводка против реального текста
       (voice recreation); при основании — 1–2 новых научных голоса (все 4 слоя:
       `ClaudeStyles/*.md` + паспорт + `manifest.yml` + README).
-- [ ] Эффект замерить в том же v4-pro-прогоне (O4), чтобы не платить дважды.
+- [x] Эффект замерить в том же v4-pro-прогоне (O4), чтобы не платить дважды.
 
 ### O3 — база знаний + журналы вглубь
-- [ ] `knowledge/bibliography.json` + `knowledge/sanskrit-terms.json` (indology-ядро
+- [x] `knowledge/bibliography.json` + `knowledge/sanskrit-terms.json` (indology-ядро
       всё ещё с пробелами; формат-сохраняюще, cross-ref через `validate_project`).
-- [ ] Новые русские indology-журнальные профили сверх vya/ppv/vestnik-spbu (кандидаты:
+- [x] Новые русские indology-журнальные профили сверх vya/ppv/vestnik-spbu (кандидаты:
       «Индоевропейское языкознание и классическая филология» (Kazansky), «Восток
       (Oriens)», «Вопросы языкознания») — требования брать с сайтов журналов, не
       выдумывать; провод в `report.journal_compliance`.
 
 ### O4 — полный v4-pro N=5 бенчмарк (бюджет одобрен)
-- [ ] N=5 по всем 5 золотым кейсам на `deepseek-v4-pro` (прежний протокол был на flash;
+- [x] N=5 по всем 5 золотым кейсам на `deepseek-v4-pro` (прежний протокол был на flash;
       v4-pro доведён до 5/5 лишь single-run) — публикационная таблица для A29 в
       [benchmark.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/benchmark.md).
-- [ ] До/после для O2/O3 сцепить в этот же прогон.
+- [x] До/после для O2/O3 сцепить в этот же прогон.
 
 ### O5 — детерминированная точность линтера (побочная находка N2, дёшево, без платных)
-- [ ] `missing_iast_on_first_mention` срабатывает при УЖЕ присутствующем IAST (3 из 4
+- [x] `missing_iast_on_first_mention` срабатывает при УЖЕ присутствующем IAST (3 из 4
       ложных срабатываний rater-B в разметке H588 N2) → детерминированный фикс +
       регрессионный тест; повышает precision и укрепляет rater-agreement-нарратив статьи.
 
