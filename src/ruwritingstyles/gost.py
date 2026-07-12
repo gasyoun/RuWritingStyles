@@ -38,12 +38,22 @@ def _join_gost(parts: list[Any]) -> str:
 
 
 def format_gost(entry: dict[str, Any]) -> str:
-    """Render one bibliography entry in GOST R 7.0.100-2018 short form."""
+    """Render one bibliography entry in GOST R 7.0.100-2018 short form.
+
+    Designators follow the entry's script (ГОСТ Р 7.0.100-2018 п. 4.9:
+    сведения приводят на языке источника): Latin-script sources get
+    "Vol./No./P./p.", Cyrillic ones «Т./№/С./с.»."""
     kind = entry.get("kind", "book")
     author = str(entry.get("author") or "").strip()
     title = str(entry.get("title") or "").strip().rstrip(".")
     year = entry.get("year")
     pages = entry.get("pages")
+
+    latin = not _is_cyrillic_entry(entry)
+    vol_label = "Vol." if latin else "Т."
+    num_label = "No." if latin else "№"
+    pages_label = "P." if latin else "С."
+    pages_suffix = "p." if latin else "с."
 
     head = f"{author} {title}".strip() if author else title
 
@@ -54,18 +64,18 @@ def format_gost(entry: dict[str, Any]) -> str:
         if year:
             parts.append(year)
         if volume:
-            parts.append(f"Т. {volume}")
+            parts.append(f"{vol_label} {volume}")
         number = entry.get("number")
         if number:
-            parts.append(f"№ {number}")
+            parts.append(f"{num_label} {number}")
         if pages:
-            parts.append(f"С. {pages}")
+            parts.append(f"{pages_label} {pages}")
         return _join_gost(parts)
 
     if kind == "chapter":
         container = str(entry.get("container") or "").strip()
         return _join_gost(
-            [f"{head} // {container}", _imprint(entry), f"С. {pages}" if pages else ""]
+            [f"{head} // {container}", _imprint(entry), f"{pages_label} {pages}" if pages else ""]
         )
 
     if kind == "web":
@@ -74,7 +84,7 @@ def format_gost(entry: dict[str, Any]) -> str:
 
     # book (default)
     return _join_gost(
-        [head, entry.get("edition"), _imprint(entry), f"{pages} с." if pages else ""]
+        [head, entry.get("edition"), _imprint(entry), f"{pages} {pages_suffix}" if pages else ""]
     )
 
 

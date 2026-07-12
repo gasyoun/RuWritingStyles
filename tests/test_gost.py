@@ -75,10 +75,30 @@ class FormatGostTests(unittest.TestCase):
         )
 
     def test_latin_book_with_edition(self) -> None:
+        # Latin-script entries take source-language designators (p., not с.).
         self.assertEqual(
             format_gost(LATIN_BOOK),
             "Whitney W. D. Sanskrit Grammar. — 2nd ed. — "
-            "Cambridge (Mass.) : Harvard University Press, 1889. — 552 с.",
+            "Cambridge (Mass.) : Harvard University Press, 1889. — 552 p.",
+        )
+
+    def test_latin_article_uses_latin_designators(self) -> None:
+        entry = {
+            "id": "Feinstein Cicchetti 1990",
+            "author": "Feinstein A. R., Cicchetti D. V.",
+            "year": 1990,
+            "title": "High agreement but low kappa: I. The problems of two paradoxes",
+            "kind": "article",
+            "journal": "Journal of Clinical Epidemiology",
+            "volume": "43",
+            "number": "6",
+            "pages": "543–549",
+        }
+        self.assertEqual(
+            format_gost(entry),
+            "Feinstein A. R., Cicchetti D. V. High agreement but low kappa: "
+            "I. The problems of two paradoxes // Journal of Clinical Epidemiology. — "
+            "1990. — Vol. 43. — No. 6. — P. 543–549.",
         )
 
     def test_web_resource(self) -> None:

@@ -1,10 +1,11 @@
 # «Совет филологов»: агентное рецензирование научной прозы по санскритологии с детерминированным контролем качества
 
-_Created: 03-07-2026 · Last updated: 11-07-2026_
+_Created: 03-07-2026 · Last updated: 12-07-2026_
 
 **М. Ю. Гасунс** · независимый исследователь · ORCID [0000-0003-4513-884X](https://orcid.org/0000-0003-4513-884X) · gasyoun@ya.ru
 
-> Полный черновик методологической статьи (A29, readiness 3/5). Развернут из
+> Полный черновик методологической статьи (A29, контентно submission-ready 12-07-2026;
+> остаются кнопки автора — адъюдикация `vedic-r02`, Zenodo-DOI). Развернут из
 > [`methodology-paper-outline.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/methodology-paper-outline.md)
 > на усредненных числах бенчмарка B1/B2. Доказательная база — измеренная, не подсмотренная:
 > все цифры воспроизводятся протоколом из
@@ -39,20 +40,20 @@ Dublin Core.
 
 We present a reproducible method for AI-assisted peer review of Russian-language scholarly
 prose in Sanskrit linguistics. The method combines (1) a catalogue of style passports
-modelling the written method of individual philologists (Zalizniak, Tronsky, Mel'čuk,
-Elizarenkova, Toporov, Lidova and others), (2) a multi-agent "Council" that runs a
-manuscript through segmentation, independent style reviews, council debate, revision
-synthesis and verification, and (3) a deterministic quality layer (IAST/Cyrillic
-transliteration linting, GOST R 7.0.100-2018 bibliography checks, citation grounding). The
-key methodological contribution is honest measurement: single-run accuracy is shown to be
-meaningless under provider non-determinism (gold-case scores oscillated 0/5–3/5 on
-unchanged code), so an N-averaged benchmark is introduced. It shows detection of
-philological errors to be strong and stable (24/25 = 0.96), while revision synthesis was
-the bottleneck (pass rate 12/25 = 0.48) — removed architecturally by engine-side span-patch
-reconstruction with a document-growth budget, raising the pass rate to 23/25 = 0.92 with
-zero diff failures. A two-rater gold-set annotation (mechanical scorer vs an independent
-frontier model, disclosed) reaches 0.96 agreement. The project is open source (Apache-2.0)
-with CITATION.cff, a Zenodo DOI and Dublin Core metadata.
+modelling the written method of individual philologists (Zalizniak, Tronsky, Elizarenkova,
+Toporov and others), (2) a multi-agent "Council" that runs a manuscript through
+segmentation, independent style reviews, council debate, revision synthesis and
+verification, and (3) a deterministic quality layer (IAST/Cyrillic transliteration linting,
+GOST R 7.0.100-2018 bibliography checks, citation grounding). The key methodological
+contribution is honest measurement: single-run accuracy is meaningless under provider
+non-determinism (gold-case scores oscillated 0/5–3/5 on unchanged code), so an N-averaged
+benchmark is introduced. Detection of philological errors proves strong and stable
+(24/25 = 0.96), while revision synthesis was the bottleneck (pass rate 12/25 = 0.48); it is
+removed architecturally by engine-side span-patch reconstruction with a document-growth
+budget, raising the pass rate to 23/25 = 0.92 with zero diff failures. A two-rater gold-set
+annotation (mechanical scorer vs an independent frontier model, disclosed) reaches 0.96
+agreement. The project is open source (Apache-2.0) with full citation and archival
+metadata.
 
 **Keywords:** Sanskrit, lexicography, digital humanities, large language models, agentic
 peer review, IAST, GOST R 7.0.100-2018, reproducibility.
@@ -122,8 +123,7 @@ general`; агенты получают динамический вес, есл�
 ли Совет ожидаемый тип риска, прошла ли верификация, уложилась ли ревизия в пороги точности
 правки — дешево и воспроизводимо. **Слой 2 (экспертная разметка)** по
 [`GOLD_PROTOCOL.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/GOLD_PROTOCOL.md)
-требует ≥2 независимых разметчиков и пока впереди (см. открытые задачи). Все числа ниже —
-слой 1.
+требует ≥2 независимых разметчиков и выполнен в §4.6. Числа в §4.2–§4.5 — слой 1.
 
 ### 4.2. Метрика-шум: почему одиночный прогон бесполезен
 
@@ -244,8 +244,11 @@ Diff-провалы: **13/25 → 0/25**. Pass-rate поднялся практи
 не ослаблена — расширять псевдонимы под конкретный прогон запрещено самим протоколом.
 Ложные срабатывания разметчика B концентрируются в одном детерминированно проверяемом
 классе: находка `missing_iast_on_first_mention` при фактически присутствующем IAST в
-тексте (3 из 4 случаев) — прямой кандидат на перевод из LLM-проверки в детерминированный
-линтер. Артефакты разметки: `evals/annotation/` (лист, суждения B,
+тексте (3 из 4 случаев). Класс уже устранен детерминированно: воспроизводимый источник
+ошибки — упоминание термина в заголовке поглощало «слот» первого упоминания, хотя
+заголовок по конвенции глоссу не несет; линтер теперь привязывает требование к первому
+упоминанию в *прозе* (v2.14.0, с регрессионным тестом), что прямо повышает точность
+детерминированного слоя и содержательное согласие разметчиков. Артефакты разметки: `evals/annotation/` (лист, суждения B,
 `gold-annotation-*.json` с попрогонными решениями обоих разметчиков).
 
 ## 5. Обсуждение и ограничения
@@ -262,8 +265,9 @@ Diff-провалы: **13/25 → 0/25**. Pass-rate поднялся практи
   синтезе (см.
   [`prompt-fidelity-review-2026-06.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/prompt-fidelity-review-2026-06.md)).
 - **Операционные ограничения** тяжелых моделей: `deepseek-v4-pro` дает ~5–11 мин на
-  кейс-прогон и интермиттентно зависает дольше окна ретраев — нужен жесткий per-request
-  wall-clock дедлайн (открытый follow-up).
+  кейс-прогон и интермиттентно зависает дольше окна ретраев; с v2.13.0 запросы ограничены
+  жестким per-request wall-clock дедлайном (`RWS_PROVIDER_WALLCLOCK_SECONDS`), что делает
+  тяжелые прогоны повторяемыми.
 - **Разметчик-модель может быть систематически снисходительнее человека.** В §4.6
   разметчик B (языковая модель) счел детекцию состоявшейся во всех 25 прогонах; при такой
   распространенности каппа вырождается, и согласие 0.96 не эквивалентно человеческой
@@ -303,16 +307,31 @@ LLM-слоя и детерминированного слоя — в
   разметчик по протоколу).
 - ~~Выбор площадки~~ — решено 04-07-2026: «Вестник СПбГУ. Востоковедение и
   африканистика», русский язык.
-- Опциональный жесткий per-request дедлайн провайдера для повторяемости тяжелых прогонов.
+- ~~Опциональный жесткий per-request дедлайн провайдера~~ — реализован в v2.13.0
+  (`RWS_PROVIDER_WALLCLOCK_SECONDS`, H588 N4).
+- Вписать в §4.6 вердикт человеческой адъюдикации `vedic-r02` (оба варианта готовы:
+  [`vedic-r02-adjudication-verdict-variants.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/paper-pack/vedic-r02-adjudication-verdict-variants.md)).
 
-## Литература (рабочий список)
+## Литература
 
-- Bassett K. et al. Heads we win, tails you lose: AI detectors in education // Journal of
-  Higher Education Policy and Management, 2026. Препринт: osf.io/preprints/edarxiv/93w6j.
-- Academic Research Skills for Claude Code (Imbad0202), v3.13.0, CC BY-NC 4.0,
-  DOI 10.5281/zenodo.20696614 — донор методов (переосмыслены, не скопированы).
-- ГОСТ Р 7.0.100-2018. Библиографическая запись. Библиографическое описание.
-- Cologne Digital Sanskrit Dictionaries (CDSL).
+По ГОСТ Р 7.0.100-2018 (кириллический блок перед латинским; сформировано движком проекта,
+`format_gost`, и выверено вручную). Каждая позиция имеет запись в
+[`knowledge/bibliography.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/knowledge/bibliography.json),
+поэтому привязка цитат (§3, детерминированный слой) проверяет и саму статью.
+
+1. ГОСТ Р 7.0.100-2018. Библиографическая запись. Библиографическое описание. Общие
+   требования и правила составления. — М. : Стандартинформ, 2018.
+2. Bassett M. A., Bradshaw W., Bornsztejn H., Hogg A., Murdoch K., Pearce B., Webber C.
+   Heads we win, tails you lose: AI detectors in education // Journal of Higher Education
+   Policy and Management. — 2026. — P. 1–16. — DOI 10.1080/1360080X.2026.2622146.
+3. Cologne Digital Sanskrit Dictionaries (CDSL) / Institut für Indologie, Universität zu
+   Köln. — URL: https://www.sanskrit-lexicon.uni-koeln.de/ (дата обращения: 12.07.2026).
+4. Feinstein A. R., Cicchetti D. V. High agreement but low kappa: I. The problems of two
+   paradoxes // Journal of Clinical Epidemiology. — 1990. — Vol. 43. — No. 6. —
+   P. 543–549. — DOI 10.1016/0895-4356(90)90158-L.
+5. Imbad0202. Academic Research Skills for Claude Code : v3.13.0. — CC BY-NC 4.0. —
+   DOI 10.5281/zenodo.20696614 — донор методов (переосмыслены, не скопированы; см.
+   [`SOURCES.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/SOURCES.md)).
 
 ---
 
