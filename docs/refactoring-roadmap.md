@@ -1,5 +1,7 @@
 # Refactoring Roadmap
 
+_Created: 09-05-2026 · Last updated: 09-05-2026_
+
 This note records the architectural review and the first refactoring pass for
 the executable RuWritingStyles pipeline.
 
@@ -125,3 +127,5 @@ Potential future migrations:
 
 Add these only when evaluation cases prove the need; otherwise the deterministic
 core should stay small, inspectable, and predictable.
+
+_Dr. Mārcis Gasūns_

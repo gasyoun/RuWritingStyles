@@ -1,5 +1,7 @@
 # Провайдерные версии roadmap
 
+_Created: 06-05-2026 · Last updated: 03-07-2026_
+
 > **АРХИВ (помечено 2026-07-03, фаза R2).** Историческое поколение roadmap (GPT-5.5 /
 > Gemini 3.1 Pro / Claude Sonnet 4.6). Актуальная единственная дорожная карта —
 > [`docs/roadmap-2026-q3.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-2026-q3.md).
@@ -144,3 +146,5 @@
 - Anthropic Claude models overview: https://platform.claude.com/docs/en/about-claude/models/overview
 - Anthropic Claude Sonnet: https://www.anthropic.com/claude/sonnet
 - Anthropic API rate limits: https://docs.anthropic.com/en/api/rate-limits
+
+_Dr. Mārcis Gasūns_
