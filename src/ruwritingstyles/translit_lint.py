@@ -132,6 +132,12 @@ def lint_segments(
 
     # Per-term state for first-mention and consistency tracking.
     ru_seen: dict[str, list[str]] = {t["ru"]: [] for t in terms}
+    # Headings never carry a parenthetical gloss («# О слове мокша»), so the
+    # first-mention requirement anchors at the first PROSE mention — a heading
+    # occurrence must neither fire nor consume the first-mention slot
+    # (H588 N2 rater-B false positives: IAST present at first prose mention,
+    # linter fired on the h001 heading above it).
+    ru_seen_prose: dict[str, list[str]] = {t["ru"]: [] for t in terms}
     iast_seen: dict[str, list[str]] = {t["ru"]: [] for t in terms}
     first_mention_flagged: set[str] = set()
 
@@ -143,6 +149,7 @@ def lint_segments(
     for seg in prose:
         span_id = str(seg["span_id"])
         text = str(seg["text"])
+        is_heading = span_id.startswith("h")
 
         # Devanagari checks.
         if _DEVANAGARI_RE.search(text):
@@ -191,7 +198,10 @@ def lint_segments(
             )
             if ru_hit:
                 ru_seen[ru].append(span_id)
-                first_ever = len(ru_seen[ru]) == 1 and not iast_seen[ru]
+                if is_heading:
+                    continue
+                ru_seen_prose[ru].append(span_id)
+                first_ever = len(ru_seen_prose[ru]) == 1 and not iast_seen[ru]
                 if require_iast_first_mention and ru not in proper_nouns and first_ever and iast not in lowered and ru not in first_mention_flagged:
                     first_mention_flagged.add(ru)
                     findings.append(_finding(
