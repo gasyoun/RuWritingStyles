@@ -1,6 +1,6 @@
 # Дорожная карта Q3 2026 — «Доверенный бенчмарк» (канонический план)
 
-_Created: 03-07-2026 · Last updated: 11-07-2026_
+_Created: 03-07-2026 · Last updated: 12-07-2026_
 
 **Статус: принята.** Четыре решения зафиксированы автором 03-07-2026 (сессия Fable 5,
 `claude-fable-5`):
@@ -168,10 +168,81 @@ Handoff: [H588](https://github.com/gasyoun/Uprava/blob/main/handoffs/H588-Fable_
 ГОСТ-оформление библиографии черновика, Zenodo DOI (freeze до 15-07), релизный
 репозиторий плагина.
 
+## Фаза O — пост-N: широкий подъём по всем осям (v4-pro-бенчмарк, корпус, паспорта, A29 к подаче)
+
+Handoff: [H770](https://github.com/gasyoun/Uprava/blob/main/handoffs/H770-Fable_RuWritingStyles_rws-post-n-axis-uplift_12.07.26.md)
+· принята автором 12-07-2026 (сессия сбора решений — Opus 4.8 `claude-opus-4-8`;
+исполнитель — Fable 5 `claude-fable-5`). Четыре решения автора:
+
+1. **Фокус — все оси сразу** (improve-every-axis): статья A29, паспорта/стили, база
+   знаний, корпус; Fable расставляет приоритеты внутри одобренного бюджета.
+2. **Платный бюджет — полный прогон `deepseek-v4-pro`** (N=5 по всем 5 золотым кейсам),
+   а не только flash: benchmark публикационного качества для A29.
+3. **Приватный корпус засеян** (Елизаренкова/Топоров/Вертоградова/Иванов) —
+   корпус-зависимые работы разблокированы.
+4. **Автор-кнопки — Fable готовит вставляемый ТЕКСТ** (ГОСТ-библиография, формулировка
+   адъюдикации, финальное Zenodo-описание); клики остаются за автором.
+
+### O1 — A29 к подаче (4/5 → 5/5) + текст автор-кнопок
+- [ ] ГОСТ-оформление библиографии черновика
+      ([methodology-paper-draft.ru.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/methodology-paper-draft.ru.md)) —
+      движок уже даёт `references-gost.md` (ГОСТ Р 7.0.100-2018); привести список
+      литературы статьи к нему, вставляемо.
+- [ ] Адъюдикация vedic-r02
+      ([review-vedic-r02-adjudication.html](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/annotation/review-vedic-r02-adjudication.html)) —
+      Fable готовит формулировку вердикта (обе трактовки), **решение принимает человек**;
+      вписать в §4.6.
+- [ ] Финальная вычитка под Вестник СПбГУ
+      ([venue-checklist.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/paper-pack/venue-checklist.md));
+      полировка EN abstract/keywords.
+- [ ] Финальный вставляемый текст Zenodo-описания
+      ([zenodo-doi-steps.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/zenodo-doi-steps.md)).
+- [ ] `/articles-update` A29 → 5/5 (контентно submission-ready; остаются только
+      автор-кнопки).
+
+### O2 — корпус-driven доводка паспортов (разблокировано)
+- [ ] `rws corpus-ingest` засеянного корпуса; `rws corpus-status` подтверждает индекс
+      (приватный `../RuWritingStyles-corpus/PDFtoTXT`, тексты сюда не коммитятся).
+- [ ] corpus-audit → слабейшие indology-паспорта; доводка против реального текста
+      (voice recreation); при основании — 1–2 новых научных голоса (все 4 слоя:
+      `ClaudeStyles/*.md` + паспорт + `manifest.yml` + README).
+- [ ] Эффект замерить в том же v4-pro-прогоне (O4), чтобы не платить дважды.
+
+### O3 — база знаний + журналы вглубь
+- [ ] `knowledge/bibliography.json` + `knowledge/sanskrit-terms.json` (indology-ядро
+      всё ещё с пробелами; формат-сохраняюще, cross-ref через `validate_project`).
+- [ ] Новые русские indology-журнальные профили сверх vya/ppv/vestnik-spbu (кандидаты:
+      «Индоевропейское языкознание и классическая филология» (Kazansky), «Восток
+      (Oriens)», «Вопросы языкознания») — требования брать с сайтов журналов, не
+      выдумывать; провод в `report.journal_compliance`.
+
+### O4 — полный v4-pro N=5 бенчмарк (бюджет одобрен)
+- [ ] N=5 по всем 5 золотым кейсам на `deepseek-v4-pro` (прежний протокол был на flash;
+      v4-pro доведён до 5/5 лишь single-run) — публикационная таблица для A29 в
+      [benchmark.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/benchmark.md).
+- [ ] До/после для O2/O3 сцепить в этот же прогон.
+
+### O5 — детерминированная точность линтера (побочная находка N2, дёшево, без платных)
+- [ ] `missing_iast_on_first_mention` срабатывает при УЖЕ присутствующем IAST (3 из 4
+      ложных срабатываний rater-B в разметке H588 N2) → детерминированный фикс +
+      регрессионный тест; повышает precision и укрепляет rater-agreement-нарратив статьи.
+
+Критерий готовности: A29 контентно submission-ready (ГОСТ-библиография + вписанная
+адъюдикация + пройденный чек-лист венью, 5/5); v4-pro N=5 таблица в benchmark.md;
+корпус засеян и ≥1 паспорт доведён с измеренным эффектом; ≥1 новый журнальный профиль;
+линтер-FP закрыт тестом; changelog `[Unreleased]` → релиз по `/cut-release`; Фаза O
+оттикана.
+
+**Автор-кнопки (НЕ агент, в GTD):** Zenodo DOI (заморожен до 15-07 — org-wide freeze),
+релизный репозиторий плагина + тег `obsidian-v0.1.0` + BRAT + community-PR, gc-запрос в
+GitHub Support по dangling до-purge объектам. Fable готовит их вставляемый текст (O1),
+клики за автором.
+
 ## Вне квартала (паркинг)
 
-Пополнение приватного корпуса (Елизаренкова/Топоров/Вертоградова/Иванов — сканы дает
-автор), gc-запрос в GitHub Support по dangling-объектам до-purge истории.
+gc-запрос в GitHub Support по dangling-объектам до-purge истории (заморожен вместе с
+Zenodo до 15-07). Пополнение приватного корпуса выполнено — корпус засеян, работа с ним
+перенесена в Фазу O2.
 
 ---
 
