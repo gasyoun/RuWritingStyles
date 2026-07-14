@@ -27,16 +27,16 @@ is broken; all of it is drift between what the catalog *is* and what this author
 
 - **`.md` ↔ passport is faithful and enforced both ways.** 39 `ClaudeStyles/*.md` map
   1:1 to 39 manifest passport entries (21 individual + 18 cluster-prompt); 0 orphans.
-  [validate_project.py](tools/validate_project.py) compares the two sets for *equality*,
+  [validate_project.py](../tools/validate_project.py) compares the two sets for *equality*,
   so an unpaired `.md` or a dangling `source_prompt` fails CI. Spot-checked
   zalizniak-method, tronsky-readings, melchuk, elizarenkova-veda, lidova-commentary —
   each passport's `checks`/`limits` compress the `.md`'s actual demands without
   inventing methods or dropping load-bearing ones.
 - **Voice reaches the model verbatim at the stages that judge.** The review prompt
   injects **both** the full passport YAML and the full `.md` instruction
-  ([review.py:244-301](src/ruwritingstyles/review.py:244)); deliberation re-injects
+  ([review.py:244-301](../src/ruwritingstyles/review.py)); deliberation re-injects
   the passport and every *other* style's findings with `style_id` attribution
-  ([review.py:179-224](src/ruwritingstyles/review.py:179)). Distinctiveness is fully
+  ([review.py:179-224](../src/ruwritingstyles/review.py)). Distinctiveness is fully
   preserved where a style forms and defends its opinion.
 - **The best passports are unmistakable.** ~16 of 21 encode a real signature:
   `anti_amateur_linguistics` (zalizniak-method), `formal_notation`/`semantic_decomposition`
@@ -49,7 +49,7 @@ is broken; all of it is drift between what the catalog *is* and what this author
 
 ### F1 · The default council is pointed away from the project's subject. `HIGH`
 `mvp_style_ids` = [zalizniak-method, zalizniak-novgorod, tronsky-readings, melchuk,
-averintsev, gasparov] ([manifest.yml:5](styles/manifest.yml)). The project's whole
+averintsev, gasparov] ([manifest.yml:5](../styles/manifest.yml)). The project's whole
 purpose is **Russian scientific papers on Sanskrit linguistics**, and the MVP set
 contains **zero of the eight Sanskrit/indology styles** (elizarenkova-veda,
 toporov-etym, panini-traditional, sanskrit-reader, samasa-manual, lidova-commentary,
@@ -75,7 +75,7 @@ signature checks (samasa-manual already has the good `wrong_samasa_type`/`missin
 voices" and label them so in the README.
 
 ### F3 · Generic `checks` dilute discriminability — but less than it looks. `LOW-MEDIUM`
-*(Corrected against measured data — see [audit_passport_checks.py](tools/audit_passport_checks.py).)*
+*(Corrected against measured data — see [audit_passport_checks.py](../tools/audit_passport_checks.py).)*
 The qualitative sweep read several check *concepts* as generic (`undefined_term`,
 `missing_example`, `weak_classification`) and inferred wide collusion. The objective
 overlap across the 21 individual passports is much smaller: of **85 distinct checks**,
@@ -94,13 +94,13 @@ overlap defect. `tools/audit_passport_checks.py` makes this re-checkable as pass
 ### F4 · Voice is preserved where styles *judge*, but unverifiable where text is *rewritten*. `MEDIUM`
 The honest finding from the pipeline trace: voice is fully present through review +
 deliberation, then progressively *finding-mediated*:
-- **Council** ([council.py:198-316](src/ruwritingstyles/council.py:198)) works from the
+- **Council** ([council.py:198-316](../src/ruwritingstyles/council.py)) works from the
   *findings* + cluster weights + a hardcoded conflict matrix — it does **not** re-inject
   any passport/`.md` text. Defensible: the findings *are* each style's distilled verdict.
-- **Revision** ([revision.py:133-143](src/ruwritingstyles/revision.py:133)) sees only
+- **Revision** ([revision.py:133-143](../src/ruwritingstyles/revision.py)) sees only
   `council.json`. A minority style voted down by the weighting **leaves no trace** in the
   rewrite — there is no "deferred dissent" record.
-- **Verification** ([verification.py:205-227](src/ruwritingstyles/verification.py:205))
+- **Verification** ([verification.py:205-227](../src/ruwritingstyles/verification.py))
   checks facts-preservation + domain rules + journal limits, but has **no record of which
   styles were selected or what they committed to**, so it cannot confirm the revised text
   honored the council's own style verdict.

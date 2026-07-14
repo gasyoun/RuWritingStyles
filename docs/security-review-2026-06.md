@@ -33,7 +33,7 @@ to `127.0.0.1`.
   holds real keys for local use, and wrongly inferred public exposure. No public leak; no
   forced key rotation. (One real side effect: the subagent **printed the key values into
   this session transcript** — if you ever share this transcript, rotate them then, not now.)
-- **"`GET /runs/{run_id}` path traversal" — already mitigated.** [`_run_dir`](src/ruwritingstyles/api.py:385)
+- **"`GET /runs/{run_id}` path traversal" — already mitigated.** [`_run_dir`](../src/ruwritingstyles/api.py)
   resolves and rejects any id that escapes `runs/` (`400 Invalid run id`). Every run-id
   route goes through it. Not a hole.
 - **SQL injection — none.** `db.py` and `corpus.py` are fully parameterized; the FTS5 search
@@ -47,7 +47,7 @@ to `127.0.0.1`.
 ### P0 — fix before binding any non-loopback interface
 
 **S1 · Arbitrary local file read in the static catch-all (LFI).** `HIGH`
-[api.py:407-418](src/ruwritingstyles/api.py:407). The SPA fallback route builds
+[api.py:407-418](../src/ruwritingstyles/api.py). The SPA fallback route builds
 `file_path = frontend_path / full_path` and returns `FileResponse(file_path)` with **no
 `.resolve()` and no bounds check** — unlike `_run_dir`, which does exactly that guard 20
 lines above. A request like `GET /..%2f..%2f.env` (or `../../rws.db`, `../../src/...py`)
@@ -58,13 +58,13 @@ case. **This is the one to fix first.** Fix: resolve `file_path` and reject anyt
 under `frontend_path` — reuse the `_run_dir` pattern.
 
 **S2 · Default bind host is `0.0.0.0`.** `HIGH (as a multiplier)`
-[api.py:423](src/ruwritingstyles/api.py:423). Every other finding's severity is gated on
+[api.py:423](../src/ruwritingstyles/api.py). Every other finding's severity is gated on
 "if exposed." Defaulting to `127.0.0.1` and requiring an explicit opt-in env
 (`RWS_BIND_HOST=0.0.0.0`) to go public turns the whole class from "exposed by default" to
 "exposed on purpose." One line, the highest risk-reduction-per-character in the repo.
 
 **S3 · `POST /runs/execute` reads any local file the process can.** `HIGH`
-[api.py:189-196](src/ruwritingstyles/api.py:189). `input_path` is taken from the request,
+[api.py:189-196](../src/ruwritingstyles/api.py). `input_path` is taken from the request,
 `expanduser().resolve()`'d, and read with **no directory allowlist** — an absolute path is
 honoured. Unauthenticated callers can make the server read and process `/etc/passwd`,
 sibling-repo source, `~/.ssh/...`, etc., and stream the result back over the run's
@@ -82,20 +82,20 @@ hard blocker for any shared bind. If you ever expose it, gate it behind a single
 token (`RWS_API_TOKEN`) checked in middleware — cheap, and it neutralizes S3/S5/S6 at once.
 
 **S5 · Unauthenticated provider-cost abuse.** `MEDIUM`
-[api.py:247](src/ruwritingstyles/api.py:247) `/api/audit/selection` and the `execute=true`
+[api.py:247](../src/ruwritingstyles/api.py) `/api/audit/selection` and the `execute=true`
 path both call **real providers with your keys** on attacker-supplied text. On an exposed
 port this is an open wallet (and a prompt-exfiltration channel). Mitigated entirely by S2+S4.
 
 ### P2 — defense-in-depth / cheap hardening (worth doing regardless of exposure)
 
 **S6 · Credential-redaction regex misses hyphenated keys.** `MEDIUM`
-[hooks.py:17-22](src/ruwritingstyles/hooks.py:17). `sk-[A-Za-z0-9]{20,}` stops at the first
+[hooks.py:17-22](../src/ruwritingstyles/hooks.py). `sk-[A-Za-z0-9]{20,}` stops at the first
 hyphen, so OpenRouter (`sk-or-v1-…`) and Nous (`sk-nous-…`) keys are **not** redacted by
 the pre-write artifact scrubber. The artifacts are gitignored, so this only bites on
 export/sharing — but the fix is one character class: `sk-[A-Za-z0-9-]{20,}`. Do it.
 
 **S7 · `shell=True` on the MCP subprocess.** `MEDIUM`
-[mcp_client.py](src/ruwritingstyles/mcp_client.py) launches the server via
+[mcp_client.py](../src/ruwritingstyles/mcp_client.py) launches the server via
 `subprocess.Popen(self.server_path, shell=True, …)`. `server_path` is config/constructor-
 controlled, **not** request-controlled, so this is not a remote RCE — but `shell=True` is
 unnecessary (the path can be passed as an argv list) and is a latent injection sink if
@@ -104,13 +104,13 @@ unnecessary (the path can be passed as an argv list) and is a latent injection s
 (documented in CLAUDE.md) — leave it, or pass `shell=False` with the npm path resolved.
 
 **S8 · SSRF via `RWS_LOCAL_LLM_URL` / `RWS_OLLAMA_URL`.** `LOW`
-[providers.py](src/ruwritingstyles/providers.py). Local/Ollama endpoints come from env and
+[providers.py](../src/ruwritingstyles/providers.py). Local/Ollama endpoints come from env and
 are sent the prompt plus an `Authorization` header. Env is a trusted input (whoever sets it
 owns the box), so this is low — but if those vars are ever sourced from request/config,
 it becomes an exfiltration redirect. Note as a constraint: never wire these from user input.
 
 **S9 · CORS allows `Authorization` it never checks; WebSocket `run_id` unauthenticated.** `LOW`
-[api.py:72-77](src/ruwritingstyles/api.py:72), [api.py:128](src/ruwritingstyles/api.py:128).
+[api.py:72-77](../src/ruwritingstyles/api.py), [api.py:128](../src/ruwritingstyles/api.py).
 Origins default to localhost (fine); the `Authorization` allow-header is cosmetic until S4
 exists. `/ws/{run_id}` accepts any id and lets a client queue "human_injection" content
 into another run and spam connections (memory). Both collapse into S4.
@@ -122,13 +122,13 @@ cross-user vector. Keep escaping on any new HTML sink.
 
 ### P3 — hygiene (not security-critical)
 
-- **npm ecosystem missing from Dependabot.** [.github/dependabot.yml](.github/dependabot.yml)
+- **npm ecosystem missing from Dependabot.** [.github/dependabot.yml](../.github/dependabot.yml)
   covers `pip` + `github-actions` but not `web/`'s `npm`. Add it — cheap supply-chain win.
 - **"Zero runtime dependencies" is now inaccurate.** The pipeline/CLI core stays light, but
   the API extra pulls `fastapi`/`uvicorn`/`pydantic`/`requests`/`websockets`/`jinja2`
-  ([pyproject.toml](pyproject.toml)). This is a *doc* accuracy issue, not a vuln — phrase it
+  ([pyproject.toml](../pyproject.toml)). This is a *doc* accuracy issue, not a vuln — phrase it
   as "zero deps for the core pipeline; the web surface adds FastAPI."
-- **CodeQL lists PHP** ([.github/workflows/codeql.yml](.github/workflows/codeql.yml)) for a
+- **CodeQL lists PHP** ([.github/workflows/codeql.yml](../.github/workflows/codeql.yml)) for a
   repo with no PHP — harmless waste; covers Python; add `javascript` for `web/`.
 
 ## Recommended fix order (all cheap, all low-risk except S3's tradeoff)

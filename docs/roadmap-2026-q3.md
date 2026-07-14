@@ -43,7 +43,7 @@ security-review закрыт. Узкое место сместилось:
 
 ## Фаза B1 — Eval-harness: статистически осмысленный бенчмарк
 
-Handoff: [H072](https://github.com/gasyoun/Uprava/blob/main/handoffs/H072-Fable_RuWritingStyles_RWS_eval_harness_nrun_03.07.26.md) · **✅ выполнена — v2.11.0 (03-07-2026)**.
+Handoff: [H072](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H072-Fable_RuWritingStyles_RWS_eval_harness_nrun_03.07.26.md) · **✅ выполнена — v2.11.0 (03-07-2026)**.
 
 - [x] `rws eval-run --repeat N` (или `eval-suite --repeat`): N независимых прогонов кейса,
       агрегат `eval-aggregate.json` — pass-rate, среднее/σ по Δ-метрикам, разброс детекции.
@@ -64,7 +64,7 @@ Handoff: [H072](https://github.com/gasyoun/Uprava/blob/main/handoffs/H072-Fable_
 
 ## Фаза B2 — Span-patch-реконструкция ревизии (архитектурный фикс)
 
-Handoff: [H073](https://github.com/gasyoun/Uprava/blob/main/handoffs/H073-Fable_RuWritingStyles_RWS_span_patch_reconstruction_03.07.26.md) · **✅ выполнена — v2.12.0 (03-07-2026)**.
+Handoff: [H073](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H073-Fable_RuWritingStyles_RWS_span_patch_reconstruction_03.07.26.md) · **✅ выполнена — v2.12.0 (03-07-2026)**.
 
 - [x] `revision.py`: LLM выдает только per-span замены (`applied_changes` со span_id +
       replacement); полный `revised.md` собирает движок — нетронутые сегменты копируются
@@ -83,7 +83,7 @@ diff-провалах; регресс-suite mock зеленый.
 
 ## Фаза R1 — Obsidian-плагин: CI и релизный репозиторий
 
-Handoff: [H074](https://github.com/gasyoun/Uprava/blob/main/handoffs/H074-Opus_RuWritingStyles_RWS_obsidian_plugin_ci_release_03.07.26.md) · **✅ выполнена — v2.12.0 (03-07-2026)**, кроме кнопок автора.
+Handoff: [H074](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H074-Opus_RuWritingStyles_RWS_obsidian_plugin_ci_release_03.07.26.md) · **✅ выполнена — v2.12.0 (03-07-2026)**, кроме кнопок автора.
 
 - [x] Починить `npm install` на main (dependabot peer-конфликт `obsidian@1.13.1` ↔
       `@codemirror/state`); закрепить рабочую матрицу зависимостей (`overrides` +
@@ -102,7 +102,7 @@ Handoff: [H074](https://github.com/gasyoun/Uprava/blob/main/handoffs/H074-Opus_R
 
 ## Фаза R2 — Публикационный проход (после B1+B2)
 
-Handoff: [H075](https://github.com/gasyoun/Uprava/blob/main/handoffs/H075-Opus_RuWritingStyles_RWS_publish_pass_03.07.26.md) · **✅ выполнена — v2.12.1 (03-07-2026)**, кроме кнопки DOI.
+Handoff: [H075](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H075-Opus_RuWritingStyles_RWS_publish_pass_03.07.26.md) · **✅ выполнена — v2.12.1 (03-07-2026)**, кроме кнопки DOI.
 
 - [ ] **Zenodo DOI**: метаданные release-ready ([CITATION.cff](https://github.com/gasyoun/RuWritingStyles/blob/main/CITATION.cff),
       [.zenodo.json](https://github.com/gasyoun/RuWritingStyles/blob/main/.zenodo.json),
@@ -134,7 +134,7 @@ Handoff: [H075](https://github.com/gasyoun/Uprava/blob/main/handoffs/H075-Opus_R
 
 ## Фаза N — пост-Q3: совет как навык, A29 к подаче, верификатор и остаток
 
-Handoff: [H588](https://github.com/gasyoun/Uprava/blob/main/handoffs/H588-Fable_RuWritingStyles_rws_post_q3_council_skill_a29_11.07.26.md)
+Handoff: [H588](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H588-Fable_RuWritingStyles_rws_post_q3_council_skill_a29_11.07.26.md)
 · принята автором 11-07-2026 (пять направлений одобрены разом; платные прогоны — в
 прежнем бюджете N=5-протокола; второй аннотатор золотого набора — **вторая
 ИИ-модель с раскрытием** по [docs/AI_DISCLOSURE.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/AI_DISCLOSURE.md)).
@@ -170,7 +170,7 @@ Handoff: [H588](https://github.com/gasyoun/Uprava/blob/main/handoffs/H588-Fable_
 
 ## Фаза O — пост-N: широкий подъём по всем осям (v4-pro-бенчмарк, корпус, паспорта, A29 к подаче)
 
-Handoff: [H770](https://github.com/gasyoun/Uprava/blob/main/handoffs/H770-Fable_RuWritingStyles_rws-post-n-axis-uplift_12.07.26.md)
+Handoff: [H770](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H770-Fable_RuWritingStyles_rws-post-n-axis-uplift_12.07.26.md)
 · принята автором 12-07-2026 (сессия сбора решений — Opus 4.8 `claude-opus-4-8`;
 исполнитель — Fable 5 `claude-fable-5`). Четыре решения автора:
 
