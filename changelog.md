@@ -3,6 +3,11 @@
 All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
+### Added (востоковедение cluster — orient_leningrad, [H944](https://github.com/gasyoun/Uprava/blob/main/handoffs/H944-Fable_RuWritingStyles_orient-leningrad-vostokoved-passports_14.07.26.md))
+- **New cluster profile [`orient_leningrad`](styles/clusters/orient_leningrad.yml)** ("Ленинградская востоковедная школа") — the first classical-Oriental-studies register beyond `indology` (арабистика, египтология, ассириология, история Древнего Востока, алтаистика). Backing style prompt [`ClaudeStyles/orient_leningrad-style.md`](ClaudeStyles/orient_leningrad-style.md); registered in both `clusters:` and `passports:` blocks of [`styles/manifest.yml`](styles/manifest.yml). `role: source_critical_reviewer`, checks `missing_source`/`missing_historiography`/`untransliterated_oriental_term`/`period_conflation`/`missing_apparatus`/`overstrong_conclusion`. Provenance is register-level (Cyrillic, corpus-exempt) — no author texts committed. **Not wired into any default council**, so pipeline behavior is unchanged until it is explicitly convened.
+- **"Эталонность" encoded as `conflict_priority: {default: high}`** (not blanket precedence): the authority of the school takes effect only when the cluster is explicitly convened and in its domain; it does not suppress the `missing_source`/`overstrong_conclusion` checks. Prompted by В. В. Емельянов's memoir naming Крачковский, Бартольд, Тураев, Голенищев, Шилейко, Поппе as эталоны научной мысли и стиля.
+- **Six orientalists added to [`docs/whois-list.md`](docs/whois-list.md)** under a new "Востоковеды" rubric (title widened accordingly). Individual author passports are **queued, corpus-gated** (H944): `validate_project` requires each passport's `provenance.sources` to resolve in [`knowledge/bibliography.json`](knowledge/bibliography.json), so no passport can be minted from the memoir alone.
+- `validate_project` + full test suite (228) green.
 
 ## [2.14.0] - 2026-07-12
 ### Added (post-N broad axis uplift, roadmap-2026-q3 Фаза O, [H770](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H770-Fable_RuWritingStyles_rws-post-n-axis-uplift_12.07.26.md))

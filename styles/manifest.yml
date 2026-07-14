@@ -76,6 +76,10 @@ clusters:
     path: styles/clusters/indology.yml
     name: "Индология (санскритология)"
     location: "Moscow-Petersburg"
+  - id: orient_leningrad
+    path: styles/clusters/orient_leningrad.yml
+    name: "Ленинградская востоковедная школа"
+    location: "Petersburg-Leningrad"
   - id: lit_opoyaz
     path: styles/clusters/lit_opoyaz.yml
     name: "ОПОЯЗ"
@@ -295,3 +299,7 @@ passports:
     path: styles/clusters/lit_poststructural.yml
     level: cluster
     source_prompt: ClaudeStyles/lit_poststructural-style.md
+  - id: orient_leningrad
+    path: styles/clusters/orient_leningrad.yml
+    level: cluster
+    source_prompt: ClaudeStyles/orient_leningrad-style.md
