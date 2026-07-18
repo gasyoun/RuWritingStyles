@@ -37,6 +37,7 @@ councils:
     - sanskrit-reader
     - samasa-manual
     - lidova-commentary
+    - smirnov-mahabharata
   # H1213: регистр-слой для pwg_ru-карточек (словарная дефиниция, не исследовательская проза).
   # Иерархия эталонов — ruling MG 18-07-2026: Зализняк > Апресян/Мельчук; Кочергина — только сверка эквивалентов.
   lexicography:
@@ -45,7 +46,6 @@ councils:
     - zalizniak-method
     - melchuk
     - toporov-etym
-    - smirnov-mahabharata
 
 clusters:
   - id: ling_iesh
