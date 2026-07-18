@@ -950,6 +950,265 @@
       "metadata": {
         "text_domain": "linguistics"
       }
+    },
+    {
+      "id": "dict-circular-gloss",
+      "input": "examples/input/dict-circular-gloss.md",
+      "purpose": "Dictionary-register reviewer must flag a transliteration-passthrough gloss (agni glossed as 'agni' instead of a Russian translation) as a circular gloss.",
+      "default_styles": [
+        "academic-dictionary-entry",
+        "melchuk"
+      ],
+      "expected_risks": [
+        "circular_gloss"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "circular_gloss"
+        ],
+        "accepted_finding_aliases": {
+          "circular_gloss": [
+            "likely_circular_gloss",
+            "circular_definition",
+            "untranslated_gloss"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_DICTIONARY"
+      ],
+      "metadata": {
+        "text_domain": "lexicography"
+      }
+    },
+    {
+      "id": "dict-publicistic-register",
+      "input": "examples/input/dict-publicistic-register.md",
+      "purpose": "Reviewer must flag publicistic tone (evaluative epithets, reader address, exclamation) inside a dictionary definition zone.",
+      "default_styles": [
+        "academic-dictionary-entry",
+        "zalizniak-method"
+      ],
+      "expected_risks": [
+        "publicistic_register"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "publicistic_register"
+        ],
+        "accepted_finding_aliases": {
+          "publicistic_register": [
+            "register_mismatch",
+            "register_drift",
+            "publicistic_tone",
+            "tone_violation"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_DICTIONARY"
+      ],
+      "metadata": {
+        "text_domain": "lexicography"
+      }
+    },
+    {
+      "id": "dict-zone-order",
+      "input": "examples/input/dict-zone-order.md",
+      "purpose": "Reviewer must flag broken entry-zone architecture: citations placed before the definition and an etymology excursus inside the definition zone.",
+      "default_styles": [
+        "academic-dictionary-entry",
+        "zalizniak-imennoe"
+      ],
+      "expected_risks": [
+        "zone_structure_violation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "zone_structure_violation"
+        ],
+        "accepted_finding_aliases": {
+          "zone_structure_violation": [
+            "structure_violation",
+            "zone_order_violation",
+            "wrong_zone_order"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_DICTIONARY"
+      ],
+      "metadata": {
+        "text_domain": "lexicography"
+      }
+    },
+    {
+      "id": "dict-nonstandard-label",
+      "input": "examples/input/dict-nonstandard-label.md",
+      "purpose": "Reviewer must flag label discipline violations: untranslated editorial abbreviations (s. u., Vgl.) and an invented/spelled-out usage label in a Russian entry.",
+      "default_styles": [
+        "academic-dictionary-entry",
+        "zalizniak-imennoe"
+      ],
+      "expected_risks": [
+        "nonstandard_label"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "nonstandard_label"
+        ],
+        "accepted_finding_aliases": {
+          "nonstandard_label": [
+            "label_violation",
+            "nonstandard_abbreviation",
+            "untranslated_label",
+            "wrong_label"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_DICTIONARY"
+      ],
+      "metadata": {
+        "text_domain": "lexicography"
+      }
+    },
+    {
+      "id": "dict-grammar-zone",
+      "input": "examples/input/dict-grammar-zone.md",
+      "purpose": "Reviewer must flag a grammar zone written as prose instead of standard Latin sigla and a compact paradigm code.",
+      "default_styles": [
+        "academic-dictionary-entry",
+        "zalizniak-imennoe"
+      ],
+      "expected_risks": [
+        "grammar_zone_violation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "grammar_zone_violation"
+        ],
+        "accepted_finding_aliases": {
+          "grammar_zone_violation": [
+            "grammar_notation_violation",
+            "missing_grammar_code",
+            "prose_grammar"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_DICTIONARY"
+      ],
+      "metadata": {
+        "text_domain": "lexicography"
+      }
+    },
+    {
+      "id": "dict-synonym-heap",
+      "input": "examples/input/dict-synonym-heap.md",
+      "purpose": "Reviewer must flag an undiscriminated synonym heap: a flat row of near-synonyms with no differentiae and a gloss repeated across senses.",
+      "default_styles": [
+        "academic-dictionary-entry",
+        "melchuk"
+      ],
+      "expected_risks": [
+        "undiscriminated_synonyms"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "undiscriminated_synonyms"
+        ],
+        "accepted_finding_aliases": {
+          "undiscriminated_synonyms": [
+            "missing_synonym_discrimination",
+            "collapsed_synonym_string",
+            "missing_apresjan_discrimination",
+            "undifferentiated_synonyms"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_DICTIONARY"
+      ],
+      "metadata": {
+        "text_domain": "lexicography"
+      }
+    },
+    {
+      "id": "dict-encyclopedic-gloss",
+      "input": "examples/input/dict-encyclopedic-gloss.md",
+      "purpose": "Reviewer must flag an encyclopedic essay standing in place of a substitutable definition/equivalent in sense 1.",
+      "default_styles": [
+        "academic-dictionary-entry",
+        "melchuk"
+      ],
+      "expected_risks": [
+        "encyclopedic_gloss"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "encyclopedic_gloss"
+        ],
+        "accepted_finding_aliases": {
+          "encyclopedic_gloss": [
+            "encyclopedic_overreach",
+            "encyclopedic_definition",
+            "definition_bloat"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_DICTIONARY"
+      ],
+      "metadata": {
+        "text_domain": "lexicography"
+      }
+    },
+    {
+      "id": "dict-pseudo-etymology-note",
+      "input": "examples/input/dict-pseudo-etymology-note.md",
+      "purpose": "Reviewer must flag a sound-similarity pseudo-etymology (karman from Russian 'karman') asserted with certainty in the etymology zone.",
+      "default_styles": [
+        "academic-dictionary-entry",
+        "toporov-etym"
+      ],
+      "expected_risks": [
+        "unsupported_etymology_note"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "unsupported_etymology_note"
+        ],
+        "accepted_finding_aliases": {
+          "unsupported_etymology_note": [
+            "unsupported_sanskrit_etymology",
+            "unsupported_etymology",
+            "pseudo_etymology"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_DICTIONARY"
+      ],
+      "metadata": {
+        "text_domain": "lexicography"
+      }
     }
   ]
 }

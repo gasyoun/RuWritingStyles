@@ -1,0 +1,70 @@
+{
+  "case_id": "dict-pseudo-etymology-note",
+  "provider": "deepseek",
+  "raters": [
+    "A (mechanical scorer, eval-result.json)",
+    "B (Fable 5, claude-fable-5 — вторая ИИ-модель, не совпадающая с оцениваемым провайдером; слепота на уровне листа: вердикты скорера не включались; роль ИИ раскрывается по docs/AI_DISCLOSURE.md)"
+  ],
+  "runs": [
+    {
+      "run": "h1213dict-dict-pseudo-etymology-note-r01",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "unsupported_etymology_note"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 1,
+      "rater_b_notes": "псевдоэтимология поймана (канонический тип + toporov accidental_similarity); почти чисто"
+    },
+    {
+      "run": "h1213dict-dict-pseudo-etymology-note-r02",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "unsupported_etymology_note"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 6,
+      "rater_b_notes": "поймана (critical у toporov); FP: «этимология не в конце» (она в конце), курсив, пунктуация сигл"
+    },
+    {
+      "run": "h1213dict-dict-pseudo-etymology-note-r03",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "unsupported_etymology_note"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 0,
+      "rater_b_notes": "образцовый прогон: три находки, все по делу"
+    },
+    {
+      "run": "h1213dict-dict-pseudo-etymology-note-r04",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "unsupported_etymology_note"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 1,
+      "rater_b_notes": "поймана всесторонне (сходство, семантизация); FP: IAST при первом упоминании (дан в вокабуле)"
+    },
+    {
+      "run": "h1213dict-dict-pseudo-etymology-note-r05",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "unsupported_etymology_note"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 1,
+      "rater_b_notes": "поймана; шум: «формально соответствует зонной структуре» как находка"
+    }
+  ],
+  "caught": true,
+  "type_correct": true,
+  "false_positives": 9,
+  "agreement": 1.0,
+  "kappa": 1.0
+}

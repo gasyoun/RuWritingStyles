@@ -1,0 +1,220 @@
+{
+  "protocol": "H1213 GOLD_DICTIONARY x N=5, deepseek routed (--routes)",
+  "prefix": "h1213dict",
+  "cases": [
+    {
+      "case_id": "dict-encyclopedic-gloss",
+      "repeat": 5,
+      "pass_count": 5,
+      "pass_rate": 1.0,
+      "detection_count": 5,
+      "detection_rate": 1.0,
+      "diff_ok_count": 5,
+      "diff_ok_rate": 1.0,
+      "verification_status_distribution": {
+        "needs_human_review": 3,
+        "passed": 2
+      },
+      "metrics": {
+        "char_delta_ratio": {
+          "n": 5,
+          "mean": 0.155714,
+          "stdev": 0.103259,
+          "min": 0.0125,
+          "max": 0.325
+        },
+        "changed_line_ratio": {
+          "n": 5,
+          "mean": 0.355555,
+          "stdev": 0.083148,
+          "min": 0.222222,
+          "max": 0.444444
+        },
+        "finding_count": {
+          "n": 5,
+          "mean": 10.0,
+          "stdev": 2.966479,
+          "min": 6.0,
+          "max": 15.0
+        }
+      },
+      "runs": [
+        {
+          "run_id": "h1213dict-dict-encyclopedic-gloss-r01",
+          "run_dir": "runs/h1213dict-dict-encyclopedic-gloss-r01",
+          "result_path": "runs/h1213dict-dict-encyclopedic-gloss-r01/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "needs_human_review",
+          "required_match_count": 1,
+          "finding_count": 6,
+          "changed_line_ratio": 0.222222,
+          "char_delta_ratio": 0.0125
+        },
+        {
+          "run_id": "h1213dict-dict-encyclopedic-gloss-r02",
+          "run_dir": "runs/h1213dict-dict-encyclopedic-gloss-r02",
+          "result_path": "runs/h1213dict-dict-encyclopedic-gloss-r02/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 11,
+          "changed_line_ratio": 0.333333,
+          "char_delta_ratio": 0.107143
+        },
+        {
+          "run_id": "h1213dict-dict-encyclopedic-gloss-r03",
+          "run_dir": "runs/h1213dict-dict-encyclopedic-gloss-r03",
+          "result_path": "runs/h1213dict-dict-encyclopedic-gloss-r03/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 9,
+          "changed_line_ratio": 0.444444,
+          "char_delta_ratio": 0.194643
+        },
+        {
+          "run_id": "h1213dict-dict-encyclopedic-gloss-r04",
+          "run_dir": "runs/h1213dict-dict-encyclopedic-gloss-r04",
+          "result_path": "runs/h1213dict-dict-encyclopedic-gloss-r04/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "needs_human_review",
+          "required_match_count": 1,
+          "finding_count": 9,
+          "changed_line_ratio": 0.444444,
+          "char_delta_ratio": 0.325
+        },
+        {
+          "run_id": "h1213dict-dict-encyclopedic-gloss-r05",
+          "run_dir": "runs/h1213dict-dict-encyclopedic-gloss-r05",
+          "result_path": "runs/h1213dict-dict-encyclopedic-gloss-r05/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "needs_human_review",
+          "required_match_count": 1,
+          "finding_count": 15,
+          "changed_line_ratio": 0.333333,
+          "char_delta_ratio": 0.139286
+        }
+      ]
+    },
+    {
+      "case_id": "dict-pseudo-etymology-note",
+      "repeat": 5,
+      "pass_count": 5,
+      "pass_rate": 1.0,
+      "detection_count": 5,
+      "detection_rate": 1.0,
+      "diff_ok_count": 5,
+      "diff_ok_rate": 1.0,
+      "verification_status_distribution": {
+        "passed": 5
+      },
+      "metrics": {
+        "char_delta_ratio": {
+          "n": 5,
+          "mean": 0.213667,
+          "stdev": 0.096131,
+          "min": 0.072893,
+          "max": 0.346241
+        },
+        "changed_line_ratio": {
+          "n": 5,
+          "mean": 0.181818,
+          "stdev": 0.140836,
+          "min": 0.090909,
+          "max": 0.454545
+        },
+        "finding_count": {
+          "n": 5,
+          "mean": 4.4,
+          "stdev": 1.959592,
+          "min": 3.0,
+          "max": 8.0
+        }
+      },
+      "runs": [
+        {
+          "run_id": "h1213dict-dict-pseudo-etymology-note-r01",
+          "run_dir": "runs/h1213dict-dict-pseudo-etymology-note-r01",
+          "result_path": "runs/h1213dict-dict-pseudo-etymology-note-r01/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 3,
+          "changed_line_ratio": 0.181818,
+          "char_delta_ratio": 0.291572
+        },
+        {
+          "run_id": "h1213dict-dict-pseudo-etymology-note-r02",
+          "run_dir": "runs/h1213dict-dict-pseudo-etymology-note-r02",
+          "result_path": "runs/h1213dict-dict-pseudo-etymology-note-r02/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 8,
+          "changed_line_ratio": 0.454545,
+          "char_delta_ratio": 0.346241
+        },
+        {
+          "run_id": "h1213dict-dict-pseudo-etymology-note-r03",
+          "run_dir": "runs/h1213dict-dict-pseudo-etymology-note-r03",
+          "result_path": "runs/h1213dict-dict-pseudo-etymology-note-r03/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 3,
+          "changed_line_ratio": 0.090909,
+          "char_delta_ratio": 0.166287
+        },
+        {
+          "run_id": "h1213dict-dict-pseudo-etymology-note-r04",
+          "run_dir": "runs/h1213dict-dict-pseudo-etymology-note-r04",
+          "result_path": "runs/h1213dict-dict-pseudo-etymology-note-r04/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 5,
+          "changed_line_ratio": 0.090909,
+          "char_delta_ratio": 0.191344
+        },
+        {
+          "run_id": "h1213dict-dict-pseudo-etymology-note-r05",
+          "run_dir": "runs/h1213dict-dict-pseudo-etymology-note-r05",
+          "result_path": "runs/h1213dict-dict-pseudo-etymology-note-r05/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 3,
+          "changed_line_ratio": 0.090909,
+          "char_delta_ratio": 0.072893
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "runs": 10,
+    "pass": 10,
+    "pass_rate": 1.0,
+    "detection": 10,
+    "detection_rate": 1.0
+  }
+}

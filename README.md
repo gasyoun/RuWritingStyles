@@ -8,7 +8,7 @@ _Created: 03-05-2026 · Last updated: 12-07-2026_
 
 > 🚀 **Хотите прогнать свою статью через «Совет» стилей?** За пять шагов от установки до первой рецензии (с ключом DeepSeek) — [`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md).
 
-**Status**: v2.14.0 (Фаза O — широкий подъём) — маршрутизированный v4-pro N=5 бенчмарк (detection **0.92** стабильна третьей конфигурацией подряд, diff-ok **25/25** по построению, узкое место переехало в строгость судьи — [`docs/benchmark.md`](docs/benchmark.md)); статья A29 контентно submission-ready (ГОСТ-библиография, EN abstract 198/200, оба варианта адъюдикации подготовлены); 40-й стиль `smirnov-mahabharata` (корпусный, эпический перевод с аппаратом) + доводка `sanskrit-reader` (анвая, mūla/комментарий); профиль «Восток (Oriens)» с реальными требованиями + проверка `keywords_max_words`; детерминированный фикс `missing_iast_on_first_mention` (заголовок ≠ первое упоминание); span-patch-реконструкция ревизии + growth-губернатор подняли усредненный pass-rate золотых кейсов **0.48 → 0.92** при нулевых diff-провалах; верификатор теперь получает стилевые обязательства прогона и выдает span-привязанные предупреждения о нарушениях (kill-switch `RWS_VERIFY_STYLE_COMMITMENTS=0`); двухэкспертная разметка золотого набора (`tools/gold_annotation.py` → согласие + κ Коэна, [`evals/annotation/`](evals/annotation/)); жесткий wall-clock-дедлайн на запрос к провайдеру (`RWS_PROVIDER_WALLCLOCK_SECONDS`) и маршрутизация моделей по стадиям в eval (`--routes` из `model_policy.yml`); статистически осмысленный eval-бенчмарк (`--repeat N` → усредненный агрегат pass-rate/detection-rate ± σ), политика меток скорера (`accepted_finding_aliases`), основной провайдер **DeepSeek**, поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, выбираемые именованные советы (`rws councils`), проверка соответствия журналу (`--journal`), WebSocket-трассировка ("Thinking Trace") и API для Obsidian/Word.
+**Status**: v2.15.0 (H1213 — академический словарный регистр) — первый стиль жанра словарной дефиниции [`academic-dictionary-entry`](ClaudeStyles/academic-dictionary-entry-style.md) (иерархия эталонов: Зализняк > Апресян/Мельчук; Кочергина — только сверка эквивалентов) + именованный совет `lexicography` + 8 gold-кейсов `GOLD_DICTIONARY` на материале pwg_ru; измеренный маршрутизированный N=5 бенчмарк словарного набора — **pass 37/40 = 0.925, detection 39/40 = 0.975** при нуле предметных провалов верификации, двухэкспертная разметка (согласие **39/40 = 0.97**, κ по кейсам 1.0 в 7/8 — [`docs/benchmark.md`](docs/benchmark.md)); ранее (v2.14.0, Фаза O): маршрутизированный v4-pro N=5 бенчмарк (detection **0.92**, diff-ok **25/25**, узкое место — строгость судьи); статья A29 контентно submission-ready; 40-й стиль `smirnov-mahabharata` + доводка `sanskrit-reader`; профиль «Восток (Oriens)» + `keywords_max_words`; детерминированный фикс `missing_iast_on_first_mention`; span-patch-реконструкция ревизии + growth-губернатор (**0.48 → 0.92**); верификатор со стилевыми обязательствами прогона (kill-switch `RWS_VERIFY_STYLE_COMMITMENTS=0`); двухэкспертная разметка золотого набора (`tools/gold_annotation.py` → согласие + κ Коэна, [`evals/annotation/`](evals/annotation/)); wall-clock-дедлайн провайдера (`RWS_PROVIDER_WALLCLOCK_SECONDS`) и маршрутизация моделей по стадиям в eval (`--routes` из `model_policy.yml`); статистически осмысленный eval-бенчмарк (`--repeat N` → pass-rate/detection-rate ± σ), политика меток скорера (`accepted_finding_aliases`), основной провайдер **DeepSeek**, поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, выбираемые именованные советы (`rws councils`), проверка соответствия журналу (`--journal`), WebSocket-трассировка ("Thinking Trace") и API для Obsidian/Word.
 
 Границы реализованного (честная маркировка):
 
@@ -55,6 +55,7 @@ _Created: 03-05-2026 · Last updated: 12-07-2026_
 - [x] **v2.12.0–2.12.1**: over-rewrite побежден по построению — span-patch-реконструкция + growth-губернатор (pass-rate **0.48 → 0.92**), консолидация Zenodo/статьи/документации, движок вынесен в [`docs/ENGINE.md`](docs/ENGINE.md).
 - [x] **v2.13.0** (H588 Phase N): span-привязанные стилевые обязательства верификатора, двухэкспертная разметка золотого набора (согласие 24/25, κ Коэна), wall-clock-дедлайн провайдера, маршрутизация моделей `--routes`, обобщенный навык `/rws-council`, черновик методологической статьи в форме подачи (§4.6, EN Abstract/Keywords).
 - [x] **v2.14.0** (H770 Фаза O): маршрутизированный v4-pro N=5 бенчмарк (0.72/0.92/25-25 — строгость судьи как новая ось, [`docs/benchmark.md`](docs/benchmark.md) + §4.7 статьи), A29 контентно submission-ready (ГОСТ-«Литература», варианты адъюдикации, EN abstract 198/200, финальное Zenodo-описание), корпус проиндексирован (FTS5) + 40-й стиль `smirnov-mahabharata` + доводка `sanskrit-reader`, профиль «Восток (Oriens)» + `keywords_max_words`, детерминированный фикс `missing_iast_on_first_mention`.
+- [x] **v2.15.0** (H1213): первый стиль жанра словарной дефиниции `academic-dictionary-entry` (эталоны: Зализняк > Апресян/Мельчук; Кочергина — сверка эквивалентов) + совет `lexicography` + 8 gold-кейсов `GOLD_DICTIONARY` на pwg_ru-материале; бенчмарк 0.925/0.975 (40 прогонов), двухэкспертная разметка 0.97; реестр эталонов и права — `SOURCES.md` №№ 13–21.
 - [ ] **Дальше (релизные действия автора)**: DOI на Zenodo (→ вписать в [`CITATION.cff`](CITATION.cff)), финализация и подача методологической статьи ([`docs/methodology-paper-outline.md`](docs/methodology-paper-outline.md)); плагин для Obsidian — план реализации (MVP: легкие детерминированные проверки) в [`docs/obsidian-plugin-plan.md`](docs/obsidian-plugin-plan.md).
 
 ## Навигация
@@ -96,7 +97,7 @@ _Created: 03-05-2026 · Last updated: 12-07-2026_
 
 ## Все созданные стили
 
-> 🎨 **Галерея со ссылками для прямого использования** (открыть → скопировать → вставить в Claude Custom Style): [`docs/STYLE_GALLERY.ru.md`](docs/STYLE_GALLERY.ru.md) — все 40 стилей, сгруппированные по школам.
+> 🎨 **Галерея со ссылками для прямого использования** (открыть → скопировать → вставить в Claude Custom Style): [`docs/STYLE_GALLERY.ru.md`](docs/STYLE_GALLERY.ru.md) — все 42 стиля, сгруппированные по школам.
 
 | Файл | Стиль | Для чего нужен | Главная интонация |
 |---|---|---|---|
@@ -112,6 +113,7 @@ _Created: 03-05-2026 · Last updated: 12-07-2026_
 | [`ClaudeStyles/kazanskiy-korpus-style.md`][kazanskiy-korpus] | [Казанский][kazanskiy-korpus] | Филологический комментарий к источнику, переводу, корпусу, семантическому нюансу. | Обстоятельная академическая осторожность и ответственное сопоставление. |
 | [`ClaudeStyles/lidova-commentary-style.md`][lidova-commentary] | [Лидова][lidova-commentary] | История комментария, жанра, канона, школы, устной и письменной передачи. | Развернутая историко-филологическая аргументация. |
 | [`ClaudeStyles/tronsky-readings-style.md`][tronsky-readings] | [Tronsky-Readings][tronsky-readings] | Небольшая специальная статья по классической филологии, индоевропеистике, текстологии или древним языкам. | Плотная источниковедческая работа без публицистики. |
+| [`ClaudeStyles/academic-dictionary-entry-style.md`][academic-dictionary-entry] | [Академическая-словарная-статья][academic-dictionary-entry] | Словарная статья толкового или переводного словаря (в т.ч. карточки pwg_ru): зонная структура, толкование «род + отличия», пометы, грамматический код. | Нулевой тон, зализняковская экономия формулировки. |
 
 ### Индологический кластер (санскритология)
 
@@ -145,6 +147,7 @@ _Created: 03-05-2026 · Last updated: 12-07-2026_
 | [Казанский][kazanskiy-korpus] | [`ClaudeStyles/kazanskiy-korpus-style.md`][kazanskiy-korpus] | Сборник с материалом Н. Н. Казанского: [`2025_1а_Part 1-1.pdf`][src-tronsky-pdf], [`2025_1а_Part 1-1.txt`][src-tronsky-txt]. |
 | [Лидова][lidova-commentary] | [`ClaudeStyles/lidova-commentary-style.md`][lidova-commentary] | Опорные материалы по комментарию и санскритской ученой традиции: [`2025_1а_Part 1-1.pdf`][src-tronsky-pdf], [`2025_1а_Part 1-1.txt`][src-tronsky-txt], [`Tubb-ScholasticSans-2007.txt`][src-tubb-txt]. |
 | [Tronsky-Readings][tronsky-readings] | [`ClaudeStyles/tronsky-readings-style.md`][tronsky-readings] | [`2025_1а_Part 1-1.pdf`][src-tronsky-pdf], [`2025_1а_Part 1-1.txt`][src-tronsky-txt]. |
+| [Академическая-словарная-статья][academic-dictionary-entry] | [`ClaudeStyles/academic-dictionary-entry-style.md`][academic-dictionary-entry] | Опубликованные академические словари (реестр эталонов и правовой статус — [`SOURCES.md`](SOURCES.md), №№ 13–21): Зализняк 2010, Апресян 1995, Фасмер, Ожегов–Шведова, МАС, Даль (ред. Бодуэна де Куртенэ), семантический словарь Шведовой, Абрамов. Выдержки эталонов — только в приватном корпусе-спутнике. |
 
 ## Быстрый выбор по задаче
 
@@ -161,6 +164,7 @@ _Created: 03-05-2026 · Last updated: 12-07-2026_
 | Составить комментарий к переводу. | [Казанский][kazanskiy-korpus] | Он различает формальное совпадение, смысловой нюанс и культурный контекст. |
 | Объяснить жанр комментария или традицию толкования. | [Лидова][lidova-commentary] | Он анализирует канон, школу, авторитет и передачу текста. |
 | Написать короткую специальную статью с источником и аппаратом. | [Tronsky-Readings][tronsky-readings] | Он организует материал как филологическую публикацию: источник, чтение, параллель, вывод. |
+| Написать или отрецензировать словарную статью (в т.ч. карточку pwg_ru). | [Академическая-словарная-статья][academic-dictionary-entry] | Он держит зоны статьи, нециркулярное толкование, дифференцированные синонимы, пометы и грамматический код; совет `lexicography`. |
 
 ## Суммарный Зализняк
 
@@ -581,6 +585,7 @@ RuWritingStyles — это не просто набор промптов, а п�
 [samasa-manual]: ClaudeStyles/samasa-manual-style.md
 [panini-traditional]: ClaudeStyles/panini-traditional-style.md
 [smirnov-mahabharata]: ClaudeStyles/smirnov-mahabharata-style.md
+[academic-dictionary-entry]: ClaudeStyles/academic-dictionary-entry-style.md
 [zalizniak-enklitiki]: ClaudeStyles/zalizniak-enklitiki-style.md
 [zalizniak-imennoe]: ClaudeStyles/zalizniak-imennoe-style.md
 [zalizniak-ocherk]: ClaudeStyles/zalizniak-ocherk-style.md

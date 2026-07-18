@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Two-rater gold-annotation harness for the GOLD_SANSKRIT expert cases.
+"""Two-rater gold-annotation harness for the gold expert cases (GOLD_SANSKRIT by
+default; `extract --tag GOLD_DICTIONARY` selects the dictionary-register set).
 
 Implements the inter-rater half of evals/GOLD_PROTOCOL.md ("Разметка экспертами"):
 rater A is the mechanical scorer verdict already stored in each run's
@@ -30,12 +31,12 @@ ROOT = Path(__file__).resolve().parent.parent
 GOLD_TAG = "GOLD_SANSKRIT"
 
 
-def load_gold_cases():
+def load_gold_cases(tag: str = GOLD_TAG):
     manifest = json.loads((ROOT / "evals" / "manifest.json").read_text(encoding="utf-8"))
     cases = manifest["cases"] if isinstance(manifest, dict) else manifest
     return [
         c for c in cases
-        if GOLD_TAG in c.get("tags", []) and "deterministic" not in c.get("tags", [])
+        if tag in c.get("tags", []) and "deterministic" not in c.get("tags", [])
     ]
 
 
@@ -65,7 +66,7 @@ def collect_findings(rd: Path):
 
 def cmd_extract(args):
     sheet = {"prefix": args.prefix, "repeats": args.repeats, "runs": []}
-    for case in load_gold_cases():
+    for case in load_gold_cases(args.tag):
         input_text = (ROOT / case["input"]).read_text(encoding="utf-8")
         for rep in range(1, args.repeats + 1):
             rd = run_dir(args.prefix, case["id"], rep)
@@ -187,6 +188,8 @@ def main():
     ex = sub.add_parser("extract", help="emit blinded annotation sheet for rater B")
     ex.add_argument("--prefix", required=True)
     ex.add_argument("--repeats", type=int, default=5)
+    ex.add_argument("--tag", default=GOLD_TAG,
+                    help="gold tag selecting the expert cases (GOLD_SANSKRIT, GOLD_DICTIONARY)")
     ex.add_argument("--out", required=True)
     ex.set_defaults(func=cmd_extract)
     ag = sub.add_parser("agree", help="merge rater B judgments, compute agreement")

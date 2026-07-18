@@ -1,0 +1,70 @@
+{
+  "case_id": "dict-grammar-zone",
+  "provider": "deepseek",
+  "raters": [
+    "A (mechanical scorer, eval-result.json)",
+    "B (Fable 5, claude-fable-5 — вторая ИИ-модель, не совпадающая с оцениваемым провайдером; слепота на уровне листа: вердикты скорера не включались; роль ИИ раскрывается по docs/AI_DISCLOSURE.md)"
+  ],
+  "runs": [
+    {
+      "run": "h1213dict-dict-grammar-zone-r01",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "grammar_zone_violation"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 1,
+      "rater_b_notes": "проза вместо кода поймана точно; почти без шума"
+    },
+    {
+      "run": "h1213dict-dict-grammar-zone-r02",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "grammar_zone_violation"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 6,
+      "rater_b_notes": "пойман; FP: жалоба на заголовок листа рецензии, genus+differentiae для переводного эквивалента"
+    },
+    {
+      "run": "h1213dict-dict-grammar-zone-r03",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "grammar_zone_violation"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 3,
+      "rater_b_notes": "пойман; FP: «nī не относится к русскому словоизменению» — мимо предмета"
+    },
+    {
+      "run": "h1213dict-dict-grammar-zone-r04",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "grammar_zone_violation"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 5,
+      "rater_b_notes": "пойман; шум: нерасшифрованные P./VOP., жалоба на заголовок"
+    },
+    {
+      "run": "h1213dict-dict-grammar-zone-r05",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "grammar_zone_violation"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 4,
+      "rater_b_notes": "пойман (совет все отклонил, но находки корректные); шум как в r03"
+    }
+  ],
+  "caught": true,
+  "type_correct": true,
+  "false_positives": 19,
+  "agreement": 1.0,
+  "kappa": 1.0
+}

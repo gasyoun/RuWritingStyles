@@ -1,0 +1,70 @@
+{
+  "case_id": "dict-nonstandard-label",
+  "provider": "deepseek",
+  "raters": [
+    "A (mechanical scorer, eval-result.json)",
+    "B (Fable 5, claude-fable-5 — вторая ИИ-модель, не совпадающая с оцениваемым провайдером; слепота на уровне листа: вердикты скорера не включались; роль ИИ раскрывается по docs/AI_DISCLOSURE.md)"
+  ],
+  "runs": [
+    {
+      "run": "h1213dict-dict-nonstandard-label-r01",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "nonstandard_label"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 6,
+      "rater_b_notes": "все три пятна помет пойманы (оч. редк./устаревшее, s. u., Vgl.); FP: «m. русифицирована» (ложь), SĀY. как помета"
+    },
+    {
+      "run": "h1213dict-dict-nonstandard-label-r02",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "nonstandard_label"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 7,
+      "rater_b_notes": "пойманы все пятна; много педантики: кириллизация SĀY., точка в «1. dā», зализняковские требования парадигмы"
+    },
+    {
+      "run": "h1213dict-dict-nonstandard-label-r03",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "nonstandard_label"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 4,
+      "rater_b_notes": "пойманы; шум: расшифровка SĀY., классификация парадигмы"
+    },
+    {
+      "run": "h1213dict-dict-nonstandard-label-r04",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "nonstandard_label"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 5,
+      "rater_b_notes": "пойманы; FP: «dat. de» якобы русификация (de — санскритская форма)"
+    },
+    {
+      "run": "h1213dict-dict-nonstandard-label-r05",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "nonstandard_label"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 5,
+      "rater_b_notes": "пойманы; шум: зализняковская педантика уровней"
+    }
+  ],
+  "caught": true,
+  "type_correct": true,
+  "false_positives": 27,
+  "agreement": 1.0,
+  "kappa": 1.0
+}

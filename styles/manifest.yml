@@ -38,6 +38,14 @@ councils:
     - samasa-manual
     - lidova-commentary
     - smirnov-mahabharata
+  # H1213: регистр-слой для pwg_ru-карточек (словарная дефиниция, не исследовательская проза).
+  # Иерархия эталонов — ruling MG 18-07-2026: Зализняк > Апресян/Мельчук; Кочергина — только сверка эквивалентов.
+  lexicography:
+    - academic-dictionary-entry
+    - zalizniak-imennoe
+    - zalizniak-method
+    - melchuk
+    - toporov-etym
 
 clusters:
   - id: ling_iesh
@@ -303,3 +311,8 @@ passports:
     path: styles/clusters/orient_leningrad.yml
     level: cluster
     source_prompt: ClaudeStyles/orient_leningrad-style.md
+  - id: academic-dictionary-entry
+    path: styles/passports/academic-dictionary-entry.yml
+    level: private
+    cluster: ling_mss
+    source_prompt: ClaudeStyles/academic-dictionary-entry-style.md
