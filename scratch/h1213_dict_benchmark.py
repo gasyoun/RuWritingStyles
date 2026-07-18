@@ -44,6 +44,13 @@ CASES = [
 ]
 REPEAT = 5
 PREFIX = "h1213dict"
+# Parallel workers: pass a disjoint case subset as argv (worker tag first),
+# e.g. `python scratch/h1213_dict_benchmark.py w1 dict-circular-gloss ...`.
+# Each worker writes scratch/h1213_dict_summary_<tag>.json; the combined
+# summary is assembled from the per-case eval-aggregate.json files.
+WORKER = sys.argv[1] if len(sys.argv) > 1 else ""
+if len(sys.argv) > 2:
+    CASES = sys.argv[2:]
 
 
 def _log(msg: str) -> None:
@@ -109,7 +116,8 @@ def main() -> None:
             "detection_rate": round(total_det / n, 3),
         },
     }
-    out = REPO_ROOT / "scratch" / "h1213_dict_summary.json"
+    suffix = f"_{WORKER}" if WORKER else ""
+    out = REPO_ROOT / "scratch" / f"h1213_dict_summary{suffix}.json"
     out.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     _log(f"summary -> {out} (pass {total_pass}/{n}, det {total_det}/{n}, {time.time()-t0:.0f}s total)")
 
