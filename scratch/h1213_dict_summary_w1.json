@@ -1,0 +1,323 @@
+{
+  "protocol": "H1213 GOLD_DICTIONARY x N=5, deepseek routed (--routes)",
+  "prefix": "h1213dict",
+  "cases": [
+    {
+      "case_id": "dict-circular-gloss",
+      "repeat": 5,
+      "pass_count": 5,
+      "pass_rate": 1.0,
+      "detection_count": 5,
+      "detection_rate": 1.0,
+      "diff_ok_count": 5,
+      "diff_ok_rate": 1.0,
+      "verification_status_distribution": {
+        "needs_human_review": 1,
+        "passed": 4
+      },
+      "metrics": {
+        "char_delta_ratio": {
+          "n": 5,
+          "mean": 0.280128,
+          "stdev": 0.038918,
+          "min": 0.237179,
+          "max": 0.339744
+        },
+        "changed_line_ratio": {
+          "n": 5,
+          "mean": 0.327272,
+          "stdev": 0.072727,
+          "min": 0.272727,
+          "max": 0.454545
+        },
+        "finding_count": {
+          "n": 5,
+          "mean": 7.4,
+          "stdev": 1.496663,
+          "min": 6.0,
+          "max": 10.0
+        }
+      },
+      "runs": [
+        {
+          "run_id": "h1213dict-dict-circular-gloss-r01",
+          "run_dir": "runs/h1213dict-dict-circular-gloss-r01",
+          "result_path": "runs/h1213dict-dict-circular-gloss-r01/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "needs_human_review",
+          "required_match_count": 1,
+          "finding_count": 8,
+          "changed_line_ratio": 0.272727,
+          "char_delta_ratio": 0.237179
+        },
+        {
+          "run_id": "h1213dict-dict-circular-gloss-r02",
+          "run_dir": "runs/h1213dict-dict-circular-gloss-r02",
+          "result_path": "runs/h1213dict-dict-circular-gloss-r02/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 10,
+          "changed_line_ratio": 0.272727,
+          "char_delta_ratio": 0.240385
+        },
+        {
+          "run_id": "h1213dict-dict-circular-gloss-r03",
+          "run_dir": "runs/h1213dict-dict-circular-gloss-r03",
+          "result_path": "runs/h1213dict-dict-circular-gloss-r03/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 6,
+          "changed_line_ratio": 0.454545,
+          "char_delta_ratio": 0.278846
+        },
+        {
+          "run_id": "h1213dict-dict-circular-gloss-r04",
+          "run_dir": "runs/h1213dict-dict-circular-gloss-r04",
+          "result_path": "runs/h1213dict-dict-circular-gloss-r04/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 7,
+          "changed_line_ratio": 0.272727,
+          "char_delta_ratio": 0.339744
+        },
+        {
+          "run_id": "h1213dict-dict-circular-gloss-r05",
+          "run_dir": "runs/h1213dict-dict-circular-gloss-r05",
+          "result_path": "runs/h1213dict-dict-circular-gloss-r05/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 6,
+          "changed_line_ratio": 0.363636,
+          "char_delta_ratio": 0.304487
+        }
+      ]
+    },
+    {
+      "case_id": "dict-publicistic-register",
+      "repeat": 5,
+      "pass_count": 5,
+      "pass_rate": 1.0,
+      "detection_count": 5,
+      "detection_rate": 1.0,
+      "diff_ok_count": 5,
+      "diff_ok_rate": 1.0,
+      "verification_status_distribution": {
+        "passed": 5
+      },
+      "metrics": {
+        "char_delta_ratio": {
+          "n": 5,
+          "mean": 0.139558,
+          "stdev": 0.07286,
+          "min": 0.044226,
+          "max": 0.253071
+        },
+        "changed_line_ratio": {
+          "n": 5,
+          "mean": 0.222222,
+          "stdev": 0.099381,
+          "min": 0.111111,
+          "max": 0.333333
+        },
+        "finding_count": {
+          "n": 5,
+          "mean": 7.4,
+          "stdev": 2.154066,
+          "min": 4.0,
+          "max": 10.0
+        }
+      },
+      "runs": [
+        {
+          "run_id": "h1213dict-dict-publicistic-register-r01",
+          "run_dir": "runs/h1213dict-dict-publicistic-register-r01",
+          "result_path": "runs/h1213dict-dict-publicistic-register-r01/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 10,
+          "changed_line_ratio": 0.333333,
+          "char_delta_ratio": 0.125307
+        },
+        {
+          "run_id": "h1213dict-dict-publicistic-register-r02",
+          "run_dir": "runs/h1213dict-dict-publicistic-register-r02",
+          "result_path": "runs/h1213dict-dict-publicistic-register-r02/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 4,
+          "changed_line_ratio": 0.111111,
+          "char_delta_ratio": 0.184275
+        },
+        {
+          "run_id": "h1213dict-dict-publicistic-register-r03",
+          "run_dir": "runs/h1213dict-dict-publicistic-register-r03",
+          "result_path": "runs/h1213dict-dict-publicistic-register-r03/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 8,
+          "changed_line_ratio": 0.111111,
+          "char_delta_ratio": 0.090909
+        },
+        {
+          "run_id": "h1213dict-dict-publicistic-register-r04",
+          "run_dir": "runs/h1213dict-dict-publicistic-register-r04",
+          "result_path": "runs/h1213dict-dict-publicistic-register-r04/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 6,
+          "changed_line_ratio": 0.333333,
+          "char_delta_ratio": 0.253071
+        },
+        {
+          "run_id": "h1213dict-dict-publicistic-register-r05",
+          "run_dir": "runs/h1213dict-dict-publicistic-register-r05",
+          "result_path": "runs/h1213dict-dict-publicistic-register-r05/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 9,
+          "changed_line_ratio": 0.222222,
+          "char_delta_ratio": 0.044226
+        }
+      ]
+    },
+    {
+      "case_id": "dict-zone-order",
+      "repeat": 5,
+      "pass_count": 4,
+      "pass_rate": 0.8,
+      "detection_count": 4,
+      "detection_rate": 0.8,
+      "diff_ok_count": 5,
+      "diff_ok_rate": 1.0,
+      "verification_status_distribution": {
+        "passed": 5
+      },
+      "metrics": {
+        "char_delta_ratio": {
+          "n": 5,
+          "mean": 0.130337,
+          "stdev": 0.06596,
+          "min": 0.037453,
+          "max": 0.23221
+        },
+        "changed_line_ratio": {
+          "n": 5,
+          "mean": 0.411111,
+          "stdev": 0.066667,
+          "min": 0.333333,
+          "max": 0.5
+        },
+        "finding_count": {
+          "n": 5,
+          "mean": 8.2,
+          "stdev": 0.748331,
+          "min": 7.0,
+          "max": 9.0
+        }
+      },
+      "runs": [
+        {
+          "run_id": "h1213dict-dict-zone-order-r01",
+          "run_dir": "runs/h1213dict-dict-zone-order-r01",
+          "result_path": "runs/h1213dict-dict-zone-order-r01/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 8,
+          "changed_line_ratio": 0.444444,
+          "char_delta_ratio": 0.037453
+        },
+        {
+          "run_id": "h1213dict-dict-zone-order-r02",
+          "run_dir": "runs/h1213dict-dict-zone-order-r02",
+          "result_path": "runs/h1213dict-dict-zone-order-r02/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 7,
+          "changed_line_ratio": 0.5,
+          "char_delta_ratio": 0.097378
+        },
+        {
+          "run_id": "h1213dict-dict-zone-order-r03",
+          "run_dir": "runs/h1213dict-dict-zone-order-r03",
+          "result_path": "runs/h1213dict-dict-zone-order-r03/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 9,
+          "changed_line_ratio": 0.333333,
+          "char_delta_ratio": 0.23221
+        },
+        {
+          "run_id": "h1213dict-dict-zone-order-r04",
+          "run_dir": "runs/h1213dict-dict-zone-order-r04",
+          "result_path": "runs/h1213dict-dict-zone-order-r04/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 9,
+          "changed_line_ratio": 0.444444,
+          "char_delta_ratio": 0.116105
+        },
+        {
+          "run_id": "h1213dict-dict-zone-order-r05",
+          "run_dir": "runs/h1213dict-dict-zone-order-r05",
+          "result_path": "runs/h1213dict-dict-zone-order-r05/eval-result.json",
+          "passed": false,
+          "detected": false,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 0,
+          "finding_count": 8,
+          "changed_line_ratio": 0.333333,
+          "char_delta_ratio": 0.168539
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "runs": 15,
+    "pass": 14,
+    "pass_rate": 0.933,
+    "detection": 14,
+    "detection_rate": 0.933
+  }
+}

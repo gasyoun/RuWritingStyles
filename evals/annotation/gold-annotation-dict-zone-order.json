@@ -1,0 +1,68 @@
+{
+  "case_id": "dict-zone-order",
+  "provider": "deepseek",
+  "raters": [
+    "A (mechanical scorer, eval-result.json)",
+    "B (Fable 5, claude-fable-5 — вторая ИИ-модель, не совпадающая с оцениваемым провайдером; слепота на уровне листа: вердикты скорера не включались; роль ИИ раскрывается по docs/AI_DISCLOSURE.md)"
+  ],
+  "runs": [
+    {
+      "run": "h1213dict-dict-zone-order-r01",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "zone_structure_violation"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 4,
+      "rater_b_notes": "порядок зон пойман (цитаты до толкования); шум: HEM. как «нестандартная помета», педантика по nom. act."
+    },
+    {
+      "run": "h1213dict-dict-zone-order-r02",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "zone_structure_violation"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 2,
+      "rater_b_notes": "пойман; FP: мед. якобы вне списка (есть в списке), грамматика в строке вокабулы"
+    },
+    {
+      "run": "h1213dict-dict-zone-order-r03",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "zone_structure_violation"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 5,
+      "rater_b_notes": "пойман; FP: нумерация омонимов «2.» как нарушение, HEM., требования парадигмы"
+    },
+    {
+      "run": "h1213dict-dict-zone-order-r04",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "zone_structure_violation"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 4,
+      "rater_b_notes": "пойман (обе стороны: цитаты до толкования + этимология не на месте)"
+    },
+    {
+      "run": "h1213dict-dict-zone-order-r05",
+      "rater_a_detected": false,
+      "rater_a_matched_types": [],
+      "rater_b_caught": "partial",
+      "rater_b_type_correct": false,
+      "rater_b_false_positives": 3,
+      "rater_b_notes": "порядок зон как таковой не назван: mixed_levels/grammar_zone задели смещение этимологии и грамматики, но ядро (цитаты до толкования) не поймано; тип не совпал"
+    }
+  ],
+  "caught": true,
+  "type_correct": false,
+  "false_positives": 18,
+  "agreement": 0.8,
+  "kappa": 0.0
+}

@@ -1,0 +1,322 @@
+{
+  "protocol": "H1213 GOLD_DICTIONARY x N=5, deepseek routed (--routes)",
+  "prefix": "h1213dict",
+  "cases": [
+    {
+      "case_id": "dict-nonstandard-label",
+      "repeat": 5,
+      "pass_count": 5,
+      "pass_rate": 1.0,
+      "detection_count": 5,
+      "detection_rate": 1.0,
+      "diff_ok_count": 5,
+      "diff_ok_rate": 1.0,
+      "verification_status_distribution": {
+        "passed": 5
+      },
+      "metrics": {
+        "char_delta_ratio": {
+          "n": 5,
+          "mean": 0.057348,
+          "stdev": 0.026822,
+          "min": 0.028674,
+          "max": 0.09319
+        },
+        "changed_line_ratio": {
+          "n": 5,
+          "mean": 0.377777,
+          "stdev": 0.054433,
+          "min": 0.333333,
+          "max": 0.444444
+        },
+        "finding_count": {
+          "n": 5,
+          "mean": 9.6,
+          "stdev": 1.356466,
+          "min": 8.0,
+          "max": 12.0
+        }
+      },
+      "runs": [
+        {
+          "run_id": "h1213dict-dict-nonstandard-label-r01",
+          "run_dir": "runs/h1213dict-dict-nonstandard-label-r01",
+          "result_path": "runs/h1213dict-dict-nonstandard-label-r01/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 9,
+          "changed_line_ratio": 0.333333,
+          "char_delta_ratio": 0.035842
+        },
+        {
+          "run_id": "h1213dict-dict-nonstandard-label-r02",
+          "run_dir": "runs/h1213dict-dict-nonstandard-label-r02",
+          "result_path": "runs/h1213dict-dict-nonstandard-label-r02/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 12,
+          "changed_line_ratio": 0.444444,
+          "char_delta_ratio": 0.09319
+        },
+        {
+          "run_id": "h1213dict-dict-nonstandard-label-r03",
+          "run_dir": "runs/h1213dict-dict-nonstandard-label-r03",
+          "result_path": "runs/h1213dict-dict-nonstandard-label-r03/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 10,
+          "changed_line_ratio": 0.333333,
+          "char_delta_ratio": 0.043011
+        },
+        {
+          "run_id": "h1213dict-dict-nonstandard-label-r04",
+          "run_dir": "runs/h1213dict-dict-nonstandard-label-r04",
+          "result_path": "runs/h1213dict-dict-nonstandard-label-r04/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 8,
+          "changed_line_ratio": 0.444444,
+          "char_delta_ratio": 0.086022
+        },
+        {
+          "run_id": "h1213dict-dict-nonstandard-label-r05",
+          "run_dir": "runs/h1213dict-dict-nonstandard-label-r05",
+          "result_path": "runs/h1213dict-dict-nonstandard-label-r05/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 9,
+          "changed_line_ratio": 0.333333,
+          "char_delta_ratio": 0.028674
+        }
+      ]
+    },
+    {
+      "case_id": "dict-grammar-zone",
+      "repeat": 5,
+      "pass_count": 3,
+      "pass_rate": 0.6,
+      "detection_count": 5,
+      "detection_rate": 1.0,
+      "diff_ok_count": 3,
+      "diff_ok_rate": 0.6,
+      "verification_status_distribution": {
+        "passed": 5
+      },
+      "metrics": {
+        "char_delta_ratio": {
+          "n": 5,
+          "mean": 0.411413,
+          "stdev": 0.127128,
+          "min": 0.190217,
+          "max": 0.527174
+        },
+        "changed_line_ratio": {
+          "n": 5,
+          "mean": 0.314286,
+          "stdev": 0.209957,
+          "min": 0.142857,
+          "max": 0.571429
+        },
+        "finding_count": {
+          "n": 5,
+          "mean": 7.2,
+          "stdev": 2.925748,
+          "min": 4.0,
+          "max": 12.0
+        }
+      },
+      "runs": [
+        {
+          "run_id": "h1213dict-dict-grammar-zone-r01",
+          "run_dir": "runs/h1213dict-dict-grammar-zone-r01",
+          "result_path": "runs/h1213dict-dict-grammar-zone-r01/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 4,
+          "changed_line_ratio": 0.142857,
+          "char_delta_ratio": 0.472826
+        },
+        {
+          "run_id": "h1213dict-dict-grammar-zone-r02",
+          "run_dir": "runs/h1213dict-dict-grammar-zone-r02",
+          "result_path": "runs/h1213dict-dict-grammar-zone-r02/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 12,
+          "changed_line_ratio": 0.571429,
+          "char_delta_ratio": 0.190217
+        },
+        {
+          "run_id": "h1213dict-dict-grammar-zone-r03",
+          "run_dir": "runs/h1213dict-dict-grammar-zone-r03",
+          "result_path": "runs/h1213dict-dict-grammar-zone-r03/eval-result.json",
+          "passed": false,
+          "detected": true,
+          "diff_within_limits": false,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 6,
+          "changed_line_ratio": 0.142857,
+          "char_delta_ratio": 0.516304
+        },
+        {
+          "run_id": "h1213dict-dict-grammar-zone-r04",
+          "run_dir": "runs/h1213dict-dict-grammar-zone-r04",
+          "result_path": "runs/h1213dict-dict-grammar-zone-r04/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 9,
+          "changed_line_ratio": 0.571429,
+          "char_delta_ratio": 0.350543
+        },
+        {
+          "run_id": "h1213dict-dict-grammar-zone-r05",
+          "run_dir": "runs/h1213dict-dict-grammar-zone-r05",
+          "result_path": "runs/h1213dict-dict-grammar-zone-r05/eval-result.json",
+          "passed": false,
+          "detected": true,
+          "diff_within_limits": false,
+          "verification_status": "passed",
+          "required_match_count": 1,
+          "finding_count": 5,
+          "changed_line_ratio": 0.142857,
+          "char_delta_ratio": 0.527174
+        }
+      ]
+    },
+    {
+      "case_id": "dict-synonym-heap",
+      "repeat": 5,
+      "pass_count": 5,
+      "pass_rate": 1.0,
+      "detection_count": 5,
+      "detection_rate": 1.0,
+      "diff_ok_count": 5,
+      "diff_ok_rate": 1.0,
+      "verification_status_distribution": {
+        "needs_human_review": 5
+      },
+      "metrics": {
+        "char_delta_ratio": {
+          "n": 5,
+          "mean": 0.201242,
+          "stdev": 0.083109,
+          "min": 0.102484,
+          "max": 0.31677
+        },
+        "changed_line_ratio": {
+          "n": 5,
+          "mean": 0.266666,
+          "stdev": 0.054433,
+          "min": 0.222222,
+          "max": 0.333333
+        },
+        "finding_count": {
+          "n": 5,
+          "mean": 8.2,
+          "stdev": 1.469694,
+          "min": 7.0,
+          "max": 11.0
+        }
+      },
+      "runs": [
+        {
+          "run_id": "h1213dict-dict-synonym-heap-r01",
+          "run_dir": "runs/h1213dict-dict-synonym-heap-r01",
+          "result_path": "runs/h1213dict-dict-synonym-heap-r01/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "needs_human_review",
+          "required_match_count": 1,
+          "finding_count": 8,
+          "changed_line_ratio": 0.222222,
+          "char_delta_ratio": 0.152174
+        },
+        {
+          "run_id": "h1213dict-dict-synonym-heap-r02",
+          "run_dir": "runs/h1213dict-dict-synonym-heap-r02",
+          "result_path": "runs/h1213dict-dict-synonym-heap-r02/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "needs_human_review",
+          "required_match_count": 1,
+          "finding_count": 11,
+          "changed_line_ratio": 0.333333,
+          "char_delta_ratio": 0.282609
+        },
+        {
+          "run_id": "h1213dict-dict-synonym-heap-r03",
+          "run_dir": "runs/h1213dict-dict-synonym-heap-r03",
+          "result_path": "runs/h1213dict-dict-synonym-heap-r03/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "needs_human_review",
+          "required_match_count": 1,
+          "finding_count": 7,
+          "changed_line_ratio": 0.333333,
+          "char_delta_ratio": 0.152174
+        },
+        {
+          "run_id": "h1213dict-dict-synonym-heap-r04",
+          "run_dir": "runs/h1213dict-dict-synonym-heap-r04",
+          "result_path": "runs/h1213dict-dict-synonym-heap-r04/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "needs_human_review",
+          "required_match_count": 1,
+          "finding_count": 8,
+          "changed_line_ratio": 0.222222,
+          "char_delta_ratio": 0.102484
+        },
+        {
+          "run_id": "h1213dict-dict-synonym-heap-r05",
+          "run_dir": "runs/h1213dict-dict-synonym-heap-r05",
+          "result_path": "runs/h1213dict-dict-synonym-heap-r05/eval-result.json",
+          "passed": true,
+          "detected": true,
+          "diff_within_limits": true,
+          "verification_status": "needs_human_review",
+          "required_match_count": 1,
+          "finding_count": 7,
+          "changed_line_ratio": 0.222222,
+          "char_delta_ratio": 0.31677
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "runs": 15,
+    "pass": 13,
+    "pass_rate": 0.867,
+    "detection": 15,
+    "detection_rate": 1.0
+  }
+}
