@@ -3,6 +3,8 @@
 All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
+
+## [2.15.0] - 2026-07-18
 ### Added (академический словарный регистр — academic-dictionary-entry, [H1213](https://github.com/gasyoun/Uprava/blob/main/handoffs/H1213-Fable_RuWritingStyles_academic-dictionary-entry-register-style_18.07.26.md))
 - **New register style [`ClaudeStyles/academic-dictionary-entry-style.md`](ClaudeStyles/academic-dictionary-entry-style.md)** («Академическая словарная статья») — the first dictionary-definition genre card in the catalogue (39 research-prose cards existed, zero for the словарная статья genre): entry-zone architecture (вокабула → грамматическая зона → пометы → толкование → цитаты → производные → этимология), Moscow-Semantic-School definitional metalanguage (genus + differentiae; Apresjan's four требования к толкованиям, non-circularity first — the pwg_ru `circular_gloss` audit class as the anti-example), two-bucket abbreviation discipline per pwg_ru ABBREVIATIONS_RU (grammatical sigla stay Latin, editorial refs go Russian), zalizniak-2010 compact-code grammar zone, Vasmer-canon etymology notes, zero tone. **Exemplar hierarchy per MG ruling 18-07-2026: Zaliznyak («Грамматический словарь») above Apresjan/Melchuk; Kochergina demoted to equivalents-checking only, not a register exemplar.** Passport [`styles/passports/academic-dictionary-entry.yml`](styles/passports/academic-dictionary-entry.yml) (`cluster: ling_mss`, 8 register-defect checks); consumer = the pwg_ru controller (H1209/H1210) as its iteration-2 register layer.
 - **New named council `lexicography`** ([`styles/manifest.yml`](styles/manifest.yml)): `academic-dictionary-entry` + `zalizniak-imennoe` + `zalizniak-method` + `melchuk` + `toporov-etym` — selectable via `rws run --council lexicography`; no default-council behavior changed.
@@ -14,6 +16,9 @@ All notable changes to RuWritingStyles are documented here.
 - **"Эталонность" encoded as `conflict_priority: {default: high}`** (not blanket precedence): the authority of the school takes effect only when the cluster is explicitly convened and in its domain; it does not suppress the `missing_source`/`overstrong_conclusion` checks. Prompted by В. В. Емельянов's memoir naming Крачковский, Бартольд, Тураев, Голенищев, Шилейко, Поппе as эталоны научной мысли и стиля.
 - **Six orientalists added to [`docs/whois-list.md`](docs/whois-list.md)** under a new "Востоковеды" rubric (title widened accordingly). Individual author passports are **queued, corpus-gated** (H944): `validate_project` requires each passport's `provenance.sources` to resolve in [`knowledge/bibliography.json`](knowledge/bibliography.json), so no passport can be minted from the memoir alone.
 - `validate_project` + full test suite (228) green.
+
+### Fixed
+- **`CITATION.cff` version drift**: 2.14.0 was released with `CITATION.cff` still at 2.13.0/2026-07-11 (the same class of slip as the pyproject drift fixed at 2.14.0); realigned to 2.15.0/2026-07-18 at this release.
 
 ## [2.14.0] - 2026-07-12
 ### Added (post-N broad axis uplift, roadmap-2026-q3 Фаза O, [H770](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H770-Fable_RuWritingStyles_rws-post-n-axis-uplift_12.07.26.md))
