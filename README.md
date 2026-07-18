@@ -96,7 +96,7 @@ _Created: 03-05-2026 · Last updated: 12-07-2026_
 
 ## Все созданные стили
 
-> 🎨 **Галерея со ссылками для прямого использования** (открыть → скопировать → вставить в Claude Custom Style): [`docs/STYLE_GALLERY.ru.md`](docs/STYLE_GALLERY.ru.md) — все 40 стилей, сгруппированные по школам.
+> 🎨 **Галерея со ссылками для прямого использования** (открыть → скопировать → вставить в Claude Custom Style): [`docs/STYLE_GALLERY.ru.md`](docs/STYLE_GALLERY.ru.md) — все 42 стиля, сгруппированные по школам.
 
 | Файл | Стиль | Для чего нужен | Главная интонация |
 |---|---|---|---|
@@ -112,6 +112,7 @@ _Created: 03-05-2026 · Last updated: 12-07-2026_
 | [`ClaudeStyles/kazanskiy-korpus-style.md`][kazanskiy-korpus] | [Казанский][kazanskiy-korpus] | Филологический комментарий к источнику, переводу, корпусу, семантическому нюансу. | Обстоятельная академическая осторожность и ответственное сопоставление. |
 | [`ClaudeStyles/lidova-commentary-style.md`][lidova-commentary] | [Лидова][lidova-commentary] | История комментария, жанра, канона, школы, устной и письменной передачи. | Развернутая историко-филологическая аргументация. |
 | [`ClaudeStyles/tronsky-readings-style.md`][tronsky-readings] | [Tronsky-Readings][tronsky-readings] | Небольшая специальная статья по классической филологии, индоевропеистике, текстологии или древним языкам. | Плотная источниковедческая работа без публицистики. |
+| [`ClaudeStyles/academic-dictionary-entry-style.md`][academic-dictionary-entry] | [Академическая-словарная-статья][academic-dictionary-entry] | Словарная статья толкового или переводного словаря (в т.ч. карточки pwg_ru): зонная структура, толкование «род + отличия», пометы, грамматический код. | Нулевой тон, зализняковская экономия формулировки. |
 
 ### Индологический кластер (санскритология)
 
@@ -145,6 +146,7 @@ _Created: 03-05-2026 · Last updated: 12-07-2026_
 | [Казанский][kazanskiy-korpus] | [`ClaudeStyles/kazanskiy-korpus-style.md`][kazanskiy-korpus] | Сборник с материалом Н. Н. Казанского: [`2025_1а_Part 1-1.pdf`][src-tronsky-pdf], [`2025_1а_Part 1-1.txt`][src-tronsky-txt]. |
 | [Лидова][lidova-commentary] | [`ClaudeStyles/lidova-commentary-style.md`][lidova-commentary] | Опорные материалы по комментарию и санскритской ученой традиции: [`2025_1а_Part 1-1.pdf`][src-tronsky-pdf], [`2025_1а_Part 1-1.txt`][src-tronsky-txt], [`Tubb-ScholasticSans-2007.txt`][src-tubb-txt]. |
 | [Tronsky-Readings][tronsky-readings] | [`ClaudeStyles/tronsky-readings-style.md`][tronsky-readings] | [`2025_1а_Part 1-1.pdf`][src-tronsky-pdf], [`2025_1а_Part 1-1.txt`][src-tronsky-txt]. |
+| [Академическая-словарная-статья][academic-dictionary-entry] | [`ClaudeStyles/academic-dictionary-entry-style.md`][academic-dictionary-entry] | Опубликованные академические словари (реестр эталонов и правовой статус — [`SOURCES.md`](SOURCES.md), №№ 13–21): Зализняк 2010, Апресян 1995, Фасмер, Ожегов–Шведова, МАС, Даль (ред. Бодуэна де Куртенэ), семантический словарь Шведовой, Абрамов. Выдержки эталонов — только в приватном корпусе-спутнике. |
 
 ## Быстрый выбор по задаче
 
@@ -161,6 +163,7 @@ _Created: 03-05-2026 · Last updated: 12-07-2026_
 | Составить комментарий к переводу. | [Казанский][kazanskiy-korpus] | Он различает формальное совпадение, смысловой нюанс и культурный контекст. |
 | Объяснить жанр комментария или традицию толкования. | [Лидова][lidova-commentary] | Он анализирует канон, школу, авторитет и передачу текста. |
 | Написать короткую специальную статью с источником и аппаратом. | [Tronsky-Readings][tronsky-readings] | Он организует материал как филологическую публикацию: источник, чтение, параллель, вывод. |
+| Написать или отрецензировать словарную статью (в т.ч. карточку pwg_ru). | [Академическая-словарная-статья][academic-dictionary-entry] | Он держит зоны статьи, нециркулярное толкование, дифференцированные синонимы, пометы и грамматический код; совет `lexicography`. |
 
 ## Суммарный Зализняк
 
@@ -581,6 +584,7 @@ RuWritingStyles — это не просто набор промптов, а п�
 [samasa-manual]: ClaudeStyles/samasa-manual-style.md
 [panini-traditional]: ClaudeStyles/panini-traditional-style.md
 [smirnov-mahabharata]: ClaudeStyles/smirnov-mahabharata-style.md
+[academic-dictionary-entry]: ClaudeStyles/academic-dictionary-entry-style.md
 [zalizniak-enklitiki]: ClaudeStyles/zalizniak-enklitiki-style.md
 [zalizniak-imennoe]: ClaudeStyles/zalizniak-imennoe-style.md
 [zalizniak-ocherk]: ClaudeStyles/zalizniak-ocherk-style.md

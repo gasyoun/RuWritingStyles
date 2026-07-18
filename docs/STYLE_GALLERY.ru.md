@@ -8,7 +8,7 @@ Claude содержимое файла в начале диалога и поп�
 > Прямой текст для копирования — кнопка **Raw** на странице файла на GitHub
 > (или `https://raw.githubusercontent.com/gasyoun/RuWritingStyles/main/<путь>`).
 
-Всего стилей: **40**. Регенерируется: `python tools/generate_style_gallery.py`.
+Всего стилей: **42**. Регенерируется: `python tools/generate_style_gallery.py`.
 
 ## Отдельные стили (по школам/кластерам)
 
@@ -32,6 +32,7 @@ Claude содержимое файла в начале диалога и поп�
 
 ### Московская Семантическая Школа
 
+- [Академическая словарная статья](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/academic-dictionary-entry-style.md) — `academic-dictionary-entry`
 - [И. А. Мельчук](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/melchuk-style.md) — `melchuk`
 - [Зализняк-ударение](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/zalizniak-udarenie-style.md) — `zalizniak-udarenie`
 
@@ -77,3 +78,4 @@ Claude содержимое файла в начале диалога и поп�
 - [Базовый стиль: Рецептивная эстетика](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/lit_reception-style.md) — `lit_reception`
 - [Базовый стиль: Литературоведческий структурализм](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/lit_structural-style.md) — `lit_structural`
 - [Базовый стиль: Текстология](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/lit_textology-style.md) — `lit_textology`
+- [Стиль: Ленинградская востоковедная школа — кластерный профиль](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/orient_leningrad-style.md) — `orient_leningrad`

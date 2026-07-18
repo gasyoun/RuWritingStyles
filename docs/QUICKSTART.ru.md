@@ -88,7 +88,7 @@ rws run examples/input/poststructural-term-check.md --provider mock --execute
 
 ```bash
 rws list-styles            # все стили; --mvp — только базовый набор
-rws councils               # именованные панели (general / sanskrit / indology)
+rws councils               # именованные панели (general / sanskrit / indology / lexicography)
 rws journals               # профили журналов
 rws lint-translit файл.md  # только проверка транслитерации, без Совета
 rws findings <run> --span p016   # находки по конкретному фрагменту

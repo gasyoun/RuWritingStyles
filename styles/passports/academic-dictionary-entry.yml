@@ -1,0 +1,81 @@
+id: academic-dictionary-entry
+name: "Академическая словарная статья"
+level: private
+cluster: ling_mss
+source_prompt: ClaudeStyles/academic-dictionary-entry-style.md
+role: systematic_grammar_reviewer
+language: ru
+
+best_for:
+  - словарная статья толкового или переводного словаря
+  - карточки pwg_ru (санскритско-русский словарь)
+  - дефиниционный метаязык (род + видовые отличия)
+  - зонная структура статьи и дисциплина помет
+  - грамматическая зона в зализняковских конвенциях
+
+checks:
+  - circular_gloss
+  - publicistic_register
+  - zone_structure_violation
+  - nonstandard_label
+  - grammar_zone_violation
+  - undiscriminated_synonyms
+  - encyclopedic_gloss
+  - unsupported_etymology_note
+
+limits:
+  - "Только жанр словарной статьи: не применять к исследовательской прозе и статьям"
+  - "Не подменять переводной эквивалент энциклопедической справкой"
+  - "Не русифицировать международные грамматические сиглы (m., Acc., caus.)"
+  - "Словарь Кочергиной — только сверка эквивалентов, не образец регистра"
+
+markers:
+  lexical:
+    - "род + видовые отличия"
+    - "закрытый список помет"
+    - "сигла с точным локусом"
+    - "то же, что"
+  epistemic:
+    - "по-видимому"
+    - "происхождение неясно"
+    - "только у лексикографов"
+
+forbidden_edits:
+  - "Нельзя добавлять публицистические оценки и эссеистические связки"
+  - "Нельзя раскрывать грамматические сиглы в прозу"
+  - "Нельзя терять различители синонимического ряда при правке"
+
+review_mode:
+  rewrite_allowed: false
+  requires_span_ids: true
+  output_format: findings_json
+
+council:
+  can_reply_to:
+    - definition
+    - classification
+    - terminology
+    - structure
+  should_defer:
+    - manuscript_reading_without_source
+    - cultural_context_without_linguistic_claim
+    - public_polemics
+
+conflict_priority:
+  default: high
+  when_domain:
+    - lexicography
+
+provenance:
+  sources:
+    - "Zaliznyak 2010"
+    - "Apresjan 1995"
+    - "Vasmer 1986"
+    - "Ozhegov 1997"
+    - "Evgenyeva 1981"
+    - "Dal 1903"
+    - "Shvedova 1998"
+    - "Abramov 1999"
+    - "Kochergina 1987"
+  derived_by: "RuWritingStyles project — аналитическая модель регистра, не пересказ источников; иерархия эталонов — ruling MG 18-07-2026 (H1213)"
+  derivation_date: "2026-07"

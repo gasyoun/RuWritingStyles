@@ -1,5 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <records xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <record id="academic-dictionary-entry">
+    <dc:identifier>academic-dictionary-entry</dc:identifier>
+    <dc:title>Академическая словарная статья</dc:title>
+    <dc:subject>Академическая словарная статья</dc:subject>
+    <dc:creator>RuWritingStyles project (M. Yu. Gasuns)</dc:creator>
+    <dc:publisher>RuWritingStyles</dc:publisher>
+    <dc:description>systematic_grammar_reviewer; словарная статья толкового или переводного словаря; карточки pwg_ru (санскритско-русский словарь); дефиниционный метаязык (род + видовые отличия); зонная структура статьи и дисциплина помет; грамматическая зона в зализняковских конвенциях</dc:description>
+    <dc:subject>словарная статья толкового или переводного словаря</dc:subject>
+    <dc:subject>карточки pwg_ru (санскритско-русский словарь)</dc:subject>
+    <dc:subject>дефиниционный метаязык (род + видовые отличия)</dc:subject>
+    <dc:subject>зонная структура статьи и дисциплина помет</dc:subject>
+    <dc:subject>грамматическая зона в зализняковских конвенциях</dc:subject>
+    <dc:subject>circular_gloss</dc:subject>
+    <dc:subject>publicistic_register</dc:subject>
+    <dc:subject>zone_structure_violation</dc:subject>
+    <dc:subject>nonstandard_label</dc:subject>
+    <dc:subject>grammar_zone_violation</dc:subject>
+    <dc:subject>undiscriminated_synonyms</dc:subject>
+    <dc:subject>encyclopedic_gloss</dc:subject>
+    <dc:subject>unsupported_etymology_note</dc:subject>
+    <dc:subject>ling_mss</dc:subject>
+    <dc:type>Text</dc:type>
+    <dc:format>text/markdown</dc:format>
+    <dc:language>ru</dc:language>
+    <dc:source>ClaudeStyles/academic-dictionary-entry-style.md</dc:source>
+    <dc:source>Zaliznyak 2010</dc:source>
+    <dc:source>Apresjan 1995</dc:source>
+    <dc:source>Vasmer 1986</dc:source>
+    <dc:source>Ozhegov 1997</dc:source>
+    <dc:source>Evgenyeva 1981</dc:source>
+    <dc:source>Dal 1903</dc:source>
+    <dc:source>Shvedova 1998</dc:source>
+    <dc:source>Abramov 1999</dc:source>
+    <dc:source>Kochergina 1987</dc:source>
+    <dc:contributor>RuWritingStyles project — аналитическая модель регистра, не пересказ источников; иерархия эталонов — ruling MG 18-07-2026 (H1213)</dc:contributor>
+    <dc:date>2026-07</dc:date>
+    <dc:relation>cluster:ling_mss</dc:relation>
+    <dc:rights>Apache-2.0</dc:rights>
+  </record>
   <record id="albedil-sbornik">
     <dc:identifier>albedil-sbornik</dc:identifier>
     <dc:title>Albedil-Sbornik</dc:title>
