@@ -1,11 +1,8 @@
 name: Dependabot auto-merge
 
-# Hands-off merge of Dependabot pull requests. When all required checks pass
-# GitHub merges the PR by itself; on repos with no required checks the PR is
-# squash-merged directly. To hold back major bumps for human review, gate the
-# Approve + Enable steps on:
-#   steps.meta.outputs.update-type != 'version-update:semver-major'
-# Deployed by /cologne-dependabot-automerge-all.
+# Hands-off merge of patch/minor Dependabot pull requests. Auto-merge queues the
+# PR and waits for the repository's required checks; there is no direct-merge
+# fallback. Major updates remain open for human review.
 
 on: pull_request
 

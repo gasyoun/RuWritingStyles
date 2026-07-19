@@ -12,7 +12,7 @@ All notable changes to RuWritingStyles are documented here.
 - **Automatic artifact IDs no longer collide at second resolution:** normal/API/eval/A-B/leaderboard IDs share a microsecond timestamp + slug + UUID suffix. Explicit `--run-id` values and their existing collision error are unchanged; concurrent same-filename API submissions now receive distinct successful run IDs.
 
 ### Changed
-- **CI is split into Python/eval, Web Studio, and conditional Obsidian jobs behind the stable `CI / Required gate` context.** The eval wrapper trusts command exit status, Web runs tests/lint/build, and the plugin runs build + parity tests. Dependabot only approves and queues patch/minor updates after checks; majors stay open and the direct-merge fallback is gone.
+- **CI is split into Python/eval, Web Studio, and conditional Obsidian jobs behind the stable `CI / Required gate` context, now configured as a strict required check on `main`.** The eval wrapper trusts command exit status, Web runs tests/lint/build, and the plugin runs build + parity tests. Dependabot only approves and queues patch/minor updates after checks; majors stay open and the direct-merge fallback is gone.
 - **Web Studio is token-aware:** one API client normalizes backend URLs, sends bearer headers, converts HTTP(S) WebSocket URLs to WS(S), and puts the URL-encoded token only on WebSocket connections. Backend URL and token are editable through Settings and live only in `sessionStorage`; 401, invalid-URL, and connection failures are visible in the UI. Bundled deployments default to the current origin; Vite development defaults to the current hostname on port 8000.
 - Release metadata, security notes, eval documentation, and the session journal were synchronized for v2.15.2.
 
