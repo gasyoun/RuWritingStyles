@@ -1,20 +1,17 @@
-version: '3.8'
-
 services:
   ruwritingstyles:
     build: .
     ports:
       - "8000:8000"
     volumes:
-      - ./rws.db:/app/rws.db
-      - ./runs:/app/runs
-      - ./examples:/app/examples
+      - ./rws-data:/data
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
       - NOUS_PORTAL_API_KEY=${NOUS_PORTAL_API_KEY}
       - RWS_OLLAMA_URL=${RWS_OLLAMA_URL}
       - RWS_OLLAMA_MODEL=${RWS_OLLAMA_MODEL}

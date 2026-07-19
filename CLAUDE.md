@@ -36,7 +36,7 @@ Run a single test method:
 python -m unittest tests.test_cli_pipeline.SegmentTests.test_segment_markdown_headings_paragraphs_and_code
 ```
 
-Frontend gate (in `web/`): `npm ci`, `npm test`, `npm run lint`, `npm run build`. Obsidian gate (in `obsidian-plugin/`): `npm ci`, `npm run build`, `npm test`. The CLI command `rws web` orchestrates both API (`ruwritingstyles.api` on port 8000) and Vite dev server (port 5173) together. GitHub branch protection requires the stable aggregator context `CI / Required gate`; Web and Obsidian jobs are path-conditional but the aggregator is always present.
+Frontend gate (in `web/`): `npm ci`, `npm test`, `npm run lint`, `npm run build`. Obsidian gate (in `obsidian-plugin/`): `npm ci`, `npm run build`, `npm test`. Packaging builds wheel/sdist, rebuilds a wheel from the sdist and compares runtime manifests; clean-wheel consumers run on Ubuntu/Windows with Python 3.10/3.14, followed by Docker smoke. `rws web` serves the bundled production SPA/API on port 8000; `rws web --dev` adds Vite on 5173. GitHub branch protection requires stable `CI / Required gate`.
 
 ## Pipeline mental model
 
@@ -84,7 +84,7 @@ Roughly one module per pipeline stage: `segment`, `review`, `council`, `revision
 
 This repo is developed primarily on Windows; assume Windows by default.
 
-- PowerShell is the default shell. Use native command parameters, not script blocks `{}` or subexpressions `$()`. Use `$env:VAR='value'` not `export VAR=value`. The `rws web` command shells out with `shell=True` for npm specifically because of this.
+- PowerShell is the default shell. Use native command parameters, not script blocks `{}` or subexpressions `$()`. Use `$env:VAR='value'` not `export VAR=value`. `rws web --dev` resolves npm explicitly and launches it without a shell.
 - All Python scripts that emit text should use UTF-8: `sys.stdout.reconfigure(encoding='utf-8')`. The Russian-language style files (and corpus `.txt` extractions, when present) require this.
 - Never commit `.env` (already gitignored). `.env.example` is the canonical template.
 

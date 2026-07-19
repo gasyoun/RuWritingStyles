@@ -10,11 +10,15 @@
 
 ## 1. Установка
 
+Обычная установка не требует clone. Скачайте wheel из GitHub Release:
+
 ```bash
-git clone https://github.com/gasyoun/RuWritingStyles
-cd RuWritingStyles
-python -m pip install -e .
+python -m pip install ruwritingstyles-2.15.3-py3-none-any.whl
+mkdir rws-workspace && cd rws-workspace
+rws init .
 ```
+
+Разработчикам: `git clone …`, `python -m pip install -e .`; checkout распознается без `rws init`.
 
 После этого команда `rws` доступна в терминале. Если ее не видно (бывает на Windows,
 когда каталог `Scripts` не в `PATH`), везде ниже вместо `rws` используйте
@@ -42,7 +46,7 @@ rws provider-status --provider deepseek
 
 ```bash
 rws run examples/input/poststructural-term-check.md \
-  --provider deepseek --execute --council sanskrit
+  --provider deepseek --execute --council sanskrit --budget-mode standard
 ```
 
 Результат появится в `runs/<id>/` — главное смотреть `report.md`.
@@ -79,7 +83,7 @@ rws run моя-статья.md \
 структуру конвейера:
 
 ```bash
-rws run examples/input/poststructural-term-check.md --provider mock --execute
+rws run examples/input/poststructural-term-check.md --provider mock --execute --budget-mode smoke
 ```
 
 `RWS_OFFLINE=1` дополнительно отключает обращения к OpenAlex.

@@ -4,6 +4,18 @@ All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
 
+## [2.15.3] - 2026-07-19
+
+### Fixed
+- **Prompt and recovery semantics are explicit and fail-loud:** typed `prepare`, `prompt`, and `execute` modes keep CLI/API compatibility while guaranteeing zero provider calls outside execute mode. `max_iterations` is validated before run creation; the normalized options and step plan are durable. Resume treats `run.json` as truth, rebuilds a missing SQLite index, and reruns completed steps whose required artifacts are missing or malformed.
+- **Run state survives interruption:** run directories are prepared off to the side and atomically published; JSON/text artifacts use same-directory temporary files plus `os.replace`. SQLite enables foreign keys, WAL and a busy timeout, schema migration errors are no longer swallowed, background failures refresh `run.json` and reach Web Studio, disconnected sockets are pruned, and MCP progress callbacks are scoped per run.
+- **Declared budgets now enforce cost boundaries:** `smoke`, `standard`, and explicit-opt-in `expensive` modes validate provider allowlists and minimum plans before the first call, count logical calls, retries and tool-loop turns, aggregate tokens and wall time, fail closed when paid usage is absent, and persist limits/consumption/exhaustion in run and provider telemetry.
+- **Installed distributions are complete:** wheel and sdist carry a verified 252-file runtime-asset manifest, including all `ClaudeStyles` and the production Web Studio. `rws init [PATH]` creates an editable checksum-tracked workspace; safe upgrades preserve local edits and stage new vendor copies under `.rws-new/`. Existing source checkouts remain compatible.
+
+### Changed
+- `rws web` now serves the bundled SPA and API on port 8000 with the active Python interpreter; `rws web --dev` retains the Vite workflow. Docker builds with Node 24/`npm ci`, installs the built wheel, initializes one writable `/data` workspace, and serves the same bundled application.
+- Required CI now includes package reproducibility, clean-wheel consumers on Windows/Ubuntu with Python 3.10/3.14, and a Docker API/SPA/mock-run smoke behind the unchanged strict `CI / Required gate` context.
+
 ## [2.15.2] - 2026-07-19
 
 ### Fixed
