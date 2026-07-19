@@ -6,7 +6,6 @@ import argparse
 import json
 from pathlib import Path
 import sys
-from datetime import datetime
 from typing import Any
 from dotenv import load_dotenv
 
@@ -60,7 +59,7 @@ from .review import create_review_bundle, create_deliberation_bundle
 from .revision import create_revision_bundle
 from .citations import citation_stats, extract_citations, verify_citations_against_knowledge
 from .bias import run_bias_audit
-from .runs import create_prepare_run
+from .runs import create_prepare_run, make_unique_id
 from .segment import normalize_document, read_document, segment_markdown
 from .validation import (
     validate_eval_aggregate_file,
@@ -967,9 +966,7 @@ def cmd_style_gallery(args: argparse.Namespace) -> int:
     
     output_path = args.output
     if not output_path:
-        from datetime import datetime
-        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-        output_path = repo_root / "docs" / f"style-gallery-{timestamp}.md"
+        output_path = repo_root / "docs" / f"{make_unique_id('style-gallery')}.md"
         
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(gallery_md, encoding="utf-8")
@@ -993,7 +990,7 @@ def cmd_ab_test(args: argparse.Namespace) -> int:
         
     print(f"Starting A/B test for {len(archetypes_list)} archetypes...")
     
-    test_run_id = f"ab-test-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+    test_run_id = make_unique_id("ab-test")
     test_dir = repo_root / "runs" / test_run_id
     test_dir.mkdir(parents=True, exist_ok=True)
     

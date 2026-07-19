@@ -1,4 +1,8 @@
+import tempfile
 import unittest
+from pathlib import Path
+
+from ruwritingstyles.config import load_passport_dicts
 
 from ruwritingstyles.yaml_lite import (
     block,
@@ -63,6 +67,17 @@ class GenericAndTargetedAgreeTests(unittest.TestCase):
         targeted = scalar(text, "name")
         self.assertEqual(generic, targeted)
         self.assertEqual(generic, "Зависимость: разбор")
+
+
+class PassportLoaderTests(unittest.TestCase):
+    def test_existing_malformed_passport_fails_loudly(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            passports = root / "styles" / "passports"
+            passports.mkdir(parents=True)
+            (passports / "broken.yml").write_text("- not\n- an\n- object\n", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "malformed style passport"):
+                load_passport_dicts(root)
 
 
 if __name__ == "__main__":

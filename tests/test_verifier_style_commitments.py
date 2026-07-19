@@ -37,7 +37,15 @@ class RunStyleCommitmentsTests(unittest.TestCase):
     def test_council_commitments_and_passport_limits_injected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             run_dir = _make_run_dir(Path(tmp))
-            section = _render_run_style_commitments(REPO_ROOT, run_dir)
+            original_import = __import__
+
+            def reject_pyyaml(name, *args, **kwargs):
+                if name == "yaml":
+                    raise AssertionError("verification must not import PyYAML")
+                return original_import(name, *args, **kwargs)
+
+            with mock.patch("builtins.__import__", side_effect=reject_pyyaml):
+                section = _render_run_style_commitments(REPO_ROOT, run_dir)
         self.assertIn("Run Style Commitments", section)
         self.assertIn("kāraka", section)
         # a real limit from styles/passports/panini-traditional.yml
@@ -56,6 +64,19 @@ class RunStyleCommitmentsTests(unittest.TestCase):
             empty = Path(tmp) / "empty-run"
             empty.mkdir()
             section = _render_run_style_commitments(REPO_ROOT, empty)
+        self.assertEqual(section, "")
+
+    def test_missing_optional_fixture_passport_is_skipped(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            run_dir = root / "run"
+            reviews = run_dir / "reviews"
+            reviews.mkdir(parents=True)
+            (reviews / "fixture.review.json").write_text(
+                json.dumps({"style_id": "optional-fixture", "findings": []}),
+                encoding="utf-8",
+            )
+            section = _render_run_style_commitments(root, run_dir)
         self.assertEqual(section, "")
 
 

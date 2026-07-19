@@ -7,6 +7,7 @@ import json
 import re
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 from .config import Manifest, ModelPolicy
 from .html_summary import write_html_report
@@ -14,10 +15,24 @@ from .report import write_run_report
 from .segment import Segment
 
 
-def make_run_id(input_path: Path, now: datetime | None = None) -> str:
-    timestamp = (now or datetime.now(timezone.utc)).strftime("%Y%m%d-%H%M%S")
-    slug = re.sub(r"[^a-zA-Z0-9]+", "-", input_path.stem).strip("-").lower() or "document"
-    return f"{timestamp}-{slug}"
+def make_unique_id(
+    label: str,
+    now: datetime | None = None,
+    unique_suffix: str | None = None,
+) -> str:
+    """Return a sortable, collision-resistant automatic artifact ID."""
+    timestamp = (now or datetime.now(timezone.utc)).strftime("%Y%m%d-%H%M%S-%f")
+    slug = re.sub(r"[^a-zA-Z0-9]+", "-", label).strip("-").lower() or "artifact"
+    suffix = unique_suffix or uuid4().hex[:8]
+    return f"{timestamp}-{slug}-{suffix}"
+
+
+def make_run_id(
+    input_path: Path,
+    now: datetime | None = None,
+    unique_suffix: str | None = None,
+) -> str:
+    return make_unique_id(input_path.stem or "document", now, unique_suffix)
 
 
 def create_prepare_run(

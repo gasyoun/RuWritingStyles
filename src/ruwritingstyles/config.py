@@ -365,6 +365,37 @@ def load_archetypes(repo_root: Path) -> tuple[CouncilArchetype, ...]:
     return tuple(archetypes)
 
 
+def _load_passport_file(path: Path) -> dict[str, Any]:
+    data = parse_simple_yaml(_read(path))
+    if not isinstance(data, dict):
+        raise ValueError(f"malformed style passport {path}: expected a YAML object")
+    declared_id = data.get("id")
+    if not isinstance(declared_id, str) or not declared_id.strip():
+        raise ValueError(f"malformed style passport {path}: missing non-empty 'id'")
+    return data
+
+
+def load_passport_by_id(
+    repo_root: Path,
+    style_id: str,
+    manifest: Manifest | None = None,
+) -> dict[str, Any] | None:
+    """Resolve a public style ID through the manifest and strictly parse its file.
+
+    Cluster passports deliberately declare IDs such as ``cluster:indology`` but
+    are exposed as ``indology`` by the manifest, so the manifest mapping—not the
+    file's internal ID—is the canonical runtime lookup.
+    """
+    manifest_path = repo_root / "styles" / "manifest.yml"
+    if manifest is None and not manifest_path.exists():
+        return None
+    actual_manifest = manifest or load_manifest(repo_root)
+    for ref in actual_manifest.passports:
+        if ref.style_id == style_id:
+            return _load_passport_file(ref.path)
+    return None
+
+
 def load_passport_dicts(repo_root: Path) -> list[dict[str, Any]]:
     """Parsed passport dicts from `styles/passports/*.yml`, sorted by filename.
 
@@ -372,12 +403,7 @@ def load_passport_dicts(repo_root: Path) -> list[dict[str, Any]]:
     user-facing summary (checks, best_for, provenance, ...). One loader so the
     glob+parse is not re-implemented per tool."""
     passports_dir = repo_root / "styles" / "passports"
-    dicts: list[dict[str, Any]] = []
-    for path in sorted(passports_dir.glob("*.yml")):
-        data = parse_simple_yaml(_read(path))
-        if isinstance(data, dict):
-            dicts.append(data)
-    return dicts
+    return [_load_passport_file(path) for path in sorted(passports_dir.glob("*.yml"))]
 
 
 def load_passport_summaries(repo_root: Path, manifest: Manifest | None = None) -> tuple[StylePassportSummary, ...]:
