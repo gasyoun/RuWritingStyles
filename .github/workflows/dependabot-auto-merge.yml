@@ -26,13 +26,15 @@ jobs:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Approve the PR
+        if: steps.meta.outputs.update-type != 'version-update:semver-major'
         run: gh pr review --approve "$PR_URL" || true
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Enable auto-merge (falls back to a direct squash-merge where no required checks exist)
-        run: gh pr merge --auto --squash "$PR_URL" || gh pr merge --squash "$PR_URL"
+      - name: Enable auto-merge after required checks
+        if: steps.meta.outputs.update-type != 'version-update:semver-major'
+        run: gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -651,6 +651,8 @@ def compare_eval_suites(baseline: Path, candidate: Path) -> EvalSuiteComparison:
 
     newly_passed = [row["case_id"] for row in rows if row["status"] == "newly_passed"]
     regressed = [row["case_id"] for row in rows if row["status"] == "regressed"]
+    missing_baseline = [row["case_id"] for row in rows if row["status"] == "missing_baseline"]
+    missing_candidate = [row["case_id"] for row in rows if row["status"] == "missing_candidate"]
     baseline_pass_rate = _number(baseline_data.get("pass_rate"))
     candidate_pass_rate = _number(candidate_data.get("pass_rate"))
     data = {
@@ -662,6 +664,8 @@ def compare_eval_suites(baseline: Path, candidate: Path) -> EvalSuiteComparison:
         "pass_rate_delta": round(candidate_pass_rate - baseline_pass_rate, 6),
         "newly_passed": newly_passed,
         "regressed": regressed,
+        "missing_baseline": missing_baseline,
+        "missing_candidate": missing_candidate,
         "results": rows,
     }
     return EvalSuiteComparison(baseline_path=baseline_path, candidate_path=candidate_path, data=data)
@@ -684,6 +688,8 @@ def render_eval_suite_comparison(comparison: EvalSuiteComparison) -> str:
         f"- Pass rate delta: {_signed(data['pass_rate_delta'])}",
         f"- Newly passed: {len(data['newly_passed'])}",
         f"- Regressed: {len(data['regressed'])}",
+        f"- Missing from baseline: {len(data['missing_baseline'])}",
+        f"- Missing from candidate: {len(data['missing_candidate'])}",
         "",
         "| Case | Status | Baseline | Candidate | Finding delta | Changed line delta | Char delta |",
         "|---|---|---:|---:|---:|---:|---:|",

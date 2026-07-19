@@ -2032,6 +2032,8 @@ def cmd_eval_suite(args: argparse.Namespace) -> int:
         print(f"comparison json {comparison_json.relative_to(repo_root)}")
         print(f"pass_rate_delta: {comparison.data.get('pass_rate_delta', 0)}")
         print(f"regressed: {len(comparison.data.get('regressed', []))}")
+        print(f"missing_baseline: {len(comparison.data.get('missing_baseline', []))}")
+        print(f"missing_candidate: {len(comparison.data.get('missing_candidate', []))}")
     if args.strict:
         if args.compare_to:
             if comparison_data is not None and _eval_comparison_has_regression(comparison_data):
@@ -2096,8 +2098,15 @@ def _eval_status_json_path(artifact: Path) -> Path:
 
 def _eval_comparison_has_regression(data: dict) -> bool:
     regressed = data.get("regressed")
+    missing_baseline = data.get("missing_baseline")
+    missing_candidate = data.get("missing_candidate")
     pass_rate_delta = data.get("pass_rate_delta")
-    return bool(regressed) or (isinstance(pass_rate_delta, (int, float)) and pass_rate_delta < 0)
+    return (
+        bool(regressed)
+        or bool(missing_baseline)
+        or bool(missing_candidate)
+        or (isinstance(pass_rate_delta, (int, float)) and pass_rate_delta < 0)
+    )
 
 
 def cmd_review(args: argparse.Namespace) -> int:

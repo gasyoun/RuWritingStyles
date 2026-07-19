@@ -12,6 +12,8 @@
     "pass_rate_delta",
     "newly_passed",
     "regressed",
+    "missing_baseline",
+    "missing_candidate",
     "results"
   ],
   "additionalProperties": false,
@@ -49,6 +51,20 @@
       }
     },
     "regressed": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]*$"
+      }
+    },
+    "missing_baseline": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]*$"
+      }
+    },
+    "missing_candidate": {
       "type": "array",
       "items": {
         "type": "string",
