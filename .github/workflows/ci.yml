@@ -167,6 +167,12 @@ jobs:
             dist/*.whl
             dist/*.tar.gz
 
+      - name: Upload installed-Web probe
+        uses: actions/upload-artifact@v6
+        with:
+          name: installed-web-probe
+          path: scripts/probe-installed-web.py
+
   wheel-consumer:
     name: Wheel consumer (${{ matrix.os }}, Python ${{ matrix.python }})
     needs: packaging
@@ -188,6 +194,12 @@ jobs:
           name: python-packages
           path: dist
 
+      - name: Download installed-Web probe
+        uses: actions/download-artifact@v7
+        with:
+          name: installed-web-probe
+          path: consumer-probe
+
       - name: Install wheel
         shell: bash
         run: python -m pip install dist/*.whl
@@ -204,7 +216,7 @@ jobs:
           rws validate-run runs/wheel-smoke
 
       - name: Probe bundled Web Studio
-        run: python scripts/probe-installed-web.py consumer
+        run: python consumer-probe/probe-installed-web.py consumer
 
   docker-smoke:
     name: Docker smoke
