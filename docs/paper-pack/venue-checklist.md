@@ -43,10 +43,12 @@ _Created: 03-07-2026 · Last updated: 12-07-2026_
 - [x] Декларация об ИИ — §7 черновика (включая роль ИИ-разметчика B из §4.6), формулы из
       [`AI_DISCLOSURE.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/AI_DISCLOSURE.md).
 - [x] Двух-разметчиковая разметка золотого набора (блокер подачи) — выполнена 11-07-2026
-      (§4.6 черновика): согласие 24/25, единственное расхождение — на адъюдикации человека
-      ([`review-vedic-r02-adjudication.html`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/annotation/review-vedic-r02-adjudication.html));
-      оба варианта вердикта готовы к вставке в §4.6 —
-      [`vedic-r02-adjudication-verdict-variants.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/paper-pack/vedic-r02-adjudication-verdict-variants.md).
+      (§4.6 черновика): согласие 24/25. Единственное расхождение **адъюдицировано автором
+      19-07-2026** (вердикт `substantive_detection`, вариант Б из
+      [`vedic-r02-adjudication-verdict-variants.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/paper-pack/vedic-r02-adjudication-verdict-variants.md)):
+      статья репортит два слоя раздельно — механический 24/25 = 0.96, содержательный
+      25/25 = 1.00. Аудит:
+      [`decisions_applied_vedic-r02-adjudication_2026-07-19.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/annotation/decisions_applied_vedic-r02-adjudication_2026-07-19.md).
 - [ ] Data availability: ссылка на репозиторий + Zenodo-DOI (после минтинга — см. ниже).
 - [ ] Cover letter под площадку —
       [`cover-letter.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/paper-pack/cover-letter.md).
