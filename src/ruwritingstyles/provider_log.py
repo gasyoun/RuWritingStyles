@@ -26,6 +26,7 @@ def append_provider_log(
     total_tokens: int = 0,
     cost_estimate: float = 0.0,
     schema_repair: bool = False,
+    budget: dict[str, Any] | None = None,
 ) -> Path:
     """Append one JSONL entry to provider.log.jsonl."""
 
@@ -49,6 +50,8 @@ def append_provider_log(
     }
     if error:
         entry["error"] = error
+    if budget is not None:
+        entry["budget"] = budget
     with log_path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(entry, ensure_ascii=False) + "\n")
     return log_path

@@ -8,6 +8,7 @@ from typing import Any
 
 from .providers import BaseProvider
 from .config import load_passport_summaries, load_manifest
+from .budget import generate_with_budget
 
 def generate_style_gallery(
     *,
@@ -82,14 +83,14 @@ Return a JSON object:
         }
         
         try:
-            result = provider.generate_json(
+            result = generate_with_budget(provider,
                 ProviderRequest(
                     task="gallery",
                     prompt=prompt,
                     schema=schema,
                     metadata={"style_id": style_id},
                     model=model,
-                )
+                ),
             )
             
             gallery_md.append(f"## {i}. {style.name} — `{style_id}`")

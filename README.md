@@ -8,7 +8,21 @@ _Created: 03-05-2026 · Last updated: 19-07-2026_
 
 > 🚀 **Хотите прогнать свою статью через «Совет» стилей?** За пять шагов от установки до первой рецензии (с ключом DeepSeek) — [`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md).
 
-**Status**: v2.15.2 — audit-hardening release: строгий mock-baseline охватывает все **52 кейса** и защищает шесть детерминированных проходов; CI сведен к обязательному контексту `CI / Required gate`; runtime больше не импортирует PyYAML для паспортов; автоматические run/eval ID устойчивы к конкурентным запускам; Web Studio поддерживает настраиваемый backend и session-only bearer token. Предыдущие содержательные релизы: v2.15.1 — адъюдикация `vedic-r02`; v2.15.0/H1213 — [`academic-dictionary-entry`](ClaudeStyles/academic-dictionary-entry-style.md), совет `lexicography` и восемь `GOLD_DICTIONARY` кейсов (бенчмарк **pass 37/40, detection 39/40**; [`docs/benchmark.md`](docs/benchmark.md)).
+**Status**: v2.15.3 — pipeline/packaging-hardening release: prompt/prepare не вызывают провайдеров; `run.json` стал источником восстановления; бюджеты ограничивают попытки, токены и время; wheel/sdist содержат проверенный runtime и Web Studio; `rws init` создает переносимое рабочее пространство. Строгий mock-baseline по-прежнему охватывает **52 кейса** и защищает шесть детерминированных проходов за обязательным `CI / Required gate`.
+
+### Установка конвейера
+
+Скачайте wheel из [GitHub Releases](https://github.com/gasyoun/RuWritingStyles/releases), затем создайте рабочее пространство вне каталога Python:
+
+```bash
+python -m pip install ruwritingstyles-2.15.3-py3-none-any.whl
+mkdir rws-workspace && cd rws-workspace
+rws init .
+rws show-config
+rws web                  # production SPA + API: http://localhost:8000
+```
+
+Для разработки из checkout используйте `python -m pip install -e .`; `rws web --dev` дополнительно запускает Vite на порту 5173. Порядок поиска workspace: `RWS_WORKSPACE`, ближайший `.rws-workspace.json`, затем legacy checkout.
 
 Границы реализованного (честная маркировка):
 
@@ -56,7 +70,7 @@ _Created: 03-05-2026 · Last updated: 19-07-2026_
 - [x] **v2.13.0** (H588 Phase N): span-привязанные стилевые обязательства верификатора, двухэкспертная разметка золотого набора (согласие 24/25, κ Коэна), wall-clock-дедлайн провайдера, маршрутизация моделей `--routes`, обобщенный навык `/rws-council`, черновик методологической статьи в форме подачи (§4.6, EN Abstract/Keywords).
 - [x] **v2.14.0** (H770 Фаза O): маршрутизированный v4-pro N=5 бенчмарк (0.72/0.92/25-25 — строгость судьи как новая ось, [`docs/benchmark.md`](docs/benchmark.md) + §4.7 статьи), A29 контентно submission-ready (ГОСТ-«Литература», варианты адъюдикации, EN abstract 198/200, финальное Zenodo-описание), корпус проиндексирован (FTS5) + 40-й стиль `smirnov-mahabharata` + доводка `sanskrit-reader`, профиль «Восток (Oriens)» + `keywords_max_words`, детерминированный фикс `missing_iast_on_first_mention`.
 - [x] **v2.15.0** (H1213): первый стиль жанра словарной дефиниции `academic-dictionary-entry` (эталоны: Зализняк > Апресян/Мельчук; Кочергина — сверка эквивалентов) + совет `lexicography` + 8 gold-кейсов `GOLD_DICTIONARY` на pwg_ru-материале; бенчмарк 0.925/0.975 (40 прогонов), двухэкспертная разметка 0.97; реестр эталонов и права — `SOURCES.md` №№ 13–21.
-- [x] **v2.15.1–2.15.2**: адъюдикация `vedic-r02` с двухслойным репортингом; затем полный audit-hardening — enforceable 52-case baseline (6 mock passes), обязательный агрегатор CI, patch/minor-only Dependabot auto-merge, строгая zero-dependency загрузка паспортов, collision-safe ID и token-aware Web Studio.
+- [x] **v2.15.1–2.15.3**: адъюдикация `vedic-r02`; audit-hardening; затем явные режимы pipeline, восстановление из `run.json`, fail-closed бюджеты, самостоятельные wheel/workspace/Web/Docker и packaging consumer matrix.
 - [ ] **Дальше (релизные действия автора)**: DOI на Zenodo (→ вписать в [`CITATION.cff`](CITATION.cff)), финализация и подача методологической статьи ([`docs/methodology-paper-outline.md`](docs/methodology-paper-outline.md)); плагин для Obsidian — план реализации (MVP: легкие детерминированные проверки) в [`docs/obsidian-plugin-plan.md`](docs/obsidian-plugin-plan.md).
 
 ## Навигация

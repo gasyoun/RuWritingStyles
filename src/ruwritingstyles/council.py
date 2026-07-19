@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import json
 from pathlib import Path
 from typing import Any
+from .io_utils import atomic_write_json, atomic_write_text
 
 
 @dataclass(frozen=True)
@@ -87,7 +88,8 @@ def create_council_bundle(
     review_docs = [_load_review(path) for path in review_paths]
     delib_docs = [_load_review(path) for path in delib_paths]
 
-    prompt_path.write_text(
+    atomic_write_text(
+        prompt_path,
         _render_prompt(
             repo_root=repo_root,
             run_id=run_id,
@@ -104,12 +106,11 @@ def create_council_bundle(
             verification_feedback=verification_feedback,
             profile=profile,
         ),
-        encoding="utf-8",
     )
 
-    council_path.write_text(
-        json.dumps(
-            {
+    atomic_write_json(
+        council_path,
+        {
                 "run_id": run_id,
                 "status": "prompt_ready",
                 "prompt_path": _repo_relative(repo_root, prompt_path),
@@ -117,12 +118,7 @@ def create_council_bundle(
                 "replies": [],
                 "decisions": [],
                 "profile": profile,
-            },
-            ensure_ascii=False,
-            indent=2,
-        )
-        + "\n",
-        encoding="utf-8",
+        },
     )
 
     return CouncilBundle(council_json=council_path, prompt_md=prompt_path)

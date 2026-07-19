@@ -14,6 +14,7 @@ import re
 import unicodedata
 from pathlib import Path
 from typing import Any
+from .io_utils import atomic_write_json
 
 IAST_DIACRITICS = frozenset("āīūṛṝḷḹṃḥṅñṭḍṇśṣĀĪŪṚṜḶḸṂḤṄÑṬḌṆŚṢ")
 
@@ -303,9 +304,7 @@ def run_translit_lint(repo_root: Path, run_dir: Path) -> Path:
     result["source_file"] = source.name
 
     artifact = run_dir / "translit-lint.json"
-    artifact.write_text(
-        json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    atomic_write_json(artifact, result)
 
     if result["findings"]:
         _merge_into_verification(run_dir, result["findings"])
@@ -332,6 +331,4 @@ def _merge_into_verification(run_dir: Path, findings: list[dict[str, Any]]) -> N
         if key not in existing:
             warnings.append(dict(f, source="translit_lint"))
     doc["warnings"] = warnings
-    verification_path.write_text(
-        json.dumps(doc, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    atomic_write_json(verification_path, doc)

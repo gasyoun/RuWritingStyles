@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any
+from .io_utils import atomic_write_json, atomic_write_text
 
 def create_syntax_bundle(*, repo_root: Path, run_dir: Path) -> dict[str, Any]:
     """Prepare a prompt for the Syntax Shift Assessor."""
@@ -20,7 +21,8 @@ def create_syntax_bundle(*, repo_root: Path, run_dir: Path) -> dict[str, Any]:
     prompt_path = run_dir / "syntax.prompt.md"
     syntax_path = run_dir / "syntax.json"
     
-    prompt_path.write_text(
+    atomic_write_text(
+        prompt_path,
         f"""# Syntax Shift Assessment Request
 
 You are a RuWritingStyles `syntax_assessor`.
@@ -67,17 +69,18 @@ You are a RuWritingStyles `syntax_assessor`.
   ]
 }}
 ```
-""", encoding="utf-8"
+"""
     )
     
     # Initialize syntax.json
-    syntax_path.write_text(
-        json.dumps({
+    atomic_write_json(
+        syntax_path,
+        {
             "run_id": run_dir.name,
             "status": "prompt_ready",
             "prompt_path": str(prompt_path.relative_to(repo_root)),
             "shifts": []
-        }, ensure_ascii=False, indent=2), encoding="utf-8"
+        },
     )
     
     return {"prompt_path": str(prompt_path), "syntax_path": str(syntax_path)}

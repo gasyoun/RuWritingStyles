@@ -9,8 +9,8 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-from typing import Dict, List, Set
+from pydantic import BaseModel, Field
+from typing import Dict, List, Literal, Set
 
 class ConnectionManager:
     def __init__(self):
@@ -24,17 +24,20 @@ class ConnectionManager:
 
     def disconnect(self, run_id: str, websocket: WebSocket):
         if run_id in self.active_connections:
-            self.active_connections[run_id].remove(websocket)
+            self.active_connections[run_id].discard(websocket)
             if not self.active_connections[run_id]:
                 del self.active_connections[run_id]
 
     async def broadcast(self, run_id: str, message: dict):
         if run_id in self.active_connections:
-            for connection in self.active_connections[run_id]:
+            disconnected = []
+            for connection in tuple(self.active_connections[run_id]):
                 try:
                     await connection.send_json(message)
                 except Exception:
-                    pass
+                    disconnected.append(connection)
+            for connection in disconnected:
+                self.disconnect(run_id, connection)
 
 import queue
 
@@ -54,7 +57,7 @@ manager = ConnectionManager()
 shared_state = SharedState()
 
 from .config import Manifest, load_manifest, load_model_policy, repo_root_from
-from .pipeline import run_full_pipeline
+from .pipeline import ExecutionMode, PipelineOptions, build_step_plan, preflight_budget, run_full_pipeline
 from .profiling import calculate_bloom_stats, calculate_methodological_compass, calculate_tension_heatmap
 from .provider_status import provider_statuses, provider_statuses_json
 from .runs import create_prepare_run, list_runs as list_run_ids, load_run_artifact
@@ -64,6 +67,7 @@ from .journals import list_journal_presets, load_journal_preset
 from .project import set_journal_profile
 import argparse
 import json
+from .io_utils import atomic_write_json
 
 
 _CORS_ORIGINS = [
@@ -251,6 +255,12 @@ class RunRequest(BaseModel):
     profile: str = "researcher"
     journal: str | None = None  # journal preset id; honoured by the pipeline
     execute: bool = True
+    max_iterations: int = Field(default=1, ge=1)
+    deliberate: bool = False
+    scrutiny: bool = False
+    lint_translit: bool = True
+    budget_mode: Literal["smoke", "standard", "expensive"] = "standard"
+    allow_expensive: bool = False
 
 
 def _input_root(repo_root: Path) -> Path:
@@ -321,6 +331,22 @@ async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
 
     manifest = load_manifest(repo_root)
     model_policy = load_model_policy(repo_root)
+    options = PipelineOptions(
+        mode=ExecutionMode.EXECUTE if req.execute else ExecutionMode.PREPARE,
+        max_iterations=req.max_iterations,
+        deliberate=req.deliberate,
+        scrutiny=req.scrutiny,
+        lint_translit=req.lint_translit,
+        style_ids=tuple(manifest.mvp_style_ids),
+        budget_mode=req.budget_mode,
+        expensive_opt_in=req.allow_expensive,
+    )
+    if req.execute:
+        from .budget import BudgetError
+        try:
+            preflight_budget(model_policy, options, req.provider)
+        except BudgetError as exc:
+            raise HTTPException(status_code=429, detail=str(exc)) from exc
 
     normalized_text = normalize_document(original_text)
     segments = segment_markdown(normalized_text)
@@ -335,6 +361,20 @@ async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
         model_policy=model_policy,
         provider=req.provider,
         profile=req.profile,
+        config={
+            "provider": req.provider,
+            "model": req.model,
+            "profile": req.profile,
+            "execute": req.execute,
+            "max_iterations": req.max_iterations,
+            "deliberate": req.deliberate,
+            "scrutiny": req.scrutiny,
+            "no_lint_translit": not req.lint_translit,
+            "budget_mode": req.budget_mode,
+            "allow_expensive": req.allow_expensive,
+        },
+        pipeline_options=options.to_json(),
+        step_plan=build_step_plan(options),
     )
 
     # The pipeline (verifier / translit linter / report) honours the journal via
@@ -353,17 +393,25 @@ async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
         def on_tool(run_id, msg):
             asyncio.run_coroutine_threadsafe(manager.broadcast(run_id, msg), loop)
             
-        mcp_client.on_tool_call = on_tool
-        
+        mcp_client.set_progress_callback(run_dir.name, on_tool)
+
+        def run_pipeline_task():
+            try:
+                run_full_pipeline(
+                    repo_root,
+                    run_dir,
+                    provider_name=req.provider,
+                    model=req.model,
+                    profile=req.profile,
+                    on_update=on_update,
+                    injection_queue=shared_state.get_queue(run_dir.name),
+                    options=options,
+                )
+            finally:
+                mcp_client.clear_progress_callback(run_dir.name)
+
         background_tasks.add_task(
-            run_full_pipeline, 
-            repo_root, 
-            run_dir, 
-            provider_name=req.provider, 
-            model=req.model, 
-            profile=req.profile,
-            on_update=on_update,
-            injection_queue=shared_state.get_queue(run_dir.name)
+            run_pipeline_task,
         )
 
     return {"run_id": run_dir.name}
@@ -434,7 +482,7 @@ async def resolve_run(run_id: str, req: ResolutionRequest, background_tasks: Bac
     resolution_data = {
         "overrides": [dict(o) for o in req.overrides]
     }
-    resolution_path.write_text(json.dumps(resolution_data, ensure_ascii=False, indent=2), encoding="utf-8")
+    atomic_write_json(resolution_path, resolution_data)
     
     from .resolution import apply_resolution
     try:
@@ -452,9 +500,15 @@ async def resolve_run(run_id: str, req: ResolutionRequest, background_tasks: Bac
     from .execution import execute_revision_artifact
     from .revision import create_revision_bundle
     from .diff import write_revision_diff
+    from .runs import record_step_state, write_run_manifest
+    import asyncio
+    loop = asyncio.get_running_loop()
+
+    def emit_revision(event: dict) -> None:
+        asyncio.run_coroutine_threadsafe(manager.broadcast(run_id, event), loop)
     
     def background_revision():
-        db.update_step_status(run_id, "revision", "executing")
+        emit_revision(record_step_state(repo_root, run_dir, "revision", "executing"))
         try:
             revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
             model_policy = load_model_policy(repo_root)
@@ -465,9 +519,17 @@ async def resolve_run(run_id: str, req: ResolutionRequest, background_tasks: Bac
                 model=model or model_policy.resolve_model("synthesis", provider),
             )
             write_revision_diff(run_dir)
-            db.update_step_status(run_id, "revision", "completed")
+            emit_revision(record_step_state(
+                repo_root, run_dir, "revision", "completed",
+                artifact_path=revision.revision_json,
+            ))
         except Exception as e:
-            db.update_step_status(run_id, "revision", "failed", error=str(e))
+            emit_revision(record_step_state(
+                repo_root, run_dir, "revision", "failed", error=str(e),
+            ))
+            db.update_run_status(run_id, "failed", summary=str(e))
+            write_run_manifest(repo_root, run_dir)
+            emit_revision({"type": "run_status", "status": "failed", "error": str(e)})
             
     background_tasks.add_task(background_revision)
     return {"status": "resolutions applied, revision re-run queued"}
@@ -529,7 +591,12 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 # Serve the built frontend if it exists
-frontend_path = Path("web/dist")
+from .workspace import bundled_web_dist
+
+try:
+    frontend_path = bundled_web_dist()
+except FileNotFoundError:
+    frontend_path = Path("web/dist")
 if frontend_path.exists():
     app.mount("/assets", StaticFiles(directory=frontend_path / "assets"), name="assets")
 

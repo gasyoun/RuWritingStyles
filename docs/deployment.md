@@ -1,15 +1,26 @@
 # Инструкция по развертыванию RuWritingStyles
 
-Этот документ описывает локальный запуск, Docker Compose и серверный режим для текущей версии проекта. Основная схема сейчас такая: FastAPI обслуживает API, а после сборки Web Studio также раздает готовый `web/dist` как статический SPA.
+Этот документ различает четыре режима: checkout для разработки, установленный wheel с редактируемым workspace, production Web Studio из wheel и контейнер с одним writable volume.
 
 ## 1. Предварительные условия
 
 - Python 3.10+.
-- Node.js 18+ для разработки Web Studio.
-- Git.
+- Node.js 24 только для разработки/сборки Web Studio.
+- Git только для checkout-разработки.
 - Docker и Docker Compose, если нужен контейнерный запуск.
 
-## 2. Локальная разработка
+## 2. Установленный workspace (обычный режим)
+
+```bash
+python -m pip install ruwritingstyles-2.15.3-py3-none-any.whl
+mkdir rws-workspace && cd rws-workspace
+rws init .
+rws web
+```
+
+`rws init` копирует только управляемые runtime assets и создает `.rws-workspace.json`; runs, exports, `rws.db`, `.env` и посторонние файлы не затрагиваются. `rws init --upgrade` заменяет только неизмененные файлы, а новые версии локально правленных файлов кладет в `.rws-new/`.
+
+## 3. Checkout-разработка
 
 ```bash
 git clone https://github.com/gasyoun/RuWritingStyles.git
@@ -19,18 +30,18 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 python -m pip install -e .
 ```
 
-Для Web Studio:
+Для Vite-разработки Web Studio:
 
 ```bash
 cd web
-npm install
+npm ci
 cd ..
-rws web
+rws web --dev
 ```
 
-`rws web` запускает FastAPI на `http://localhost:8000` и Vite frontend на `http://localhost:5173`.
+Production-команда `rws web` всегда отдает встроенный SPA и API на `http://localhost:8000`; `--dev` сохраняет Vite на `http://localhost:5173`.
 
-## 3. Настройка провайдеров
+## 4. Настройка провайдеров
 
 Скопируйте `.env.example` в `.env` и заполните только те ключи, которые реально будете использовать:
 
@@ -58,12 +69,12 @@ RWS_LOCAL_LLM_URL=http://localhost:8000/v1/chat/completions
 
 После этого запускайте аудит с `--provider ollama` или `--provider local`.
 
-## 4. CLI smoke
+## 5. CLI smoke
 
 Без внешних ключей:
 
 ```bash
-rws run examples/input/pseudo-etymology.md --run-id deployment-smoke --execute --provider mock
+rws run examples/input/pseudo-etymology.md --run-id deployment-smoke --execute --provider mock --budget-mode smoke
 rws validate-run runs/deployment-smoke
 ```
 
@@ -76,9 +87,9 @@ rws validate-eval-suite runs/deployment-eval-smoke
 
 Текущий manifest содержит 52 eval-кейса: шесть детерминированно проходят на `mock`, остальные 46 требуют содержательного провайдера. `mock` проверяет инфраструктуру, схемы и сохранность защищенных проходов, но не является содержательной филологической оценкой.
 
-## 5. Production через Docker Compose
+## 6. Production через Docker Compose
 
-Контейнер собирает React frontend, устанавливает Python-пакет из `pyproject.toml`, копирует проектные данные и запускает `python -m ruwritingstyles.api`.
+Контейнер собирает frontend на Node 24 через `npm ci`, собирает и устанавливает wheel, затем при первом старте инициализирует `/data`. Образ не использует исходный checkout во время исполнения.
 
 ```bash
 docker compose up --build
@@ -86,43 +97,31 @@ docker compose up --build
 
 Сервис доступен на `http://localhost:8000`. Этот же порт отдает API и собранный frontend.
 
-`docker-compose.yml` монтирует:
-
-- `./rws.db:/app/rws.db` - SQLite index запусков и метрик;
-- `./runs:/app/runs` - переносимые run artifacts;
-- `./examples:/app/examples` - демонстрационные входные документы.
+`docker-compose.yml` монтирует один writable каталог `./rws-data:/data`; в нем совместно живут marker, редактируемые assets, `runs/`, exports и rebuildable `rws.db`.
 
 Перед production-запуском проверьте, что `.env` не попадает в Git и что контейнер получает только нужные ключи провайдеров.
 
-## 6. Production без Docker (Bare Metal)
+## 7. Production без Docker (Bare Metal)
 
 Для развертывания на обычном Linux-сервере (Ubuntu/Debian) без контейнеров:
 
-1. **Соберите frontend**:
+1. **Подготовьте окружение и workspace**:
    ```bash
-   cd web
-   npm install
-   npm run build
-   cd ..
-   ```
-   *FastAPI автоматически подхватит папку `web/dist`, если она существует.*
-
-2. **Подготовьте окружение**:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate
-   pip install -U pip setuptools
-   pip install -e .
-   pip install uvicorn gunicorn
+    python -m venv venv
+    source venv/bin/activate
+    pip install ruwritingstyles-2.15.3-py3-none-any.whl
+    mkdir -p /srv/ruwritingstyles-data
+    rws init /srv/ruwritingstyles-data
+    export RWS_WORKSPACE=/srv/ruwritingstyles-data
    ```
 
-3. **Запустите через Process Manager (PM2)**:
+2. **Запустите через Process Manager (PM2)**:
    Рекомендуется использовать PM2 для автоматического перезапуска при сбоях:
    ```bash
    pm2 start "python -m ruwritingstyles.api" --name rws-api
    ```
 
-4. **Или через Systemd (Рекомендуется для Linux)**:
+3. **Или через Systemd (Рекомендуется для Linux)**:
    Создайте файл `/etc/systemd/system/rws.service`:
    ```ini
    [Unit]
@@ -131,9 +130,10 @@ docker compose up --build
 
    [Service]
    User=youruser
-   WorkingDirectory=/home/youruser/RuWritingStyles
-   Environment="PATH=/home/youruser/RuWritingStyles/venv/bin"
-   ExecStart=/home/youruser/RuWritingStyles/venv/bin/uvicorn ruwritingstyles.api:app --host 0.0.0.0 --port 8000
+   WorkingDirectory=/srv/ruwritingstyles-data
+   Environment="PATH=/opt/ruwritingstyles/venv/bin"
+   Environment="RWS_WORKSPACE=/srv/ruwritingstyles-data"
+   ExecStart=/opt/ruwritingstyles/venv/bin/uvicorn ruwritingstyles.api:app --host 0.0.0.0 --port 8000
    Restart=always
 
    [Install]
@@ -141,18 +141,20 @@ docker compose up --build
    ```
    Затем: `systemctl enable rws && systemctl start rws`.
 
-5. **Reverse Proxy (Nginx)**:
+4. **Reverse Proxy (Nginx)**:
    Поставьте Nginx перед портом 8000 для поддержки SSL (HTTPS) и доменного имени. FastAPI будет отдавать и API, и статику фронтенда на одном порту.
 
-## 7. Release checks
+## 8. Release checks
 
 Перед деплоем или PR:
 
 ```bash
 python -m compileall -q src tools tests
 python tools/validate_project.py
-python -m unittest discover -s tests
+python -m pytest -q
 python scripts/ci-eval-gate.py
+python -m build --wheel --sdist
+python scripts/verify-runtime-assets.py dist/*.whl dist/*.tar.gz
 ```
 
 Для frontend:
@@ -165,11 +167,11 @@ npm run lint
 npm run build
 ```
 
-Для Obsidian plugin: `cd obsidian-plugin && npm ci && npm run build && npm test`. GitHub Actions `CI` запускает Python/eval всегда, Web и Obsidian по измененным путям, а стабильный `CI / Required gate` агрегирует успех или допустимый `skipped` всех jobs.
+Для Obsidian plugin: `cd obsidian-plugin && npm ci && npm run build && npm test`. GitHub Actions также проверяет wheel в чистых Windows/Ubuntu consumer-средах (Python 3.10/3.14) и запускает Docker smoke; стабильный `CI / Required gate` требует все применимые jobs.
 
-## 8. Хранилище и приватность
+## 9. Хранилище и приватность
 
 - `runs/` остается источником переносимых артефактов: prompts, JSON, Markdown, HTML, diff, LaTeX/BibTeX и ZIP.
-- `rws.db` ускоряет список запусков и хранит метрики, но не заменяет сами артефакты.
-- `provider.log.jsonl` пишет duration/retry/status telemetry без API-ключей и без полного request body.
+- `run.json` — durable source of truth; `rws.db` является rebuildable index.
+- `provider.log.jsonl` пишет duration/retry/status и budget consumption без API-ключей и полного request body.
 - Для конфиденциальных текстов используйте `mock`, `local` или `ollama`; внешние провайдеры всегда opt-in через явный `--provider`.

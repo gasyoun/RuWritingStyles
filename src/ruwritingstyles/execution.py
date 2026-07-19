@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from time import perf_counter
 from typing import Any
+from .io_utils import atomic_write_json, atomic_write_text
+from .budget import generate_with_budget
 
 from .provider_log import append_provider_log
 from .providers import BaseProvider, ProviderRequest, load_schema
@@ -163,7 +165,7 @@ Your task is to revise the following snippet based on the Socratic Council's fin
     # and the rejection is surfaced in `unresolved` for human review.
     accepted_changes, rejected_changes = govern_changes(normalized_text, segments, applied_changes)
     revised_text = reconstruct_revised(normalized_text, segments, accepted_changes)
-    revised_path.write_text(revised_text, encoding="utf-8")
+    atomic_write_text(revised_path, revised_text)
     revision["status"] = "completed"
     revision["revised_document_path"] = _repo_relative(repo_root, revised_path)
     revision["applied_changes"] = accepted_changes
@@ -291,7 +293,7 @@ def _load_json(path: Path) -> dict[str, Any]:
 
 
 def _write_json(path: Path, data: dict[str, Any]) -> None:
-    path.write_text(json.dumps(hooks.pre_write_artifact(data), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    atomic_write_json(path, hooks.pre_write_artifact(data))
 
 
 def _generate_with_log(
@@ -308,8 +310,9 @@ def _generate_with_log(
     # 1. Pre-provider hook
     provider_request = hooks.pre_provider_call(provider_request)
     
+    budget = provider.budget_controller()
     try:
-        output = provider.generate_json(provider_request)
+        output = generate_with_budget(provider, provider_request)
         # 2. Schema validate hook
         output = hooks.post_schema_validate(output, provider_request.schema)
         # 3. Post-provider hook
@@ -328,6 +331,7 @@ def _generate_with_log(
             retry_delay_seconds=_float(telemetry.get("retry_delay_seconds")),
             retry_statuses=_strings(telemetry.get("retry_statuses")),
             error=str(exc),
+            budget=budget.snapshot() if budget is not None else None,
         )
         raise
 
@@ -349,6 +353,7 @@ def _generate_with_log(
         total_tokens=_int(usage.get("total_tokens")),
         cost_estimate=_float(usage.get("cost_estimate")),
         schema_repair=telemetry.get("schema_repair", False),
+        budget=budget.snapshot() if budget is not None else None,
     )
     return output
 

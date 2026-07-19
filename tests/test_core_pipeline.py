@@ -57,6 +57,14 @@ class CorePipelineTests(unittest.TestCase):
         self.assertIn("bloom_stats", run_manifest["metrics"])
         self.assertIn("citation_stats", run_manifest["metrics"])
         self.assertTrue(run_manifest["steps"])
+        self.assertEqual(run_manifest["budget"]["mode"], "standard")
+        self.assertGreater(run_manifest["budget"]["consumption"]["outbound_attempts"], 0)
+        provider_entries = [
+            json.loads(line)
+            for line in (run_dir / "provider.log.jsonl").read_text(encoding="utf-8").splitlines()
+        ]
+        self.assertTrue(provider_entries)
+        self.assertTrue(all("budget" in entry for entry in provider_entries))
 
     def test_prompt_only_mode_builds_bundles_without_executing(self) -> None:
         run_dir, manifest, model_policy = self._prepare("unittest-core-prompt")

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from .io_utils import atomic_write_json
+from .budget import generate_with_budget
 from typing import Any
 from .providers import BaseProvider, ProviderRequest, load_schema
 
@@ -73,17 +75,17 @@ Return a JSON object:
         }
     }
 
-    result = provider.generate_json(
+    result = generate_with_budget(provider,
         ProviderRequest(
             task="bias_audit",
             prompt=prompt,
             schema=schema,
             metadata={"run_id": run_dir.name},
             model=model,
-        )
+        ),
     )
     
     bias_path = run_dir / "bias-audit.json"
-    bias_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+    atomic_write_json(bias_path, result)
     
     return result

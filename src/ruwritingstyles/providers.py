@@ -98,6 +98,12 @@ class BaseProvider:
     def _set_usage(self, usage: ProviderUsage) -> None:
         self._last_usage = usage.to_json()
 
+    def set_budget_controller(self, controller: Any) -> None:
+        self._budget_controller = controller
+
+    def budget_controller(self) -> Any:
+        return getattr(self, "_budget_controller", None)
+
 
 class MockProvider(BaseProvider):
     """Deterministic provider for local development and tests."""
@@ -1066,6 +1072,8 @@ def _post_json_with_retries(
     last_error: Exception | None = None
 
     for attempt in range(1, attempts + 1):
+        from .budget import before_http_attempt
+        before_http_attempt()
         sleep_for = delay
         req = request.Request(url, data=encoded, headers=headers, method="POST")
         try:

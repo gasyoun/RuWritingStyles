@@ -22,8 +22,12 @@
 ```bash
 python -m compileall -q src tools tests
 python tools/validate_project.py
-python -m unittest discover -s tests
+python -m pytest -q
 python scripts/ci-eval-gate.py
 cd web && npm ci && npm test && npm run lint && npm run build
 cd ../obsidian-plugin && npm ci && npm run build && npm test
+cd .. && python -m build --wheel --sdist
+python scripts/verify-runtime-assets.py dist/*.whl dist/*.tar.gz
 ```
+
+CI also runs clean-wheel consumers on Ubuntu/Windows (Python 3.10/3.14) and a Docker API/SPA/mock-run smoke; all jobs feed strict `CI / Required gate`.

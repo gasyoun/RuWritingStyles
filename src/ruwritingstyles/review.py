@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 from .config import Manifest, StylePassportSummary, load_passport_summaries
+from .io_utils import atomic_write_json, atomic_write_text
 
 
 @dataclass(frozen=True)
@@ -54,7 +55,8 @@ def create_review_bundle(
     prompt_path = review_dir / f"{style_id}.prompt.md"
     review_path = review_dir / f"{style_id}.review.json"
 
-    prompt_path.write_text(
+    atomic_write_text(
+        prompt_path,
         _render_prompt(
             repo_root=repo_root,
             run_id=run_id,
@@ -63,12 +65,11 @@ def create_review_bundle(
             segments_json=segments_path.read_text(encoding="utf-8"),
             profile=profile,
         ),
-        encoding="utf-8",
     )
 
-    review_path.write_text(
-        json.dumps(
-            {
+    atomic_write_json(
+        review_path,
+        {
                 "run_id": run_id,
                 "style_id": style_id,
                 "status": "prompt_ready",
@@ -77,12 +78,7 @@ def create_review_bundle(
                 "segment_count": len(segments),
                 "findings": [],
                 "profile": profile,
-            },
-            ensure_ascii=False,
-            indent=2,
-        )
-        + "\n",
-        encoding="utf-8",
+        },
     )
 
     return ReviewBundle(review_json=review_path, prompt_md=prompt_path)
@@ -133,7 +129,8 @@ def create_deliberation_bundle(
     other_reviews = [d for d in review_docs if d.get("style_id") != style_id]
     other_reviews_json = json.dumps(other_reviews, ensure_ascii=False, indent=2)
 
-    prompt_path.write_text(
+    atomic_write_text(
+        prompt_path,
         _render_delib_prompt(
             repo_root=repo_root,
             run_id=run_id,
@@ -143,24 +140,18 @@ def create_deliberation_bundle(
             segments_json=segments_path.read_text(encoding="utf-8"),
             profile=profile,
         ),
-        encoding="utf-8",
     )
 
-    delib_path.write_text(
-        json.dumps(
-            {
+    atomic_write_json(
+        delib_path,
+        {
                 "run_id": run_id,
                 "style_id": style_id,
                 "status": "prompt_ready",
                 "prompt_path": _repo_relative(repo_root, prompt_path),
                 "replies": [],
                 "profile": profile,
-            },
-            ensure_ascii=False,
-            indent=2,
-        )
-        + "\n",
-        encoding="utf-8",
+        },
     )
 
     return DeliberationBundle(deliberation_json=delib_path, prompt_md=prompt_path)

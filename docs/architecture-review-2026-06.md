@@ -9,6 +9,10 @@ Method: three parallel read-only sweeps over `src/ruwritingstyles/`, `tools/`,
 `schemas/`, `tests/`, `web/`, and the agentic modules. Line counts are
 approximate (the tree moves).
 
+## v2.15.3 reconciliation (2026-07-19)
+
+The duplicated-orchestrator and duplicated-YAML-parser findings below are historical: CLI and API now share `core_pipeline`, and runtime/validation share `yaml_lite`. v2.15.3 adds a typed prepare/prompt/execute contract, artifact-validating resume with durable `run.json`, and enforced provider budgets. Distribution now has four explicit shapes: a source checkout for development; an installed wheel plus `rws init` workspace for normal use; bundled production Web Studio on port 8000; and Vite development via `rws web --dev`. The wheel, sdist and Docker image consume the same allowlisted, hashed top-level runtime assets.
+
 ## Overall assessment
 
 A well-conceived pipeline with a sound core contract, wrapped in an

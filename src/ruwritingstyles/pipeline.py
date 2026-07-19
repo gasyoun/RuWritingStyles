@@ -14,6 +14,8 @@ execute=True / single-iteration / no-optional-stages / +callbacks case.
 
 import json
 import queue
+from dataclasses import asdict, dataclass
+from enum import Enum
 from pathlib import Path
 from typing import Any, Callable, Optional
 
@@ -41,6 +43,118 @@ from .report import write_run_report
 from .html_summary import write_html_report
 from .citations import citation_stats, extract_citations, verify_citations_against_knowledge
 from .bias import run_bias_audit
+from .io_utils import atomic_write_json
+
+
+class ExecutionMode(str, Enum):
+    PREPARE = "prepare"
+    PROMPT = "prompt"
+    EXECUTE = "execute"
+
+
+@dataclass(frozen=True)
+class PipelineOptions:
+    """Normalized, durable contract shared by CLI, API and resume."""
+
+    mode: ExecutionMode = ExecutionMode.EXECUTE
+    max_iterations: int = 1
+    deliberate: bool = False
+    scrutiny: bool = False
+    lint_translit: bool = True
+    style_ids: tuple[str, ...] = ()
+    archetype: str | None = None
+    budget_mode: str = "standard"
+    expensive_opt_in: bool = False
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "mode", ExecutionMode(self.mode))
+        object.__setattr__(self, "style_ids", tuple(self.style_ids))
+        if self.max_iterations < 1:
+            raise ValueError("max_iterations must be at least 1")
+
+    def to_json(self) -> dict[str, Any]:
+        value = asdict(self)
+        value["mode"] = self.mode.value
+        value["style_ids"] = list(self.style_ids)
+        return value
+
+    @classmethod
+    def from_json(cls, value: dict[str, Any]) -> "PipelineOptions":
+        return cls(**value)
+
+
+def build_step_plan(options: PipelineOptions) -> list[dict[str, Any]]:
+    """Return the deterministic stage plan persisted before execution."""
+
+    if options.mode is ExecutionMode.PREPARE:
+        return []
+    steps: list[dict[str, Any]] = [{"step_id": "review", "provider_backed": options.mode is ExecutionMode.EXECUTE}]
+    if options.deliberate:
+        steps.append({"step_id": "deliberation", "provider_backed": options.mode is ExecutionMode.EXECUTE})
+    if options.scrutiny:
+        steps.append({"step_id": "scrutiny", "provider_backed": options.mode is ExecutionMode.EXECUTE})
+    for iteration in range(1, options.max_iterations + 1):
+        suffix = f"_iter{iteration}" if options.max_iterations > 1 else ""
+        steps.append({"step_id": f"council{suffix}", "provider_backed": options.mode is ExecutionMode.EXECUTE})
+        if options.mode is ExecutionMode.EXECUTE:
+            steps.append({"step_id": f"bias_audit{suffix}", "provider_backed": True})
+        steps.extend([
+            {"step_id": f"revision{suffix}", "provider_backed": options.mode is ExecutionMode.EXECUTE},
+            {"step_id": f"verification{suffix}", "provider_backed": options.mode is ExecutionMode.EXECUTE},
+        ])
+        if options.lint_translit:
+            steps.append({"step_id": f"translit_lint{suffix}", "provider_backed": False})
+        if options.mode is ExecutionMode.EXECUTE:
+            steps.extend([
+                {"step_id": f"citations{suffix}", "provider_backed": False},
+                {"step_id": f"impact{suffix}", "provider_backed": True},
+                {"step_id": f"syntax{suffix}", "provider_backed": True},
+            ])
+    steps.append({"step_id": "reports", "provider_backed": False})
+    return steps
+
+
+def _artifact_valid(path: Path) -> bool:
+    if not path.exists():
+        return False
+    if path.is_dir():
+        return any(path.iterdir())
+    if path.stat().st_size == 0:
+        return False
+    if path.suffix == ".json":
+        try:
+            json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            return False
+    return True
+
+
+def minimum_provider_attempts(options: PipelineOptions) -> int:
+    if options.mode is not ExecutionMode.EXECUTE:
+        return 0
+    styles = len(options.style_ids)
+    total = styles
+    if options.deliberate:
+        total += styles
+    if options.scrutiny:
+        total += 1
+    # Council, bias audit, revision, verification and syntax are definite.
+    # Impact may be a deterministic no-op when there are no protected spans.
+    total += options.max_iterations * 5
+    return total
+
+
+def preflight_budget(model_policy: Any, options: PipelineOptions, provider_name: str) -> None:
+    if options.mode is not ExecutionMode.EXECUTE:
+        return
+    from .budget import BudgetController
+
+    BudgetController(
+        model_policy.resolve_budget(options.budget_mode),
+        provider=provider_name,
+        explicit_opt_in=options.expensive_opt_in,
+        minimum_attempts=minimum_provider_attempts(options),
+    )
 
 
 def _noop(_msg: str) -> None:
@@ -57,7 +171,7 @@ def core_pipeline(
     manifest: Any = None,
     model_policy: Any = None,
     style_ids: list[str] | tuple[str, ...] | None = None,
-    execute: bool = True,
+    execute: bool | None = True,
     max_iterations: int = 1,
     deliberate: bool = False,
     scrutiny: bool = False,
@@ -68,6 +182,7 @@ def core_pipeline(
     injection_queue: Optional[queue.Queue] = None,
     emit: Optional[Callable[[str], None]] = None,
     post_run: Optional[Callable[[], None]] = None,
+    options: PipelineOptions | None = None,
 ) -> None:
     """Run the full review pipeline over a prepared run directory.
 
@@ -95,7 +210,45 @@ def core_pipeline(
         model_policy = load_model_policy(repo_root)
     if style_ids is None:
         style_ids = manifest.mvp_style_ids
-    provider = provider_from_name(provider_name)
+    if options is None:
+        options = PipelineOptions(
+            mode=ExecutionMode.EXECUTE if execute is not False else ExecutionMode.PROMPT,
+            max_iterations=max_iterations,
+            deliberate=deliberate,
+            scrutiny=scrutiny,
+            lint_translit=lint_translit,
+            style_ids=tuple(style_ids),
+            archetype=archetype,
+        )
+    style_ids = list(options.style_ids or style_ids)
+    execute_mode = options.mode is ExecutionMode.EXECUTE
+    max_iterations = options.max_iterations
+    deliberate = options.deliberate
+    scrutiny = options.scrutiny
+    lint_translit = options.lint_translit
+    archetype = options.archetype
+    step_plan = build_step_plan(options)
+    budget = None
+    if execute_mode:
+        from .budget import BudgetController
+
+        budget_mode = model_policy.resolve_budget(options.budget_mode)
+
+        def persist_budget(snapshot: dict[str, Any]) -> None:
+            from .runs import write_run_manifest
+            write_run_manifest(repo_root, run_dir, budget=snapshot)
+
+        budget = BudgetController(
+            budget_mode,
+            provider=provider_name,
+            explicit_opt_in=options.expensive_opt_in,
+            minimum_attempts=minimum_provider_attempts(options),
+            persist=persist_budget,
+        )
+        provider = provider_from_name(provider_name)
+        provider.set_budget_controller(budget)
+    else:
+        provider = None
 
     def resolve(task: str) -> str:
         return model or model_policy.resolve_model(task, provider_name)
@@ -106,28 +259,49 @@ def core_pipeline(
         except ValueError:
             return str(path)
 
+    from .runs import record_step_state, write_run_manifest
+
     db.update_run_status(run_id, "executing")
+    write_run_manifest(
+        repo_root, run_dir,
+        pipeline_options=options.to_json(), step_plan=step_plan,
+        budget=budget.snapshot() if budget is not None else None,
+    )
     if on_update:
         on_update({"type": "run_status", "status": "executing"})
 
-    def step(step_id: str, func: Callable[[], Any]) -> None:
+    def step(
+        step_id: str,
+        func: Callable[[], Any],
+        expected_outputs: tuple[Path, ...] = (),
+    ) -> None:
         steps = db.get_run_steps(run_id)
-        if any(s["step_id"] == step_id and s["status"] == "completed" for s in steps):
-            emit(f"skipping completed step: {step_id}")
-            return
-        db.update_step_status(run_id, step_id, "executing")
+        existing = next((s for s in steps if s["step_id"] == step_id), None)
+        if existing and existing["status"] == "completed":
+            recorded = Path(existing["artifact_path"]) if existing.get("artifact_path") else None
+            candidates = expected_outputs or ((recorded,) if recorded else ())
+            if candidates and all(_artifact_valid(path) for path in candidates):
+                emit(f"skipping completed step: {step_id}")
+                return
+            emit(f"completed step is stale; rerunning: {step_id}")
+            record_step_state(repo_root, run_dir, step_id, "stale")
+        event = record_step_state(repo_root, run_dir, step_id, "executing")
         if on_update:
-            on_update({"type": "step_update", "step_id": step_id, "status": "executing"})
+            on_update(event)
         try:
             artifact_path = func()
             path_str = str(artifact_path) if artifact_path else None
-            db.update_step_status(run_id, step_id, "completed", artifact_path=path_str)
+            event = record_step_state(
+                repo_root, run_dir, step_id, "completed", artifact_path=path_str,
+            )
             if on_update:
-                on_update({"type": "step_update", "step_id": step_id, "status": "completed", "artifact_path": path_str})
+                on_update(event)
         except Exception as exc:
-            db.update_step_status(run_id, step_id, "failed", error=str(exc))
+            event = record_step_state(
+                repo_root, run_dir, step_id, "failed", error=str(exc),
+            )
             if on_update:
-                on_update({"type": "step_update", "step_id": step_id, "status": "failed", "error": str(exc)})
+                on_update(event)
             raise
 
     try:
@@ -139,14 +313,14 @@ def core_pipeline(
                     manifest=manifest, profile=profile,
                 )
                 emit(f"created {rel(bundle.review_json)}")
-                if execute:
+                if execute_mode:
                     execute_review_artifact(
                         repo_root=repo_root, review_path=bundle.review_json,
                         provider=provider, model=resolve("style_review"),
                     )
                     emit(f"completed {rel(bundle.review_json)}")
             return run_dir / "reviews"
-        step("review", do_review)
+        step("review", do_review, (run_dir / "reviews",))
 
         # 2. Deliberation (optional)
         if deliberate:
@@ -158,14 +332,14 @@ def core_pipeline(
                         manifest=manifest, profile=profile,
                     )
                     emit(f"created {rel(bundle.deliberation_json)}")
-                    if execute:
+                    if execute_mode:
                         execute_deliberation_artifact(
                             repo_root=repo_root, delib_path=bundle.deliberation_json,
                             provider=provider, model=resolve("style_review"),
                         )
                         emit(f"completed {rel(bundle.deliberation_json)}")
                 return run_dir / "deliberations"
-            step("deliberation", do_deliberation)
+            step("deliberation", do_deliberation, (run_dir / "deliberations",))
 
         # 3. Scrutiny (optional)
         if scrutiny:
@@ -173,14 +347,14 @@ def core_pipeline(
                 emit("\n--- Linguistic Scrutiny (Expert Audit) ---")
                 bundle = create_scrutiny_bundle(repo_root=repo_root, run_dir=run_dir)
                 emit(f"created {rel(bundle.scrutiny_json)}")
-                if execute:
+                if execute_mode:
                     execute_scrutiny_artifact(
                         repo_root=repo_root, scrutiny_path=bundle.scrutiny_json,
                         provider=provider, model=resolve("verification"),
                     )
                     emit(f"completed {rel(bundle.scrutiny_json)}")
                 return bundle.scrutiny_json
-            step("scrutiny", do_scrutiny)
+            step("scrutiny", do_scrutiny, (run_dir / "scrutiny" / "scrutiny.json",))
 
         # 4. Iterations
         for iteration in range(1, max_iterations + 1):
@@ -200,7 +374,7 @@ def core_pipeline(
                     archetype_id=archetype, profile=profile,
                 )
                 emit(f"created {rel(council.council_json)}")
-                if execute:
+                if execute_mode:
                     execute_council_artifact(
                         repo_root=repo_root, council_path=council.council_json,
                         provider=provider, model=resolve("council"),
@@ -212,23 +386,24 @@ def core_pipeline(
                     db.save_metric(run_id, "bloom_stats", calculate_bloom_stats(run_dir))
                     db.save_metric(run_id, "compass", calculate_methodological_compass(run_dir, manifest))
                 return council.council_json
-            step(f"council{suffix}", do_council)
+            step(f"council{suffix}", do_council, (run_dir / "council.json",))
 
-            def do_bias_audit():
-                emit("\n--- Methodological Bias Audit ---")
-                res = run_bias_audit(
-                    repo_root=repo_root, run_dir=run_dir,
-                    provider=provider, model=resolve("council"),
-                )
-                db.save_metric(run_id, "bias_score", res.get("bias_score", 0))
-                emit(f"completed bias audit, score: {res.get('bias_score', 0)}/10")
-                return run_dir / "bias-audit.json"
-            step(f"bias_audit{suffix}", do_bias_audit)
+            if execute_mode:
+                def do_bias_audit():
+                    emit("\n--- Methodological Bias Audit ---")
+                    res = run_bias_audit(
+                        repo_root=repo_root, run_dir=run_dir,
+                        provider=provider, model=resolve("council"),
+                    )
+                    db.save_metric(run_id, "bias_score", res.get("bias_score", 0))
+                    emit(f"completed bias audit, score: {res.get('bias_score', 0)}/10")
+                    return run_dir / "bias-audit.json"
+                step(f"bias_audit{suffix}", do_bias_audit, (run_dir / "bias-audit.json",))
 
             def do_revision():
                 revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir)
                 emit(f"created {rel(revision.revision_json)}")
-                if execute:
+                if execute_mode:
                     execute_revision_artifact(
                         repo_root=repo_root, revision_path=revision.revision_json,
                         provider=provider, model=resolve("synthesis"),
@@ -237,19 +412,19 @@ def core_pipeline(
                     diff_path = write_revision_diff(run_dir)
                     emit(f"updated {rel(diff_path)}")
                 return revision.revision_json
-            step(f"revision{suffix}", do_revision)
+            step(f"revision{suffix}", do_revision, (run_dir / "revision.json",))
 
             def do_verify():
                 verification = create_verification_bundle(repo_root=repo_root, run_dir=run_dir)
                 emit(f"created {rel(verification.verification_json)}")
-                if execute:
+                if execute_mode:
                     execute_verification_artifact(
                         repo_root=repo_root, verification_path=verification.verification_json,
                         provider=provider, model=resolve("verification"),
                     )
                     emit(f"completed {rel(verification.verification_json)}")
                 return verification.verification_json
-            step(f"verification{suffix}", do_verify)
+            step(f"verification{suffix}", do_verify, (run_dir / "verification.json",))
 
             if lint_translit:
                 def do_translit_lint():
@@ -258,24 +433,23 @@ def core_pipeline(
                     doc = json.loads(artifact.read_text(encoding="utf-8"))
                     emit(f"completed transliteration lint: {len(doc.get('findings', []))} finding(s) in {doc.get('source_file')}")
                     return artifact
-                step(f"translit_lint{suffix}", do_translit_lint)
+                step(f"translit_lint{suffix}", do_translit_lint, (run_dir / "translit-lint.json",))
 
-            def do_citations():
-                emit("\n--- Scholarly Grounding (Citations) ---")
-                rev_path = run_dir / "revised.md"
-                if not rev_path.exists():
-                    return None
-                text = rev_path.read_text(encoding="utf-8")
-                citations = extract_citations(text)
-                result = verify_citations_against_knowledge(repo_root, citations)
-                cite_path = run_dir / "citations.json"
-                cite_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-                db.save_metric(run_id, "citation_stats", citation_stats(citations, result))
-                emit(f"completed citation verification: {len(result['verified'])} verified, {len(result['not_in_bibliography'])} not in bibliography")
-                return cite_path
-            step(f"citations{suffix}", do_citations)
+            if execute_mode:
+                def do_citations():
+                    emit("\n--- Scholarly Grounding (Citations) ---")
+                    rev_path = run_dir / "revised.md"
+                    text = rev_path.read_text(encoding="utf-8")
+                    citations = extract_citations(text)
+                    result = verify_citations_against_knowledge(repo_root, citations)
+                    cite_path = run_dir / "citations.json"
+                    atomic_write_json(cite_path, result)
+                    db.save_metric(run_id, "citation_stats", citation_stats(citations, result))
+                    emit(f"completed citation verification: {len(result['verified'])} verified, {len(result['not_in_bibliography'])} not in bibliography")
+                    return cite_path
+                step(f"citations{suffix}", do_citations, (run_dir / "citations.json",))
 
-            if execute:
+            if execute_mode:
                 def do_impact():
                     impact = create_impact_bundle(repo_root=repo_root, run_dir=run_dir)
                     emit(f"created {rel(impact.impact_json)}")
@@ -286,7 +460,7 @@ def core_pipeline(
                     db.save_metric(run_id, "tension", calculate_tension_heatmap(run_dir))
                     emit(f"completed {rel(impact.impact_json)}")
                     return impact.impact_json
-                step(f"impact{suffix}", do_impact)
+                step(f"impact{suffix}", do_impact, (run_dir / "impact.json",))
 
                 def do_syntax():
                     syntax_bundle = create_syntax_bundle(repo_root=repo_root, run_dir=run_dir)
@@ -316,7 +490,7 @@ def core_pipeline(
                     combined_warnings = v_warnings + i_warnings
                     if not combined_warnings or iteration == max_iterations:
                         break
-                    verification_json.write_text(json.dumps({"warnings": combined_warnings}, ensure_ascii=False, indent=2), encoding="utf-8")
+                    atomic_write_json(verification_json, {"warnings": combined_warnings})
                     emit(f"Verification/Impact failed with {len(combined_warnings)} warnings. Retrying...")
                 else:
                     break
@@ -333,20 +507,18 @@ def core_pipeline(
             write_latex_report(run_dir, db.get_run(run_id))
             from .bibtex import write_bibtex
             write_bibtex(run_dir, repo_root)
-            return run_dir / "reports"
-        step("reports", do_reports)
+            return run_dir / "report.md"
+        step("reports", do_reports, (run_dir / "report.md", run_dir / "summary.html"))
 
         if post_run is not None:
             post_run()
 
         db.update_run_status(run_id, "completed")
-        from .runs import write_run_manifest
         write_run_manifest(repo_root, run_dir)
         if on_update:
             on_update({"type": "run_status", "status": "completed"})
     except Exception as exc:
         db.update_run_status(run_id, "failed", summary=str(exc))
-        from .runs import write_run_manifest
         write_run_manifest(repo_root, run_dir)
         if on_update:
             on_update({"type": "run_status", "status": "failed", "error": str(exc)})
@@ -361,6 +533,7 @@ def run_full_pipeline(
     profile: str = "researcher",
     on_update: Any = None,
     injection_queue: Optional[queue.Queue] = None,
+    options: PipelineOptions | None = None,
 ) -> None:
     """API entry point: single-iteration, mvp styles, streamed via on_update."""
     core_pipeline(
@@ -373,4 +546,5 @@ def run_full_pipeline(
         max_iterations=1,
         on_update=on_update,
         injection_queue=injection_queue,
+        options=options,
     )

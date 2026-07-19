@@ -52,7 +52,7 @@ jobs:
         run: python tools/validate_project.py
 
       - name: Run tests
-        run: python -m unittest discover -s tests
+        run: python -m pytest -q
 
       - name: Run committed mock eval regression
         run: python scripts/ci-eval-gate.py
@@ -116,6 +116,134 @@ jobs:
       - name: Run plugin parity tests
         run: npm test
 
+  packaging:
+    name: Build packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Build bundled Web Studio
+        working-directory: web
+        run: |
+          npm ci
+          npm run build
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build wheel and sdist
+        run: |
+          python -m pip install build
+          python -m build --wheel --sdist
+
+      - name: Build a wheel from the sdist
+        run: |
+          mkdir -p dist/from-sdist
+          python -m pip wheel --no-deps dist/*.tar.gz --wheel-dir dist/from-sdist
+
+      - name: Verify identical runtime assets
+        run: python scripts/verify-runtime-assets.py dist/*.whl dist/*.tar.gz dist/from-sdist/*.whl
+
+      - name: Verify build left the source tree clean
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
+
+      - name: Upload Python packages
+        uses: actions/upload-artifact@v6
+        with:
+          name: python-packages
+          path: |
+            dist/*.whl
+            dist/*.tar.gz
+
+      - name: Upload installed-Web probe
+        uses: actions/upload-artifact@v6
+        with:
+          name: installed-web-probe
+          path: scripts/probe-installed-web.py
+
+  wheel-consumer:
+    name: Wheel consumer (${{ matrix.os }}, Python ${{ matrix.python }})
+    needs: packaging
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.10", "3.14"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Download packages
+        uses: actions/download-artifact@v7
+        with:
+          name: python-packages
+          path: dist
+
+      - name: Download installed-Web probe
+        uses: actions/download-artifact@v7
+        with:
+          name: installed-web-probe
+          path: consumer-probe
+
+      - name: Install wheel
+        shell: bash
+        run: python -m pip install dist/*.whl
+
+      - name: Exercise installed workspace
+        shell: bash
+        run: |
+          mkdir consumer
+          cd consumer
+          rws init .
+          rws show-config
+          rws list-styles
+          rws run examples/input/article-snippet.md --execute --provider mock --budget-mode smoke --run-id wheel-smoke
+          rws validate-run runs/wheel-smoke
+
+      - name: Probe bundled Web Studio
+        run: python consumer-probe/probe-installed-web.py consumer
+
+  docker-smoke:
+    name: Docker smoke
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Build image
+        run: docker build -t ruwritingstyles:ci .
+
+      - name: Start and probe image
+        run: |
+          docker run --rm -d --name rws-ci -p 8000:8000 ruwritingstyles:ci
+          trap 'docker stop rws-ci' EXIT
+          for i in {1..60}; do curl --fail --silent http://127.0.0.1:8000/status && break; sleep 1; done
+          curl --fail --silent http://127.0.0.1:8000/ | grep -q '<div id="root">'
+          response=$(curl --fail --silent -X POST http://127.0.0.1:8000/runs/execute -H 'Content-Type: application/json' -d '{"text":"# Docker smoke\n\nТест.","filename":"docker.md","provider":"mock","execute":true,"budget_mode":"smoke"}')
+          run_id=$(python -c 'import json,sys; print(json.load(sys.stdin)["run_id"])' <<<"$response")
+          for i in {1..60}; do
+            status=$(curl --fail --silent "http://127.0.0.1:8000/runs/$run_id/status" | python -c 'import json,sys; print(json.load(sys.stdin)["overall_status"])')
+            test "$status" = completed && break
+            test "$status" != failed
+            sleep 1
+          done
+          test "$status" = completed
+
   required:
     name: Required gate
     if: always()
@@ -124,6 +252,9 @@ jobs:
       - python
       - web
       - plugin
+      - packaging
+      - wheel-consumer
+      - docker-smoke
     runs-on: ubuntu-latest
     steps:
       - name: Require every applicable gate
@@ -132,8 +263,14 @@ jobs:
           PYTHON_RESULT: ${{ needs.python.result }}
           WEB_RESULT: ${{ needs.web.result }}
           PLUGIN_RESULT: ${{ needs.plugin.result }}
+          PACKAGING_RESULT: ${{ needs.packaging.result }}
+          CONSUMER_RESULT: ${{ needs.wheel-consumer.result }}
+          DOCKER_RESULT: ${{ needs.docker-smoke.result }}
         run: |
           test "$CHANGES_RESULT" = "success"
           test "$PYTHON_RESULT" = "success"
           test "$WEB_RESULT" = "success" -o "$WEB_RESULT" = "skipped"
           test "$PLUGIN_RESULT" = "success" -o "$PLUGIN_RESULT" = "skipped"
+          test "$PACKAGING_RESULT" = "success"
+          test "$CONSUMER_RESULT" = "success"
+          test "$DOCKER_RESULT" = "success"

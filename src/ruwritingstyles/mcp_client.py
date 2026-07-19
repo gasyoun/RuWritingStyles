@@ -35,7 +35,8 @@ class ZoteroMCPClient:
         self._process: Optional[subprocess.Popen] = None
         self._response_queues: Dict[str, queue.Queue] = {}
         self._reader_thread: Optional[threading.Thread] = None
-        self.on_tool_call: Any = None
+        self._progress_callbacks: Dict[str, Any] = {}
+        self._callback_lock = threading.Lock()
         
         if repo_root:
             self._db = Database(repo_root)
@@ -189,6 +190,14 @@ class ZoteroMCPClient:
         if not self.connected:
             self.connect()
         return self._tools
+
+    def set_progress_callback(self, run_id: str, callback: Any) -> None:
+        with self._callback_lock:
+            self._progress_callbacks[run_id] = callback
+
+    def clear_progress_callback(self, run_id: str) -> None:
+        with self._callback_lock:
+            self._progress_callbacks.pop(run_id, None)
         
     def execute_tool(self, tool_name: str, arguments: Dict[str, Any], run_id: Optional[str] = None, task: Optional[str] = None) -> Any:
         """Execute a tool on the remote MCP server or local researcher."""
@@ -231,8 +240,10 @@ class ZoteroMCPClient:
         if self._db and run_id and task:
             self._db.save_tool_call(run_id, task, tool_name, arguments, result)
             
-        if self.on_tool_call and run_id:
-            self.on_tool_call(run_id, {
+        with self._callback_lock:
+            callback = self._progress_callbacks.get(run_id) if run_id else None
+        if callback and run_id:
+            callback(run_id, {
                 "type": "tool_call",
                 "task": task,
                 "tool_name": tool_name,
