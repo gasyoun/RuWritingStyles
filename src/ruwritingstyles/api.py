@@ -10,7 +10,7 @@ from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket, WebSocke
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
-from typing import Dict, List, Set
+from typing import Dict, List, Literal, Set
 
 class ConnectionManager:
     def __init__(self):
@@ -57,7 +57,7 @@ manager = ConnectionManager()
 shared_state = SharedState()
 
 from .config import Manifest, load_manifest, load_model_policy, repo_root_from
-from .pipeline import ExecutionMode, PipelineOptions, build_step_plan, run_full_pipeline
+from .pipeline import ExecutionMode, PipelineOptions, build_step_plan, preflight_budget, run_full_pipeline
 from .profiling import calculate_bloom_stats, calculate_methodological_compass, calculate_tension_heatmap
 from .provider_status import provider_statuses, provider_statuses_json
 from .runs import create_prepare_run, list_runs as list_run_ids, load_run_artifact
@@ -259,7 +259,7 @@ class RunRequest(BaseModel):
     deliberate: bool = False
     scrutiny: bool = False
     lint_translit: bool = True
-    budget_mode: str = "standard"
+    budget_mode: Literal["smoke", "standard", "expensive"] = "standard"
     allow_expensive: bool = False
 
 
@@ -341,6 +341,12 @@ async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
         budget_mode=req.budget_mode,
         expensive_opt_in=req.allow_expensive,
     )
+    if req.execute:
+        from .budget import BudgetError
+        try:
+            preflight_budget(model_policy, options, req.provider)
+        except BudgetError as exc:
+            raise HTTPException(status_code=429, detail=str(exc)) from exc
 
     normalized_text = normalize_document(original_text)
     segments = segment_markdown(normalized_text)

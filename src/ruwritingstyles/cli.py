@@ -76,6 +76,23 @@ PROVIDER_CHOICES = ["mock", "openai", "google", "anthropic", "openrouter", "deep
 REAL_PROVIDER_CHOICES = ["openai", "google", "anthropic", "openrouter", "deepseek", "local", "ollama"]
 
 
+def _provider_for_args(repo_root: Path, args: argparse.Namespace):
+    """Construct a provider with the selected fail-closed command budget."""
+
+    from .budget import BudgetController
+
+    policy = load_model_policy(repo_root)
+    provider_name = getattr(args, "provider", "mock")
+    controller = BudgetController(
+        policy.resolve_budget(getattr(args, "budget_mode", "standard")),
+        provider=provider_name,
+        explicit_opt_in=getattr(args, "allow_expensive", False),
+    )
+    provider = provider_from_name(provider_name)
+    provider.set_budget_controller(controller)
+    return provider
+
+
 def _configure_stdio() -> None:
     for stream in (sys.stdout, sys.stderr):
         reconfigure = getattr(stream, "reconfigure", None)
@@ -986,7 +1003,7 @@ def cmd_style_gallery(args: argparse.Namespace) -> int:
         repo_root=repo_root,
         input_text=args.input_text,
         style_ids=style_ids,
-        provider=provider_from_name(args.provider),
+        provider=_provider_for_args(repo_root, args),
         model=args.model,
     )
     
@@ -1094,18 +1111,19 @@ def _execute_ab_run(repo_root: Path, args: argparse.Namespace, manifest: Any) ->
     style_ids = args.styles or manifest.mvp_style_ids
     
     if args.execute:
+        provider = _provider_for_args(repo_root, args)
         # 1. Review
         for style_id in style_ids:
             bundle = create_review_bundle(repo_root=repo_root, run_dir=run_dir, style_id=style_id, manifest=manifest)
-            execute_review_artifact(repo_root=repo_root, review_path=bundle.review_json, provider=provider_from_name(args.provider), model=args.model or model_policy.resolve_model("style_review", args.provider))
+            execute_review_artifact(repo_root=repo_root, review_path=bundle.review_json, provider=provider, model=args.model or model_policy.resolve_model("style_review", args.provider))
         
         # 2. Council
         council = create_council_bundle(repo_root=repo_root, run_dir=run_dir, manifest=manifest)
-        execute_council_artifact(repo_root=repo_root, council_path=council.council_json, provider=provider_from_name(args.provider), model=args.model or model_policy.resolve_model("council", args.provider))
+        execute_council_artifact(repo_root=repo_root, council_path=council.council_json, provider=provider, model=args.model or model_policy.resolve_model("council", args.provider))
         
         # 3. Revision
         revision = create_revision_bundle(repo_root=repo_root, run_dir=run_dir, manifest=manifest)
-        execute_revision_artifact(repo_root=repo_root, revision_path=revision.revision_json, provider=provider_from_name(args.provider), model=args.model or model_policy.resolve_model("synthesis", args.provider))
+        execute_revision_artifact(repo_root=repo_root, revision_path=revision.revision_json, provider=provider, model=args.model or model_policy.resolve_model("synthesis", args.provider))
         
     return 0
 
@@ -1150,7 +1168,7 @@ def cmd_run(args: argparse.Namespace) -> int:
 
     manifest = load_manifest(repo_root)
     model_policy = load_model_policy(repo_root)
-    from .pipeline import ExecutionMode, PipelineOptions, build_step_plan
+    from .pipeline import ExecutionMode, PipelineOptions, build_step_plan, preflight_budget
     style_ids = _selected_style_ids(args, manifest)
     options = PipelineOptions(
         mode=ExecutionMode.EXECUTE if args.execute else ExecutionMode.PROMPT,
@@ -1164,6 +1182,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         expensive_opt_in=getattr(args, "allow_expensive", False),
     )
     setattr(args, "_pipeline_options", options)
+    preflight_budget(model_policy, options, args.provider)
     original_text = read_document(input_path)
     normalized_text = normalize_document(original_text)
     segments = segment_markdown(normalized_text)
@@ -1344,7 +1363,7 @@ def cmd_project_run(args: argparse.Namespace) -> int:
 def cmd_audit(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     project_dir = args.project_dir if args.project_dir.is_absolute() else (Path.cwd() / args.project_dir)
-    provider = provider_from_name(args.provider)
+    provider = _provider_for_args(repo_root, args)
     
     print(f"Auditing project consistency for: {project_dir.name}...")
     try:
@@ -1377,7 +1396,7 @@ def cmd_audit(args: argparse.Namespace) -> int:
 def cmd_repl(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
-    provider = provider_from_name(args.provider)
+    provider = _provider_for_args(repo_root, args)
     manifest = load_manifest(repo_root)
     
     run_council_repl(
@@ -1393,7 +1412,7 @@ def cmd_repl(args: argparse.Namespace) -> int:
 def cmd_migrate_corpus(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     input_dir = args.input_dir if args.input_dir.is_absolute() else (Path.cwd() / args.input_dir)
-    provider = provider_from_name(args.provider)
+    provider = _provider_for_args(repo_root, args)
     
     if not input_dir.exists() or not input_dir.is_dir():
         print(f"error: {input_dir} is not a directory")
@@ -1435,7 +1454,7 @@ def cmd_migrate_corpus(args: argparse.Namespace) -> int:
 def cmd_sentiment(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
-    provider = provider_from_name(args.provider)
+    provider = _provider_for_args(repo_root, args)
     
     print(f"Analyzing philological sentiment for: {run_dir.name}...")
     try:
@@ -1462,7 +1481,7 @@ def cmd_sentiment(args: argparse.Namespace) -> int:
 def cmd_peer_review(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
-    provider = provider_from_name(args.provider)
+    provider = _provider_for_args(repo_root, args)
     
     print(f"Running Philological Peer Review for: {run_dir.name}...")
     print(f"Reviewer Archetype: {args.archetype}")
@@ -1493,7 +1512,7 @@ def cmd_peer_review(args: argparse.Namespace) -> int:
 def cmd_style_regression(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     style_id = args.style
-    provider = provider_from_name(args.provider)
+    provider = _provider_for_args(repo_root, args)
     
     print(f"Running Style Regression Test for: {style_id}...")
     
@@ -1526,7 +1545,7 @@ def cmd_style_regression(args: argparse.Namespace) -> int:
 def cmd_peer_review_ab(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
-    provider = provider_from_name(args.provider)
+    provider = _provider_for_args(repo_root, args)
     archetypes = args.archetypes
     
     print(f"Running Peer Review A/B Test for: {run_dir.name}...")
@@ -1670,7 +1689,7 @@ def cmd_web(args: argparse.Namespace) -> int:
 def cmd_migrate(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
     input_file = args.input_file if args.input_file.is_absolute() else (Path.cwd() / args.input_file)
-    provider = provider_from_name(args.provider)
+    provider = _provider_for_args(repo_root, args)
     
     print(f"Migrating {input_file.name} to style: {args.to_style}...")
     try:
@@ -1745,7 +1764,7 @@ def cmd_eval_regression(args: argparse.Namespace) -> int:
 
 def cmd_generate_passport(args: argparse.Namespace) -> int:
     repo_root = repo_root_from()
-    provider = provider_from_name(args.provider)
+    provider = _provider_for_args(repo_root, args)
     
     print(f"Generating style passport for: {args.name}...")
     try:
@@ -2229,7 +2248,7 @@ def cmd_review(args: argparse.Namespace) -> int:
             execute_review_artifact(
                 repo_root=repo_root,
                 review_path=bundle.review_json,
-                provider=provider_from_name(args.provider),
+                provider=_provider_for_args(repo_root, args),
                 model=args.model,
             )
             print(f"completed {bundle.review_json.relative_to(repo_root)}")
@@ -2294,7 +2313,7 @@ def cmd_council(args: argparse.Namespace) -> int:
         execute_council_artifact(
             repo_root=repo_root,
             council_path=bundle.council_json,
-            provider=provider_from_name(args.provider),
+            provider=_provider_for_args(repo_root, args),
             model=args.model,
         )
         print(f"completed {bundle.council_json.relative_to(repo_root)}")
@@ -2323,7 +2342,7 @@ def cmd_deliberate(args: argparse.Namespace) -> int:
             execute_deliberation_artifact(
                 repo_root=repo_root,
                 delib_path=bundle.deliberation_json,
-                provider=provider_from_name(args.provider),
+                provider=_provider_for_args(repo_root, args),
                 model=args.model,
             )
             print(f"completed {bundle.deliberation_json.relative_to(repo_root)}")
@@ -2341,7 +2360,7 @@ def cmd_scrutiny(args: argparse.Namespace) -> int:
         execute_scrutiny_artifact(
             repo_root=repo_root,
             scrutiny_path=bundle.scrutiny_json,
-            provider=provider_from_name(args.provider),
+            provider=_provider_for_args(repo_root, args),
             model=args.model,
         )
         print(f"completed {bundle.scrutiny_json.relative_to(repo_root)}")
@@ -2359,7 +2378,7 @@ def cmd_assess(args: argparse.Namespace) -> int:
         execute_impact_artifact(
             repo_root=repo_root,
             impact_path=bundle.impact_json,
-            provider=provider_from_name(args.provider),
+            provider=_provider_for_args(repo_root, args),
             model=args.model,
         )
         print(f"completed {bundle.impact_json.relative_to(repo_root)}")
@@ -2378,7 +2397,7 @@ def cmd_revise(args: argparse.Namespace) -> int:
         execute_revision_artifact(
             repo_root=repo_root,
             revision_path=bundle.revision_json,
-            provider=provider_from_name(args.provider),
+            provider=_provider_for_args(repo_root, args),
             model=args.model,
         )
         print(f"completed {bundle.revision_json.relative_to(repo_root)}")
@@ -2400,7 +2419,7 @@ def cmd_verify(args: argparse.Namespace) -> int:
         execute_verification_artifact(
             repo_root=repo_root,
             verification_path=bundle.verification_json,
-            provider=provider_from_name(args.provider),
+            provider=_provider_for_args(repo_root, args),
             model=args.model,
         )
         print(f"completed {bundle.verification_json.relative_to(repo_root)}")

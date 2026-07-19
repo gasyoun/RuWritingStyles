@@ -8,6 +8,7 @@ from typing import Any
 
 from .providers import BaseProvider
 from .config import load_manifest, StylePassportSummary
+from .budget import generate_with_budget
 
 
 def migrate_document_style(
@@ -72,7 +73,7 @@ Return a JSON object:
     
     schema = load_schema(repo_root, "schemas/migration-summary.schema.json")
     
-    result = provider.generate_json(
+    result = generate_with_budget(provider,
         ProviderRequest(
             task="migration",
             prompt=prompt,
@@ -82,7 +83,7 @@ Return a JSON object:
                 "to_style_id": to_style_id,
             },
             model=model,
-        )
+        ),
     )
     
     # Save result

@@ -8,6 +8,7 @@ from typing import Any
 
 from .providers import BaseProvider
 from .config import load_archetypes
+from .budget import generate_with_budget
 
 
 def run_peer_review(
@@ -88,14 +89,14 @@ Return a JSON object:
         }
     }
     
-    result = provider.generate_json(
+    result = generate_with_budget(provider,
         ProviderRequest(
             task="peer_review",
             prompt=prompt,
             schema=schema,
             metadata={"archetype": reviewer_archetype_id},
             model=model,
-        )
+        ),
     )
     
     # Save to run dir

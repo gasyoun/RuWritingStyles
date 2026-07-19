@@ -129,6 +129,34 @@ def _artifact_valid(path: Path) -> bool:
     return True
 
 
+def minimum_provider_attempts(options: PipelineOptions) -> int:
+    if options.mode is not ExecutionMode.EXECUTE:
+        return 0
+    styles = len(options.style_ids)
+    total = styles
+    if options.deliberate:
+        total += styles
+    if options.scrutiny:
+        total += 1
+    # Council, bias audit, revision, verification and syntax are definite.
+    # Impact may be a deterministic no-op when there are no protected spans.
+    total += options.max_iterations * 5
+    return total
+
+
+def preflight_budget(model_policy: Any, options: PipelineOptions, provider_name: str) -> None:
+    if options.mode is not ExecutionMode.EXECUTE:
+        return
+    from .budget import BudgetController
+
+    BudgetController(
+        model_policy.resolve_budget(options.budget_mode),
+        provider=provider_name,
+        explicit_opt_in=options.expensive_opt_in,
+        minimum_attempts=minimum_provider_attempts(options),
+    )
+
+
 def _noop(_msg: str) -> None:
     pass
 
@@ -200,7 +228,27 @@ def core_pipeline(
     lint_translit = options.lint_translit
     archetype = options.archetype
     step_plan = build_step_plan(options)
-    provider = provider_from_name(provider_name) if execute_mode else None
+    budget = None
+    if execute_mode:
+        from .budget import BudgetController
+
+        budget_mode = model_policy.resolve_budget(options.budget_mode)
+
+        def persist_budget(snapshot: dict[str, Any]) -> None:
+            from .runs import write_run_manifest
+            write_run_manifest(repo_root, run_dir, budget=snapshot)
+
+        budget = BudgetController(
+            budget_mode,
+            provider=provider_name,
+            explicit_opt_in=options.expensive_opt_in,
+            minimum_attempts=minimum_provider_attempts(options),
+            persist=persist_budget,
+        )
+        provider = provider_from_name(provider_name)
+        provider.set_budget_controller(budget)
+    else:
+        provider = None
 
     def resolve(task: str) -> str:
         return model or model_policy.resolve_model(task, provider_name)
@@ -217,6 +265,7 @@ def core_pipeline(
     write_run_manifest(
         repo_root, run_dir,
         pipeline_options=options.to_json(), step_plan=step_plan,
+        budget=budget.snapshot() if budget is not None else None,
     )
     if on_update:
         on_update({"type": "run_status", "status": "executing"})

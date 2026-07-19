@@ -16,13 +16,26 @@ default_development_mode:
 budget_modes:
   smoke:
     description: "Use fast/free models across all tasks for infrastructure testing."
-    fallback_model: "gemini-flash"
+    providers:
+      - mock
+      - ollama
+      - local
+    max_outbound_attempts: 32
+    max_tokens: 250000
+    max_wall_seconds: 900
   standard:
     description: "Use default task-specific routes."
+    providers: []
+    max_outbound_attempts: 64
+    max_tokens: 750000
+    max_wall_seconds: 3600
   expensive:
     description: "Upgrade all tasks to flagship models with maximum reasoning."
-  verifier-only:
-    description: "Use standard models for most tasks, but flagship for verification."
+    providers: []
+    max_outbound_attempts: 256
+    max_tokens: 3000000
+    max_wall_seconds: 10800
+    explicit_selection_required: true
 
 providers:
   openai:

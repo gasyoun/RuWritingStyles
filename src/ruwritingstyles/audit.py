@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from .providers import BaseProvider
+from .budget import generate_with_budget
 
 
 def audit_project_consistency(
@@ -105,12 +106,12 @@ Return a JSON object:
         }
     }
     
-    return provider.generate_json(
+    return generate_with_budget(provider,
         ProviderRequest(
             task="audit",
             prompt=prompt,
             schema=schema,
             metadata={"project_dir": str(project_dir)},
             model=model,
-        )
+        ),
     )

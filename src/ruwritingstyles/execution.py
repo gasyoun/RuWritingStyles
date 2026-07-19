@@ -7,6 +7,7 @@ from pathlib import Path
 from time import perf_counter
 from typing import Any
 from .io_utils import atomic_write_json, atomic_write_text
+from .budget import generate_with_budget
 
 from .provider_log import append_provider_log
 from .providers import BaseProvider, ProviderRequest, load_schema
@@ -309,8 +310,9 @@ def _generate_with_log(
     # 1. Pre-provider hook
     provider_request = hooks.pre_provider_call(provider_request)
     
+    budget = provider.budget_controller()
     try:
-        output = provider.generate_json(provider_request)
+        output = generate_with_budget(provider, provider_request)
         # 2. Schema validate hook
         output = hooks.post_schema_validate(output, provider_request.schema)
         # 3. Post-provider hook
@@ -329,6 +331,7 @@ def _generate_with_log(
             retry_delay_seconds=_float(telemetry.get("retry_delay_seconds")),
             retry_statuses=_strings(telemetry.get("retry_statuses")),
             error=str(exc),
+            budget=budget.snapshot() if budget is not None else None,
         )
         raise
 
@@ -350,6 +353,7 @@ def _generate_with_log(
         total_tokens=_int(usage.get("total_tokens")),
         cost_estimate=_float(usage.get("cost_estimate")),
         schema_repair=telemetry.get("schema_repair", False),
+        budget=budget.snapshot() if budget is not None else None,
     )
     return output
 

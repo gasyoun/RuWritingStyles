@@ -93,6 +93,7 @@ class ModelPolicy:
     default_reasoning: str
     default_speed: str
     routes: tuple[ModelRoute, ...] = ()
+    budget_modes: tuple["BudgetMode", ...] = ()
 
     def resolve_model(self, task: str, provider_name: str) -> str:
         """Resolve the best model for a specific task and provider."""
@@ -100,6 +101,23 @@ class ModelPolicy:
             if route.provider == provider_name and route.task == task:
                 return route.model
         return self.default_model
+
+    def resolve_budget(self, name: str) -> "BudgetMode":
+        for mode in self.budget_modes:
+            if mode.name == name:
+                return mode
+        available = ", ".join(mode.name for mode in self.budget_modes)
+        raise ValueError(f"unknown budget mode {name!r}; available: {available}")
+
+
+@dataclass(frozen=True)
+class BudgetMode:
+    name: str
+    providers: tuple[str, ...]
+    max_outbound_attempts: int
+    max_tokens: int
+    max_wall_seconds: int
+    explicit_selection_required: bool = False
 
 
 @dataclass(frozen=True)
@@ -246,6 +264,23 @@ def load_model_policy(repo_root: Path) -> ModelPolicy:
     text = _read(path)
     default_block = _block(text, "default_development_mode")
 
+    parsed = parse_simple_yaml(text)
+    raw_modes = parsed.get("budget_modes", {}) if isinstance(parsed, dict) else {}
+    budget_modes: list[BudgetMode] = []
+    if isinstance(raw_modes, dict):
+        for name, value in raw_modes.items():
+            if not isinstance(value, dict):
+                continue
+            providers = value.get("providers", [])
+            budget_modes.append(BudgetMode(
+                name=str(name),
+                providers=tuple(str(item) for item in providers) if isinstance(providers, list) else (),
+                max_outbound_attempts=int(value.get("max_outbound_attempts", 0)),
+                max_tokens=int(value.get("max_tokens", 0)),
+                max_wall_seconds=int(value.get("max_wall_seconds", 0)),
+                explicit_selection_required=bool(value.get("explicit_selection_required", False)),
+            ))
+
     return ModelPolicy(
         path=path,
         default_provider=_scalar(text, "default_provider", "openai"),
@@ -253,6 +288,7 @@ def load_model_policy(repo_root: Path) -> ModelPolicy:
         default_reasoning=_scalar(default_block, "reasoning", "xhigh"),
         default_speed=_scalar(default_block, "speed", "standard"),
         routes=load_model_routes(repo_root),
+        budget_modes=tuple(budget_modes),
     )
 
 
