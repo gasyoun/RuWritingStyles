@@ -1,6 +1,12 @@
 # Адъюдикация `vedic-classical-anachronism-r02` — два готовых варианта вердикта для §4.6
 
-_Created: 12-07-2026 · Last updated: 12-07-2026_
+_Created: 12-07-2026 · Last updated: 19-07-2026_
+
+> **✅ РЕШЕНО 19-07-2026 — выбран вариант Б** (`substantive_detection`). Его абзац вставлен
+> в §4.6 черновика; оба числа репортируются раздельно. Голос:
+> [`evals/annotation/decisions.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/annotation/decisions.json),
+> аудит: [`decisions_applied_vedic-r02-adjudication_2026-07-19.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/annotation/decisions_applied_vedic-r02-adjudication_2026-07-19.md).
+> Этот файл сохранен как запись рассмотренных альтернатив (вариант A отклонен).
 
 > Единственное расхождение разметчиков A/B по 25 прогонам (§4.6
 > [`methodology-paper-draft.ru.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/methodology-paper-draft.ru.md)):
@@ -9,8 +15,7 @@ _Created: 12-07-2026 · Last updated: 12-07-2026_
 > опознание анахронизма под смежными типами (`missing_source`,
 > `unsupported_semantization`). Решение — за человеком (третьим разметчиком по
 > [`GOLD_PROTOCOL.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/GOLD_PROTOCOL.md));
-> интерактивный лист —
-> [`review-vedic-r02-adjudication.html`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/annotation/review-vedic-r02-adjudication.html).
+> интерактивный лист `review-vedic-r02-adjudication.html` удален после голосования.
 > После решения: вставить выбранный абзац в конец §4.6 черновика (вместо фразы
 > «Расхождение передано на решение человека…») и снять соответствующий пункт из
 > «Открытых задач».
