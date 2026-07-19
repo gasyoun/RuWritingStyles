@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-The Vite dev server runs on `http://localhost:5173` and expects the backend on `http://localhost:8000`.
+The Vite dev server runs on `http://localhost:5173` and defaults to the current hostname on port 8000. Use the Settings button to change the backend URL or add an API token; both values are stored only in `sessionStorage`.
 
 From the repository root, the CLI can launch both:
 
@@ -26,7 +26,7 @@ npm run lint
 npm run build
 ```
 
-The production bundle is written to `web/dist`. When `web/dist` exists, `python -m ruwritingstyles.api` serves it from the same FastAPI process that serves the API.
+The production bundle is written to `web/dist`. When `web/dist` exists, `python -m ruwritingstyles.api` serves it from the same FastAPI process that serves the API, so Web Studio defaults to its current origin.
 
 ## Current Views
 
