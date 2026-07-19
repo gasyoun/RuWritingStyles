@@ -4,6 +4,18 @@ All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
 
+## [2.15.2] - 2026-07-19
+
+### Fixed
+- **The committed mock baseline is enforceable again:** [`evals/baselines/gold.json`](evals/baselines/gold.json) was explicitly regenerated from the final 52-case suite (6 deterministic passes, 46 expected mock failures). Strict comparison now fails when either side lacks a case, a previously passing case fails, or aggregate pass rate falls; adding a case therefore requires an explicit baseline refresh.
+- **Runtime YAML is zero-dependency and fail-loud:** verification and styleguide generation resolve passports through the manifest with the in-repo YAML parser. Missing optional fixture passports remain skippable, while an existing malformed passport raises a clear error instead of silently dropping its obligations.
+- **Automatic artifact IDs no longer collide at second resolution:** normal/API/eval/A-B/leaderboard IDs share a microsecond timestamp + slug + UUID suffix. Explicit `--run-id` values and their existing collision error are unchanged; concurrent same-filename API submissions now receive distinct successful run IDs.
+
+### Changed
+- **CI is split into Python/eval, Web Studio, and conditional Obsidian jobs behind the stable `CI / Required gate` context.** The eval wrapper trusts command exit status, Web runs tests/lint/build, and the plugin runs build + parity tests. Dependabot only approves and queues patch/minor updates after checks; majors stay open and the direct-merge fallback is gone.
+- **Web Studio is token-aware:** one API client normalizes backend URLs, sends bearer headers, converts HTTP(S) WebSocket URLs to WS(S), and puts the URL-encoded token only on WebSocket connections. Backend URL and token are editable through Settings and live only in `sessionStorage`; 401, invalid-URL, and connection failures are visible in the UI. Bundled deployments default to the current origin; Vite development defaults to the current hostname on port 8000.
+- Release metadata, security notes, eval documentation, and the session journal were synchronized for v2.15.2.
+
 ## [2.15.1] - 2026-07-19
 ### Changed (vedic-r02 adjudication applied — A29 submission blocker closed, roadmap Фаза O1)
 - **The single gold-set annotation disagreement is adjudicated** (author vote 19-07-2026, verdict `substantive_detection`, recorded in [`evals/annotation/decisions.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/annotation/decisions.json)): detection is now reported as **two separate layers** rather than one contested number — layer 1 (mechanical scorer, canonical-type match) **24/25 = 0.96**, layer 2 (gold annotation, substantive detection) **25/25 = 1.00**. The one-run gap between layers is itself the measurement: it scores *typing discipline*, not the ability to find the error. `accepted_finding_aliases` deliberately NOT extended for the run (the third option was rejected as protocol-forbidden run-specific vocabulary widening).

@@ -7,6 +7,35 @@ import {
   Search, BookOpen, Activity, Layers, MessageSquare,
   Settings, Download, Plus, Info, Zap
 } from 'lucide-react';
+import {
+  apiFetch,
+  defaultBackendUrl,
+  loadSessionSettings,
+  saveSessionSettings,
+  webSocketUrl,
+} from './api-client.js';
+
+function initialWebSettings() {
+  const fallbackUrl = defaultBackendUrl(window.location, '', import.meta.env.DEV);
+  try {
+    const backendUrl = defaultBackendUrl(
+      window.location,
+      import.meta.env.VITE_RWS_API_URL,
+      import.meta.env.DEV,
+    );
+    return {
+      settings: loadSessionSettings(window.sessionStorage, { backendUrl, token: '' }),
+      error: '',
+    };
+  } catch (error) {
+    return {
+      settings: { backendUrl: fallbackUrl, token: '' },
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+const INITIAL_WEB_SETTINGS = initialWebSettings();
 
 function App() {
   const [runs, setRuns] = useState([]);
@@ -17,7 +46,11 @@ function App() {
   const [systemStatuses, setSystemStatuses] = useState([]);
   const [selectedProvider, setSelectedProvider] = useState('google');
   const [isNewRunModalOpen, setIsNewRunModalOpen] = useState(false);
-  const [newRunPath, setNewRunPath] = useState('C:\\Users\\user\\Documents\\GitHub\\RuWritingStyles\\article.md');
+  const [newRunPath, setNewRunPath] = useState('');
+  const [apiSettings, setApiSettings] = useState(INITIAL_WEB_SETTINGS.settings);
+  const [settingsDraft, setSettingsDraft] = useState(INITIAL_WEB_SETTINGS.settings);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [uiError, setUiError] = useState(INITIAL_WEB_SETTINGS.error);
   const [viewMode, setViewMode] = useState('audit'); // 'audit', 'profile', 'syntax', 'compare'
   const [comparisonData, setComparisonData] = useState([]);
   const [resolutions, setResolutions] = useState({});
@@ -28,11 +61,22 @@ function App() {
 
   const wsRef = useRef(null);
 
+  const showError = useCallback((error) => {
+    setUiError(error instanceof Error ? error.message : String(error));
+  }, []);
+
+  const request = useCallback(
+    (path, options) => apiFetch(apiSettings, path, options),
+    [apiSettings],
+  );
+
   // WebSocket Live Updates
   useEffect(() => {
     if (!activeRunId) return;
 
-    const ws = new WebSocket(`ws://localhost:8000/ws/${activeRunId}`);
+    const ws = new WebSocket(
+      webSocketUrl(apiSettings.backendUrl, `/ws/${activeRunId}`, apiSettings.token),
+    );
     wsRef.current = ws;
     
     ws.onmessage = (event) => {
@@ -44,18 +88,20 @@ function App() {
 
       // Auto-refresh data if step completed
       if (msg.type === 'step_update' && msg.status === 'completed') {
-        fetch(`http://localhost:8000/runs/${activeRunId}`)
+        request(`/runs/${activeRunId}`)
           .then(res => res.json())
-          .then(data => setRunData(data));
+          .then(data => setRunData(data))
+          .catch(showError);
       }
     };
+    ws.onerror = () => showError(new Error(`WebSocket connection failed: ${apiSettings.backendUrl}`));
 
     return () => {
       ws.close();
       wsRef.current = null;
       setTrace([]);
     };
-  }, [activeRunId]);
+  }, [activeRunId, apiSettings, request, showError]);
 
   const sendInjection = (content) => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
@@ -75,49 +121,55 @@ function App() {
 
   // 1. Fetch Runs List
   const fetchRuns = useCallback(() => {
-    fetch('http://localhost:8000/runs')
+    return request('/runs')
       .then(res => res.json())
       .then(data => {
         setRuns(data);
         if (data.length > 0) {
           setActiveRunId(current => current || data[0]);
         }
-      });
-  }, []);
+      })
+      .catch(showError);
+  }, [request, showError]);
 
   useEffect(() => {
     fetchRuns();
-    fetch('http://localhost:8000/status')
+    request('/status')
       .then(res => res.json())
-      .then(data => setSystemStatuses(data));
-  }, [fetchRuns]);
+      .then(data => setSystemStatuses(data))
+      .catch(showError);
+  }, [fetchRuns, request, showError]);
 
   // 2. Fetch Active Run Data
   useEffect(() => {
     if (activeRunId && viewMode !== 'compare') {
-      fetch(`http://localhost:8000/runs/${activeRunId}`)
-        .then(res => res.json())
-        .then(data => {
+      Promise.all([
+        request(`/runs/${activeRunId}`).then(res => res.json()),
+        request(`/runs/${activeRunId}/concordance`).then(res => res.json()),
+      ])
+        .then(([data, concData]) => {
           setRunData(data);
-          fetch(`http://localhost:8000/runs/${activeRunId}/concordance`)
-            .then(res => res.json())
-            .then(concData => setConcordance(concData));
-        });
+          setConcordance(concData);
+        })
+        .catch(showError);
     }
-  }, [activeRunId, viewMode]);
+  }, [activeRunId, viewMode, request, showError]);
 
   // 3. Fetch Comparison Data
   useEffect(() => {
     if (viewMode === 'compare' && selectedRunIds.length > 1) {
-      fetch(`http://localhost:8000/api/compare?run_ids=${selectedRunIds.join(',')}`)
+      const query = new URLSearchParams({ run_ids: selectedRunIds.join(',') });
+      request(`/api/compare?${query}`)
         .then(res => res.json())
-        .then(data => setComparisonData(data));
+        .then(data => setComparisonData(data))
+        .catch(showError);
     }
-  }, [viewMode, selectedRunIds]);
+  }, [viewMode, selectedRunIds, request, showError]);
 
   const handleStartRun = () => {
     if (!newRunPath) return;
-    fetch('http://localhost:8000/runs/execute', {
+    setUiError('');
+    request('/runs/execute', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -125,10 +177,12 @@ function App() {
         provider: selectedProvider,
         execute: true
       })
-    }).then(() => {
-      setIsNewRunModalOpen(false);
-      fetchRuns();
-    });
+    })
+      .then(() => {
+        setIsNewRunModalOpen(false);
+        return fetchRuns();
+      })
+      .catch(showError);
   };
 
   const handleApplyResolutions = () => {
@@ -136,30 +190,44 @@ function App() {
     const overrides = Object.values(resolutions);
     if (overrides.length === 0) return;
     
-    fetch(`http://localhost:8000/runs/${activeRunId}/resolve`, {
+    request(`/runs/${activeRunId}/resolve`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ overrides })
-    }).then(res => res.json()).then(data => {
-      alert(data.status);
+    }).then(res => res.json()).then(() => {
       setResolutions({});
-      // Ideally poll for status, but for now just clear
-    }).catch(err => alert("Error applying resolutions: " + err));
+    }).catch(showError);
   };
 
   const handleFinalize = () => {
     if (!activeRunId) return;
     setIsFinalizing(true);
-    fetch(`http://localhost:8000/runs/${activeRunId}/finalize`, { method: 'POST' })
+    request(`/runs/${activeRunId}/finalize`, { method: 'POST' })
       .then(res => res.json())
-      .then(data => {
-        alert(data.status === 'finalized' ? 'Final manuscript generated!' : data.status);
+      .then(() => {
         setIsFinalizing(false);
       })
-      .catch(err => {
-        alert("Error finalizing: " + err);
+      .catch(error => {
+        showError(error);
         setIsFinalizing(false);
       });
+  };
+
+  const openSettings = () => {
+    setSettingsDraft(apiSettings);
+    setIsSettingsModalOpen(true);
+  };
+
+  const handleSaveSettings = () => {
+    try {
+      const saved = saveSessionSettings(window.sessionStorage, settingsDraft);
+      setApiSettings(saved);
+      setSettingsDraft(saved);
+      setUiError('');
+      setIsSettingsModalOpen(false);
+    } catch (error) {
+      showError(error);
+    }
   };
 
   const toggleRunSelection = (runId) => {
@@ -244,7 +312,15 @@ function App() {
             <div className="status-dot"></div>
             <span>{selectedProvider.toUpperCase()}: {currentStatus.ready ? 'READY' : 'OFFLINE'}</span>
           </div>
-          <Settings size={18} className="settings-icon" />
+          <button
+            type="button"
+            className="settings-button"
+            onClick={openSettings}
+            title="Backend settings"
+            aria-label="Backend settings"
+          >
+            <Settings size={18} />
+          </button>
         </div>
       </aside>
 
@@ -275,6 +351,13 @@ function App() {
              </button>
           </div>
         </header>
+
+        {uiError && (
+          <div className="api-error-banner" role="alert">
+            <span>{uiError}</span>
+            <button type="button" onClick={() => setUiError('')} aria-label="Dismiss error">×</button>
+          </div>
+        )}
 
         {viewMode === 'compare' ? (
           <div className="workbench-content compare-view">
@@ -491,6 +574,7 @@ function App() {
             <div className="modal-header"><Plus size={20} /><h3>New Philological Audit</h3></div>
             <div className="modal-body">
               <p>Initialize a new automated stylistic audit. Specify the absolute path to your source manuscript (.md, .txt).</p>
+              {uiError && <div className="modal-error" role="alert">{uiError}</div>}
               <div className="input-group">
                 <label>Manuscript Path</label>
                 <input type="text" value={newRunPath} onChange={(e) => setNewRunPath(e.target.value)} />
@@ -498,6 +582,49 @@ function App() {
               <div className="modal-actions">
                 <button className="cancel-btn" onClick={() => setIsNewRunModalOpen(false)}>Cancel</button>
                 <button className="start-btn" onClick={handleStartRun}>Execute Audit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isSettingsModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal glass">
+            <div className="modal-header"><Settings size={20} /><h3>Backend Settings</h3></div>
+            <div className="modal-body">
+              <p>Credentials stay in this browser tab&apos;s session storage and are sent as a bearer token only to the configured backend.</p>
+              {uiError && <div className="modal-error" role="alert">{uiError}</div>}
+              <div className="input-group">
+                <label htmlFor="backend-url">Backend URL</label>
+                <input
+                  id="backend-url"
+                  type="url"
+                  value={settingsDraft.backendUrl}
+                  onChange={(event) => setSettingsDraft(previous => ({
+                    ...previous,
+                    backendUrl: event.target.value,
+                  }))}
+                  placeholder="http://localhost:8000"
+                />
+              </div>
+              <div className="input-group">
+                <label htmlFor="backend-token">API Token</label>
+                <input
+                  id="backend-token"
+                  type="password"
+                  value={settingsDraft.token}
+                  onChange={(event) => setSettingsDraft(previous => ({
+                    ...previous,
+                    token: event.target.value,
+                  }))}
+                  autoComplete="off"
+                  placeholder="Optional on localhost"
+                />
+              </div>
+              <div className="modal-actions">
+                <button className="cancel-btn" onClick={() => setIsSettingsModalOpen(false)}>Cancel</button>
+                <button className="start-btn" onClick={handleSaveSettings}>Save Settings</button>
               </div>
             </div>
           </div>

@@ -8,9 +8,30 @@ on:
       - "codex/**"
 
 jobs:
-  test:
+  changes:
+    name: Detect changed paths
     runs-on: ubuntu-latest
+    outputs:
+      web: ${{ steps.filter.outputs.web }}
+      plugin: ${{ steps.filter.outputs.plugin }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Detect changed paths
+        uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          filters: |
+            web:
+              - 'web/**'
+              - '.github/workflows/ci.yml'
+            plugin:
+              - 'obsidian-plugin/**'
+              - '.github/workflows/ci.yml'
 
+  python:
+    name: Python and eval
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -19,6 +40,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
 
       - name: Install dependencies
         run: pip install -e .[test]
@@ -32,34 +54,48 @@ jobs:
       - name: Run tests
         run: python -m unittest discover -s tests
 
-  # Detects whether the Obsidian plugin subtree changed so the (heavier) Node
-  # build/test only runs when it actually needs to. Python-only pushes skip the
-  # plugin job entirely instead of paying for an npm install + tsc + esbuild.
-  changes:
+      - name: Run committed mock eval regression
+        run: python scripts/ci-eval-gate.py
+
+  web:
+    name: Web Studio
+    needs: changes
+    if: needs.changes.outputs.web == 'true'
     runs-on: ubuntu-latest
-    outputs:
-      plugin: ${{ steps.filter.outputs.plugin }}
+    defaults:
+      run:
+        working-directory: web
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
-      - name: Detect changed paths
-        uses: dorny/paths-filter@v4
-        id: filter
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
         with:
-          filters: |
-            plugin:
-              - 'obsidian-plugin/**'
-              - '.github/workflows/ci.yml'
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install web dependencies
+        run: npm ci
+
+      - name: Run web tests
+        run: npm test
+
+      - name: Lint Web Studio
+        run: npm run lint
+
+      - name: Build Web Studio
+        run: npm run build
 
   plugin:
+    name: Obsidian plugin
     needs: changes
     if: needs.changes.outputs.plugin == 'true'
     runs-on: ubuntu-latest
-
     defaults:
       run:
         working-directory: obsidian-plugin
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -71,21 +107,33 @@ jobs:
           cache: npm
           cache-dependency-path: obsidian-plugin/package-lock.json
 
-      # Strict install from the lockfile — no --legacy-peer-deps escape hatch.
-      # Fails on any peer-dependency conflict (e.g. a future obsidian bump whose
-      # exact @codemirror/* peers no longer match our ranges) or an out-of-sync
-      # lockfile, so a breaking dependabot bump is caught here instead of on main.
-      - name: Install plugin deps (strict, from lockfile)
+      - name: Install plugin dependencies
         run: npm ci
 
-      # tsc type-check + esbuild bundle → main.js. Catches type/build regressions
-      # (e.g. a typescript bump that turns deprecated tsconfig options into errors)
-      # before they reach main.
-      - name: Build plugin (tsc + esbuild)
+      - name: Build plugin
         run: npm run build
 
-      # Enforces TS↔Python parity of the deterministic checks (transliteration
-      # linter + journal compliance): the tests compare the plugin's output to
-      # golden fixtures regenerated from the Python engine.
-      - name: Obsidian plugin parity tests (TS ↔ Python)
+      - name: Run plugin parity tests
         run: npm test
+
+  required:
+    name: Required gate
+    if: always()
+    needs:
+      - changes
+      - python
+      - web
+      - plugin
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every applicable gate
+        env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          PYTHON_RESULT: ${{ needs.python.result }}
+          WEB_RESULT: ${{ needs.web.result }}
+          PLUGIN_RESULT: ${{ needs.plugin.result }}
+        run: |
+          test "$CHANGES_RESULT" = "success"
+          test "$PYTHON_RESULT" = "success"
+          test "$WEB_RESULT" = "success" -o "$WEB_RESULT" = "skipped"
+          test "$PLUGIN_RESULT" = "success" -o "$PLUGIN_RESULT" = "skipped"

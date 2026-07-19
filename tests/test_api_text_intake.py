@@ -4,6 +4,7 @@ body, not a server-side path)."""
 import os
 import shutil
 import unittest
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -87,6 +88,23 @@ class TextIntakeTests(unittest.TestCase):
         run_id = resp.json()["run_id"]
         self._cleanup(run_id)
         self.assertIn("passwd", run_id)  # slug of the basename, not a traversal
+
+    def test_same_filename_can_be_submitted_concurrently(self) -> None:
+        def submit():
+            return self.client.post(
+                "/runs/execute",
+                json={"text": "# Concurrent\n", "filename": "same.md", "execute": False},
+            )
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            responses = list(pool.map(lambda _: submit(), range(2)))
+
+        for response in responses:
+            self.assertEqual(response.status_code, 200, response.text)
+        run_ids = [response.json()["run_id"] for response in responses]
+        for run_id in run_ids:
+            self._cleanup(run_id)
+        self.assertEqual(len(set(run_ids)), 2)
 
 
 if __name__ == "__main__":

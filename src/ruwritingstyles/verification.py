@@ -161,6 +161,10 @@ def _render_run_style_commitments(repo_root: Path, run_dir: Path) -> str:
     style_limits: list[str] = []
     reviews_dir = run_dir / "reviews"
     if reviews_dir.exists():
+        from .config import load_manifest, load_passport_by_id
+
+        manifest_path = repo_root / "styles" / "manifest.yml"
+        manifest = load_manifest(repo_root) if manifest_path.exists() else None
         for review_path in sorted(reviews_dir.glob("*.review.json")):
             try:
                 review = json.loads(review_path.read_text(encoding="utf-8"))
@@ -169,13 +173,8 @@ def _render_run_style_commitments(repo_root: Path, run_dir: Path) -> str:
             style_id = review.get("style_id")
             if not style_id:
                 continue
-            passport_path = repo_root / "styles" / "passports" / f"{style_id}.yml"
-            if not passport_path.exists():
-                continue
-            try:
-                import yaml
-                passport = yaml.safe_load(passport_path.read_text(encoding="utf-8")) or {}
-            except Exception:
+            passport = load_passport_by_id(repo_root, style_id, manifest)
+            if passport is None:
                 continue
             limits = passport.get("limits")
             if isinstance(limits, list) and limits:

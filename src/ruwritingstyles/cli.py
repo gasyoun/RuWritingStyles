@@ -6,7 +6,6 @@ import argparse
 import json
 from pathlib import Path
 import sys
-from datetime import datetime
 from typing import Any
 from dotenv import load_dotenv
 
@@ -60,7 +59,7 @@ from .review import create_review_bundle, create_deliberation_bundle
 from .revision import create_revision_bundle
 from .citations import citation_stats, extract_citations, verify_citations_against_knowledge
 from .bias import run_bias_audit
-from .runs import create_prepare_run
+from .runs import create_prepare_run, make_unique_id
 from .segment import normalize_document, read_document, segment_markdown
 from .validation import (
     validate_eval_aggregate_file,
@@ -967,9 +966,7 @@ def cmd_style_gallery(args: argparse.Namespace) -> int:
     
     output_path = args.output
     if not output_path:
-        from datetime import datetime
-        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-        output_path = repo_root / "docs" / f"style-gallery-{timestamp}.md"
+        output_path = repo_root / "docs" / f"{make_unique_id('style-gallery')}.md"
         
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(gallery_md, encoding="utf-8")
@@ -993,7 +990,7 @@ def cmd_ab_test(args: argparse.Namespace) -> int:
         
     print(f"Starting A/B test for {len(archetypes_list)} archetypes...")
     
-    test_run_id = f"ab-test-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
+    test_run_id = make_unique_id("ab-test")
     test_dir = repo_root / "runs" / test_run_id
     test_dir.mkdir(parents=True, exist_ok=True)
     
@@ -2032,6 +2029,8 @@ def cmd_eval_suite(args: argparse.Namespace) -> int:
         print(f"comparison json {comparison_json.relative_to(repo_root)}")
         print(f"pass_rate_delta: {comparison.data.get('pass_rate_delta', 0)}")
         print(f"regressed: {len(comparison.data.get('regressed', []))}")
+        print(f"missing_baseline: {len(comparison.data.get('missing_baseline', []))}")
+        print(f"missing_candidate: {len(comparison.data.get('missing_candidate', []))}")
     if args.strict:
         if args.compare_to:
             if comparison_data is not None and _eval_comparison_has_regression(comparison_data):
@@ -2096,8 +2095,15 @@ def _eval_status_json_path(artifact: Path) -> Path:
 
 def _eval_comparison_has_regression(data: dict) -> bool:
     regressed = data.get("regressed")
+    missing_baseline = data.get("missing_baseline")
+    missing_candidate = data.get("missing_candidate")
     pass_rate_delta = data.get("pass_rate_delta")
-    return bool(regressed) or (isinstance(pass_rate_delta, (int, float)) and pass_rate_delta < 0)
+    return (
+        bool(regressed)
+        or bool(missing_baseline)
+        or bool(missing_candidate)
+        or (isinstance(pass_rate_delta, (int, float)) and pass_rate_delta < 0)
+    )
 
 
 def cmd_review(args: argparse.Namespace) -> int:

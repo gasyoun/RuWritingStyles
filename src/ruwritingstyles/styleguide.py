@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
-from .config import load_manifest, load_passport_summaries, load_archetypes, StylePassportSummary, CouncilArchetype
+from .config import load_archetypes, load_manifest, load_passport_by_id, load_passport_summaries
 
 def generate_stylebook_markdown(repo_root: Path) -> str:
     manifest = load_manifest(repo_root)
@@ -28,28 +27,24 @@ def generate_stylebook_markdown(repo_root: Path) -> str:
         md.append(f"- **Passport Path**: [`{s.passport_path.relative_to(repo_root)}`](file:///{s.passport_path.resolve()})")
         md.append(f"- **Source Prompt**: [`{s.source_prompt}`](file:///{ (repo_root / s.source_prompt).resolve() })")
         
-        # Load extra details from the YAML
-        import yaml
-        try:
-            with open(s.passport_path, 'r', encoding='utf-8') as f:
-                passport_data = yaml.safe_load(f)
-                
-            if "best_for" in passport_data:
-                md.append("\n**Best For:**")
-                for item in passport_data["best_for"]:
-                    md.append(f"- {item}")
-            
-            if "checks" in passport_data:
-                md.append("\n**Key Checks:**")
-                for item in passport_data["checks"]:
-                    md.append(f"- `{item}`")
-                    
-            if "limits" in passport_data:
-                md.append("\n**Constraints (Limits):**")
-                for item in passport_data["limits"]:
-                    md.append(f"- {item}")
-        except:
-            pass
+        passport_data = load_passport_by_id(repo_root, s.style_id, manifest)
+        if passport_data is None:
+            raise ValueError(f"manifest references missing style passport {s.style_id!r}")
+
+        if "best_for" in passport_data:
+            md.append("\n**Best For:**")
+            for item in passport_data["best_for"]:
+                md.append(f"- {item}")
+
+        if "checks" in passport_data:
+            md.append("\n**Key Checks:**")
+            for item in passport_data["checks"]:
+                md.append(f"- `{item}`")
+
+        if "limits" in passport_data:
+            md.append("\n**Constraints (Limits):**")
+            for item in passport_data["limits"]:
+                md.append(f"- {item}")
             
         md.append("")
         

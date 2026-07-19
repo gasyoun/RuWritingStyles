@@ -174,6 +174,24 @@ body {
 .ready .status-dot { background: var(--accent-success); box-shadow: 0 0 8px var(--accent-success); }
 .offline .status-dot { background: var(--accent-error); }
 
+.settings-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.settings-button:hover,
+.settings-button:focus-visible {
+  color: var(--accent-primary);
+  border-color: var(--border-color);
+}
+
 /* Workbench */
 .workbench {
   display: flex;
@@ -191,6 +209,26 @@ body {
   border-bottom: 1px solid var(--border-color);
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
+}
+
+.api-error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 2rem;
+  color: #ffd7d5;
+  background: rgba(248, 81, 73, 0.16);
+  border-bottom: 1px solid rgba(248, 81, 73, 0.45);
+  font-size: 0.85rem;
+}
+
+.api-error-banner button {
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 1.25rem;
 }
 
 .header-left { display: flex; align-items: center; gap: 1rem; }
@@ -451,6 +489,16 @@ body {
 .modal-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem; }
 .modal-body { padding: 2rem; }
 .modal-body p { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5; }
+
+.modal-error {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  color: #ffd7d5;
+  background: rgba(248, 81, 73, 0.16);
+  border: 1px solid rgba(248, 81, 73, 0.45);
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
 
 .input-group label { display: block; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
 .input-group input { width: 100%; padding: 0.8rem; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; color: white; margin-bottom: 2rem; }

@@ -109,7 +109,7 @@ rws eval-list
 ```
 
 This reads `evals/manifest.json` and prints the current comparison cases, their input documents, default styles, expected risks, scoring thresholds, and tags.
-The current suite contains 44 cases covering unsupported etymology, over-strong source claims, scholarly register/overconfidence, cluster behavior, adversarial caution, syntax and source discipline, plus the `GOLD_SANSKRIT` cases. Six Sanskrit cases tagged `deterministic` pass on `mock` (gated on the transliteration linter / citation grounding); the rest are LLM-judgment gold cases that flag only on real providers — see `evals/GOLD_PROTOCOL.md` and `docs/benchmark.md`.
+The current suite contains 52 cases covering unsupported etymology, over-strong source claims, scholarly register/overconfidence, cluster behavior, adversarial caution, syntax/source discipline, `GOLD_SANSKRIT`, and eight `GOLD_DICTIONARY` cases. Six cases tagged `deterministic` pass on `mock` (gated on the transliteration linter / citation grounding); the other 46 are LLM-judgment cases expected to fail under mock — see `evals/GOLD_PROTOCOL.md` and `docs/benchmark.md`.
 
 ## Run An Eval Case
 
@@ -170,7 +170,7 @@ The command accepts suite directories or direct `eval-suite-result.json` paths, 
 rws eval-compare runs/openai-suite runs/gemini-suite --output runs/eval-compare-openai-gemini.md --json-output runs/eval-compare-openai-gemini.json
 ```
 
-Use `--strict` in CI when a lower candidate pass rate or any per-case regression should return exit code `1`.
+Use `--strict` in CI to return exit code `1` when either suite lacks a case, a previously passing case fails, or aggregate pass rate decreases.
 
 Validate a saved comparison JSON with:
 
@@ -191,7 +191,7 @@ rws eval-status runs/eval-compare-openai-gemini.json
 rws eval-promote runs/cli-smoke-suite --tag gold
 ```
 
-This promotes the selected suite result to `evals/baselines/gold.json`. This baseline is used for future regression testing in CI.
+This explicit command promotes the selected suite result to `evals/baselines/gold.json`. New cases fail strict comparison until this intentional refresh is reviewed and committed.
 
 ## Run Regression Tests
 
@@ -199,9 +199,7 @@ This promotes the selected suite result to `evals/baselines/gold.json`. This bas
 rws eval-regression --provider mock
 ```
 
-This command runs the full evaluation suite and automatically compares it against the `gold.json` baseline. If any per-case regressions are detected or the pass rate drops, the command returns exit code `1`. This is the primary gate for CI/CD stability.
-
-The repository also includes a manual GitHub Actions workflow, `Eval Smoke`, which runs the mock eval suite, validates it, prints `eval-status`, exports the suite bundle, and uploads the ZIP artifact.
+This command runs the full evaluation suite and automatically compares it against the `gold.json` baseline. Missing cases, protected-pass regressions, or a lower pass rate return exit code `1`. `python scripts/ci-eval-gate.py` is the thin wrapper used by the Python/eval job; branch protection targets the always-present `CI / Required gate` aggregator.
 
 ## Export An Eval Suite
 
