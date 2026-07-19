@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from .io_utils import atomic_write_json
 from typing import Any
 from .providers import BaseProvider, ProviderRequest, load_schema
 
@@ -84,6 +85,6 @@ Return a JSON object:
     )
     
     bias_path = run_dir / "bias-audit.json"
-    bias_path.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+    atomic_write_json(bias_path, result)
     
     return result

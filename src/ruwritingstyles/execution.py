@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from time import perf_counter
 from typing import Any
+from .io_utils import atomic_write_json, atomic_write_text
 
 from .provider_log import append_provider_log
 from .providers import BaseProvider, ProviderRequest, load_schema
@@ -163,7 +164,7 @@ Your task is to revise the following snippet based on the Socratic Council's fin
     # and the rejection is surfaced in `unresolved` for human review.
     accepted_changes, rejected_changes = govern_changes(normalized_text, segments, applied_changes)
     revised_text = reconstruct_revised(normalized_text, segments, accepted_changes)
-    revised_path.write_text(revised_text, encoding="utf-8")
+    atomic_write_text(revised_path, revised_text)
     revision["status"] = "completed"
     revision["revised_document_path"] = _repo_relative(repo_root, revised_path)
     revision["applied_changes"] = accepted_changes
@@ -291,7 +292,7 @@ def _load_json(path: Path) -> dict[str, Any]:
 
 
 def _write_json(path: Path, data: dict[str, Any]) -> None:
-    path.write_text(json.dumps(hooks.pre_write_artifact(data), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    atomic_write_json(path, hooks.pre_write_artifact(data))
 
 
 def _generate_with_log(

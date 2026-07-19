@@ -6,6 +6,7 @@ from difflib import unified_diff
 import re
 from pathlib import Path
 from typing import Any
+from .io_utils import atomic_write_text
 
 
 def write_revision_diff(run_dir: Path) -> Path:
@@ -29,7 +30,7 @@ def write_revision_diff(run_dir: Path) -> Path:
         tofile="revised.md",
         lineterm="",
     )
-    diff_path.write_text("\n".join(line.rstrip("\n") for line in diff_lines), encoding="utf-8")
+    atomic_write_text(diff_path, "\n".join(line.rstrip("\n") for line in diff_lines))
     return diff_path
 
 

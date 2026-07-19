@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
+from .io_utils import atomic_write_text
 from typing import Any
 
 from .citations import extract_citations
@@ -94,6 +95,6 @@ def write_bibtex(run_dir: Path, repo_root: Path | None = None) -> Path:
 
     entries = matched_entries(repo_root, revised_text)
     bib_path = run_dir / "references.bib"
-    bib_path.write_text(generate_bibtex(run_id, revised_text, repo_root), encoding="utf-8")
+    atomic_write_text(bib_path, generate_bibtex(run_id, revised_text, repo_root))
     write_gost_references(run_dir, entries)
     return bib_path

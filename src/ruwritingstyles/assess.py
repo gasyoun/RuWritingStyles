@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 from pathlib import Path
+from .io_utils import atomic_write_json, atomic_write_text
 
 
 @dataclass(frozen=True)
@@ -35,51 +36,41 @@ def create_impact_bundle(*, repo_root: Path, run_dir: Path) -> ImpactBundle:
     if not protected:
         prompt_path = run_dir / "impact.prompt.md"
         impact_path = run_dir / "impact.json"
-        prompt_path.write_text(
+        atomic_write_text(
+            prompt_path,
             "# Impact Assessment\n\nNo protected segment tags were found; no provider assessment is required.\n",
-            encoding="utf-8",
         )
-        impact_path.write_text(
-            json.dumps(
-                {
+        atomic_write_json(
+            impact_path,
+            {
                     "run_id": run_id,
                     "status": "completed",
                     "prompt_path": _repo_relative(repo_root, prompt_path),
                     "assessments": [],
-                },
-                ensure_ascii=False,
-                indent=2,
-            )
-            + "\n",
-            encoding="utf-8",
+            },
         )
         return ImpactBundle(impact_json=impact_path, prompt_md=prompt_path)
 
     prompt_path = run_dir / "impact.prompt.md"
     impact_path = run_dir / "impact.json"
 
-    prompt_path.write_text(
+    atomic_write_text(
+        prompt_path,
         _render_prompt(
             run_id=run_id,
             protected_segments=protected,
             revised_text=revised_path.read_text(encoding="utf-8"),
         ),
-        encoding="utf-8",
     )
 
-    impact_path.write_text(
-        json.dumps(
-            {
+    atomic_write_json(
+        impact_path,
+        {
                 "run_id": run_id,
                 "status": "prompt_ready",
                 "prompt_path": _repo_relative(repo_root, prompt_path),
                 "assessments": [],
-            },
-            ensure_ascii=False,
-            indent=2,
-        )
-        + "\n",
-        encoding="utf-8",
+        },
     )
 
     return ImpactBundle(impact_json=impact_path, prompt_md=prompt_path)

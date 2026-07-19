@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any
+from .io_utils import atomic_write_text
 
 LATEX_TEMPLATE = r"""
 \documentclass{{article}}
@@ -168,4 +169,4 @@ def generate_latex_report(run_dir: Path, db_entry: dict[str, Any]) -> str:
 
 def write_latex_report(run_dir: Path, db_entry: dict[str, Any]):
     latex_content = generate_latex_report(run_dir, db_entry)
-    (run_dir / "report.tex").write_text(latex_content, encoding="utf-8")
+    atomic_write_text(run_dir / "report.tex", latex_content)

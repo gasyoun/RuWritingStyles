@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 from pathlib import Path
+from .io_utils import atomic_write_json, atomic_write_text
 
 
 @dataclass(frozen=True)
@@ -41,7 +42,8 @@ def create_revision_bundle(*, repo_root: Path, run_dir: Path) -> RevisionBundle:
     if segments_path.exists():
         segments_json = _render_span_map(segments_path.read_text(encoding="utf-8"))
 
-    prompt_path.write_text(
+    atomic_write_text(
+        prompt_path,
         _render_prompt(
             repo_root=repo_root,
             run_id=run_id,
@@ -51,12 +53,11 @@ def create_revision_bundle(*, repo_root: Path, run_dir: Path) -> RevisionBundle:
             resolution_json=resolution_json,
             segments_json=segments_json,
         ),
-        encoding="utf-8",
     )
 
-    revision_path.write_text(
-        json.dumps(
-            {
+    atomic_write_json(
+        revision_path,
+        {
                 "run_id": run_id,
                 "status": "prompt_ready",
                 "prompt_path": _repo_relative(repo_root, prompt_path),
@@ -65,12 +66,7 @@ def create_revision_bundle(*, repo_root: Path, run_dir: Path) -> RevisionBundle:
                 "revised_document_path": None,
                 "applied_changes": [],
                 "unresolved": [],
-            },
-            ensure_ascii=False,
-            indent=2,
-        )
-        + "\n",
-        encoding="utf-8",
+        },
     )
 
     return RevisionBundle(revision_json=revision_path, prompt_md=prompt_path)

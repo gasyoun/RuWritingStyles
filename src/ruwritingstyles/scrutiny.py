@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
+from .io_utils import atomic_write_json, atomic_write_text
 
 
 @dataclass(frozen=True)
@@ -34,28 +35,23 @@ def create_scrutiny_bundle(*, repo_root: Path, run_dir: Path) -> ScrutinyBundle:
     prompt_path = scrutiny_dir / "scrutiny.prompt.md"
     scrutiny_path = scrutiny_dir / "scrutiny.json"
 
-    prompt_path.write_text(
+    atomic_write_text(
+        prompt_path,
         _render_prompt(
             run_id=run_id,
             segments_json=segments_path.read_text(encoding="utf-8"),
             normalized_text=normalized_path.read_text(encoding="utf-8"),
         ),
-        encoding="utf-8",
     )
 
-    scrutiny_path.write_text(
-        json.dumps(
-            {
+    atomic_write_json(
+        scrutiny_path,
+        {
                 "run_id": run_id,
                 "status": "prompt_ready",
                 "prompt_path": _repo_relative(repo_root, prompt_path),
                 "findings": [],
-            },
-            ensure_ascii=False,
-            indent=2,
-        )
-        + "\n",
-        encoding="utf-8",
+        },
     )
 
     return ScrutinyBundle(scrutiny_json=scrutiny_path, prompt_md=prompt_path)

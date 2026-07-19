@@ -893,6 +893,17 @@ def _add_execute_args(parser: argparse.ArgumentParser) -> None:
         default="researcher",
         help="Researcher profile name (e.g., 'Editor', 'Student'). Default: 'researcher'.",
     )
+    parser.add_argument(
+        "--budget-mode",
+        choices=("smoke", "standard", "expensive"),
+        default="standard",
+        help="Provider cost boundary. Expensive mode requires --allow-expensive.",
+    )
+    parser.add_argument(
+        "--allow-expensive",
+        action="store_true",
+        help="Explicitly opt in to the expensive provider budget.",
+    )
 
 
 def _add_provider_args(parser: argparse.ArgumentParser) -> None:
@@ -911,6 +922,12 @@ def _add_provider_args(parser: argparse.ArgumentParser) -> None:
         action="store_true",
         help="Fail before execution if the selected provider is not configured.",
     )
+    parser.add_argument(
+        "--budget-mode",
+        choices=("smoke", "standard", "expensive"),
+        default="standard",
+    )
+    parser.add_argument("--allow-expensive", action="store_true")
 
 
 def cmd_prepare(args: argparse.Namespace) -> int:
@@ -924,6 +941,13 @@ def cmd_prepare(args: argparse.Namespace) -> int:
     normalized_text = normalize_document(original_text)
     segments = segment_markdown(normalized_text)
 
+    from .pipeline import ExecutionMode, PipelineOptions, build_step_plan
+    options = PipelineOptions(
+        mode=ExecutionMode.PREPARE,
+        style_ids=tuple(manifest.mvp_style_ids),
+        budget_mode=getattr(args, "budget_mode", "standard"),
+        expensive_opt_in=getattr(args, "allow_expensive", False),
+    )
     run_dir = create_prepare_run(
         repo_root=repo_root,
         input_path=input_path,
@@ -935,6 +959,8 @@ def cmd_prepare(args: argparse.Namespace) -> int:
         run_id=args.run_id,
         provider=args.provider,
         profile=args.profile,
+        pipeline_options=options.to_json(),
+        step_plan=build_step_plan(options),
     )
 
     print(f"created {run_dir.relative_to(repo_root)}")
@@ -1124,6 +1150,20 @@ def cmd_run(args: argparse.Namespace) -> int:
 
     manifest = load_manifest(repo_root)
     model_policy = load_model_policy(repo_root)
+    from .pipeline import ExecutionMode, PipelineOptions, build_step_plan
+    style_ids = _selected_style_ids(args, manifest)
+    options = PipelineOptions(
+        mode=ExecutionMode.EXECUTE if args.execute else ExecutionMode.PROMPT,
+        max_iterations=getattr(args, "max_iterations", 1),
+        deliberate=getattr(args, "deliberate", False),
+        scrutiny=getattr(args, "scrutiny", False),
+        lint_translit=not getattr(args, "no_lint_translit", False),
+        style_ids=tuple(style_ids),
+        archetype=getattr(args, "archetype", None),
+        budget_mode=getattr(args, "budget_mode", "standard"),
+        expensive_opt_in=getattr(args, "allow_expensive", False),
+    )
+    setattr(args, "_pipeline_options", options)
     original_text = read_document(input_path)
     normalized_text = normalize_document(original_text)
     segments = segment_markdown(normalized_text)
@@ -1146,7 +1186,13 @@ def cmd_run(args: argparse.Namespace) -> int:
         provider=args.provider,
         archetype=getattr(args, "archetype", None),
         profile=args.profile,
-        config={k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items() if k != "func"},
+        config={
+            k: str(v) if isinstance(v, Path) else v
+            for k, v in vars(args).items()
+            if k != "func" and not k.startswith("_")
+        },
+        pipeline_options=options.to_json(),
+        step_plan=build_step_plan(options),
     )
 
     if project_dir:
@@ -1179,9 +1225,22 @@ def cmd_run(args: argparse.Namespace) -> int:
 
 def _execute_run_pipeline(repo_root: Path, run_dir: Path, args: argparse.Namespace, manifest: Any, model_policy: Any) -> int:
     """Thin CLI wrapper over the shared `core_pipeline` (see pipeline.py)."""
-    from .pipeline import core_pipeline
+    from .pipeline import ExecutionMode, PipelineOptions, core_pipeline
 
-    style_ids = _selected_style_ids(args, manifest)
+    options = getattr(args, "_pipeline_options", None)
+    style_ids = list(options.style_ids) if options and options.style_ids else _selected_style_ids(args, manifest)
+    if options is None:
+        options = PipelineOptions(
+            mode=ExecutionMode.EXECUTE if getattr(args, "execute", False) else ExecutionMode.PROMPT,
+            max_iterations=getattr(args, "max_iterations", 1),
+            deliberate=getattr(args, "deliberate", False),
+            scrutiny=getattr(args, "scrutiny", False),
+            lint_translit=not getattr(args, "no_lint_translit", False),
+            style_ids=tuple(style_ids),
+            archetype=getattr(args, "archetype", None),
+            budget_mode=getattr(args, "budget_mode", "standard"),
+            expensive_opt_in=getattr(args, "allow_expensive", False),
+        )
     project_dir = getattr(args, "project_dir", None)
     if project_dir:
         project_dir = project_dir if project_dir.is_absolute() else (Path.cwd() / project_dir)
@@ -1213,6 +1272,7 @@ def _execute_run_pipeline(repo_root: Path, run_dir: Path, args: argparse.Namespa
         interactive_hook=interactive_hook,
         emit=print,
         post_run=post_run,
+        options=options,
     )
     return 0
 
@@ -1754,18 +1814,35 @@ def cmd_resume(args: argparse.Namespace) -> int:
         print(f"error: run directory {run_dir} not found")
         return 1
         
+    from .runs import load_run_manifest
+    try:
+        durable = load_run_manifest(run_dir)
+    except ValueError as exc:
+        print(f"error: {exc}")
+        return 1
+
     db = Database(repo_root)
     run_id = run_dir.name
+    try:
+        # run.json is authoritative; SQLite is only a queryable index.
+        db.restore_run(durable)
+    except Exception as exc:
+        print(f"error: could not rebuild database index from run.json: {exc}")
+        return 1
     run_data = db.get_run(run_id)
-    
     if not run_data:
-        print(f"error: run {run_id} not found in database. Cannot resume.")
+        print(f"error: run {run_id} could not be restored from run.json")
         return 1
         
     print(f"Resuming run {run_id}...")
     
     # Reconstruct args from config_json
-    config = json.loads(run_data.get("config_json", "{}"))
+    raw_config = run_data.get("config_json")
+    try:
+        config = durable.get("config") or (json.loads(raw_config) if raw_config else {})
+    except (TypeError, json.JSONDecodeError) as exc:
+        print(f"error: malformed run configuration: {exc}")
+        return 1
     if not config:
         print("warning: no config_json found in database. Reconstructing minimal args.")
         config = {
@@ -1779,6 +1856,30 @@ def cmd_resume(args: argparse.Namespace) -> int:
     if getattr(args, "execute", False):
         config["execute"] = True
     
+    from .pipeline import ExecutionMode, PipelineOptions
+    raw_options = durable.get("pipeline_options")
+    try:
+        options = PipelineOptions.from_json(raw_options) if raw_options else PipelineOptions(
+            mode=ExecutionMode.EXECUTE,
+            max_iterations=max(1, int(config.get("max_iterations", 1))),
+            deliberate=bool(config.get("deliberate", False)),
+            scrutiny=bool(config.get("scrutiny", False)),
+            lint_translit=not bool(config.get("no_lint_translit", False)),
+            style_ids=tuple(config.get("style_ids", ())),
+            archetype=config.get("archetype"),
+            budget_mode=config.get("budget_mode", "standard"),
+            expensive_opt_in=bool(config.get("allow_expensive", False)),
+        )
+    except (TypeError, ValueError) as exc:
+        print(f"error: malformed pipeline options in run.json: {exc}")
+        return 1
+    if options.mode is not ExecutionMode.EXECUTE:
+        options = PipelineOptions(**{**options.to_json(), "mode": ExecutionMode.EXECUTE.value})
+    config.setdefault("provider", run_data.get("provider") or "mock")
+    config.setdefault("model", run_data.get("model"))
+    config.setdefault("profile", run_data.get("profile") or "researcher")
+    config["execute"] = True
+    config["_pipeline_options"] = options
     resumed_args = argparse.Namespace(**config)
     
     manifest = load_manifest(repo_root)

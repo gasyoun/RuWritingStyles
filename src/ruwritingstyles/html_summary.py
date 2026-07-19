@@ -9,6 +9,7 @@ from typing import Any
 import difflib
 
 from .provider_log import load_provider_log
+from .io_utils import atomic_write_text
 
 
 def write_html_report(run_dir: Path) -> Path:
@@ -16,7 +17,7 @@ def write_html_report(run_dir: Path) -> Path:
 
     run_dir = run_dir.resolve()
     report_path = run_dir / "summary.html"
-    report_path.write_text(render_html_report(run_dir), encoding="utf-8")
+    atomic_write_text(report_path, render_html_report(run_dir))
     return report_path
 
 

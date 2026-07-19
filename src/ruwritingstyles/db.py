@@ -16,8 +16,10 @@ class Database:
         self._init_db()
 
     def _get_connection(self) -> sqlite3.Connection:
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path, timeout=30.0)
         conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA foreign_keys = ON")
+        conn.execute("PRAGMA busy_timeout = 30000")
         return conn
 
     @contextmanager
@@ -32,6 +34,7 @@ class Database:
     def _init_db(self):
         """Initialize the database schema."""
         with self._connection() as conn:
+            conn.execute("PRAGMA journal_mode = WAL")
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS runs (
                     run_id TEXT PRIMARY KEY,
@@ -51,22 +54,21 @@ class Database:
                 )
             """)
             
-            # Migration for existing DBs
-            try:
-                conn.execute("ALTER TABLE runs ADD COLUMN started_at TIMESTAMP")
-            except sqlite3.OperationalError: pass
-            try:
-                conn.execute("ALTER TABLE runs ADD COLUMN finished_at TIMESTAMP")
-            except sqlite3.OperationalError: pass
-            try:
-                conn.execute("ALTER TABLE runs ADD COLUMN duration_seconds REAL")
-            except sqlite3.OperationalError: pass
-            try:
-                conn.execute("ALTER TABLE runs ADD COLUMN profile TEXT")
-            except sqlite3.OperationalError: pass
-            try:
-                conn.execute("ALTER TABLE runs ADD COLUMN config_json TEXT")
-            except sqlite3.OperationalError: pass
+            # Migration for existing DBs. Inspect the schema first so a real
+            # OperationalError (locked/corrupt/read-only DB) is never mistaken
+            # for the harmless "duplicate column" case.
+            existing_columns = {
+                row["name"] for row in conn.execute("PRAGMA table_info(runs)").fetchall()
+            }
+            for name, sql_type in (
+                ("started_at", "TIMESTAMP"),
+                ("finished_at", "TIMESTAMP"),
+                ("duration_seconds", "REAL"),
+                ("profile", "TEXT"),
+                ("config_json", "TEXT"),
+            ):
+                if name not in existing_columns:
+                    conn.execute(f"ALTER TABLE runs ADD COLUMN {name} {sql_type}")
             
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS run_metrics (
@@ -151,13 +153,85 @@ class Database:
     def register_run(self, run_id: str, input_path: str, provider: str, model: str | None = None, archetype: str | None = None, profile: str | None = None, config: dict | None = None):
         """Create a new run entry."""
         with self._connection() as conn:
-            conn.execute("DELETE FROM run_steps WHERE run_id = ?", (run_id,))
-            conn.execute("DELETE FROM run_metrics WHERE run_id = ?", (run_id,))
+            # The filesystem publisher has already established that this is a
+            # new durable run. Replace only a stale/rebuildable index row.
             conn.execute("DELETE FROM runs WHERE run_id = ?", (run_id,))
             conn.execute(
                 "INSERT INTO runs (run_id, input_path, provider, model, archetype, profile, config_json) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 (run_id, input_path, provider, model, archetype, profile, json.dumps(config) if config else None)
             )
+
+    def restore_run(self, manifest: dict[str, Any]) -> None:
+        """Rebuild or reconcile a DB index row from durable ``run.json``."""
+
+        run_id = str(manifest["run_id"])
+        config = manifest.get("config")
+        with self._connection() as conn:
+            existing = conn.execute(
+                "SELECT 1 FROM runs WHERE run_id = ?", (run_id,)
+            ).fetchone()
+            values = (
+                run_id,
+                manifest.get("input_path"),
+                manifest.get("provider"),
+                manifest.get("model"),
+                manifest.get("archetype"),
+                manifest.get("profile"),
+                manifest.get("status", "prepared"),
+                manifest.get("created_at"),
+                manifest.get("started_at"),
+                manifest.get("finished_at"),
+                manifest.get("duration_seconds"),
+                manifest.get("updated_at"),
+                manifest.get("summary"),
+                json.dumps(config) if config is not None else None,
+            )
+            if existing:
+                conn.execute(
+                    """UPDATE runs SET
+                       input_path = ?, provider = ?, model = ?, archetype = ?,
+                       profile = ?, status = ?, created_at = ?, started_at = ?,
+                       finished_at = ?, duration_seconds = ?, updated_at = ?,
+                       summary = ?, config_json = ? WHERE run_id = ?""",
+                    (*values[1:], run_id),
+                )
+                conn.execute("DELETE FROM run_steps WHERE run_id = ?", (run_id,))
+                conn.execute("DELETE FROM run_metrics WHERE run_id = ?", (run_id,))
+            else:
+                conn.execute(
+                    """INSERT INTO runs
+                   (run_id, input_path, provider, model, archetype, profile,
+                    status, created_at, started_at, finished_at,
+                    duration_seconds, updated_at, summary, config_json)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    values,
+                )
+            for step in manifest.get("steps", []):
+                if not isinstance(step, dict) or not step.get("step_id"):
+                    continue
+                conn.execute(
+                    """INSERT INTO run_steps
+                       (run_id, step_id, status, started_at, finished_at,
+                        artifact_path, error, retry_count)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (
+                        run_id,
+                        step["step_id"],
+                        step.get("status", "pending"),
+                        step.get("started_at"),
+                        step.get("finished_at"),
+                        step.get("artifact_path"),
+                        step.get("error"),
+                        step.get("retry_count", 0),
+                    ),
+                )
+            metrics = manifest.get("metrics", {})
+            if isinstance(metrics, dict):
+                for metric_type, data in metrics.items():
+                    conn.execute(
+                        "INSERT INTO run_metrics (run_id, metric_type, data_json) VALUES (?, ?, ?)",
+                        (run_id, metric_type, json.dumps(data, ensure_ascii=False)),
+                    )
 
     def update_step_status(self, run_id: str, step_id: str, status: str, artifact_path: str | None = None, error: str | None = None):
         """Update the status of a specific step in a run."""
@@ -184,8 +258,8 @@ class Database:
                     )
                 else:
                     conn.execute(
-                        "UPDATE run_steps SET status = ? WHERE id = ?",
-                        (status, row["id"])
+                        "UPDATE run_steps SET status = ?, artifact_path = NULL, error = NULL WHERE id = ?",
+                        (status, row["id"]),
                     )
 
     def get_run_steps(self, run_id: str) -> list[dict[str, Any]]:

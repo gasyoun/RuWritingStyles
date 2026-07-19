@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
+from .io_utils import atomic_write_text
 
 
 def _is_cyrillic_entry(entry: dict[str, Any]) -> bool:
@@ -112,5 +113,5 @@ def render_gost_list(entries: list[dict[str, Any]]) -> str:
 
 def write_gost_references(run_dir: Path, entries: list[dict[str, Any]]) -> Path:
     target = run_dir / "references-gost.md"
-    target.write_text(render_gost_list(entries), encoding="utf-8")
+    atomic_write_text(target, render_gost_list(entries))
     return target
