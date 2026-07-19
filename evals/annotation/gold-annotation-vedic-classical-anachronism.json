@@ -64,5 +64,15 @@
   "type_correct": false,
   "false_positives": 1,
   "agreement": 0.8,
-  "kappa": 0.0
+  "kappa": 0.0,
+  "adjudication": {
+    "run": "20260703-h073gov-vedic-classical-anachronism-r02",
+    "rater": "C (human, third rater per GOLD_PROTOCOL step 4)",
+    "decided": "2026-07-19",
+    "verdict": "substantive_detection",
+    "effect": "Report two layers separately: layer 1 (mechanical scorer, canonical-type match) stays 24/25 = 0.96; layer 2 (gold annotation, substantive detection) is 25/25 = 1.00. accepted_finding_aliases deliberately NOT extended for this run.",
+    "sheet": "review-vedic-r02-adjudication",
+    "decisions_file": "evals/annotation/decisions.json",
+    "audit_record": "evals/annotation/decisions_applied_vedic-r02-adjudication_2026-07-19.md"
+  }
 }

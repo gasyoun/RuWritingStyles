@@ -164,7 +164,8 @@ Handoff: [H588](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H58
       не требуется; измерительный цикл идет по N3.
 
 Фаза N выполнена за один проход 11-07-2026 (Fable 5 `claude-fable-5`, H588). Остаток —
-человеческие действия: адъюдикация расхождения разметки ([review-vedic-r02-adjudication.html](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/annotation/review-vedic-r02-adjudication.html)),
+человеческие действия: адъюдикация расхождения разметки (закрыта 19-07-2026 — см. O1 ниже и
+[аудит-запись](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/annotation/decisions_applied_vedic-r02-adjudication_2026-07-19.md)),
 ГОСТ-оформление библиографии черновика, Zenodo DOI (freeze до 15-07), релизный
 репозиторий плагина.
 
@@ -198,10 +199,15 @@ Handoff: [H770](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H77
       ([methodology-paper-draft.ru.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/methodology-paper-draft.ru.md)) —
       движок уже даёт `references-gost.md` (ГОСТ Р 7.0.100-2018); привести список
       литературы статьи к нему, вставляемо.
-- [x] Адъюдикация vedic-r02
-      ([review-vedic-r02-adjudication.html](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/annotation/review-vedic-r02-adjudication.html)) —
-      Fable готовит формулировку вердикта (обе трактовки), **решение принимает человек**;
-      вписать в §4.6.
+- [x] Адъюдикация vedic-r02 ✅ **19-07-2026** — автор проголосовал `substantive_detection`
+      (вариант Б из [vedic-r02-adjudication-verdict-variants.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/paper-pack/vedic-r02-adjudication-verdict-variants.md));
+      применено во всех местах (§4.6 черновика, benchmark «Слой 2», cover-letter,
+      venue-checklist, `gold-annotation-vedic-classical-anachronism.json`, GOLD_PROTOCOL
+      получил правило двухслойного репортинга). Статья репортит **два числа раздельно**:
+      механический слой 24/25 = 0.96, содержательный 25/25 = 1.00. Аудит:
+      [decisions_applied_vedic-r02-adjudication_2026-07-19.md](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/annotation/decisions_applied_vedic-r02-adjudication_2026-07-19.md).
+      Остаток от заметки автора — два новых вопроса (арша-язык как узаконенное отклонение;
+      парсинг комментариев к МБх/Рамаяне), см. аудит-запись § «Остаток».
 - [x] Финальная вычитка под Вестник СПбГУ
       ([venue-checklist.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/paper-pack/venue-checklist.md));
       полировка EN abstract/keywords.
