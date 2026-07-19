@@ -11,7 +11,7 @@
 **Основные принципы (2026 Standard):**
 - **Harness Over Model**: Логика обвязки (Council, Verifier) приоритетнее промптов.
 - **Philological Fidelity**: Никогда не упрощать эпистемические маркеры ("по-видимому", "вероятно") без явного разрешения кластера.
-- **Eval-Centricity**: Любое изменение в логике должно проверяться через `eval-suite`; текущий manifest содержит 33 кейса, а MVP-набор содержит 6 стилей.
+- **Eval-Centricity**: Любое изменение в логике должно проверяться через `eval-suite`; текущий manifest содержит 52 кейса, из которых 6 детерминированно проходят на mock, а MVP-набор содержит 6 стилей.
 - **Agentic Autonomy (v2.4)**: Агенты обязаны использовать инструменты (Zotero, OpenAlex, FTS5) для подтверждения гипотез; галлюцинации библиографии считаются критическим отказом.
 
 **Канонический роадмап:** https://github.com/codejunkie99/agent-roadmap-2026
@@ -23,6 +23,7 @@
 python -m compileall -q src tools tests
 python tools/validate_project.py
 python -m unittest discover -s tests
-rws eval-regression --provider mock
-cd web && npm run lint && npm run build
+python scripts/ci-eval-gate.py
+cd web && npm ci && npm test && npm run lint && npm run build
+cd ../obsidian-plugin && npm ci && npm run build && npm test
 ```

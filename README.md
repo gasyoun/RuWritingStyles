@@ -1,6 +1,6 @@
 # Каталог пользовательских стилей для Claude
 
-_Created: 03-05-2026 · Last updated: 12-07-2026_
+_Created: 03-05-2026 · Last updated: 19-07-2026_
 
 Этот README объясняет, какие пользовательские стили для Claude уже созданы, чем они отличаются и как ими пользоваться. Он рассчитан на человека, который впервые открыл эту папку и еще не знает, какой файл брать для своей задачи.
 
@@ -8,7 +8,7 @@ _Created: 03-05-2026 · Last updated: 12-07-2026_
 
 > 🚀 **Хотите прогнать свою статью через «Совет» стилей?** За пять шагов от установки до первой рецензии (с ключом DeepSeek) — [`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md).
 
-**Status**: v2.15.0 (H1213 — академический словарный регистр) — первый стиль жанра словарной дефиниции [`academic-dictionary-entry`](ClaudeStyles/academic-dictionary-entry-style.md) (иерархия эталонов: Зализняк > Апресян/Мельчук; Кочергина — только сверка эквивалентов) + именованный совет `lexicography` + 8 gold-кейсов `GOLD_DICTIONARY` на материале pwg_ru; измеренный маршрутизированный N=5 бенчмарк словарного набора — **pass 37/40 = 0.925, detection 39/40 = 0.975** при нуле предметных провалов верификации, двухэкспертная разметка (согласие **39/40 = 0.97**, κ по кейсам 1.0 в 7/8 — [`docs/benchmark.md`](docs/benchmark.md)); ранее (v2.14.0, Фаза O): маршрутизированный v4-pro N=5 бенчмарк (detection **0.92**, diff-ok **25/25**, узкое место — строгость судьи); статья A29 контентно submission-ready; 40-й стиль `smirnov-mahabharata` + доводка `sanskrit-reader`; профиль «Восток (Oriens)» + `keywords_max_words`; детерминированный фикс `missing_iast_on_first_mention`; span-patch-реконструкция ревизии + growth-губернатор (**0.48 → 0.92**); верификатор со стилевыми обязательствами прогона (kill-switch `RWS_VERIFY_STYLE_COMMITMENTS=0`); двухэкспертная разметка золотого набора (`tools/gold_annotation.py` → согласие + κ Коэна, [`evals/annotation/`](evals/annotation/)); wall-clock-дедлайн провайдера (`RWS_PROVIDER_WALLCLOCK_SECONDS`) и маршрутизация моделей по стадиям в eval (`--routes` из `model_policy.yml`); статистически осмысленный eval-бенчмарк (`--repeat N` → pass-rate/detection-rate ± σ), политика меток скорера (`accepted_finding_aliases`), основной провайдер **DeepSeek**, поиск в OpenAlex, Deep Retrieval (FTS5) по корпусу текстов, выбираемые именованные советы (`rws councils`), проверка соответствия журналу (`--journal`), WebSocket-трассировка ("Thinking Trace") и API для Obsidian/Word.
+**Status**: v2.15.2 — audit-hardening release: строгий mock-baseline охватывает все **52 кейса** и защищает шесть детерминированных проходов; CI сведен к обязательному контексту `CI / Required gate`; runtime больше не импортирует PyYAML для паспортов; автоматические run/eval ID устойчивы к конкурентным запускам; Web Studio поддерживает настраиваемый backend и session-only bearer token. Предыдущие содержательные релизы: v2.15.1 — адъюдикация `vedic-r02`; v2.15.0/H1213 — [`academic-dictionary-entry`](ClaudeStyles/academic-dictionary-entry-style.md), совет `lexicography` и восемь `GOLD_DICTIONARY` кейсов (бенчмарк **pass 37/40, detection 39/40**; [`docs/benchmark.md`](docs/benchmark.md)).
 
 Границы реализованного (честная маркировка):
 
@@ -56,6 +56,7 @@ _Created: 03-05-2026 · Last updated: 12-07-2026_
 - [x] **v2.13.0** (H588 Phase N): span-привязанные стилевые обязательства верификатора, двухэкспертная разметка золотого набора (согласие 24/25, κ Коэна), wall-clock-дедлайн провайдера, маршрутизация моделей `--routes`, обобщенный навык `/rws-council`, черновик методологической статьи в форме подачи (§4.6, EN Abstract/Keywords).
 - [x] **v2.14.0** (H770 Фаза O): маршрутизированный v4-pro N=5 бенчмарк (0.72/0.92/25-25 — строгость судьи как новая ось, [`docs/benchmark.md`](docs/benchmark.md) + §4.7 статьи), A29 контентно submission-ready (ГОСТ-«Литература», варианты адъюдикации, EN abstract 198/200, финальное Zenodo-описание), корпус проиндексирован (FTS5) + 40-й стиль `smirnov-mahabharata` + доводка `sanskrit-reader`, профиль «Восток (Oriens)» + `keywords_max_words`, детерминированный фикс `missing_iast_on_first_mention`.
 - [x] **v2.15.0** (H1213): первый стиль жанра словарной дефиниции `academic-dictionary-entry` (эталоны: Зализняк > Апресян/Мельчук; Кочергина — сверка эквивалентов) + совет `lexicography` + 8 gold-кейсов `GOLD_DICTIONARY` на pwg_ru-материале; бенчмарк 0.925/0.975 (40 прогонов), двухэкспертная разметка 0.97; реестр эталонов и права — `SOURCES.md` №№ 13–21.
+- [x] **v2.15.1–2.15.2**: адъюдикация `vedic-r02` с двухслойным репортингом; затем полный audit-hardening — enforceable 52-case baseline (6 mock passes), обязательный агрегатор CI, patch/minor-only Dependabot auto-merge, строгая zero-dependency загрузка паспортов, collision-safe ID и token-aware Web Studio.
 - [ ] **Дальше (релизные действия автора)**: DOI на Zenodo (→ вписать в [`CITATION.cff`](CITATION.cff)), финализация и подача методологической статьи ([`docs/methodology-paper-outline.md`](docs/methodology-paper-outline.md)); плагин для Obsidian — план реализации (MVP: легкие детерминированные проверки) в [`docs/obsidian-plugin-plan.md`](docs/obsidian-plugin-plan.md).
 
 ## Навигация
@@ -566,7 +567,7 @@ rws run статья.md --execute --provider deepseek --council sanskrit --journ
 - Для зализняковских стилей держите единый принцип именования: в видимом тексте `Зализняк-...`, в файлах допускается существующая латинская транслитерация `zalizniak-...` или `zaliznyak-...`, если так уже назван файл.
 - `PDFtoTXT/update.py` (в приватном корпусном репозитории) относится к служебной обработке указателей для `AAZ_Zametki_2025`; не считайте его универсальным конвертером всех PDF.
 - Перед коммитом полезно проверить README на старые имена файлов и затем выполнить `git diff --check`.
-- Перед релизом или большой правкой прогоните: `python tools/validate_project.py`, `python -m unittest discover -s tests`, `python -m compileall -q src tools tests`, а в `web/` - `npm run lint` и `npm run build`.
+- Перед релизом или большой правкой прогоните: `python -m compileall -q src tools tests`, `python tools/validate_project.py`, `python -m unittest discover -s tests`, `python scripts/ci-eval-gate.py`; в `web/` — `npm ci`, `npm test`, `npm run lint`, `npm run build`; в `obsidian-plugin/` — `npm ci`, `npm run build`, `npm test`.
 
 ## Движок RuWritingStyles (CLI & Multi-Agent)
 

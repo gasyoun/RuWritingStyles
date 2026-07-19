@@ -27,6 +27,7 @@ Tests, validation, compile (mirror of `.github/workflows/ci.yml`):
 python -m compileall -q src tools tests
 python tools/validate_project.py
 python -m unittest discover -s tests
+python scripts/ci-eval-gate.py
 ```
 
 Run a single test method:
@@ -35,7 +36,7 @@ Run a single test method:
 python -m unittest tests.test_cli_pipeline.SegmentTests.test_segment_markdown_headings_paragraphs_and_code
 ```
 
-Frontend (in `web/`): `npm run dev`, `npm run build`, `npm run lint`. The CLI command `rws web` orchestrates both API (`ruwritingstyles.api` on port 8000) and Vite dev server (port 5173) together.
+Frontend gate (in `web/`): `npm ci`, `npm test`, `npm run lint`, `npm run build`. Obsidian gate (in `obsidian-plugin/`): `npm ci`, `npm run build`, `npm test`. The CLI command `rws web` orchestrates both API (`ruwritingstyles.api` on port 8000) and Vite dev server (port 5173) together. GitHub branch protection requires the stable aggregator context `CI / Required gate`; Web and Obsidian jobs are path-conditional but the aggregator is always present.
 
 ## Pipeline mental model
 
@@ -73,7 +74,7 @@ Every JSON artifact has a schema in `schemas/`: `segments.schema.json`, `review.
 
 ## Eval suite
 
-`evals/manifest.json` defines 44 comparison cases (`pseudo-etymology`, `register-shift`, `source-claim`, cluster/adversarial cases, plus the Sanskrit `GOLD_SANSKRIT` cases) that map to documents under `examples/input/`. The Sanskrit cases split two ways (see `evals/GOLD_PROTOCOL.md`): six `deterministic`-tagged cases gated on the transliteration linter / citation grounding (which `run_eval_case` runs as provider-independent post-verification checks via `_run_deterministic_checks`) pass identically on `mock`; the rest are LLM-judgment gold cases that only flag on real providers. `rws eval-suite --provider mock --suite-id <id>` runs all cases and writes `eval-suite-result.json` + `eval-suite-report.md`. Use `rws eval-compare A B` to diff two suite runs; `--strict` makes regressions fail with exit 1. The `Eval Smoke` GitHub Actions workflow pins this for the mock provider.
+`evals/manifest.json` defines 52 comparison cases (`pseudo-etymology`, `register-shift`, `source-claim`, cluster/adversarial cases, the Sanskrit `GOLD_SANSKRIT` cases, and eight `GOLD_DICTIONARY` cases) that map to documents under `examples/input/`. Six `deterministic`-tagged cases are gated on the transliteration linter / citation grounding (which `run_eval_case` runs as provider-independent post-verification checks via `_run_deterministic_checks`) and pass identically on `mock`; the other 46 are LLM-judgment cases expected to fail under mock. `rws eval-suite --provider mock --suite-id <id> --deliberate` runs all cases and writes `eval-suite-result.json` + `eval-suite-report.md`. Use `rws eval-compare A B --strict` to reject absent cases, protected-pass regressions, or a lower aggregate pass rate. New cases require an explicit `rws eval-promote` baseline refresh. `python scripts/ci-eval-gate.py` is the committed mock gate used by the Python CI job.
 
 ## Code organization in `src/ruwritingstyles/`
 

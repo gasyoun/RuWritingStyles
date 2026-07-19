@@ -145,7 +145,7 @@ Items 1–5 are safe, mechanical, and lock down the default posture without chan
 intended workflow. 6 is the "actually shippable as a public service" tier and is a product
 decision, not a cleanup.
 
-## Status (2026-06-13): all findings closed
+## Status (2026-07-19): all findings closed, including token-aware Web Studio
 
 Items 1–5 shipped in v2.5.4. **S3 and S4 now implemented (v2.7.1)** — the public-bind tier:
 
@@ -184,7 +184,9 @@ failed on real providers). Fixed by hoisting `provider_from_name` to a module im
 **and** `RWS_API_TOKEN=<secret>` (S4); optionally `RWS_INPUT_ROOT` (S3). Without a token, keep
 it on loopback.
 
-**Known limitation (token-ON mode):** the bundled React SPA (`web/src/App.jsx`) sends no
-`Authorization` header on its `fetch` calls, so with `RWS_API_TOKEN` set every API call from the
-default UI returns 401 — token-ON mode currently requires a token-aware client (curl/scripts, or
-a frontend change to plumb the token). The loopback default (no token) is unaffected.
+**Token-aware Web Studio (v2.15.2):** the bundled React SPA now routes every HTTP request through
+one API client and sends `Authorization: Bearer <token>` when configured. The Settings dialog
+stores the backend URL and token in browser `sessionStorage`; WebSocket connections convert
+`http→ws` / `https→wss` and append only the URL-encoded token query parameter required by the
+browser WebSocket API. Invalid URLs, 401 responses, and connection failures are visible in the
+UI. The loopback default remains token-free and unchanged.

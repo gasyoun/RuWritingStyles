@@ -74,7 +74,7 @@ rws eval-suite --provider mock --suite-id deployment-eval-smoke
 rws validate-eval-suite runs/deployment-eval-smoke
 ```
 
-Текущий manifest содержит 33 eval-кейса. `mock` provider проверяет инфраструктуру и схемы, но не является содержательной филологической оценкой.
+Текущий manifest содержит 52 eval-кейса: шесть детерминированно проходят на `mock`, остальные 46 требуют содержательного провайдера. `mock` проверяет инфраструктуру, схемы и сохранность защищенных проходов, но не является содержательной филологической оценкой.
 
 ## 5. Production через Docker Compose
 
@@ -152,18 +152,20 @@ docker compose up --build
 python -m compileall -q src tools tests
 python tools/validate_project.py
 python -m unittest discover -s tests
-rws eval-regression --provider mock
+python scripts/ci-eval-gate.py
 ```
 
 Для frontend:
 
 ```bash
 cd web
+npm ci
+npm test
 npm run lint
 npm run build
 ```
 
-GitHub Actions `CI` сейчас покрывает Python compile, `tools/validate_project.py` и unit tests. Manual workflow `Eval Smoke` запускает mock eval suite, сравнение, validation и export bundle.
+Для Obsidian plugin: `cd obsidian-plugin && npm ci && npm run build && npm test`. GitHub Actions `CI` запускает Python/eval всегда, Web и Obsidian по измененным путям, а стабильный `CI / Required gate` агрегирует успех или допустимый `skipped` всех jobs.
 
 ## 8. Хранилище и приватность
 
