@@ -32,7 +32,8 @@ passports:
             encoding="utf-8",
         )
         (root / "styles" / "passports" / "fixture-style.yml").write_text(
-            "name: Fixture Style\nrole: Test reviewer\n", encoding="utf-8"
+            "id: fixture-style\nname: Fixture Style\nrole: Test reviewer\n",
+            encoding="utf-8",
         )
         (root / "styles" / "prompts" / "fixture-style.md").write_text(
             "Review fixture text conservatively.\n", encoding="utf-8"
