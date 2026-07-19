@@ -52,7 +52,7 @@ jobs:
         run: python tools/validate_project.py
 
       - name: Run tests
-        run: python -m unittest discover -s tests
+        run: python -m pytest -q
 
       - name: Run committed mock eval regression
         run: python scripts/ci-eval-gate.py
@@ -203,32 +203,8 @@ jobs:
           rws run examples/input/article-snippet.md --execute --provider mock --budget-mode smoke --run-id wheel-smoke
           rws validate-run runs/wheel-smoke
 
-      - name: Probe bundled Web Studio (Ubuntu)
-        if: runner.os == 'Linux'
-        shell: bash
-        run: |
-          cd consumer
-          RWS_WORKSPACE="$PWD" python -m ruwritingstyles.api >web.log 2>&1 &
-          server_pid=$!
-          trap 'kill $server_pid' EXIT
-          for i in {1..30}; do curl --fail --silent http://127.0.0.1:8000/status && break; sleep 1; done
-          curl --fail --silent http://127.0.0.1:8000/ | grep -q '<div id="root">'
-
-      - name: Probe bundled Web Studio (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $env:RWS_WORKSPACE = (Resolve-Path consumer)
-          $server = Start-Process python -ArgumentList '-m','ruwritingstyles.api' -WorkingDirectory consumer -WindowStyle Hidden -PassThru
-          try {
-            for ($i = 0; $i -lt 30; $i++) {
-              try { Invoke-WebRequest http://127.0.0.1:8000/status -UseBasicParsing | Out-Null; break } catch { Start-Sleep -Seconds 1 }
-            }
-            $html = (Invoke-WebRequest http://127.0.0.1:8000/ -UseBasicParsing).Content
-            if ($html -notmatch '<div id="root">') { throw 'SPA root was not served' }
-          } finally {
-            Stop-Process -Id $server.Id -Force -ErrorAction SilentlyContinue
-          }
+      - name: Probe bundled Web Studio
+        run: python scripts/probe-installed-web.py consumer
 
   docker-smoke:
     name: Docker smoke

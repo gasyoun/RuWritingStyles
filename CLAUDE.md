@@ -26,7 +26,7 @@ Tests, validation, compile (mirror of `.github/workflows/ci.yml`):
 ```powershell
 python -m compileall -q src tools tests
 python tools/validate_project.py
-python -m unittest discover -s tests
+python -m pytest -q
 python scripts/ci-eval-gate.py
 ```
 

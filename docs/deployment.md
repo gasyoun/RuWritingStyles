@@ -151,7 +151,7 @@ docker compose up --build
 ```bash
 python -m compileall -q src tools tests
 python tools/validate_project.py
-python -m unittest discover -s tests
+python -m pytest -q
 python scripts/ci-eval-gate.py
 python -m build --wheel --sdist
 python scripts/verify-runtime-assets.py dist/*.whl dist/*.tar.gz
