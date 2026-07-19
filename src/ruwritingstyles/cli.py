@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 import sys
 from typing import Any
@@ -112,9 +113,26 @@ def build_parser() -> argparse.ArgumentParser:
 
     web = subparsers.add_parser(
         "web",
-        help="Launch the modern web frontend (RuWritingStyles Web Studio).",
+        help="Serve the bundled Web Studio and API on port 8000.",
+    )
+    web.add_argument(
+        "--dev",
+        action="store_true",
+        help="Run the checkout's Vite development server on port 5173.",
     )
     web.set_defaults(func=cmd_web)
+
+    init = subparsers.add_parser(
+        "init",
+        help="Initialize an editable RuWritingStyles workspace.",
+    )
+    init.add_argument("path", nargs="?", type=Path, default=Path.cwd())
+    init.add_argument(
+        "--upgrade",
+        action="store_true",
+        help="Upgrade unmodified managed files and stage edited conflicts under .rws-new/.",
+    )
+    init.set_defaults(func=cmd_init)
 
     prepare = subparsers.add_parser(
         "prepare",
@@ -1640,50 +1658,76 @@ def _warn_if_port_busy(port: int) -> None:
     except subprocess.CalledProcessError:
         pass
 
+def cmd_init(args: argparse.Namespace) -> int:
+    from .workspace import init_workspace
+
+    result = init_workspace(args.path, upgrade=args.upgrade)
+    print(f"workspace: {result['path']}")
+    print(f"installed: {len(result['installed'])}")
+    if result["conflicts"]:
+        print(f"preserved local conflicts: {len(result['conflicts'])} (new copies in .rws-new/)")
+    return 0
+
+
 def cmd_web(args: argparse.Namespace) -> int:
     import subprocess
+    import shutil
     import time
     import webbrowser
+    from .workspace import bundled_web_dist
     
     repo_root = repo_root_from()
-    
-    print("Pre-flight check: inspecting ports 8000 and 5173...")
+
+    if args.dev:
+        web_dir = repo_root / "web"
+        if not (web_dir / "package.json").exists():
+            print("error: Vite development sources are available only in a source checkout")
+            return 1
+        npm = shutil.which("npm")
+        if not npm:
+            print("error: npm is required for `rws web --dev`")
+            return 1
+    else:
+        bundled_web_dist()
+
+    print("Pre-flight check: inspecting port 8000...")
     _warn_if_port_busy(8000)
-    _warn_if_port_busy(5173)
-    
+    if args.dev:
+        _warn_if_port_busy(5173)
+
+    env = os.environ.copy()
+    env["RWS_WORKSPACE"] = str(repo_root)
     print("Launching RuWritingStyles Web Studio...")
-    
-    # 1. Start API Backend
     api_process = subprocess.Popen(
-        ["python", "-m", "ruwritingstyles.api"],
-        cwd=repo_root
+        [sys.executable, "-m", "ruwritingstyles.api"],
+        cwd=repo_root,
+        env=env,
     )
-    
-    # 2. Start Vite Frontend (if in dev mode)
-    web_dir = repo_root / "web"
+
     frontend_process = None
-    if web_dir.exists():
+    if args.dev:
         print("Starting Vite development server...")
         frontend_process = subprocess.Popen(
-            ["npm", "run", "dev"],
-            cwd=web_dir,
-            shell=True
+            [npm, "run", "dev"],
+            cwd=repo_root / "web",
+            shell=False,
+            env=env,
         )
         time.sleep(2)
         webbrowser.open("http://localhost:5173")
     else:
-        print("Frontend directory not found. Please run 'npm install' in 'web/'.")
-        return 1
-        
+        time.sleep(1)
+        webbrowser.open("http://localhost:8000")
+
     try:
-        api_process.wait()
+        return api_process.wait()
     except KeyboardInterrupt:
         print("\nShutting down...")
         api_process.terminate()
-        if frontend_process:
+        return 0
+    finally:
+        if frontend_process and frontend_process.poll() is None:
             frontend_process.terminate()
-            
-    return 0
 
 
 def cmd_migrate(args: argparse.Namespace) -> int:

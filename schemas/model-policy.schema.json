@@ -47,24 +47,45 @@
       "required": ["smoke", "standard", "expensive"],
       "additionalProperties": false,
       "properties": {
-        "smoke": { "$ref": "#/$defs/budgetMode" },
-        "standard": { "$ref": "#/$defs/budgetMode" },
-        "expensive": { "$ref": "#/$defs/budgetMode" }
-      }
-    }
-  },
-  "$defs": {
-    "budgetMode": {
-      "type": "object",
-      "required": ["description", "providers", "max_outbound_attempts", "max_tokens", "max_wall_seconds"],
-      "additionalProperties": false,
-      "properties": {
-        "description": { "type": "string" },
-        "providers": { "type": "array", "items": { "type": "string" } },
-        "max_outbound_attempts": { "type": "integer", "minimum": 1 },
-        "max_tokens": { "type": "integer", "minimum": 1 },
-        "max_wall_seconds": { "type": "integer", "minimum": 1 },
-        "explicit_selection_required": { "type": "boolean" }
+        "smoke": {
+          "type": "object",
+          "required": ["description", "providers", "max_outbound_attempts", "max_tokens", "max_wall_seconds"],
+          "additionalProperties": false,
+          "properties": {
+            "description": { "type": "string" },
+            "providers": { "type": "array", "items": { "type": "string" } },
+            "max_outbound_attempts": { "type": "integer", "minimum": 1 },
+            "max_tokens": { "type": "integer", "minimum": 1 },
+            "max_wall_seconds": { "type": "integer", "minimum": 1 },
+            "explicit_selection_required": { "type": "boolean" }
+          }
+        },
+        "standard": {
+          "type": "object",
+          "required": ["description", "providers", "max_outbound_attempts", "max_tokens", "max_wall_seconds"],
+          "additionalProperties": false,
+          "properties": {
+            "description": { "type": "string" },
+            "providers": { "type": "array", "items": { "type": "string" } },
+            "max_outbound_attempts": { "type": "integer", "minimum": 1 },
+            "max_tokens": { "type": "integer", "minimum": 1 },
+            "max_wall_seconds": { "type": "integer", "minimum": 1 },
+            "explicit_selection_required": { "type": "boolean" }
+          }
+        },
+        "expensive": {
+          "type": "object",
+          "required": ["description", "providers", "max_outbound_attempts", "max_tokens", "max_wall_seconds"],
+          "additionalProperties": false,
+          "properties": {
+            "description": { "type": "string" },
+            "providers": { "type": "array", "items": { "type": "string" } },
+            "max_outbound_attempts": { "type": "integer", "minimum": 1 },
+            "max_tokens": { "type": "integer", "minimum": 1 },
+            "max_wall_seconds": { "type": "integer", "minimum": 1 },
+            "explicit_selection_required": { "type": "boolean" }
+          }
+        }
       }
     }
   }

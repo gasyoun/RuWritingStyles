@@ -1,0 +1,8 @@
+include README.md LICENSE model_policy.yml setup.py
+recursive-include ClaudeStyles *
+recursive-include styles *
+recursive-include schemas *
+recursive-include knowledge *
+recursive-include evals *
+recursive-include examples *
+recursive-include web/dist *

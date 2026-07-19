@@ -1,43 +1,39 @@
-# Stage 1: Build the React frontend
-FROM node:18-alpine AS frontend-builder
+# syntax=docker/dockerfile:1
+
+FROM node:24-alpine AS frontend-builder
 WORKDIR /web
 COPY web/package*.json ./
-RUN npm install
+RUN npm ci
 COPY web/ ./
 RUN npm run build
 
-# Stage 2: Build the Python backend
-FROM python:3.11-slim
-WORKDIR /app
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy backend source and install the package
-COPY pyproject.toml README.md LICENSE ./
+FROM python:3.11-slim AS wheel-builder
+WORKDIR /src
+RUN python -m pip install --no-cache-dir build
+COPY pyproject.toml setup.py MANIFEST.in README.md LICENSE ./
 COPY src/ ./src/
-RUN pip install --no-cache-dir .
-
-# Copy runtime project data
+COPY ClaudeStyles/ ./ClaudeStyles/
 COPY styles/ ./styles/
 COPY schemas/ ./schemas/
 COPY knowledge/ ./knowledge/
 COPY evals/ ./evals/
+COPY examples/ ./examples/
 COPY model_policy.yml ./
-
-# Copy built frontend from Stage 1
 COPY --from=frontend-builder /web/dist ./web/dist
+RUN python -m build --wheel
 
-# Environment variables
-ENV PYTHONPATH="/app/src"
-ENV RWS_DATABASE_URL="sqlite:////app/rws.db"
-ENV PORT=8000
+FROM python:3.11-slim
+COPY --from=wheel-builder /src/dist/*.whl /tmp/
+RUN python -m pip install --no-cache-dir /tmp/*.whl && rm -f /tmp/*.whl
+COPY docker-entrypoint.sh /usr/local/bin/rws-entrypoint
+RUN chmod 0755 /usr/local/bin/rws-entrypoint
 
-# Expose port
+ENV RWS_WORKSPACE=/data \
+    RWS_INPUT_ROOT=/data \
+    RWS_BIND_HOST=0.0.0.0 \
+    PORT=8000
+WORKDIR /data
+VOLUME ["/data"]
 EXPOSE 8000
-
-# Start script
+ENTRYPOINT ["/usr/local/bin/rws-entrypoint"]
 CMD ["python", "-m", "ruwritingstyles.api"]

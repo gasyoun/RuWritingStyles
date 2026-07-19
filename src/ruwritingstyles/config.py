@@ -476,10 +476,8 @@ def load_run_metadata(run_dir: Path) -> dict[str, Any]:
 
 
 def repo_root_from(start: Path | None = None) -> Path:
-    """Find the repository root by walking upward from `start`."""
+    """Resolve an installed workspace or a backwards-compatible checkout."""
 
-    current = (start or Path.cwd()).resolve()
-    for candidate in (current, *current.parents):
-        if (candidate / "README.md").exists() and (candidate / "ClaudeStyles").exists():
-            return candidate
-    raise FileNotFoundError("could not find RuWritingStyles repository root")
+    from .workspace import find_workspace
+
+    return find_workspace(start)

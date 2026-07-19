@@ -591,7 +591,12 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 # Serve the built frontend if it exists
-frontend_path = Path("web/dist")
+from .workspace import bundled_web_dist
+
+try:
+    frontend_path = bundled_web_dist()
+except FileNotFoundError:
+    frontend_path = Path("web/dist")
 if frontend_path.exists():
     app.mount("/assets", StaticFiles(directory=frontend_path / "assets"), name="assets")
 

@@ -25,13 +25,29 @@ budget_modes:
     max_wall_seconds: 900
   standard:
     description: "Use default task-specific routes."
-    providers: []
+    providers:
+      - mock
+      - openai
+      - google
+      - anthropic
+      - openrouter
+      - deepseek
+      - ollama
+      - local
     max_outbound_attempts: 64
     max_tokens: 750000
     max_wall_seconds: 3600
   expensive:
     description: "Upgrade all tasks to flagship models with maximum reasoning."
-    providers: []
+    providers:
+      - mock
+      - openai
+      - google
+      - anthropic
+      - openrouter
+      - deepseek
+      - ollama
+      - local
     max_outbound_attempts: 256
     max_tokens: 3000000
     max_wall_seconds: 10800

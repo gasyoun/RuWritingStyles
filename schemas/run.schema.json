@@ -21,6 +21,30 @@
     "duration_seconds": { "type": ["number", "null"] },
     "summary": { "type": ["string", "null"] },
     "config": { "type": ["object", "null"] },
+    "pipeline_options": { "type": ["object", "null"] },
+    "step_plan": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["step_id", "provider_backed"],
+        "properties": {
+          "step_id": { "type": "string" },
+          "provider_backed": { "type": "boolean" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "budget": {
+      "type": ["object", "null"],
+      "properties": {
+        "mode": { "type": "string" },
+        "provider": { "type": "string" },
+        "limits": { "type": "object" },
+        "consumption": { "type": "object" },
+        "exhaustion_reason": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
     "metrics": { "type": "object" },
     "steps": { "type": "array", "items": { "type": "object" } },
     "styles": {
