@@ -189,13 +189,13 @@ jobs:
           python-version: ${{ matrix.python }}
 
       - name: Download packages
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: python-packages
           path: dist
 
       - name: Download installed-Web probe
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: installed-web-probe
           path: consumer-probe
