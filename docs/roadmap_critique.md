@@ -472,6 +472,8 @@ CLUSTER_WEIGHTS_BY_DOMAIN = {
 **Критерий проверки:**  
 Eval case: текст по этимологии + finding от nss-агента о «лишней» оговорке → после взвешивания finding получает severity: low или отклоняется.
 
+> ✅ **Реализовано 29-07-2026** (H1479): таблица заведена как `DOMAIN_CLUSTER_WEIGHTS` в [`src/ruwritingstyles/council.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/council.py). Короткие id набросков разрешены в реальные (`iesh` → `ling_iesh` и т. д.); отдельный `"default"`-словарь не нужен — отсутствие строки и есть нейтральный 1.0. Строка домена **авторитетна**: она заменяет общий множитель ×1.5 и прежние три хардкод-случая, поэтому у пары «домен × кластер» одно число, а не произведение трёх. Вес попадает в промпт Совета как авторитет агента и в `_style_weight` каждого finding-а (взвешивание severity — на стороне модели-Совета, как и было). Тесты: [`tests/test_domain_cluster_weights.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_domain_cluster_weights.py).
+
 ---
 
 ### Шаг G-05: Создание eval-кейсов на основе philology.ru
