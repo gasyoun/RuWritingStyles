@@ -1,6 +1,12 @@
 # literary_clusters.md
 # RuWritingStyles: Литературоведческие кластеры и Gemini-Ready Plan
 
+> **АРХИВ (помечено 29-07-2026, H1879).** Этот документ отражает ранний
+> ("Gemini-Ready") этап и сохранен как история — литературоведческие
+> кластеры уже заведены как `lit_*` в `styles/manifest.yml`, проверки идут
+> через `rws eval-suite`. Актуальная единственная дорожная карта —
+> [`docs/roadmap-2026-q3.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-2026-q3.md).
+
 > Документ подготовлен: 2026-05-08  
 > Статус: рабочий черновик для передачи следующей модели  
 > Целевой исполнитель: Gemini 2.5 Pro / Gemini 2.5 Flash (или эквивалент)  
