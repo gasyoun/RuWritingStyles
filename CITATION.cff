@@ -20,8 +20,8 @@ authors:
     affiliation: Independent scholar
     orcid: "https://orcid.org/0000-0003-4513-884X"
     alias: gasyoun
-version: 2.15.3
-date-released: '2026-07-19'
+version: 2.16.0
+date-released: '2026-07-30'
 license: Apache-2.0
 repository-code: "https://github.com/gasyoun/RuWritingStyles"
 url: "https://github.com/gasyoun/RuWritingStyles"
