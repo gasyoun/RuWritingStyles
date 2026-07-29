@@ -30,6 +30,91 @@ CONFLICT_MATRIX = {
     ("lit_textology", "lit_historico_cultural"): "Textology: manuscript evidence. Hist-Cult: epoch spirit. Resolution: Manuscript evidence is absolute for the text itself; historical context is for interpretation.",
 }
 
+# Per-domain cluster authority (roadmap_critique.md G-04 + roadmap_literary_clusters.md L-03).
+#
+# `text_domain` -> {cluster_id: multiplier}. The multiplier scales a passport's base
+# weight (or its archetype override, which still supplies the base) and is rendered
+# into the council prompt as that agent's authority number.
+#
+# Three rules keep this composable with the mechanisms already in production:
+#
+# 1. **A row is authoritative.** When a domain appears here, the row is the ONLY
+#    domain-derived multiplier applied — the generic `text_domain in cluster.domains`
+#    x1.5 boost does not also fire, and the former hardcoded special cases
+#    (etymology->ling_iesh x2.0, semiotics->ling_mts x2.0, literature->lit_* x1.2)
+#    are folded in as rows rather than stacked on top. So every (domain, cluster)
+#    pair has exactly one documented number instead of a product of three.
+# 2. **Absent means neutral (1.0).** A row names only the schools whose authority
+#    actually shifts in that domain; every other cluster keeps its base weight.
+#    Values < 1.0 suppress a school that is methodologically mute in the domain
+#    (the normativist on etymology or textology, say) — suppression is the half of
+#    the drafted tables the 3-case shortcut could not express at all.
+# 3. **No silent re-tuning.** Where a boost already fired today, the row reproduces
+#    today's number, so wiring the table is not a covert re-weighting. The two
+#    deliberate exceptions are legislated by the roadmaps themselves:
+#    `etymology->ling_iesh` becomes 1.5 (was 1.5 x 2.0 = 3.0 by double-count — note
+#    the *ratio* to the suppressed ling_nss is 3x either way, so relative authority
+#    is unchanged), and `literary_bakhtin->lit_bakhtin` becomes L-03's 1.8 (was 1.5).
+#
+# A key ending in `*` matches a cluster-id prefix; the longest matching prefix wins,
+# and an exact id always beats a prefix. Domains with no row (`unknown`, and the
+# `linguistics`/`lexicography` labels the eval suite uses) stay deliberately neutral
+# — G-04's `"default": {c: 1.0 for c in ALL_CLUSTERS}` is this absence, not a row.
+DOMAIN_CLUSTER_WEIGHTS: dict[str, dict[str, float]] = {
+    # --- G-04, docs/roadmap_critique.md Part IV (short ids resolved to real ones) ---
+    "etymology": {"ling_iesh": 1.5, "ling_mss": 1.0, "ling_nss": 0.5},
+    "functional_grammar": {"ling_pfg": 1.5, "ling_mss": 1.2, "ling_kmsh": 0.7},
+    "discourse_analysis": {"ling_kmsh": 1.5, "ling_dss": 1.2, "ling_mss": 0.8},
+    # --- L-03, docs/roadmap_literary_clusters.md Part V ---
+    "literary_textology": {"lit_textology": 1.8, "lit_structural": 0.8, "ling_nss": 0.3},
+    "literary_bakhtin": {
+        "lit_bakhtin": 1.8,
+        "lit_opoyaz": 0.4,  # conflicting paradigms (see CONFLICT_MATRIX)
+        "lit_narratology": 0.5,
+        "ling_nss": 0.2,
+    },
+    "literary_poststructural": {
+        "lit_poststructural": 2.0,
+        "lit_narratology": 0.5,
+        "ling_nss": 0.1,
+    },
+    # --- coverage for every remaining domain a cluster file declares ---
+    # ling_iesh: ["etymology", "historical_linguistics"]
+    "historical_linguistics": {"ling_iesh": 1.5, "ling_tsh": 1.2, "ling_nss": 0.5},
+    # ling_mss: ["semantics", "grammar"]
+    "semantics": {"ling_mss": 1.5, "ling_kmsh": 1.0, "ling_nss": 0.7},
+    "grammar": {"ling_mss": 1.5, "ling_pfg": 1.5},  # norm has a real voice here: no suppression
+    # indology: ["sanskrit", "indology", "philology"]
+    "sanskrit": {"indology": 1.5, "orient_leningrad": 1.2, "ling_iesh": 1.2, "ling_nss": 0.3},
+    "indology": {"indology": 1.5, "orient_leningrad": 1.2, "ling_nss": 0.3},
+    "philology": {"indology": 1.5, "orient_leningrad": 1.5, "lit_textology": 1.2, "ling_nss": 0.8},
+    # orient_leningrad: ["oriental_studies", "history", "philology"]
+    "oriental_studies": {"orient_leningrad": 1.5, "indology": 1.2, "ling_nss": 0.3},
+    "history": {"orient_leningrad": 1.5, "lit_historico_cultural": 1.3, "ling_nss": 0.5},
+    # --- the pre-table special cases, ratios preserved ---
+    "semiotics": {"ling_mts": 2.0, "lit_structural": 1.2},
+    "literature": {"lit_*": 1.2},
+}
+
+
+def domain_cluster_multiplier(text_domain: str, cluster_id: str | None) -> float:
+    """Authority multiplier for one cluster under one text domain (1.0 = neutral)."""
+    row = DOMAIN_CLUSTER_WEIGHTS.get(text_domain)
+    if not row or not cluster_id:
+        return 1.0
+    if cluster_id in row:
+        return row[cluster_id]
+    best_prefix = ""
+    multiplier = 1.0
+    for key, value in row.items():
+        if not key.endswith("*"):
+            continue
+        prefix = key[:-1]
+        if cluster_id.startswith(prefix) and len(prefix) >= len(best_prefix):
+            best_prefix, multiplier = prefix, value
+    return multiplier
+
+
 def create_council_bundle(
     *,
     repo_root: Path,
@@ -134,30 +219,29 @@ def get_cluster_weights(manifest: Manifest, text_domain: str, archetype: Council
     """Calculate style weights based on cluster domain matching and methodological priority."""
     # Map cluster_id to domains and locations
     cluster_meta = {c.id: (c.domains, c.location) for c in manifest.clusters}
-    
+
     adjusted_weights = {}
     for ref in manifest.passports:
         weight = ref.weight
-        
+
         # 1. Archetype overrides (explicit weights from archetypes.yml)
         if archetype and ref.style_id in archetype.weights:
             weight = archetype.weights[ref.style_id]
         elif archetype and ref.cluster_id in archetype.weights:
             weight = archetype.weights[ref.cluster_id]
-        
+
         domains, _location = cluster_meta.get(ref.cluster_id, ((), ""))
 
-        # 2. Domain Match Boost
-        if text_domain != "unknown" and text_domain in domains:
+        # 2. Methodological authority per domain (DOMAIN_CLUSTER_WEIGHTS, G-04 + L-03).
+        #    A table row is authoritative — it replaces the generic domain-match boost
+        #    below rather than stacking on it, so a cluster's authority in a domain is
+        #    exactly one documented number (and can be < 1.0, i.e. suppressed).
+        if text_domain in DOMAIN_CLUSTER_WEIGHTS:
+            weight *= domain_cluster_multiplier(text_domain, ref.cluster_id)
+        # 3. Generic domain-match boost — fail-open for a cluster file that declares a
+        #    domain the table does not cover yet (a new `domains:` entry keeps working).
+        elif text_domain != "unknown" and text_domain in domains:
             weight *= 1.5
-
-        # 3. Methodological Authority (domain → school boost, by method not geography)
-        if text_domain == "etymology" and ref.cluster_id == "ling_iesh":
-            weight *= 2.0
-        elif text_domain == "semiotics" and ref.cluster_id == "ling_mts":
-            weight *= 2.0
-        elif text_domain == "literature" and ref.cluster_id and ref.cluster_id.startswith("lit_"):
-            weight *= 1.2
 
         # De-regioned (prompt-fidelity review F5): the former location-string boost
         # (Moscow/Leningrad archetype × cluster `location`) multiplied weight by
@@ -167,7 +251,9 @@ def get_cluster_weights(manifest: Manifest, text_domain: str, archetype: Council
         # cluster boosting is still available via explicit archetype weights in
         # styles/archetypes.yml, which key on cluster_id, not city.
 
-        adjusted_weights[ref.style_id] = weight
+        # Rounded because the table's sub-1.0 multipliers otherwise render float
+        # noise (1.5 * 0.3 -> 0.44999999999999996) straight into the council prompt.
+        adjusted_weights[ref.style_id] = round(weight, 4)
         
     return adjusted_weights
 

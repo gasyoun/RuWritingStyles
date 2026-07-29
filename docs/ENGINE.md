@@ -1,6 +1,6 @@
 # Движок RuWritingStyles (CLI & Multi-Agent)
 
-_Created: 03-07-2026 · Last updated: 19-07-2026_
+_Created: 03-07-2026 · Last updated: 30-07-2026_
 
 Инженерная документация движка. Каталог стилей и человеко-ориентированное описание —
 в корневом [`README.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/README.md);
@@ -12,7 +12,7 @@ RuWritingStyles — это не просто набор промптов, а п�
 
 *   **Мультиагентный аудит**: Система запускает «Совет» (Council) из MVP-набора стилей и сохраняет цепочку `segment -> review -> council -> revision -> verification`.
 *   **Иерархическая таксономия (17 кластеров)**: Внедрена система из 8 лингвистических и 9 литературоведческих школ, позволяющая Совету учитывать методологический контекст (напр. Московская семантическая школа vs ОПОЯЗ).
-*   **Динамическое взвешивание**: Агенты автоматически получают приоритет, если их научный профиль совпадает с доменом анализируемого текста (`text_domain`).
+*   **Динамическое взвешивание**: Агенты автоматически получают приоритет, если их научный профиль совпадает с доменом анализируемого текста (`text_domain`). Авторитет каждой школы в каждом домене задан явной таблицей `DOMAIN_CLUSTER_WEIGHTS` в [`src/ruwritingstyles/council.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/council.py) (10 доменов кластерных файлов + `semiotics`/`literature`): строка таблицы **авторитетна** — она заменяет общий множитель ×1.5, а не умножается на него, поэтому у пары «домен × кластер» ровно одно документированное число. Множители < 1.0 **подавляют** методологически немую в этом домене школу (нормативист об этимологии или текстологии — G-04 / L-03), чего прежний трёхслучайный shortcut выразить не мог; домены без строки (`unknown`, `linguistics`, `lexicography`) остаются нейтральными.
 *   **Eval-дисциплина**: `evals/manifest.json` содержит 52 кейса; строгий mock-baseline защищает шесть детерминированных проходов и требует явного refresh для новых кейсов, реальные провайдеры сравниваются через `eval-suite` и `eval-compare`. Статистически осмысленный бенчмарк — `eval-run --repeat N` / `eval-suite --repeat N` (усредненный агрегат pass-rate / detection-rate ± σ), см. [`docs/benchmark.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/benchmark.md).
 *   **Контракт артефактов**: JSON-схемы покрывают style/review/council/revision/verification/eval artifacts, включая `profile`, `clusters`, `bloom_level`, `primary_school` и `influence`. Стадия ревизии возвращает только пер-спановые `applied_changes`, движок сам реконструирует `revised.md` (diff-fidelity по построению) с бюджетом роста документа.
 *   **Web/API слой**: FastAPI обслуживает API и, после `npm run build`, готовый `web/dist`; Web Studio умеет запускать аудит и сравнивать несколько runs, настраивать backend URL и хранить bearer token только в browser session.

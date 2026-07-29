@@ -727,6 +727,8 @@ forbidden_edits:
 },
 ```
 
+> ✅ **Реализовано 29-07-2026** (H1479): все три строки перенесены в `DOMAIN_CLUSTER_WEIGHTS` ([`src/ruwritingstyles/council.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/council.py)) с указанными коэффициентами; `nss` разрешён в реальный id `ling_nss`. `literary_bakhtin → lit_bakhtin` = 1.8 по этому наброску (было 1.5 от общего domain-match). Подавление (< 1.0) — именно то, чего прежний механизм выразить не мог: он умел только повышать. Тесты: [`tests/test_domain_cluster_weights.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_domain_cluster_weights.py).
+
 ---
 
 ### L-04: Создать паспорта частных стилей (5 файлов)
