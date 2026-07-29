@@ -1,6 +1,6 @@
 # Дорожная карта Q3 2026 — «Доверенный бенчмарк» (канонический план)
 
-_Created: 03-07-2026 · Last updated: 12-07-2026_
+_Created: 03-07-2026 · Last updated: 29-07-2026_
 
 **Статус: принята.** Четыре решения зафиксированы автором 03-07-2026 (сессия Fable 5,
 `claude-fable-5`):
@@ -227,9 +227,11 @@ Handoff: [H770](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H77
 ### O3 — база знаний + журналы вглубь
 - [x] `knowledge/bibliography.json` + `knowledge/sanskrit-terms.json` (indology-ядро
       всё ещё с пробелами; формат-сохраняюще, cross-ref через `validate_project`).
-- [x] Новые русские indology-журнальные профили сверх vya/ppv/vestnik-spbu (кандидаты:
+- [~] Новые русские indology-журнальные профили сверх vya/ppv/vestnik-spbu (кандидаты:
       «Индоевропейское языкознание и классическая филология» (Kazansky), «Восток
-      (Oriens)», «Вопросы языкознания») — требования брать с сайтов журналов, не
+      (Oriens)», «Вопросы языкознания») — **частично (проверено 29-07-2026, H1879):
+      только `knowledge/journals/vostok-oriens.json` реально построен; Kazansky и
+      «Вопросы языкознания» — нет** — требования брать с сайтов журналов, не
       выдумывать; провод в `report.journal_compliance`.
 
 ### O4 — полный v4-pro N=5 бенчмарк (бюджет одобрен)

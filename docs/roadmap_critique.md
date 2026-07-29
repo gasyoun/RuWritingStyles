@@ -1,5 +1,15 @@
 # RuWritingStyles: Критика, Стилистические группы и Gemini-Ready Plan
 
+> **АРХИВ (помечено 29-07-2026, H1879).** Этот документ отражает ранний
+> ("Gemini-Ready") этап и сохранен как история — ~90% его содержания уже
+> реализовано под другими именами (17 `ling_*`/`lit_*` кластеров в
+> `styles/manifest.yml`, кластерное взвешивание в `council.py::get_cluster_weights`,
+> «Style Architect» prompt как CLI-команда `rws generate-passport`, 38+
+> eval-кейсов в `evals/manifest.json`, 20+ приватных паспортов включая
+> averintsev/gasparov/melchuk/toporov-etym). Актуальная единственная
+> дорожная карта —
+> [`docs/roadmap-2026-q3.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-2026-q3.md).
+
 > Документ подготовлен: 2026-05-08  
 > Статус: рабочий черновик для передачи следующей модели  
 > Целевой исполнитель: Gemini 2.5 Pro / Gemini 2.5 Flash (или эквивалент)
