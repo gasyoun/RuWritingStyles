@@ -486,7 +486,8 @@ GOST R 7.0.100-2018 (Cyrillic block sorted before Latin), alongside
 
 Submission profiles for target journals live in `knowledge/journals/<id>.json`
 (presets: `vya` — Вопросы языкознания, `ppv` — Письменные памятники Востока,
-`vestnik-spbu`). List them:
+`vestnik-spbu`, `vostok-oriens` — Восток (Oriens), `iyakf` — Индоевропейское
+языкознание и классическая филология). List them:
 
 ```bash
 rws journals
