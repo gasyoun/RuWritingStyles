@@ -40,7 +40,7 @@ class PresetLoadingTests(unittest.TestCase):
         preset = load_journal_preset(REPO_ROOT, "vya")
         self.assertIsNotNone(preset)
         self.assertEqual(preset["name"], "Вопросы языкознания")
-        self.assertEqual(preset["citation_format"], "GOST-R-7.0.100-2018")
+        self.assertEqual(preset["citation_format"], "author-year-brackets")
 
     def test_unknown_preset_returns_none(self) -> None:
         self.assertIsNone(load_journal_preset(REPO_ROOT, "no-such-journal"))
