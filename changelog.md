@@ -4,6 +4,8 @@ All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
 
+## [2.16.1] - 2026-07-30
+
 ### Added
 - **O3 journal-corpora gap closed (H1883):** [`knowledge/journals/iyakf.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/knowledge/journals/iyakf.json) — new profile for «Индоевропейское языкознание и классическая филология» (Чтения памяти Тронского, ИЛИ РАН, ред. Н. Н. Казанский), built from tronsky.iling.spb.ru/ru/policy.html (checked 30-07-2026): 10 000–20 000 chars, Latin-surname author-year in-text citation, ≤15 keywords RU/EN. `knowledge/journals/vya.json` (Вопросы языкознания) — corrected in place: real format is `[Автор год: стр.]` in-text + alphabetical author-year bibliography (**not** GOST as previously recorded), 40–60k chars, 200–250-word abstracts, sourced from vja.ruslang.ru/ru/author_guidelines (checked 30-07-2026). `docs/roadmap-2026-q3.md` O3 checkbox flipped `[~]` → `[x]`; `docs/cli.md` preset list now names all five journal profiles.
 
