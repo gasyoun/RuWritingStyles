@@ -91,7 +91,7 @@ To run a regression check against the gold baseline:
 rws eval-regression --provider mock
 ```
 
-The suite currently runs 52 cases and writes `eval-suite-result.json` and `eval-suite-report.md`. Six deterministic cases pass under mock. `eval-regression` fails if a case is absent on either side, a protected pass regresses, or aggregate pass rate drops; new cases require an explicit baseline promotion.
+The suite currently runs 55 cases and writes `eval-suite-result.json` and `eval-suite-report.md`. Six deterministic cases pass under mock. `eval-regression` fails if a case is absent on either side, a protected pass regresses, or aggregate pass rate drops; new cases require an explicit baseline promotion.
 
 The mock provider is deterministic. It is useful for checking schemas, file outputs, reports and orchestration; it is not a substantive philological quality signal.
 

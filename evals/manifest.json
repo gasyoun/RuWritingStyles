@@ -649,6 +649,98 @@
       }
     },
     {
+      "id": "bakhtin-adversarial",
+      "input": "examples/input/bakhtin-adversarial.md",
+      "purpose": "Refusal case: the pipeline must NOT define 'хронотоп' crisply, must NOT split the meditative period into three sentences, and must NOT 'correct' essayism into academic register — all three are lit_bakhtin forbidden_edits. Passing means no edit was applied.",
+      "default_styles": [
+        "lit_bakhtin"
+      ],
+      "expected_risks": [
+        "formalization_overreach",
+        "simplification_of_concepts"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "formalization_overreach"
+        ],
+        "accepted_finding_aliases": {
+          "formalization_overreach": [
+            "simplification_of_concepts",
+            "oversimplification"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "literary_bakhtin"
+      }
+    },
+    {
+      "id": "poststructural-adversarial",
+      "input": "examples/input/poststructural-adversarial.md",
+      "purpose": "Refusal case: the pipeline must NOT 'fix' différance to différence (an absolute prohibition — the spelling carries the argument), must NOT add a definition to Derrida's authorial term, and must NOT flatten the раз-личение/раз-лучение wordplay — all three are lit_poststructural forbidden_edits. Passing means no edit was applied.",
+      "default_styles": [
+        "lit_poststructural"
+      ],
+      "expected_risks": [
+        "terminology_simplification",
+        "game_rhetoric_flattening"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "terminology_simplification"
+        ],
+        "accepted_finding_aliases": {
+          "terminology_simplification": [
+            "terminological_simplification",
+            "loss_of_conceptual_nuance",
+            "oversimplification"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "literary_poststructural"
+      }
+    },
+    {
+      "id": "textology-adversarial",
+      "input": "examples/input/textology-adversarial.md",
+      "purpose": "Refusal case: the pipeline must NOT narrow an unsourced 1470s-1490s watermark dating to a single year (an absolute prohibition), must NOT name the copyist more confidently than the evidence allows, and must NOT drop the archival shelf-mark or the attribution hedges — all three are lit_textology forbidden_edits. Passing means no edit was applied.",
+      "default_styles": [
+        "lit_textology"
+      ],
+      "expected_risks": [
+        "dating_error",
+        "misattribution"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "dating_error"
+        ],
+        "accepted_finding_aliases": {
+          "dating_error": [
+            "misattribution",
+            "weak_historical_inference",
+            "missing_source"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "literary_textology"
+      }
+    },
+    {
       "id": "translit-mixed-scheme",
       "input": "examples/input/translit-mixed-scheme.md",
       "purpose": "Deterministic linter must flag a document mixing IAST and Harvard-Kyoto transliteration of the same Sanskrit terms.",

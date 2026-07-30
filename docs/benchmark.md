@@ -1,6 +1,6 @@
 # Бенчмарк провайдеров по санскритским eval-кейсам
 
-_Created: 13-06-2026 · Last updated: 18-07-2026_
+_Created: 13-06-2026 · Last updated: 31-07-2026_
 
 Точность реальных провайдеров на экспертных золотых кейсах: санскритских
 (`tags: ["GOLD_SANSKRIT"]` без `deterministic`) и — с 18-07-2026 (H1213) —
@@ -345,7 +345,7 @@ eval-путь (`execution.py`) вообще **не читал** `model_policy.ym
 ```bash
 # статистически осмысленный агрегат по одному кейсу (N=5):
 rws eval-run --case sanskrit-pseudo-etymology --provider deepseek --repeat 5
-# все кейсы манифеста, N=5 (внимание: 52 кейса × N — дорого):
+# все кейсы манифеста, N=5 (внимание: 55 кейсов × N — дорого):
 rws eval-suite --provider deepseek --repeat 5
 # сравнительный прогон на v4-pro (медленнее — поднять таймаут):
 RWS_PROVIDER_TIMEOUT_SECONDS=300 rws eval-run --case <id> --provider deepseek --model deepseek-v4-pro --repeat 3
