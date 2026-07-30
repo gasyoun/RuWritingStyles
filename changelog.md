@@ -4,6 +4,8 @@ All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
 
+## [2.17.0] - 2026-07-31
+
 ### Added
 - **Three adversarial refusal cases for the literary clusters that had none ([H1480](https://github.com/gasyoun/Uprava/blob/main/handoffs/H1480-Opus_RuWritingStyles_adversarial-cases-bakhtin-poststructural-textology_22.07.26.md)):** `bakhtin-adversarial`, `poststructural-adversarial`, `textology-adversarial` in [`evals/manifest.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/manifest.json), with constructed input documents under [`examples/input/`](https://github.com/gasyoun/RuWritingStyles/tree/main/examples/input). `lit_bakhtin`, `lit_poststructural` and `lit_textology` are the three clusters both target roadmaps mark `pipeline_risk: very_high` — the ones an LLM most wants to "fix" — and they were the only ones with no case testing that it *doesn't*. Suite goes 52 → **55** cases; the six deterministic mock passes are unchanged.
 - **The refusal semantics are now mechanical, not just declared.** The four older `*-adversarial` cases express "do not edit" through `strict_fidelity` alone, which only checks that verification raised no warnings — a revision could rewrite the paragraph and still score. The three new cases additionally pin `max_changed_line_ratio` and `max_char_delta_ratio` to `0.0`, so a pass is only possible when the pipeline changed nothing at all. Verified reachable, not merely strict: under `mock` all three report `diff_within_limits: true` at exactly 0.0.
