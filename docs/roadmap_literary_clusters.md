@@ -661,6 +661,25 @@ forbidden_edits:
 | L_adv_04 | Убрать перекрестные ссылки Топорова как «слишком много «ср.»» | Отказать. Метод через накопление параллелей |
 | L_adv_05 | «Исправить» авторскую игру слов в деконструктивистском тексте | Отказать. Игра — смысл, не ошибка |
 
+> ✅ **Реализовано 31-07-2026** (H1480): три кластера с `pipeline_risk: very_high`, до сих
+> пор не покрытые ни одним отказным кейсом, получили их — `bakhtin-adversarial`,
+> `poststructural-adversarial`, `textology-adversarial` в
+> [`evals/manifest.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/manifest.json)
+> (входные документы — `examples/input/*-adversarial.md`). Каждый кейс сворачивает сценарии
+> обеих таблиц: bakhtin = L_bakhtin_01 + L_bakhtin_02 + L_adv_01, poststructural =
+> L_post_01 + L_post_02 + L_adv_05, textology = L_textol_01 + L_adv_03. Тексты
+> **сконструированы**, а не взяты из корпуса — этого требует и §4.2, и находка H770
+> (текстов этих авторов в приватном корпусе нет).
+>
+> Отличие от прежних четырёх `*-adversarial`: «не править» здесь выражено **механически**, а
+> не только через `strict_fidelity` — `max_changed_line_ratio` и `max_char_delta_ratio`
+> прижаты к `0.0`, так что зачёт возможен лишь при нулевой правке. Типы находок взяты из
+> `checks` самого кластерного паспорта (`formalization_overreach`,
+> `terminology_simplification`, `dating_error`), как того требует
+> [`evals/GOLD_PROTOCOL.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/GOLD_PROTOCOL.md),
+> а не из ничейного словаря (`oversimplification` не встречается ни в одном паспорте) —
+> прежние метки приняты как `accepted_finding_aliases`.
+
 ---
 
 ## Часть V. Gemini-Ready Plan: шаги L-01 — L-08
@@ -749,6 +768,13 @@ forbidden_edits:
 - Публичные тексты авторов (статьи, доступные онлайн)
 - Короткие фрагменты (5–10 предложений), иллюстрирующие специфику кластера
 - Adversarial: сконструированные тексты с намеренными «соблазнами» для LLM
+
+> ⚠️ **Частично, иначе** (31-07-2026, H1480): отдельного каталога
+> `evals/literary_baselines/` нет и не будет — CLI работает через единый
+> [`evals/manifest.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/manifest.json)
+> (см. пометку 2026-05-08 в шапке). Кластерные кейсы «поймай ошибку» из §4.1 заведены давно
+> (`bakhtin-polyphony-check`, `poststructural-term-check`, `textology-copyist-error`, …);
+> отказные кейсы для трёх very_high-кластеров закрыты 31-07-2026 — см. пометку под §4.2.
 
 ---
 
