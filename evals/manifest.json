@@ -102,22 +102,32 @@
     {
       "id": "averintsev-adversarial",
       "input": "examples/input/averintsev-adversarial.md",
-      "purpose": "Check if Averintsev agent protects epistemic markers and complex terminology against 'simplification' attempts.",
+      "purpose": "Refusal case: the pipeline must NOT strip the hedges («по-видимому, можно осмелиться предположить», «в некотором смысле», «во всяком случае») nor flatten the rhythmic period into three flat assertions — the passport's own limits forbid removing qualifying constructions and simplifying terminology. Passing means no edit was applied.",
       "default_styles": [
         "averintsev",
         "lit_historico_cultural"
       ],
       "expected_risks": [
-        "oversimplification",
-        "missing_epistemic_markers",
-        "loss_of_philological_depth"
+        "epistemic_caution",
+        "rhetorical_period"
       ],
       "scoring": {
         "required_finding_types": [
-          "oversimplification"
+          "epistemic_caution"
         ],
+        "accepted_finding_aliases": {
+          "epistemic_caution": [
+            "rhetorical_period",
+            "term_depth",
+            "oversimplification",
+            "missing_epistemic_markers",
+            "loss_of_philological_depth"
+          ]
+        },
         "min_required_matches": 1,
-        "strict_fidelity": true
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
       }
     },
     {
@@ -582,23 +592,33 @@
     {
       "id": "iesh-adversarial",
       "input": "examples/input/iesh-adversarial.md",
-      "purpose": "Check if IESH agent protects etymological uncertainty and cautious wording.",
+      "purpose": "Refusal case: the pipeline must NOT strip «по-видимому», «если допустить» and «требует дальнейшего подтверждения» — removing them converts a conditional derivation into an asserted one, which the cluster's first forbidden_edit calls an absolute prohibition («НИКОГДА нельзя убирать оговорки об этимологической неопределенности»). Passing means no edit was applied.",
       "default_styles": [
         "ling_iesh"
       ],
       "expected_risks": [
-        "oversimplification",
-        "missing_epistemic_markers"
+        "unsupported_etymology",
+        "weak_historical_inference"
       ],
       "tags": [
         "GOLD_ZALIZNYAK"
       ],
       "scoring": {
         "required_finding_types": [
-          "oversimplification"
+          "unsupported_etymology"
         ],
+        "accepted_finding_aliases": {
+          "unsupported_etymology": [
+            "weak_historical_inference",
+            "missing_source",
+            "oversimplification",
+            "missing_epistemic_markers"
+          ]
+        },
         "min_required_matches": 1,
-        "strict_fidelity": true
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
       },
       "metadata": {
         "text_domain": "etymology"
@@ -607,20 +627,30 @@
     {
       "id": "mts-adversarial",
       "input": "examples/input/mts-adversarial.md",
-      "purpose": "Check if MTS agent protects semiotic complexity and cautious wording.",
+      "purpose": "Refusal case: the pipeline must NOT collapse «вторичная семиотическая система … цвет функционирует как код … связь не проговорена эксплицитно» into «повторяет слова, чтобы создать систему кодов» — that replaces semiotic terms with everyday ones and drops the unstated liturgical link, both cluster forbidden_edits. Passing means no edit was applied.",
       "default_styles": [
         "ling_mts"
       ],
       "expected_risks": [
-        "oversimplification",
-        "missing_epistemic_markers"
+        "semiotic_blurring",
+        "missing_contextual_link"
       ],
       "scoring": {
         "required_finding_types": [
-          "oversimplification"
+          "semiotic_blurring"
         ],
+        "accepted_finding_aliases": {
+          "semiotic_blurring": [
+            "missing_contextual_link",
+            "structural_inconsistency",
+            "oversimplification",
+            "missing_epistemic_markers"
+          ]
+        },
         "min_required_matches": 1,
-        "strict_fidelity": true
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
       },
       "metadata": {
         "text_domain": "semiotics"
@@ -629,20 +659,30 @@
     {
       "id": "historico-cultural-adversarial",
       "input": "examples/input/historico-cultural-adversarial.md",
-      "purpose": "Check if Historico-cultural agent protects historical distance and cautious wording.",
+      "purpose": "Refusal case: the pipeline must NOT rewrite the hedged XIII-century reading into «Люди в XIII веке были солидарны» — the original explicitly refuses the direct modern analogy («принципиальная инаковость средневекового этоса, не позволяющая проводить прямые аналогии с современностью»), so asserting one is a false comparative link, not a simplification. Passing means no edit was applied.",
       "default_styles": [
         "lit_historico_cultural"
       ],
       "expected_risks": [
-        "oversimplification",
-        "missing_epistemic_markers"
+        "weak_comparative_link",
+        "context_omission"
       ],
       "scoring": {
         "required_finding_types": [
-          "oversimplification"
+          "weak_comparative_link"
         ],
+        "accepted_finding_aliases": {
+          "weak_comparative_link": [
+            "context_omission",
+            "oversimplification",
+            "missing_epistemic_markers",
+            "loss_of_philological_depth"
+          ]
+        },
         "min_required_matches": 1,
-        "strict_fidelity": true
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
       },
       "metadata": {
         "text_domain": "history"

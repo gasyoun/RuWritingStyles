@@ -4,6 +4,17 @@ All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
 
+## [2.18.0] - 2026-07-31
+
+### Fixed
+- **The four legacy `*-adversarial` cases were unpassable by construction; they now require finding types their own reviewers can actually emit ([#108](https://github.com/gasyoun/RuWritingStyles/issues/108), H1987).** `averintsev-adversarial`, `iesh-adversarial`, `mts-adversarial` and `historico-cultural-adversarial` all required `oversimplification` — a string that occurs in **no passport's `checks`**. The reviewing agent's prompt is built from its passport, so the model was asked to catch a violation and then label it with a type its own vocabulary never offers: a correct model scored zero on every provider. [`evals/GOLD_PROTOCOL.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/GOLD_PROTOCOL.md) already stated the rule; nothing enforced it.
+- Each case now requires a type declared by one of its own reviewing styles, chosen for what the tempting edit actually violates: **`epistemic_caution`** for `averintsev-adversarial` (declared verbatim in [`styles/passports/averintsev.yml`](https://github.com/gasyoun/RuWritingStyles/blob/main/styles/passports/averintsev.yml), and already the input's own `rws:` tag), **`unsupported_etymology`** for `iesh-adversarial` (stripping «по-видимому / если допустить» turns a conditional derivation into an asserted one), **`semiotic_blurring`** for `mts-adversarial` (replacing semiotic terms with everyday ones is the cluster's own `forbidden_edit`), **`weak_comparative_link`** for `historico-cultural-adversarial` (the original explicitly refuses the direct modern analogy the edit asserts). Legacy labels are retained as `accepted_finding_aliases`, so a model reaching for the old vocabulary still scores.
+- **All seven refusal cases now forbid the edit mechanically, not just declaratively.** `strict_fidelity` only asserts that verification raised no warnings — a revision could rewrite the paragraph and still pass. The four legacy cases join the three from v2.17.0 in pinning `max_changed_line_ratio` and `max_char_delta_ratio` to `0.0`. Note that `averintsev` is the only reviewing style with `review_mode.rewrite_allowed: true`, so its bound is a deliberate case-level override of a style-level permission (roadmap `L_ave_01` rules "Отклонить").
+
+### Changed
+- [`tests/test_eval_adversarial_refusal_cases.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_eval_adversarial_refusal_cases.py) extended from three cases to all seven and given two new invariants: a **registry-coverage** assertion (a newly added `*-adversarial` case that is not listed fails CI, so it cannot skip the contract) and an alias-hygiene assertion (an `accepted_finding_aliases` key that is not a required type is dead config). Aliases themselves stay deliberately ungrounded — that is precisely what lets a legacy label still score.
+- `evals/baselines/gold.json` **not** refreshed, on purpose: `ci-eval-gate` runs green against the unchanged `baseline-v2.17.0` with `regressed: 0`, `missing_baseline: 0`, `pass_rate_delta: 0.0`, which proves the retrofit is scoring-neutral under `mock`. A baseline refresh is owed when verdicts move, not whenever the manifest is touched.
+
 ## [2.17.0] - 2026-07-31
 
 ### Added

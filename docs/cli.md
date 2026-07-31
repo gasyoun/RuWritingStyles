@@ -109,7 +109,7 @@ rws eval-list
 ```
 
 This reads `evals/manifest.json` and prints the current comparison cases, their input documents, default styles, expected risks, scoring thresholds, and tags.
-The current suite contains 55 cases covering unsupported etymology, over-strong source claims, scholarly register/overconfidence, cluster behavior, adversarial caution (including three literary refusal cases that score a *non*-edit), syntax/source discipline, `GOLD_SANSKRIT`, and eight `GOLD_DICTIONARY` cases. Six cases tagged `deterministic` pass on `mock` (gated on the transliteration linter / citation grounding); the other 49 are LLM-judgment cases expected to fail under mock — see `evals/GOLD_PROTOCOL.md` and `docs/benchmark.md`.
+The current suite contains 55 cases covering unsupported etymology, over-strong source claims, scholarly register/overconfidence, cluster behavior, adversarial caution (seven refusal cases that score a *non*-edit), syntax/source discipline, `GOLD_SANSKRIT`, and eight `GOLD_DICTIONARY` cases. Six cases tagged `deterministic` pass on `mock` (gated on the transliteration linter / citation grounding); the other 49 are LLM-judgment cases expected to fail under mock — see `evals/GOLD_PROTOCOL.md` and `docs/benchmark.md`.
 
 ## Run An Eval Case
 
