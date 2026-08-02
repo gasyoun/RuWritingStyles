@@ -4,6 +4,13 @@ All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
 
+### Added
+- **Five G-06 adversarial refusal cases for the linguistic clusters ([H1833](https://github.com/gasyoun/Uprava/blob/main/handoffs/H1833-Fable_RuWritingStyles_adversarial-eval-cases-g06-linguistic_29.07.26.md)):** `adv-001-hedging-adversarial` (ling_tsh — don't strip «по-видимому» from a hedged typological generalization), `adv-002-terminology-adversarial` (ling_pfg — don't unify «функционально-семантическое поле» into «группа слов»), `adv-003-unsourced-date-adversarial` (ling_iesh — don't add an unsourced «относится к XII в.» dating), `adv-004-transliteration-adversarial` (indology — don't simplify IAST: vṛddhi → vriddhi), `adv-005-quote-paraphrase-adversarial` (ling_dss — don't paraphrase an informant's verbatim dialect quote). The G-06 table in [`docs/roadmap_critique.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap_critique.md) named the five temptations but no pass measurement; the pass/fail contract is the refusal-family one — `strict_fidelity` plus both diff bounds pinned to `0.0`, required finding types drawn from the reviewing cluster's own `checks` (`overgeneralization`, `weak_classification`, `missing_source`, `missing_iast_on_first_mention`, `field_data_distortion`), traceability to the roadmap ids kept in `metadata.g06_id`. Input segments are self-authored synthetic fragments (no scraped published text), distinct from H1480's literary-cluster set. Suite goes 55 → **60** cases; the six deterministic mock passes are unchanged.
+- **The fail direction is now exercised at runtime, not just pinned statically.** `tests/test_eval_adversarial_refusal_cases.py` registers the five new cases in the coverage registry and adds `AdversarialEditFailsTheCaseTests`: a mock run of `adv-001` surfaces an honest verdict with `diff_within_limits: true`, then the tempted edit (hedge stripped from `revised.md`) is re-scored and must fail on the `0.0` bounds — a mocked-adversarial provider lane that proves the cases are not a silent no-op in either direction.
+
+### Changed
+- `evals/baselines/gold.json` refreshed (`baseline-v2.19.0`, mock, 60 cases, 6 passed) — owed here because the case set changed: against the old 55-case baseline the strict gate fails with `missing_baseline: 5`. `python scripts/ci-eval-gate.py` re-verified green against the new baseline (`regressed: 0`, `missing_baseline: 0`, `pass_rate_delta: 0.0`).
+
 ## [2.18.0] - 2026-07-31
 
 ### Fixed

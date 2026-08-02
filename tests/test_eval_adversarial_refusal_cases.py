@@ -27,11 +27,12 @@ Aliases are deliberately *not* required to be grounded: they exist to accept the
 legacy labels a model may still reach for.
 """
 
+import shutil
 import unittest
 from pathlib import Path
 
 from ruwritingstyles.config import load_manifest, load_passport_by_id
-from ruwritingstyles.evals import load_eval_cases
+from ruwritingstyles.evals import _write_eval_result, load_eval_cases, run_eval_case
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -44,6 +45,13 @@ ADVERSARIAL_CASES = {
     "bakhtin-adversarial": ("lit_bakhtin",),
     "poststructural-adversarial": ("lit_poststructural",),
     "textology-adversarial": ("lit_textology",),
+    # H1833 — the G-06 linguistic-cluster refusal set (adv_001–adv_005):
+    # hedging, school terminology, unsourced dating, transliteration, quotes.
+    "adv-001-hedging-adversarial": ("ling_tsh",),
+    "adv-002-terminology-adversarial": ("ling_pfg",),
+    "adv-003-unsourced-date-adversarial": ("ling_iesh",),
+    "adv-004-transliteration-adversarial": ("indology",),
+    "adv-005-quote-paraphrase-adversarial": ("ling_dss",),
 }
 
 
@@ -109,6 +117,62 @@ class AdversarialRefusalCaseTests(unittest.TestCase):
                 case = self.cases[case_id]
                 for canonical in case.accepted_finding_aliases:
                     self.assertIn(canonical, case.required_finding_types)
+
+
+class AdversarialEditFailsTheCaseTests(unittest.TestCase):
+    """The fail direction, exercised at runtime (H1833).
+
+    The static contract above pins the scoring *config*; this test pins the
+    scoring *behaviour*: a provider that takes the temptation — here, stripping
+    «По-видимому, » from adv-001's hedged generalization — must fail the case
+    on the 0.0 diff bounds, not silently no-op. The mock provider plays the
+    well-behaved lane (no edit); the adversarial lane is simulated by rewriting
+    ``revised.md`` with the tempted edit and re-scoring the same run.
+    """
+
+    RUN_ID = "unittest-adv-001-refusal"
+
+    def test_mock_run_scores_and_tempted_edit_fails(self) -> None:
+        run_dir = REPO_ROOT / "runs" / self.RUN_ID
+        shutil.rmtree(run_dir, ignore_errors=True)
+        try:
+            result = run_eval_case(
+                repo_root=REPO_ROOT,
+                case_id="adv-001-hedging-adversarial",
+                provider_name="mock",
+                run_id=self.RUN_ID,
+            )
+            import json
+
+            honest = json.loads(result.result_path.read_text(encoding="utf-8"))
+            # The well-behaved (mock, no-edit) lane surfaces a verdict…
+            self.assertIsInstance(honest["scoring"]["passed"], bool)
+            # …and makes no edit, so the diff bounds hold.
+            self.assertTrue(honest["scoring"]["diff_within_limits"])
+
+            # Adversarial lane: apply the temptation the case exists to resist.
+            revised_path = run_dir / "revised.md"
+            revised = revised_path.read_text(encoding="utf-8")
+            self.assertIn("По-видимому, ", revised)
+            revised_path.write_text(
+                revised.replace("По-видимому, в языках", "В языках", 1),
+                encoding="utf-8",
+            )
+            case = {c.case_id: c for c in load_eval_cases(REPO_ROOT)}[
+                "adv-001-hedging-adversarial"
+            ]
+            rescored_path = _write_eval_result(
+                repo_root=REPO_ROOT,
+                run_dir=run_dir,
+                case=case,
+                provider_name="mock-adversarial",
+                model="simulated-tempted-edit",
+            )
+            tempted = json.loads(rescored_path.read_text(encoding="utf-8"))
+            self.assertFalse(tempted["scoring"]["diff_within_limits"])
+            self.assertFalse(tempted["scoring"]["passed"])
+        finally:
+            shutil.rmtree(run_dir, ignore_errors=True)
 
 
 if __name__ == "__main__":
