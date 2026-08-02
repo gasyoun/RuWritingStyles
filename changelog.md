@@ -4,6 +4,9 @@ All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
 
+### Added
+- **`text_domain` wired from run creation through to domain-aware council weighting ([H1834](https://github.com/gasyoun/Uprava/blob/main/handoffs/H1834-Fable_RuWritingStyles_text-domain-field-wiring_29.07.26.md)):** `rws prepare` and `rws run` gain `--text-domain` (choices from the new closed `TEXT_DOMAINS` vocabulary in [`src/ruwritingstyles/council.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/council.py), default `unknown`), persisted via `metadata.json` so `write_run_manifest` refreshes carry it instead of wiping it back to `unknown` — previously the field only ever held the default, so the H1479 `DOMAIN_CLUSTER_WEIGHTS` table never activated on real runs. [`schemas/run.schema.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/schemas/run.schema.json) pins `text_domain` to an `enum` (22 values: every weight-table row + the G-07 roadmap domains `typology`/`normative`/`dialectology` + the eval labels `linguistics`/`lexicography` + `unknown`); [`tests/test_text_domain_wiring.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_text_domain_wiring.py) locks schema↔code↔eval-manifest vocabulary sync, persistence through the manifest-refresh cycle, and that the *persisted* domain (not a hardcoded default) shifts `get_cluster_weights` output. Web Studio UI deliberately untouched (out of scope per the handoff).
+
 ## [2.19.0] - 2026-08-02
 
 ### Added

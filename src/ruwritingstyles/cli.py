@@ -28,7 +28,7 @@ from .api import app as web_app
 from .generation import generate_style_passport, save_generated_style
 from .styleguide import generate_stylebook_markdown, save_stylebook
 from .profiling import calculate_bloom_stats, calculate_methodological_compass
-from .council import create_council_bundle
+from .council import TEXT_DOMAINS, create_council_bundle
 from .council_summary import load_council_summary, render_council_summary
 from .diff import write_revision_diff
 from .evals import (
@@ -149,6 +149,13 @@ def build_parser() -> argparse.ArgumentParser:
         default="researcher",
         help="Researcher profile name (e.g., 'Editor', 'Student'). Default: 'researcher'.",
     )
+    prepare.add_argument(
+        "--text-domain",
+        choices=TEXT_DOMAINS,
+        default="unknown",
+        help="Text domain for domain-aware council authority weighting "
+             "(persisted in metadata.json/run.json; default: 'unknown' = neutral).",
+    )
     prepare.set_defaults(func=cmd_prepare)
 
     run = subparsers.add_parser(
@@ -197,6 +204,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Interactively review and override Council decisions before revision.",
     )
     run.add_argument("--archetype", help="Council archetype ID")
+    run.add_argument(
+        "--text-domain",
+        choices=TEXT_DOMAINS,
+        default="unknown",
+        help="Text domain for domain-aware council authority weighting "
+             "(persisted in metadata.json/run.json; default: 'unknown' = neutral).",
+    )
     run.add_argument(
         "--no-lint-translit",
         action="store_true",
@@ -992,6 +1006,7 @@ def cmd_prepare(args: argparse.Namespace) -> int:
         manifest=manifest,
         model_policy=model_policy,
         run_id=args.run_id,
+        metadata={"text_domain": getattr(args, "text_domain", "unknown")},
         provider=args.provider,
         profile=args.profile,
         pipeline_options=options.to_json(),
@@ -1220,6 +1235,7 @@ def cmd_run(args: argparse.Namespace) -> int:
         manifest=manifest,
         model_policy=model_policy,
         run_id=run_id,
+        metadata={"text_domain": getattr(args, "text_domain", "unknown")},
         provider=args.provider,
         archetype=getattr(args, "archetype", None),
         profile=args.profile,

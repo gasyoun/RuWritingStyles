@@ -96,6 +96,17 @@ DOMAIN_CLUSTER_WEIGHTS: dict[str, dict[str, float]] = {
     "literature": {"lit_*": 1.2},
 }
 
+# The closed vocabulary for run.json's `text_domain` (mirrored by the enum in
+# schemas/run.schema.json and the `--text-domain` CLI choices). Union of every
+# DOMAIN_CLUSTER_WEIGHTS row, the extra G-07 domains from docs/roadmap_critique.md
+# (typology/normative/dialectology), and the deliberately-unrowed labels the eval
+# suite stamps on cases (linguistics/lexicography). A domain listed here without a
+# table row above stays neutral (every multiplier 1.0) by rule 2 of the table.
+TEXT_DOMAINS: tuple[str, ...] = tuple(sorted(
+    set(DOMAIN_CLUSTER_WEIGHTS)
+    | {"typology", "normative", "dialectology", "linguistics", "lexicography", "unknown"}
+))
+
 
 def domain_cluster_multiplier(text_domain: str, cluster_id: str | None) -> float:
     """Authority multiplier for one cluster under one text domain (1.0 = neutral)."""
