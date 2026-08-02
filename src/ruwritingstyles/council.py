@@ -20,15 +20,68 @@ class CouncilBundle:
 from .config import CouncilArchetype, CouncilConfig, Manifest, load_archetypes, load_run_metadata
 from .knowledge import search_knowledge_base, extract_keywords_from_reviews
 
-# Philological Conflict Matrix (Step L-03)
+# Philological Conflict Matrix (Step L-03 + L-08 literary expansion)
 # (cluster_a, cluster_b) -> resolution_hint
+# Keys are stored in one order only; use lookup_conflict_hint() so either
+# ordering resolves. L-08 pairs from docs/roadmap_literary_clusters.md §L-08.
 CONFLICT_MATRIX = {
-    ("lit_opoyaz", "lit_bakhtin"): "OPOYAZ focus: plot structure, technical device. Bakhtin focus: dialogism, character voice. Resolution: Prioritize polyphony in dialogues, but maintain formal unity in narrative structure.",
+    # Pre-L-08 linguistic / mixed pairs
     ("ling_iesh", "ling_nss"): "IESH focus: historical etymology. NSS focus: modern literary norm. Resolution: Use modern spelling by default, but retain etymological variants in citations or expert commentary.",
-    ("lit_structural", "lit_poststructural"): "Structuralist: stable deep structure. Poststructuralist: deconstruction of hierarchies. Resolution: Define a clear structure but add 'epistemic markers' to acknowledge alternative readings.",
     ("ling_mss", "ling_kmsh"): "MSS: semantic decomposition. KMSH: cognitive metaphors. Resolution: Use precise formal definitions, but interpret cultural concepts through metaphorical frames.",
+    ("lit_structural", "lit_poststructural"): "Structuralist: stable deep structure. Poststructuralist: deconstruction of hierarchies. Resolution: Define a clear structure but add 'epistemic markers' to acknowledge alternative readings.",
     ("lit_textology", "lit_historico_cultural"): "Textology: manuscript evidence. Hist-Cult: epoch spirit. Resolution: Manuscript evidence is absolute for the text itself; historical context is for interpretation.",
+    # L-08 required pairs (roadmap_literary_clusters.md §L-08)
+    # L1 ↔ L6
+    ("lit_opoyaz", "lit_bakhtin"): (
+        "OPOYAZ (L1) vs Bakhtin (L6): paradigmatic conflict (antipsychologism / "
+        "text-as-mechanism vs dialogism / polyphony). Resolution: escalate — "
+        "leave the paradigm choice to the author; do not silently prefer one school. "
+        "Cite 'OPOYAZ vs Bakhtin: escalate, author decides'."
+    ),
+    # L5 ↔ L6
+    ("lit_narratology", "lit_bakhtin"): (
+        "Narratology (L5) vs Bakhtin (L6): category precision vs openness of concepts. "
+        "Resolution: escalate — keep narratological terms exact where the text uses them, "
+        "but do not impose rigid definitions on Bakhtinian open terms (хронотоп, голос). "
+        "Cite 'Narratology vs Bakhtin: escalate'."
+    ),
+    # L3 ↔ NSS
+    ("lit_textology", "ling_nss"): (
+        "Textology (L3) vs NSS: archival accuracy vs normative literary standard. "
+        "Resolution: lit_textology_wins — manuscript evidence, shelf-marks, dating hedges, "
+        "and attribution caveats override normativist 'correctness' edits. "
+        "Cite 'Textology > NSS: lit_textology_wins'."
+    ),
+    # L9 ↔ NSS
+    ("lit_poststructural", "ling_nss"): (
+        "Poststructural (L9) vs NSS: deconstruction vs literary norm. "
+        "Resolution: lit_poststructural_wins — intentional orthography (différance), "
+        "wordplay, and anti-normative rhetoric are method, not error; do not 'correct' them. "
+        "Cite 'Poststructural > NSS: lit_poststructural_wins'."
+    ),
+    # L9 ↔ L5
+    ("lit_poststructural", "lit_narratology"): (
+        "Poststructural (L9) vs Narratology (L5): play / différance vs closed categories. "
+        "Resolution: escalate — do not collapse deconstructive play into narratological "
+        "labels, and do not erase category precision where the text is narratological. "
+        "Cite 'Poststructural vs Narratology: escalate'."
+    ),
 }
+
+
+def lookup_conflict_hint(cluster_a: str | None, cluster_b: str | None) -> str | None:
+    """Return the resolution hint for a cluster pair, accepting either key order.
+
+    Returns None when either id is missing or the pair is not in CONFLICT_MATRIX.
+    """
+    if not cluster_a or not cluster_b:
+        return None
+    if cluster_a == cluster_b:
+        return None
+    hint = CONFLICT_MATRIX.get((cluster_a, cluster_b))
+    if hint is not None:
+        return hint
+    return CONFLICT_MATRIX.get((cluster_b, cluster_a))
 
 # Per-domain cluster authority (roadmap_critique.md G-04 + roadmap_literary_clusters.md L-03).
 #

@@ -4,6 +4,11 @@ All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
 
+## [2.21.0] - 2026-08-02
+
+### Added
+- **Philological CONFLICT_MATRIX expanded for all five L-08 literary pairs ([H1832](https://github.com/gasyoun/Uprava/blob/main/handoffs/H1832-Opus_RuWritingStyles_conflict-matrix-expand-tests_29.07.26.md)):** `lit_opoyaz`↔`lit_bakhtin` (L1↔L6, escalate / author decides), `lit_narratology`↔`lit_bakhtin` (L5↔L6, escalate), `lit_textology`↔`ling_nss` (L3↔NSS, `lit_textology_wins`), `lit_poststructural`↔`ling_nss` (L9↔NSS, `lit_poststructural_wins`), `lit_poststructural`↔`lit_narratology` (L9↔L5, escalate). New `lookup_conflict_hint(a, b)` accepts either key ordering. Mock council cites the matrix rule in `reason` when findings name two matrix clusters as `style_id`. Regression: [`tests/test_conflict_matrix.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_conflict_matrix.py).
+
 ## [2.20.0] - 2026-08-02
 
 ### Added
