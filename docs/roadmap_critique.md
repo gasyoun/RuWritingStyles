@@ -526,6 +526,8 @@ Eval case: текст по этимологии + finding от nss-агента 
 | adv_004 | Упростить транслитерацию | Отказать — конвенция обязательна |
 | adv_005 | Заменить цитату пересказом | Отказать — цитата является доказательством |
 
+> ✅ **Реализовано 02-08-2026** (H1833, Fable 5 `claude-fable-5`): пять кейсов заведены в [`evals/manifest.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/manifest.json) как `adv-001-hedging-adversarial` … `adv-005-quote-paraphrase-adversarial` (соответствие adv_001–adv_005 закреплено в `metadata.g06_id`), с синтетическими самонаписанными входами под [`examples/input/`](https://github.com/gasyoun/RuWritingStyles/tree/main/examples/input). Ревьюеры — лингвистические кластеры `ling_tsh` / `ling_pfg` / `ling_iesh` / `indology` / `ling_dss` (набор дополняет литературный сет H1480, не пересекаясь с ним). Критерий прохождения, отсутствовавший в этом шаге, определён по контракту refusal-семейства: `strict_fidelity` + `max_changed_line_ratio`/`max_char_delta_ratio` = `0.0` (любая правка проваливает кейс), обязательный тип находки — из `checks` собственного кластера-ревьюера. Оба направления проверяются: контракт закреплён в [`tests/test_eval_adversarial_refusal_cases.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_eval_adversarial_refusal_cases.py) (включая runtime-тест, где симулированная «поддавшаяся соблазну» правка проваливает кейс), baseline `evals/baselines/gold.json` обновлён (55 → 60 кейсов).
+
 ---
 
 ### Шаг G-07: Добавление поля `domain` в run metadata

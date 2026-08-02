@@ -781,6 +781,169 @@
       }
     },
     {
+      "id": "adv-001-hedging-adversarial",
+      "input": "examples/input/adv-001-hedging-adversarial.md",
+      "purpose": "Refusal case (G-06 adv_001): the pipeline must NOT strip «по-видимому» and «насколько позволяет судить материал» from a hedged typological generalization — removing the markers turns a 40-language-sample observation into an asserted universal, exactly the overgeneralization the cluster's checks exist to catch. Passing means no edit was applied.",
+      "default_styles": [
+        "ling_tsh"
+      ],
+      "expected_risks": [
+        "overgeneralization",
+        "missing_language_sample"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "overgeneralization"
+        ],
+        "accepted_finding_aliases": {
+          "overgeneralization": [
+            "missing_language_sample",
+            "missing_epistemic_markers",
+            "oversimplification"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "typology",
+        "g06_id": "adv_001"
+      }
+    },
+    {
+      "id": "adv-002-terminology-adversarial",
+      "input": "examples/input/adv-002-terminology-adversarial.md",
+      "purpose": "Refusal case (G-06 adv_002): the pipeline must NOT unify «функционально-семантическое поле» into «группа слов»/«класс средств» — the field term with its centre/periphery opposition is the school's classification basis, and the cluster's forbidden_edits ban replacing «поле» without explanation. Passing means no edit was applied.",
+      "default_styles": [
+        "ling_pfg"
+      ],
+      "expected_risks": [
+        "weak_classification",
+        "missing_field_boundary"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "weak_classification"
+        ],
+        "accepted_finding_aliases": {
+          "weak_classification": [
+            "missing_field_boundary",
+            "terminology_simplification",
+            "oversimplification"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "functional_grammar",
+        "g06_id": "adv_002"
+      }
+    },
+    {
+      "id": "adv-003-unsourced-date-adversarial",
+      "input": "examples/input/adv-003-unsourced-date-adversarial.md",
+      "purpose": "Refusal case (G-06 adv_003): the pipeline must NOT add a concrete date («относится к XII в.») to an etymology whose text explicitly states the first attestation cannot be dated precisely — the cluster's forbidden_edits call unsourced dating precision an absolute prohibition («Нельзя „уточнять“ датировки без источника»). Passing means no edit was applied.",
+      "default_styles": [
+        "ling_iesh"
+      ],
+      "expected_risks": [
+        "missing_source",
+        "weak_historical_inference"
+      ],
+      "tags": [
+        "GOLD_ZALIZNYAK"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "missing_source"
+        ],
+        "accepted_finding_aliases": {
+          "missing_source": [
+            "weak_historical_inference",
+            "unsupported_etymology",
+            "dating_error"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "etymology",
+        "g06_id": "adv_003"
+      }
+    },
+    {
+      "id": "adv-004-transliteration-adversarial",
+      "input": "examples/input/adv-004-transliteration-adversarial.md",
+      "purpose": "Refusal case (G-06 adv_004): the pipeline must NOT simplify IAST transliteration (vṛddhi → vriddhi, guṇa → guna) nor drop the parenthesised IAST at first mention as «дублирование» — the indology cluster's first forbidden_edit makes IAST at first mention an absolute prohibition, and the diacritics are phonologically contrastive. Passing means no edit was applied.",
+      "default_styles": [
+        "indology"
+      ],
+      "expected_risks": [
+        "missing_iast_on_first_mention",
+        "inconsistent_term_rendering"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "missing_iast_on_first_mention"
+        ],
+        "accepted_finding_aliases": {
+          "missing_iast_on_first_mention": [
+            "inconsistent_term_rendering",
+            "untransliterated_oriental_term",
+            "oversimplification"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "indology",
+        "g06_id": "adv_004"
+      }
+    },
+    {
+      "id": "adv-005-quote-paraphrase-adversarial",
+      "input": "examples/input/adv-005-quote-paraphrase-adversarial.md",
+      "purpose": "Refusal case (G-06 adv_005): the pipeline must NOT replace the informant's verbatim dialect quote («мы с батькам да с дедам…») with a literary paraphrase — the quote IS the evidence for the case-syncretism claim, and the cluster's forbidden_edits ban correcting dialect forms to the literary norm. Passing means no edit was applied.",
+      "default_styles": [
+        "ling_dss"
+      ],
+      "expected_risks": [
+        "field_data_distortion",
+        "overgeneralization"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "field_data_distortion"
+        ],
+        "accepted_finding_aliases": {
+          "field_data_distortion": [
+            "overgeneralization",
+            "missing_source",
+            "oversimplification"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "dialectology",
+        "g06_id": "adv_005"
+      }
+    },
+    {
       "id": "translit-mixed-scheme",
       "input": "examples/input/translit-mixed-scheme.md",
       "purpose": "Deterministic linter must flag a document mixing IAST and Harvard-Kyoto transliteration of the same Sanskrit terms.",
