@@ -131,7 +131,7 @@ class MockProvider(BaseProvider):
         if task == "review":
             return self._review(metadata)
         if task == "council":
-            return self._council(metadata)
+            return self._council(metadata, prompt=provider_request.prompt or "")
         if task == "revision":
             return self._revision(metadata)
         if task == "verification":
@@ -198,13 +198,21 @@ class MockProvider(BaseProvider):
             ]
         }
 
-    def _council(self, metadata: dict[str, Any]) -> dict[str, Any]:
+    def _council(self, metadata: dict[str, Any], prompt: str = "") -> dict[str, Any]:
+        # When the council prompt surfaces a Philological Conflict Matrix pair
+        # (two clusters from CONFLICT_MATRIX both appear in the assembled
+        # findings/prompt), cite that resolution rule in `reason` — same duty
+        # the live council prompt imposes on real providers (H1832 / L-08).
+        cited_reason = self._conflict_matrix_reason(prompt)
+        default_reason = "Mock council keeps placeholder findings informational."
+        reason = cited_reason or default_reason
+
         decisions = []
         replies = []
         finding_ids = metadata.get("finding_ids", [])
         if not finding_ids:
             finding_ids = ["finding-001"]
-            
+
         for finding_id in finding_ids:
             replies.append({
                 "reply_to": finding_id,
@@ -219,7 +227,7 @@ class MockProvider(BaseProvider):
                 "status": "informational",
                 "primary_school": "ling_iesh",
                 "influence": {"ling_iesh": 0.8, "ling_mss": 0.2},
-                "reason": "Mock council keeps placeholder findings informational.",
+                "reason": reason,
             })
         return {
             "run_id": str(metadata["run_id"]),
@@ -234,6 +242,33 @@ class MockProvider(BaseProvider):
                 }
             ],
         }
+
+    def _conflict_matrix_reason(self, prompt: str) -> str | None:
+        """If review findings name two clusters that share a matrix rule, cite it.
+
+        Only ``"style_id"`` values from the assembled findings are considered —
+        the matrix JSON itself always lists every pair, so a bare substring
+        scan of the whole prompt would falsely fire on every council run.
+        """
+        if not prompt or "Philological Conflict Matrix" not in prompt:
+            return None
+        import re
+
+        from .council import CONFLICT_MATRIX, lookup_conflict_hint
+
+        style_ids = set(re.findall(r'"style_id"\s*:\s*"([^"]+)"', prompt))
+        known_clusters = {cluster for pair in CONFLICT_MATRIX for cluster in pair}
+        # Cluster-level passports use style_id == cluster_id; only those (or
+        # any style_id that literally is a matrix key) participate.
+        present = sorted(style_ids & known_clusters)
+        for i, cluster_a in enumerate(present):
+            for cluster_b in present[i + 1 :]:
+                hint = lookup_conflict_hint(cluster_a, cluster_b)
+                if hint:
+                    return (
+                        f"Conflict matrix rule for {cluster_a} vs {cluster_b}: {hint}"
+                    )
+        return None
 
     def _revision(self, metadata: dict[str, Any]) -> dict[str, Any]:
         return {
