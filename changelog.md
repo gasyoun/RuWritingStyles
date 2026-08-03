@@ -4,6 +4,8 @@ All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
 
+## [2.22.0] - 2026-08-04
+
 ### Fixed
 - **The council prompt taught providers a rule the CONFLICT_MATRIX contradicts ([H2217](https://github.com/gasyoun/Uprava/blob/main/handoffs/H2217-Opus_RuWritingStyles_h1832-grok-dual-run-compare_02.08.26.md), dual-run compare of H1832).** The `Resolve Conflicts` instruction's only worked example told the model to cite **`'Bakhtin > OPOYAZ'`** — a school-wins verdict for the single pair roadmap §L-08 resolves as `escalate, author decides`. H1832 rewrote the matrix entry but left the instruction that quotes it, so the one citation pattern every live provider sees argued against the shipped rule. The example now cites a matrix-true rule (`'Textology > NSS: lit_textology_wins'`) and states explicitly that an `escalate` pair must never be handed a winner. Mock lanes never exercise that instruction, so no existing test could see it.
 - **[`docs/agent-protocol.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/agent-protocol.md) §2 documented two resolutions the code does not implement.** `Bakhtin > OPOYAZ` contradicted §L-08 (escalate), and `IESH > NSS` inverted the shipped `ling_iesh`↔`ling_nss` hint, which makes the modern norm the default and keeps etymological variants for citations and expert commentary. Both corrected; the section now names `CONFLICT_MATRIX` as source of truth and adds the `lit_textology_wins` / `lit_poststructural_wins` rules.
