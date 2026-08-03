@@ -73,6 +73,64 @@ class ConflictMatrixLookupTests(unittest.TestCase):
             self.assertNotIn((b, a), CONFLICT_MATRIX)
 
 
+class ConflictMatrixPromptFidelityTests(unittest.TestCase):
+    """The council prompt must not teach a rule the matrix contradicts (H2217).
+
+    H1832 rewrote the L1 ↔ L6 entry to `escalate, author decides` but left the
+    prompt's own CRITICAL worked example as `'Bakhtin > OPOYAZ'` — a school-wins
+    verdict for the one pair the roadmap says must escalate. Since that example
+    is the only citation pattern a live provider is shown, it biased the model
+    against the shipped rule.
+    """
+
+    COUNCIL_SRC = (
+        REPO_ROOT / "src" / "ruwritingstyles" / "council.py"
+    ).read_text(encoding="utf-8")
+
+    def test_prompt_has_no_school_wins_example_for_escalate_pairs(self) -> None:
+        self.assertNotIn(
+            "Bakhtin > OPOYAZ",
+            self.COUNCIL_SRC,
+            "council prompt asserts a winner for an `escalate` pair (L1 ↔ L6)",
+        )
+
+    def test_prompt_examples_are_backed_by_a_real_matrix_hint(self) -> None:
+        """Every `'X > Y: token'` example in the prompt must exist in the matrix."""
+        import re
+
+        hints = " || ".join(CONFLICT_MATRIX.values())
+        # Only the `Resolve Conflicts` instruction line — the one place the prompt
+        # shows a provider what a citation should look like.
+        instruction_lines = [
+            line
+            for line in self.COUNCIL_SRC.splitlines()
+            if "**Resolve Conflicts**" in line
+        ]
+        self.assertTrue(instruction_lines, "Resolve Conflicts instruction not found")
+        examples = [
+            match
+            for line in instruction_lines
+            for match in re.findall(r"'([^'\n]{3,120})'", line)
+            if ">" in match or " vs " in match
+        ]
+        self.assertTrue(examples, "no citation example found in the prompt")
+        for example in examples:
+            with self.subTest(example=example):
+                self.assertIn(
+                    example,
+                    hints,
+                    f"prompt cites '{example}', which no CONFLICT_MATRIX hint supports",
+                )
+
+    def test_escalate_pairs_never_name_a_winner_token(self) -> None:
+        """An `escalate` hint must not also carry an `*_wins` resolution token."""
+        for pair, hint in CONFLICT_MATRIX.items():
+            if "Resolution: escalate" not in hint:
+                continue
+            with self.subTest(pair=pair):
+                self.assertNotIn("_wins", hint, f"{pair} is both escalate and a win")
+
+
 class ConflictMatrixCouncilCitationTests(unittest.TestCase):
     """Deliberation-level: mock provider cites the matrix rule in reason."""
 

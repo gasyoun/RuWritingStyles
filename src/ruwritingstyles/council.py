@@ -465,7 +465,7 @@ When specific schools disagree, follow these established philological resolution
 ## Instructions
 
 1. **Compare Advice**: For each document span, look at findings from all styles.
-2. **Resolve Conflicts**: If styles suggest different changes for the same span, use your strategy and the `_style_weight` (higher is more authoritative) to decide. **CRITICAL**: If a conflict is listed in the `Philological Conflict Matrix`, you MUST cite the specific resolution rule (e.g., 'Bakhtin > OPOYAZ') in your `reason` field.
+2. **Resolve Conflicts**: If styles suggest different changes for the same span, use your strategy and the `_style_weight` (higher is more authoritative) to decide. **CRITICAL**: If a conflict is listed in the `Philological Conflict Matrix`, you MUST cite that entry's own resolution rule verbatim in your `reason` field (e.g. 'Textology > NSS: lit_textology_wins'). Never invent a school-wins verdict for a pair the matrix resolves as `escalate` — for those, cite the escalate rule (e.g. 'OPOYAZ vs Bakhtin: escalate, author decides') and leave the paradigm choice to the author.
 3. **Synthesis**: You can accept a finding exactly, reject it, or create a "modified" finding that combines advice from multiple styles.
 4. **Impact Assessment**: Pay close attention to `tags` in `segments.json`. 
    - If a segment has a `rhyme` tag, ensure proposed changes do not break the rhyme.
