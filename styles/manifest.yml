@@ -316,3 +316,13 @@ passports:
     level: private
     cluster: ling_mss
     source_prompt: ClaudeStyles/academic-dictionary-entry-style.md
+  - id: lotman
+    path: styles/passports/lotman.yml
+    level: private
+    cluster: lit_structural
+    source_prompt: ClaudeStyles/lotman-style.md
+  - id: meletinsky
+    path: styles/passports/meletinsky.yml
+    level: private
+    cluster: lit_mythopoetics
+    source_prompt: ClaudeStyles/meletinsky-style.md
