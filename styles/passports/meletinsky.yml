@@ -1,0 +1,63 @@
+id: meletinsky
+name: "Е. М. Мелетинский"
+level: private
+cluster: lit_mythopoetics
+extends: cluster:lit_mythopoetics
+source_prompt: ClaudeStyles/meletinsky-style.md
+role: cultural_context_reviewer
+language: ru
+
+best_for:
+  - поэтика мифа
+  - сравнительная мифология и фольклористика
+  - эпос и сказочный канон
+  - историческая поэтика
+
+checks:
+  - archetype_distortion
+  - missing_mythic_context
+  - trickster_term_integrity
+  - parallel_list_truncation
+  - methodological_base_removal
+  - reconstruction_overconfidence
+
+limits:
+  - "Не убирать ссылки на Проппа или Леви-Стросса как «излишние» — двойная методологическая база принципиальна"
+  - "Не заменять «трикстер» на «хитрец» или «обманщик»"
+  - "Не сокращать перечисления межкультурных параллелей (охват — от Океании до Скандинавии)"
+  - "Не усиливать уверенность реконструкций: осторожность («по-видимому», «вероятно») — часть метода"
+
+markers:
+  lexical:
+    - "мифологема"
+    - "архетип"
+    - "инициация"
+    - "трикстер"
+    - "культурный герой"
+    - "сказочный канон"
+
+forbidden_edits:
+  - "Нельзя убирать ссылки на Проппа или Леви-Стросса"
+  - "Нельзя заменять «трикстер» на «хитрец» или «обманщик»"
+  - "Нельзя сокращать перечисления межкультурных параллелей"
+  - "Нельзя заменять «мифологема» на «образ»"
+
+review_mode:
+  rewrite_allowed: false
+  requires_span_ids: true
+  output_format: findings_json
+
+council:
+  can_reply_to:
+    - cultural_context
+    - structural_analysis
+    - mythology
+
+conflict_priority:
+  default: medium
+
+provenance:
+  sources:
+    - "Meletinsky 1976"
+  derived_by: "RuWritingStyles project — аналитическая модель письма по docs/roadmap_literary_clusters.md §3.4 и кластеру lit_mythopoetics; тексты Мелетинского в приватном корпусе отсутствуют (находка H770), стилевые утверждения не выверены по первоисточнику"
+  derivation_date: "2026-08"

@@ -2,12 +2,10 @@
 
 from __future__ import annotations
 
-import json
-import re
 from pathlib import Path
 from typing import Any
 
-from .providers import BaseProvider
+from .providers import BaseProvider, ProviderRequest
 
 
 def generate_style_passport(
@@ -60,21 +58,29 @@ Return a JSON object:
 }
 """
 
-    response_text = provider.generate(
-        prompt=prompt,
-        model=model,
-        system_instructions="You are an expert philologist and prompt engineer specializing in multi-agent linguistic systems.",
-        json_mode=True
+    system_instructions = (
+        "You are an expert philologist and prompt engineer specializing in "
+        "multi-agent linguistic systems."
     )
-    
-    try:
-        result = json.loads(response_text)
-        return result
-    except json.JSONDecodeError:
-        match = re.search(r"\{.*\}", response_text, re.DOTALL)
-        if match:
-            return json.loads(match.group(0))
-        raise ValueError(f"LLM failed to return valid JSON: {response_text}")
+    request = ProviderRequest(
+        task="generation",
+        prompt=f"{system_instructions}\n\n{prompt}",
+        schema={},
+        metadata={"style_name": style_name},
+        model=model,
+    )
+    result = provider.generate_json(request)
+
+    missing = [
+        key
+        for key in ("passport_id", "passport_yaml", "source_prompt_md")
+        if not result.get(key)
+    ]
+    if missing:
+        raise ValueError(
+            f"provider returned an incomplete generation result (missing: {', '.join(missing)})"
+        )
+    return result
 
 
 def save_generated_style(repo_root: Path, generation_result: dict[str, str]) -> str:
@@ -101,6 +107,7 @@ def save_generated_style(repo_root: Path, generation_result: dict[str, str]) -> 
     path: styles/passports/{passport_id}.yml
     level: private
     cluster: {cluster_id}
+    source_prompt: {source_prompt_rel}
 """
         # Append to passports list
         if "\npassports:" in manifest_text:

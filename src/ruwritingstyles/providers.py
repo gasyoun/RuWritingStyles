@@ -154,7 +154,49 @@ class MockProvider(BaseProvider):
             return self._audit(metadata)
         if task == "bias_audit":
             return self._bias_audit(metadata)
+        if task == "generation":
+            return self._generation(metadata)
         raise ProviderError(f"mock provider does not support task {task!r}")
+
+    def _generation(self, metadata: dict[str, Any]) -> dict[str, Any]:
+        style_name = str(metadata.get("style_name") or "Mock Style")
+        passport_id = "mock-generated-style"
+        passport_yaml = "\n".join(
+            [
+                f"id: {passport_id}",
+                f'name: "{style_name}"',
+                "level: private",
+                "cluster: ling_nss",
+                f"source_prompt: ClaudeStyles/{passport_id}-style.md",
+                "role: clarity_reviewer",
+                "language: ru",
+                "best_for:",
+                "  - mock pipeline validation",
+                "checks:",
+                "  - mock_observation",
+                "limits:",
+                '  - "Deterministic mock output for offline validation only"',
+                "review_mode:",
+                "  rewrite_allowed: false",
+                "  requires_span_ids: true",
+                "  output_format: findings_json",
+                "council:",
+                "  can_reply_to:",
+                "    - mock_topic",
+                "",
+            ]
+        )
+        source_prompt_md = (
+            f"# {style_name}\n\n"
+            "Deterministic mock style prompt produced by the mock provider for "
+            "offline pipeline validation.\n"
+        )
+        return {
+            "passport_id": passport_id,
+            "cluster_id": "ling_nss",
+            "passport_yaml": passport_yaml,
+            "source_prompt_md": source_prompt_md,
+        }
 
     def _review(self, metadata: dict[str, Any]) -> dict[str, Any]:
         style_id = str(metadata["style_id"])

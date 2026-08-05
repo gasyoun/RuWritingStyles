@@ -4,6 +4,12 @@ All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
 
+### Added
+- **Style passports for Yuri Lotman and Eleazar Meletinsky ([H1861](https://github.com/gasyoun/Uprava/blob/main/handoffs/H1861-Fable_RuWritingStyles_lotman-meletinsky-style-passports_29.07.26.md)):** `lotman` (private, `lit_structural` — early structuralist vs late essayistic register split, «семиосфера» integrity, schema/binary-opposition preservation) and `meletinsky` (private, `lit_mythopoetics` — Propp+Lévi-Strauss double base, cross-cultural parallel lists, трикстер/мифологема term integrity, reconstruction hedging), with [`ClaudeStyles/lotman-style.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/lotman-style.md) / [`ClaudeStyles/meletinsky-style.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/meletinsky-style.md) prompts, manifest rows, three `knowledge/bibliography.json` records (Lotman 1970/1992, Meletinsky 1976) and the regenerated 44-style gallery. Content is derived from the repo's own [`docs/roadmap_literary_clusters.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap_literary_clusters.md) §3.3/§3.4 drafts and the two cluster passports — **not** from primary corpus text: per H770/H1882 neither author has attributable text in the private corpus, so each passport's `provenance.derived_by` states the claims are unverified against first sources (same constructed-content posture as the H1480 adversarial cases).
+
+### Fixed
+- **`rws generate-passport` crashed with `AttributeError` on every provider** — [`generation.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/generation.py) called a nonexistent `provider.generate(...)`; no adapter (mock included) ever defined it. It now routes through the universal `generate_json(ProviderRequest)` path (task `generation`), the mock provider gained a deterministic `generation` branch so the command is offline-testable, and the manifest entry `save_generated_style` writes now includes `source_prompt` (previously omitted, which broke the `validate_project` ClaudeStyles↔manifest sync on the very next run). Round-trip pinned by [`tests/test_generate_passport_roundtrip.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_generate_passport_roundtrip.py), which also drives both H1861 passports through the save/load machinery byte-identically.
+
 ## [2.22.0] - 2026-08-04
 
 ### Fixed

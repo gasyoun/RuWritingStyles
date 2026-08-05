@@ -8,7 +8,7 @@ Claude содержимое файла в начале диалога и поп�
 > Прямой текст для копирования — кнопка **Raw** на странице файла на GitHub
 > (или `https://raw.githubusercontent.com/gasyoun/RuWritingStyles/main/<путь>`).
 
-Всего стилей: **42**. Регенерируется: `python tools/generate_style_gallery.py`.
+Всего стилей: **44**. Регенерируется: `python tools/generate_style_gallery.py`.
 
 ## Отдельные стили (по школам/кластерам)
 
@@ -52,9 +52,14 @@ Claude содержимое файла в начале диалога и поп�
 
 - [С. С. Аверинцев](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/averintsev-style.md) — `averintsev`
 
+### Мифопоэтика
+
+- [Е. М. Мелетинский](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/meletinsky-style.md) — `meletinsky`
+
 ### Литературоведческий структурализм
 
 - [М. Л. Гаспаров](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/gasparov-style.md) — `gasparov`
+- [Ю. М. Лотман](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/lotman-style.md) — `lotman`
 
 ## Школы целиком (кластерные стили)
 
