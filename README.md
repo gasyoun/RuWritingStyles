@@ -1,6 +1,6 @@
 # Каталог пользовательских стилей для Claude
 
-_Created: 03-05-2026 · Last updated: 05-08-2026_
+_Created: 03-05-2026 · Last updated: 07-08-2026_
 
 Этот README объясняет, какие пользовательские стили для Claude уже созданы, чем они отличаются и как ими пользоваться. Он рассчитан на человека, который впервые открыл эту папку и еще не знает, какой файл брать для своей задачи.
 
@@ -8,14 +8,14 @@ _Created: 03-05-2026 · Last updated: 05-08-2026_
 
 > 🚀 **Хотите прогнать свою статью через «Совет» стилей?** За пять шагов от установки до первой рецензии (с ключом DeepSeek) — [`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md).
 
-**Status**: v2.18.0 — все семь adversarial-кейсов теперь однородны: каждый требует тип находки, объявленный в `checks` собственного стиля-ревьюера, и засчитывается только при нулевой правке (`max_changed_line_ratio`/`max_char_delta_ratio` = `0.0`). Четыре старых кейса до этого требовали `oversimplification` — метку, которой нет ни в одном паспорте, то есть были непроходимы на любом провайдере. Предыдущий v2.17.0 — те же кейсы на **отказ** править для трёх литературоведческих кластеров с `pipeline_risk: very_high` (`lit_bakhtin`, `lit_poststructural`, `lit_textology`). Ещё раньше v2.16.0 — авторитет школ по доменам задан явной таблицей `DOMAIN_CLUSTER_WEIGHTS` в `council.py` (16 доменных строк вместо трёх хардкод-случаев; множители < 1.0 подавляют методологически немую в домене школу). Ещё раньше v2.15.3 — pipeline/packaging-hardening release: prompt/prepare не вызывают провайдеров; `run.json` стал источником восстановления; бюджеты ограничивают попытки, токены и время; wheel/sdist содержат проверенный runtime и Web Studio; `rws init` создает переносимое рабочее пространство. Строгий mock-baseline охватывает **55 кейсов** и защищает шесть детерминированных проходов за обязательным `CI / Required gate`.
+**Status**: v2.23.0 (см. [`changelog.md`](changelog.md)). Каталог стилей + CLI-конвейер «Совет» + eval-харнесс + Web Studio. Честная граница «что уже есть / что ещё нет» — в разделах [Реализовано](#реализовано) и [Запланировано](#запланировано) ниже (H2369).
 
 ### Установка конвейера
 
 Скачайте wheel из [GitHub Releases](https://github.com/gasyoun/RuWritingStyles/releases), затем создайте рабочее пространство вне каталога Python:
 
 ```bash
-python -m pip install ruwritingstyles-2.16.0-py3-none-any.whl
+python -m pip install ruwritingstyles-2.23.0-py3-none-any.whl
 mkdir rws-workspace && cd rws-workspace
 rws init .
 rws show-config
@@ -24,12 +24,37 @@ rws web                  # production SPA + API: http://localhost:8000
 
 Для разработки из checkout используйте `python -m pip install -e .`; `rws web --dev` дополнительно запускает Vite на порту 5173. Порядок поиска workspace: `RWS_WORKSPACE`, ближайший `.rws-workspace.json`, затем legacy checkout.
 
-Границы реализованного (честная маркировка):
+## Реализовано
 
-- **OpenAlex** — реализован (`researcher.py`, живые запросы к api.openalex.org);
-- **Zotero (MCP)** — клиент реализован (`mcp_client.py`), но требует отдельно установленного внешнего Zotero MCP-сервера; без него функция неактивна;
-- **Deep Retrieval (FTS5)** — реализован (`corpus.py`) и доступен из CLI (`rws corpus-status` / `corpus-ingest` / `corpus-search`), но требует локального корпуса текстов: с 2026-06 корпус не входит в публичный репозиторий (см. [`SOURCES.md`](SOURCES.md)) и подключается через приватный репозиторий-спутник или `RWS_CORPUS_DIR`;
-- **плагины Obsidian/Word** — реализован только API-слой (FastAPI); сами плагины остаются прототипами и отложены (решение о выпуске за автором), к конкретной версии больше не привязаны.
+То, что **работает в публичном дереве** (код + тесты/CI, либо явная оговорка о внешней зависимости):
+
+| Возможность | Где | Условие |
+|---|---|---|
+| Каталог Claude Custom Styles (≈44 файла) | [`ClaudeStyles/`](ClaudeStyles/) | без API-ключа |
+| CLI-конвейер prepare → review → council → revise → verify | `rws run`, [`docs/ENGINE.md`](docs/ENGINE.md) | mock offline; live — ключ провайдера |
+| Именованные советы (`general` / `sanskrit` / `indology` / `lexicography`) | `rws councils`, `--council` | — |
+| Провайдер DeepSeek | `--provider deepseek` | `DEEPSEEK_API_KEY` |
+| OpenAlex (живые запросы) | `researcher.py` → api.openalex.org | сеть |
+| Zotero MCP-клиент | `mcp_client.py` | **внешний** Zotero MCP-сервер; без него путь неактивен |
+| Deep Retrieval (FTS5) | `corpus.py`; `rws corpus-status` / `corpus-ingest` / `corpus-search` | локальный корпус: приватный [`RuWritingStyles-corpus`](https://github.com/gasyoun/RuWritingStyles-corpus) или `RWS_CORPUS_DIR` — **не** в этом репо |
+| Web Studio + FastAPI | `rws web`, каталог `web/` | — |
+| Eval-харнесс + mock CI gate | `evals/`, `scripts/ci-eval-gate.py` | mock без ключей |
+| Журнальные профили + ГОСТ-аппарат | `knowledge/journals/`, citation path | — |
+| Obsidian-плагин (код + CI) | [`obsidian-plugin/`](obsidian-plugin/) | сборка/тесты в репо; **не** = публикация в Community Plugins |
+| Библиография опорных источников + права | [`SOURCES.md`](SOURCES.md) | полные тексты только в private corpus |
+
+## Запланировано
+
+То, что **ещё не сделано** или сделано только частично / только автором:
+
+| Пункт | Статус |
+|---|---|
+| **Вычистка `PDFtoTXT` из истории git** (`git filter-repo` + force-push + бэкап) | **только автор (human-only)**; в рабочем дереве каталога уже нет, в истории — ещё есть. Агенты **не** запускают filter-repo |
+| DOI на Zenodo → вписать в [`CITATION.cff`](CITATION.cff) | релизное действие автора |
+| Подача методологической статьи | [`docs/methodology-paper-outline.md`](docs/methodology-paper-outline.md) |
+| Публикация Obsidian-плагина (BRAT / Community Plugins, тег `obsidian-v*`) | кнопки автора; код плагина уже в репо |
+| Word-плагин | только прототип HTML/manifest в [`docs/rws-word-*.html`](docs/) / XML — **не** store-ready |
+| Новые паспортные стили без текста в private corpus | блокированы gate H1882 (нет attributable source) |
 
 ## Цитирование и декларация об использовании ИИ
 
@@ -75,6 +100,8 @@ rws web                  # production SPA + API: http://localhost:8000
 
 ## Навигация
 
+- [Реализовано](#реализовано)
+- [Запланировано](#запланировано)
 - [Все созданные стили](#все-созданные-стили)
 - [Исходные материалы](#исходные-материалы)
 - [Быстрый выбор по задаче](#быстрый-выбор-по-задаче)

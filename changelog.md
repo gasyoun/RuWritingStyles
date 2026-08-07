@@ -4,6 +4,9 @@ All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
 
+### Changed
+- **SOURCES.md + README honesty pass ([H2369](https://github.com/gasyoun/Uprava/blob/main/handoffs/H2369-Grok_RuWritingStyles_sources-readme-honesty-pass_07.08.26.md)):** removed the false claim that `PDFtoTXT/` was purged from git history via `git filter-repo` (working tree is clean; history still has the blobs — human-only). README now has explicit [Реализовано](README.md#реализовано) / [Запланировано](README.md#запланировано) sections with external-dependency caveats (Zotero MCP server, private corpus for FTS5, Obsidian code vs Community publish). Roadmap Phase 0 doc checkboxes ticked in [`docs/roadmap-sanskrit-dh.md`](docs/roadmap-sanskrit-dh.md); filter-repo left open as author-only. No history rewrite.
+
 ## [2.23.0] - 2026-08-05
 
 ### Added
