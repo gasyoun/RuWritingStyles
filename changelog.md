@@ -4,6 +4,7 @@ All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
 
+## [2.23.3] - 2026-08-13
 ### Fixed
 - **CLI/API `text_domain` and `generate-passport` now survive the full path into persistence, runtime, and export ([H2576](https://github.com/gasyoun/Uprava/blob/main/handoffs/H2576-Grok_RuWritingStyles_end-to-end-field-wiring_11.08.26.md)).** `#116` / H1834 already persisted a non-default domain from `rws prepare`/`rws run`, and `#129` / H1861 already routed `rws generate-passport` through `provider.generate_json` so the mock provider no longer crashed on a missing `generate`. The FastAPI `/runs/execute` body still omitted `text_domain`, so every API run landed as `unknown` and never activated `DOMAIN_CLUSTER_WEIGHTS`; the export ZIP omitted `run.json`/`metadata.json`, so the persisted domain never left the run directory; and the editor revision shortcut in `execute_revision_artifact` still called the nonexistent `provider.generate`. `/runs/execute` now accepts `text_domain` (default `unknown`, 400 on an unknown value), the export bundle carries `run.json` + `metadata.json`, and the selection revision path uses `generate_json` like every other provider call. Acceptance: `python -m unittest tests.test_cli_to_manifest_acceptance` (CLI prepare/run + API execute + `rws generate-passport` → `source_prompt` in `styles/manifest.yml` + `rws list-styles`).
 
