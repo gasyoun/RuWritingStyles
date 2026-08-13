@@ -57,6 +57,7 @@ manager = ConnectionManager()
 shared_state = SharedState()
 
 from .config import Manifest, load_manifest, load_model_policy, repo_root_from
+from .council import TEXT_DOMAINS
 from .pipeline import ExecutionMode, PipelineOptions, build_step_plan, preflight_budget, run_full_pipeline
 from .profiling import calculate_bloom_stats, calculate_methodological_compass, calculate_tension_heatmap
 from .provider_status import provider_statuses, provider_statuses_json
@@ -261,6 +262,9 @@ class RunRequest(BaseModel):
     lint_translit: bool = True
     budget_mode: Literal["smoke", "standard", "expensive"] = "standard"
     allow_expensive: bool = False
+    # Closed vocabulary (same as `rws prepare --text-domain`). Default keeps
+    # pre-H2576 clients on the neutral `unknown` row.
+    text_domain: str = "unknown"
 
 
 def _input_root(repo_root: Path) -> Path:
@@ -329,6 +333,12 @@ async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
                 detail=f"unknown journal '{req.journal}'; available: {list_journal_presets(repo_root)}",
             )
 
+    if req.text_domain not in TEXT_DOMAINS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"unknown text_domain '{req.text_domain}'; available: {list(TEXT_DOMAINS)}",
+        )
+
     manifest = load_manifest(repo_root)
     model_policy = load_model_policy(repo_root)
     options = PipelineOptions(
@@ -361,6 +371,7 @@ async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
         model_policy=model_policy,
         provider=req.provider,
         profile=req.profile,
+        metadata={"text_domain": req.text_domain},
         config={
             "provider": req.provider,
             "model": req.model,
@@ -372,6 +383,7 @@ async def execute_run(req: RunRequest, background_tasks: BackgroundTasks):
             "no_lint_translit": not req.lint_translit,
             "budget_mode": req.budget_mode,
             "allow_expensive": req.allow_expensive,
+            "text_domain": req.text_domain,
         },
         pipeline_options=options.to_json(),
         step_plan=build_step_plan(options),
