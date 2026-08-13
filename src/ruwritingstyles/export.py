@@ -73,6 +73,8 @@ def export_eval_suite_bundle(suite_dir: Path, output_path: Path | None = None) -
 
 def _bundle_files(run_dir: Path, report_path: Path, html_path: Path) -> list[Path]:
     candidates = [
+        run_dir / "run.json",
+        run_dir / "metadata.json",
         run_dir / "original.md",
         run_dir / "normalized.md",
         run_dir / "segments.json",

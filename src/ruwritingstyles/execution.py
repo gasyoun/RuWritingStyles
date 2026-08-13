@@ -121,12 +121,22 @@ Your task is to revise the following snippet based on the Socratic Council's fin
 - Return ONLY the revised Russian text.
 - Maintain the cluster's stylistic constraints (epistemic modality, philological depth).
 """
-        revised = provider.generate(
-            prompt=prompt,
-            model=model,
-            system_instructions="You are a professional philological editor."
+        system_instructions = "You are a professional philological editor."
+        output = provider.generate_json(
+            ProviderRequest(
+                task="revision",
+                prompt=f"{system_instructions}\n\n{prompt}",
+                schema={},
+                metadata={
+                    "run_id": "selection",
+                    "normalized_text": text,
+                    "findings": findings,
+                },
+                model=model,
+            )
         )
-        return revised.strip()
+        revised = output.get("revised_document") or output.get("revised_text") or ""
+        return str(revised).strip()
 
     # Standard pipeline path
     revision = _load_json(revision_path)
