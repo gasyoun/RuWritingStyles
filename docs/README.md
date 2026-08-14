@@ -67,6 +67,7 @@
 
 ## Разработка и развертывание
 
+- [`RELEASE_SOURCE_OF_TRUTH.md`](RELEASE_SOURCE_OF_TRUTH.md) — merged `origin/main` + real `vX.Y.Z` tags are the release sequence; run `python scripts/release_source_truth.py --require-releaseable` before `/cut-release`.
 - [`obsidian-plugin-plan.md`](obsidian-plugin-plan.md) — план плагина для Obsidian:
   MVP с легкими детерминированными проверками (порт линтера на TypeScript), полный
   аудит «Совета» через локальный FastAPI как Tier 2.

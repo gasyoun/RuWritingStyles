@@ -29,3 +29,17 @@ jobs:
         with:
           python-version: "3.11"
       - run: python scripts/changelog_duplicate_bullets.py
+
+  release-source-truth:
+    name: Changelog — headings vs real tags
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - name: Classify release state (no tag mutation)
+        run: python scripts/release_source_truth.py
