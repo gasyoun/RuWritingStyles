@@ -4,6 +4,7 @@ All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
 
+## [2.25.2] - 2026-08-14
 ### Added
 - **Release source of truth ([H2580](https://github.com/gasyoun/Uprava/blob/main/handoffs/H2580-Grok_RuWritingStyles_release-source-truth_11.08.26.md)).** [`scripts/release_source_truth.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/scripts/release_source_truth.py) refuses a tag or `gh release` decision when `HEAD` is an unmerged PR or a stale local `main`, and fails when a changelog heading newer than the latest real tag is not a one-step bump (the [IndologyScholars#177](https://github.com/gasyoun/IndologyScholars/pull/177) `1.12.0` vs `v1.6.0` shape). Historical untagged headings at or below the latest tag are reported, not rewritten. The script never creates or moves a tag; a real cut stays a separate `/cut-release` after merge. Tests: [`tests/test_release_source_truth.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_release_source_truth.py). Operator notes: [`docs/RELEASE_SOURCE_OF_TRUTH.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/RELEASE_SOURCE_OF_TRUTH.md).
 
