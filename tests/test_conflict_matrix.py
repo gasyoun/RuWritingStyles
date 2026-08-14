@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import unittest
 from pathlib import Path
@@ -18,11 +19,12 @@ os.environ.setdefault("RWS_OFFLINE", "1")
 from ruwritingstyles.config import load_manifest, load_model_policy
 from ruwritingstyles.council import (
     CONFLICT_MATRIX,
+    _render_prompt,
     create_council_bundle,
     lookup_conflict_hint,
 )
 from ruwritingstyles.execution import execute_council_artifact
-from ruwritingstyles.providers import MockProvider, provider_from_name
+from ruwritingstyles.providers import MockProvider, ProviderRequest, provider_from_name
 from ruwritingstyles.runs import create_prepare_run
 from ruwritingstyles.segment import normalize_document, segment_markdown
 
@@ -96,23 +98,8 @@ class ConflictMatrixPromptFidelityTests(unittest.TestCase):
 
     def test_prompt_examples_are_backed_by_a_real_matrix_hint(self) -> None:
         """Every `'X > Y: token'` example in the prompt must exist in the matrix."""
-        import re
-
         hints = " || ".join(CONFLICT_MATRIX.values())
-        # Only the `Resolve Conflicts` instruction line — the one place the prompt
-        # shows a provider what a citation should look like.
-        instruction_lines = [
-            line
-            for line in self.COUNCIL_SRC.splitlines()
-            if "**Resolve Conflicts**" in line
-        ]
-        self.assertTrue(instruction_lines, "Resolve Conflicts instruction not found")
-        examples = [
-            match
-            for line in instruction_lines
-            for match in re.findall(r"'([^'\n]{3,120})'", line)
-            if ">" in match or " vs " in match
-        ]
+        examples = _instruction_examples(self.COUNCIL_SRC)
         self.assertTrue(examples, "no citation example found in the prompt")
         for example in examples:
             with self.subTest(example=example):
@@ -129,6 +116,272 @@ class ConflictMatrixPromptFidelityTests(unittest.TestCase):
                 continue
             with self.subTest(pair=pair):
                 self.assertNotIn("_wins", hint, f"{pair} is both escalate and a win")
+
+
+# ---------------------------------------------------------------------------
+# H2575 — generated-prompt / spec parity (source of truth: CONFLICT_MATRIX)
+# ---------------------------------------------------------------------------
+#
+# PR #127 locked the *source file* of council.py. That still leaves the
+# original hole: MockProvider never reads instruction prose, so a later
+# edit can reintroduce a matrix-false example while every mock test stays
+# green. These helpers inspect the *rendered* council prompt (what a live
+# provider is shown) and compare its examples to CONFLICT_MATRIX. They do
+# not copy the matrix; tokens are read from lookup_conflict_hint / Cite
+# lines. Forbidden strings are only the inverted school-wins forms the
+# pre-fix prompt and agent-protocol.md taught.
+
+_CITE_RE = re.compile(r"Cite '([^']+)'")
+# Require ` > ` or ` vs ` *inside* the quotes. A naive '[^']+' scan starts
+# at the apostrophe in "entry's" and swallows the opening quote of the
+# first example — the H2217 source scan therefore never saw the wins
+# token, which is why 286 mock tests stayed green.
+_EXAMPLE_RE = re.compile(r"'([^'\n]*(?: > | vs )[^'\n]*)'")
+_RESOLUTION_RE = re.compile(r"Resolution: ([^.]{10,200})")
+
+# Pairs whose instruction or docs PR #127 rewrote, plus the inverted
+# winner the pre-fix surface taught. Extra forbiddens are historical
+# defect strings, not a second copy of the matrix.
+PR127_RULES: tuple[tuple[str, tuple[str, str], tuple[str, ...]], ...] = (
+    (
+        "opoyaz_bakhtin_escalate",
+        ("lit_opoyaz", "lit_bakhtin"),
+        ("Bakhtin > OPOYAZ", "OPOYAZ > Bakhtin"),
+    ),
+    (
+        "iesh_nss_modern_default",
+        ("ling_iesh", "ling_nss"),
+        ("IESH > NSS",),
+    ),
+    (
+        "textology_histcult_manuscript",
+        ("lit_textology", "lit_historico_cultural"),
+        ("Historico-Cultural > Textology", "Hist-Cult > Textology"),
+    ),
+    (
+        "textology_nss_wins",
+        ("lit_textology", "ling_nss"),
+        ("NSS > Textology",),
+    ),
+    (
+        "poststructural_nss_wins",
+        ("lit_poststructural", "ling_nss"),
+        ("NSS > Poststructural",),
+    ),
+)
+
+AGENT_PROTOCOL = REPO_ROOT / "docs" / "agent-protocol.md"
+
+
+def _matrix_cite_or_resolution(pair: tuple[str, str]) -> str:
+    """Distinctive token taken from CONFLICT_MATRIX, never authored here."""
+    hint = lookup_conflict_hint(*pair)
+    if not hint:
+        raise AssertionError(f"CONFLICT_MATRIX has no entry for {pair}")
+    cited = _CITE_RE.search(hint)
+    if cited:
+        return cited.group(1)
+    resolved = _RESOLUTION_RE.search(hint)
+    if resolved:
+        return resolved.group(1)
+    raise AssertionError(f"no Cite/Resolution token in matrix hint for {pair}")
+
+
+def _instruction_line(text: str) -> str:
+    for line in text.splitlines():
+        if "**Resolve Conflicts**" in line:
+            return line
+    raise AssertionError("Resolve Conflicts instruction not found")
+
+
+def _instruction_examples(text: str) -> list[str]:
+    return [
+        match
+        for match in _EXAMPLE_RE.findall(_instruction_line(text))
+        if ">" in match or " vs " in match
+    ]
+
+
+def assert_instruction_examples_backed_by_matrix(text: str) -> None:
+    """Fail when a Resolve Conflicts example is not a matrix hint substring.
+
+    This is the check MockProvider cannot perform: it never reads the
+    instruction. Calling it on a mutated prompt is the H2575 red proof.
+    """
+    hints = " || ".join(CONFLICT_MATRIX.values())
+    examples = _instruction_examples(text)
+    if not examples:
+        raise AssertionError("no citation example found in Resolve Conflicts")
+    missing = [example for example in examples if example not in hints]
+    if missing:
+        raise AssertionError(
+            "instruction cites example(s) no CONFLICT_MATRIX hint supports: "
+            + ", ".join(repr(item) for item in missing)
+        )
+
+
+def _generated_council_prompt(
+    review_docs: list[dict] | None = None,
+) -> str:
+    return _render_prompt(
+        repo_root=REPO_ROOT,
+        run_id="unittest-h2575-parity",
+        run_dir=REPO_ROOT / "runs" / "unittest-h2575-parity",
+        segments_json="[]",
+        review_docs=review_docs or [],
+        delib_docs=[],
+        scrutiny_doc=None,
+        project_context=None,
+        external_research="",
+        manifest=load_manifest(REPO_ROOT),
+        archetype=None,
+    )
+
+
+class ConflictMatrixPromptSpecParityTests(unittest.TestCase):
+    """Generated instruction + docs vs CONFLICT_MATRIX (H2575 / PR #127).
+
+    Source of truth is ``CONFLICT_MATRIX`` in
+    ``src/ruwritingstyles/council.py``. These cases compare the *rendered*
+    council prompt (and the agent-protocol section that quotes it) to that
+    table. They must fail when instruction prose changes and mock behaviour
+    does not — the exact hole PR #127 diagnosed.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.prompt = _generated_council_prompt()
+        cls.instruction = _instruction_line(cls.prompt)
+        cls.docs = AGENT_PROTOCOL.read_text(encoding="utf-8")
+
+    def test_generated_instruction_examples_are_matrix_backed(self) -> None:
+        examples = _instruction_examples(self.prompt)
+        self.assertGreaterEqual(
+            len(examples),
+            2,
+            "extractor must see both the wins example and the escalate example "
+            "(the apostrophe in 'entry's' used to hide the first)",
+        )
+        assert_instruction_examples_backed_by_matrix(self.prompt)
+
+    def test_each_pr127_rule_positive_token_in_generated_prompt(self) -> None:
+        for rule_id, pair, _forbidden in PR127_RULES:
+            token = _matrix_cite_or_resolution(pair)
+            with self.subTest(rule=rule_id, token=token):
+                self.assertIn(
+                    token,
+                    self.prompt,
+                    f"{rule_id}: generated prompt dropped matrix token {token!r}",
+                )
+
+    def test_each_pr127_rule_negative_forbidden_form_absent(self) -> None:
+        surfaces = {
+            "instruction": self.instruction,
+            "docs": self.docs,
+        }
+        for rule_id, pair, forbidden in PR127_RULES:
+            hint = lookup_conflict_hint(*pair)
+            self.assertIsNotNone(hint)
+            derived: list[str] = list(forbidden)
+            if hint and "Resolution: escalate" in hint:
+                cited = _CITE_RE.search(hint)
+                if cited and " vs " in cited.group(1):
+                    left, rest = cited.group(1).split(" vs ", 1)
+                    right = rest.split(":", 1)[0].strip()
+                    derived.extend((f"{left} > {right}", f"{right} > {left}"))
+            for form in dict.fromkeys(derived):
+                for surface_name, surface in surfaces.items():
+                    with self.subTest(rule=rule_id, form=form, surface=surface_name):
+                        self.assertNotIn(
+                            form,
+                            surface,
+                            f"{rule_id}: {surface_name} still teaches {form!r}",
+                        )
+
+    def test_instruction_cite_examples_appear_in_matrix_cite_lines(self) -> None:
+        """Positive: every quoted instruction example is a matrix Cite token."""
+        cites = {
+            match.group(1)
+            for hint in CONFLICT_MATRIX.values()
+            if (match := _CITE_RE.search(hint))
+        }
+        examples = _instruction_examples(self.prompt)
+        self.assertTrue(examples)
+        for example in examples:
+            with self.subTest(example=example):
+                self.assertIn(
+                    example,
+                    cites,
+                    f"instruction example {example!r} is not a CONFLICT_MATRIX Cite token",
+                )
+
+    def test_docs_name_conflict_matrix_as_source_of_truth(self) -> None:
+        self.assertIn("CONFLICT_MATRIX", self.docs)
+        self.assertIn("lit_textology_wins", self.docs)
+        self.assertIn("lit_poststructural_wins", self.docs)
+        self.assertIn("escalate", self.docs)
+
+    def test_wrong_instruction_example_fails_parity_while_mock_stays_green(self) -> None:
+        """Intentional mutation: mock ignores prose; this checker must not.
+
+        Replays the PR #127 pre-fix instruction example. MockProvider still
+        completes (it only reads ``style_id``), and the parity helper fails.
+        """
+        review_docs = [
+            {
+                "style_id": "lit_opoyaz",
+                "findings": [
+                    {
+                        "id": "finding-opoyaz",
+                        "style_id": "lit_opoyaz",
+                        "span_id": "p001",
+                    }
+                ],
+            },
+            {
+                "style_id": "lit_bakhtin",
+                "findings": [
+                    {
+                        "id": "finding-bakhtin",
+                        "style_id": "lit_bakhtin",
+                        "span_id": "p001",
+                    }
+                ],
+            },
+        ]
+        prompt = _generated_council_prompt(review_docs)
+        assert_instruction_examples_backed_by_matrix(prompt)
+
+        mutated = prompt.replace(
+            "Textology > NSS: lit_textology_wins",
+            "Bakhtin > OPOYAZ",
+        )
+        self.assertIn("Bakhtin > OPOYAZ", mutated)
+        self.assertNotEqual(mutated, prompt)
+
+        mock_out = MockProvider().generate_json(
+            ProviderRequest(
+                task="council",
+                prompt=mutated,
+                schema={},
+                metadata={
+                    "run_id": "unittest-h2575-mutation",
+                    "finding_ids": ["finding-opoyaz", "finding-bakhtin"],
+                },
+            )
+        )
+        self.assertEqual(mock_out.get("status"), "completed")
+        reasons = " ".join(
+            str(decision.get("reason") or "")
+            for decision in mock_out.get("decisions") or []
+        )
+        self.assertIn("Conflict matrix rule", reasons)
+        self.assertIn("escalate, author decides", reasons)
+        self.assertNotIn("Bakhtin > OPOYAZ", reasons)
+
+        with self.assertRaises(AssertionError) as raised:
+            assert_instruction_examples_backed_by_matrix(mutated)
+        self.assertIn("Bakhtin > OPOYAZ", str(raised.exception))
 
 
 class ConflictMatrixCouncilCitationTests(unittest.TestCase):
