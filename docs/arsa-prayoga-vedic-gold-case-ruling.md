@@ -1,6 +1,6 @@
 # Ruling: *ārṣa prayoga* does not invalidate the `vedic-classical-anachronism` gold case
 
-_Created: 14-08-2026 · Last updated: 14-08-2026_
+_Created: 14-08-2026 · Last updated: 14-08-2026 (Q3 ruled YES the same day — the epic passport now carries the clause; §4)_
 
 **Provenance.** Question raised by the author on 19-07-2026 in the
 `review-vedic-r02-adjudication` vote note (audit trail:
@@ -122,30 +122,45 @@ a case's `purpose` must enumerate every planted claim, not just the one that nam
 | Extend `accepted_finding_aliases` | Protocol-forbidden (GOLD_PROTOCOL § «Политика меток»), and already rejected once as the `add_alias` option of this very adjudication. |
 | Edit the frozen rater sheet's copy of `purpose` | `evals/annotation/sheet-h073gov.json` records what rater B was actually shown in 2026-07. It is audit trail; it keeps the old wording by design. |
 
-## 4. Q3 — gated, not applied
+## 4. Q3 — RULED YES 14-08-2026, clause applied
 
-Whether an epic-facing passport (e.g.
-[styles/passports/smirnov-mahabharata.yml](https://github.com/gasyoun/RuWritingStyles/blob/main/styles/passports/smirnov-mahabharata.yml))
-should carry a Novgorod-shaped clause — *не считать отклонение от паниниевской нормы ошибкой
-в эпическом тексте без проверки*, on the model of the existing
+**A human ruled: «защити эпический паспорт клаузой — вариант да».** The clause is now live in
+[styles/passports/smirnov-mahabharata.yml](https://github.com/gasyoun/RuWritingStyles/blob/main/styles/passports/smirnov-mahabharata.yml)
+`limits`, mirrored in the human-facing
+[ClaudeStyles/smirnov-mahabharata-style.md](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/smirnov-mahabharata-style.md)
+§ Запреты (H2713). Three lines, not one — the permission alone would have re-created the error
+this ruling refutes:
+
+1. *не должен считать отклонение от паниниевской нормы ошибкой в эпическом тексте без проверки* —
+   the Novgorod-shaped permission itself.
+2. *не должен объяснять такое отклонение архаикой («язык риши», доведийская древность) — в эпосе
+   оно объясняется метрической необходимостью и среднеиндийским влиянием* — the Oberlies guard
+   from §2. Without it the clause would teach the reviewer the very folk-rationale §2 refutes.
+3. *не должен переносить эту поблажку на ведийский текст: она действует только в постведийском* —
+   the direction lock. This is what keeps the clause from leaking back onto Vedic material, where
+   §2 establishes it has no purchase.
+
+Costs accepted with the ruling, stated rather than buried: a `limits` line reaches the model as
+review-prompt text, so **runs after this change are not comparable to the A29 §4.6/§4.7 tables**,
+and the next real-provider benchmark owes a fresh baseline. Nothing already published moves —
+the mock lane ignores `limits` (eval gate: 0 regressed, delta 0.0), so no `eval-promote` was owed
+for this change.
+
+**Not applied to `elizarenkova-veda`, and that is the point.** That passport reviews *Vedic*
+text; §2 establishes the licence does not reach Vedic material, so the same clause there would
+license exactly the error the gold case plants. The clause's shape follows the existing
 [styles/passports/zalizniak-novgorod.yml](https://github.com/gasyoun/RuWritingStyles/blob/main/styles/passports/zalizniak-novgorod.yml)
-line «не должен считать отклонение от книжной нормы ошибкой без проверки» — is a
-**style-layer change with eval consequences**, and is not applied here.
+line «не должен считать отклонение от книжной нормы ошибкой без проверки» — a
+different corpus, the same move: do not call a deviation from the book norm an error before
+checking.
 
-Three things a human needs before ruling on it:
-
-1. Such a clause must **not** be attached to `elizarenkova-veda`. That passport reviews
-   *Vedic* text; §2 establishes the licence does not reach Vedic material, so a clause there
-   would license exactly the error the gold case plants.
-2. If written for an epic passport, the clause must say the licence is epic-specific
-   (metri causa / Middle-Indic contact), never that the deviations are archaisms — §2's
-   Oberlies corollary.
-3. Adding a `limits` line changes the review prompt, so it needs a baseline re-promote and
-   makes post-change runs non-comparable to the A29 tables.
-
-Empirical instrument for grounding such a clause in named commentator instances: H1324
-(Opus 4.8) — MBh/Rāmāyaṇa commentary parsing feasibility,
-[handoffs/H1324](https://github.com/gasyoun/Uprava/blob/main/handoffs/H1324-Opus_CommentaryStrategies_mbh-ramayana-commentary-parsing-feasibility_19.07.26.md).
+**Still open, and not a blocker.** The clause rests on Oberlies' account of *why* epic Sanskrit
+deviates, not yet on a corpus of named commentator verdicts. H1324 (Opus 4.8) — MBh/Rāmāyaṇa
+commentary parsing feasibility,
+[handoffs/H1324](https://github.com/gasyoun/Uprava/blob/main/handoffs/H1324-Opus_CommentaryStrategies_mbh-ramayana-commentary-parsing-feasibility_19.07.26.md)
+— is the instrument that would ground it in specific verses where a commentator writes *ārṣa*.
+Until then the clause is a correct guard with a thin evidence base, which is a weaker claim than
+§2's and is marked as such here.
 
 ## 5. Not verified — do not report these as settled
 

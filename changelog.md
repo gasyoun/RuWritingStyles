@@ -4,6 +4,11 @@ All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
 
+## [2.25.0] - 2026-08-14
+
+### Changed
+- **The epic passport now carries the *ārṣa*-shaped clause — H1325 Q3 ruled YES by the author ([H2713](https://github.com/gasyoun/Uprava/blob/main/handoffs/H2713-Opus_RuWritingStyles_epic-passport-arsa-clause-h1325-q3_14.08.26.md)).** [`styles/passports/smirnov-mahabharata.yml`](https://github.com/gasyoun/RuWritingStyles/blob/main/styles/passports/smirnov-mahabharata.yml) `limits` and the human-facing [`ClaudeStyles/smirnov-mahabharata-style.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/smirnov-mahabharata-style.md) § Запреты gain **three** lines, not one: (1) the Novgorod-shaped permission — do not call a departure from Pāṇini's norm an error in an epic text without checking; (2) the Oberlies guard — do not explain that departure as archaism («язык риши», pre-Vedic antiquity), since in the epic it is metrical necessity and Middle-Indic contact; (3) the direction lock — the latitude does not carry over to Vedic material, it holds only post-Vedically. The permission alone would have taught the reviewer the folk-rationale that v2.24.0's ruling refutes, and would have leaked back onto the Vedic side where [`elizarenkova-veda`](https://github.com/gasyoun/RuWritingStyles/blob/main/styles/passports/elizarenkova-veda.yml) deliberately gets no such clause — a clause there would license exactly the error the `vedic-classical-anachronism` gold case plants. **Cost accepted with the ruling:** a `limits` line reaches the model as review-prompt text, so real-provider runs after this change are **not comparable** to A29's §4.6/§4.7 tables and the next paid benchmark owes a fresh baseline. Nothing published moves — the mock lane ignores `limits`, so the eval gate is unchanged (0 regressed, delta 0.0) and no `eval-promote` was owed. §4 of [`docs/arsa-prayoga-vedic-gold-case-ruling.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/arsa-prayoga-vedic-gold-case-ruling.md) is rewritten from "gated" to the applied clause, and states plainly that the clause rests on Oberlies' account rather than on a corpus of named commentator verdicts — H1324 is the instrument that would ground it.
+
 ## [2.24.0] - 2026-08-14
 
 ### Added
