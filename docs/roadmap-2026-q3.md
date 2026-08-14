@@ -1,6 +1,6 @@
 # Дорожная карта Q3 2026 — «Доверенный бенчмарк» (канонический план)
 
-_Created: 03-07-2026 · Last updated: 30-07-2026_
+_Created: 03-07-2026 · Last updated: 14-08-2026_
 
 **Статус: принята.** Четыре решения зафиксированы автором 03-07-2026 (сессия Fable 5,
 `claude-fable-5`):
@@ -208,6 +208,12 @@ Handoff: [H770](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H77
       [decisions_applied_vedic-r02-adjudication_2026-07-19.md](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/annotation/decisions_applied_vedic-r02-adjudication_2026-07-19.md).
       Остаток от заметки автора — два новых вопроса (арша-язык как узаконенное отклонение;
       парсинг комментариев к МБх/Рамаяне), см. аудит-запись § «Остаток».
+- [x] Вопрос об **арша-языке закрыт 14-08-2026** (H1325): *ārṣa prayoga* не работает в
+      обратную сторону — заложенная ошибка кейса остаётся ошибкой; вскрытый при этом дефект
+      (текст закладывает две оси периодизации, `purpose` называл одну) исправлен в рубрике
+      и в §5 статьи. Разбор:
+      [arsa-prayoga-vedic-gold-case-ruling.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/arsa-prayoga-vedic-gold-case-ruling.md).
+      Открытым остаётся только Q3 (оговорка эпического паспорта) — решение человека.
 - [x] Финальная вычитка под Вестник СПбГУ
       ([venue-checklist.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/paper-pack/venue-checklist.md));
       полировка EN abstract/keywords.

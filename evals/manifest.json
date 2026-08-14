@@ -1158,7 +1158,7 @@
     {
       "id": "vedic-classical-anachronism",
       "input": "examples/input/vedic-classical-anachronism.md",
-      "purpose": "Expert reviewer must flag ascribing Classical-Sanskrit forms/rules to a Vedic (Rigveda) hymn.",
+      "purpose": "Expert reviewer must flag ascribing POST-Vedic norms to a Vedic (Rigveda) hymn. The input plants the same period-collapse on two poles: (a) classical — Panini's rules, a 'classical aorist', mature-Sanskrit sandhi; (b) epic — accent 'set by the norms of the epic language' (a norm that does not exist: epic Sanskrit has no recorded accent) and the verse held analysable like a Mahabharata verse. Both poles are one finding class, 'anachronistic_sanskrit_period'; catching either scores the case, and the aggregate does NOT record which pole a run caught (H1325).",
       "default_styles": [
         "elizarenkova-veda"
       ],
