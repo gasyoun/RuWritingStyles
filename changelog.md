@@ -4,6 +4,7 @@ All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
 
+## [2.25.1] - 2026-08-14
 ### Added
 - **Generated-prompt ↔ `CONFLICT_MATRIX` parity cases ([H2575](https://github.com/gasyoun/Uprava/blob/main/handoffs/H2575-Grok_RuWritingStyles_prompt-spec-parity_11.08.26.md)).** [PR #127](https://github.com/gasyoun/RuWritingStyles/pull/127) already scanned `council.py` source, but `MockProvider` still ignores instruction prose — a later edit could re-teach `'Bakhtin > OPOYAZ'` while every mock lane stayed green. [`tests/test_conflict_matrix.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_conflict_matrix.py) now renders `_render_prompt` and checks a positive and a negative case for every PR #127 rule against the live matrix (tokens come from `Cite` / `Resolution` lines, not a second copy). A committed mutation test replaces the wins example with the pre-fix school-wins string: mock still completes and cites the matrix, the new checker fails.
 
