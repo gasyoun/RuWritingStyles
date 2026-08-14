@@ -24,7 +24,7 @@ jobs:
     name: Changelog — no duplicated entries
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
@@ -34,7 +34,7 @@ jobs:
     name: Changelog — headings vs real tags
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           fetch-tags: true
