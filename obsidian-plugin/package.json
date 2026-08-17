@@ -27,7 +27,7 @@
     "@codemirror/lint": "6.9.7",
     "@codemirror/state": "6.7.1",
     "@codemirror/view": "6.43.8",
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.2.0",
     "builtin-modules": "^5.3.0",
     "esbuild": "^0.28.2",
     "obsidian": "1.13.1",
