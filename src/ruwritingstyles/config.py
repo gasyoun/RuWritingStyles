@@ -14,11 +14,32 @@ import re
 from pathlib import Path
 from typing import Any
 
+from .extract import SANITY_THRESHOLDS
 from .yaml_lite import (
     scalar as _scalar,
     block as _block,
     list_items as _list_items,
     parse_simple_yaml,
+)
+
+# --------------------------------------------------------------------------- #
+# PDF extraction (D08) — pinned by the 19-08-2026 bake-off.
+# Verdict, score matrix and calibration: docs/BENCHMARK_pdf-extractors_ru_19-08-2026.md
+# --------------------------------------------------------------------------- #
+
+#: Fallback order. Try each in turn; keep the first whose `extract.sanity`
+#: verdict is "pass". Names match the candidate keys in
+#: `tools/benchmark_extractors.py`, so the benchmark and production cannot drift.
+#: `pdftotext` is deliberately absent: it scored 1/8, extracting zero Cyrillic
+#: from every Russian sample including all six RCSI galleys. `pdfplumber`,
+#: `docling` and `unstructured` are absent because they are not project
+#: dependencies and none of them beat PyMuPDF (D19 — a candidate enters
+#: `pyproject.toml` only if it wins).
+PDF_EXTRACTOR_CHAIN: tuple[str, ...] = (
+    "pymupdf-text",
+    "pdfminer.six",
+    "pypdf",
+    "ocrmypdf+tesseract rus",
 )
 
 
