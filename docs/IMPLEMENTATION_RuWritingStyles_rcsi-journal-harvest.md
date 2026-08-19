@@ -19,6 +19,10 @@ end; they are not needed for the first unattended run.
 
 ## Wave 0 — the bake-off
 
+> **Done, 19-08-2026 ([H3153](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H3153-Opus_RuWritingStyles_rcsi-pdf-extractor-bakeoff_19.08.26.md), shipped in v2.26.0).** S0.1–S0.5 are all complete; the steps below are kept as the record of how, not as work to do. Verdict, matrix and calibration: [BENCHMARK_pdf-extractors_ru_19-08-2026.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/BENCHMARK_pdf-extractors_ru_19-08-2026.md). Winner `pymupdf-text`; `PDF_EXTRACTOR_CHAIN` and `SANITY_THRESHOLDS` pinned in `config.py`; the gate is `sanity()` in `extract.py`.
+>
+> **Three results change wave 1 and should be read before starting S1.1:** the UA this document prescribes is 403'd site-wide; RCSI publishes English articles, so the gate needs `expect_cyrillic=False` for them; and `pdftotext` is out of the pipeline entirely, including as the reader for another extractor's output.
+
 ### S0.1 Candidate inventory
 **Touches:** `docs/BENCHMARK_pdf-extractors_ru_19-08-2026.md` (created)
 **Depends on:** nothing
@@ -90,6 +94,8 @@ poppler. Log the tie in the decisions file.
 BASE = "https://journals.rcsi.science"
 USER_AGENT = "RuWritingStyles/<version> (research harvester; sanskrit.research.institute@gmail.com)"
 ```
+
+> **This UA does not work (measured 19-08-2026, H3153).** It is **403'd site-wide** — both the OAI endpoint and article pages — while a common browser UA is served 200 on the same URL in the same second. Wave 1 must send a browser-shaped UA (or obtain an allowance from the platform); as specified here it will fetch nothing at all. The 1 req/s throttle is unaffected and should be kept.
 
 - `fetch(url, *, binary=False)` — 1 request/second minimum interval, on-disk cache keyed by
   URL hash under the scratch cache dir, retry twice on 5xx with backoff, raise a typed

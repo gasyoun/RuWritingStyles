@@ -1,6 +1,6 @@
 # Каталог пользовательских стилей для Claude
 
-_Created: 03-05-2026 · Last updated: 07-08-2026_
+_Created: 03-05-2026 · Last updated: 19-08-2026_
 
 Этот README объясняет, какие пользовательские стили для Claude уже созданы, чем они отличаются и как ими пользоваться. Он рассчитан на человека, который впервые открыл эту папку и еще не знает, какой файл брать для своей задачи.
 
@@ -607,6 +607,7 @@ rws run статья.md --execute --provider deepseek --council sanskrit --journ
 - При переименовании файла стиля сначала меняйте путь в [`ClaudeStyles/`](ClaudeStyles/), затем все ссылки в README. Видимое русское название стиля может отличаться от технического имени файла.
 - Для зализняковских стилей держите единый принцип именования: в видимом тексте `Зализняк-...`, в файлах допускается существующая латинская транслитерация `zalizniak-...` или `zaliznyak-...`, если так уже назван файл.
 - `PDFtoTXT/update.py` (в приватном корпусном репозитории) относится к служебной обработке указателей для `AAZ_Zametki_2025`; не считайте его универсальным конвертером всех PDF.
+- **Не извлекайте русский текст из PDF через `pdftotext`.** На этом материале poppler возвращает *ноль* кириллицы — вывод выглядит правдоподобно, но все кириллические участки пусты, поэтому проверка по длине его не ловит. Порядок извлечения закреплён в `PDF_EXTRACTOR_CHAIN` ([`config.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/config.py)), проверка результата — `sanity()` из [`extract.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/extract.py). Измерения и обоснование: [`docs/BENCHMARK_pdf-extractors_ru_19-08-2026.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/BENCHMARK_pdf-extractors_ru_19-08-2026.md).
 - Перед коммитом полезно проверить README на старые имена файлов и затем выполнить `git diff --check`.
 - Перед релизом или большой правкой прогоните: `python -m compileall -q src tools tests`, `python tools/validate_project.py`, `python -m unittest discover -s tests`, `python scripts/ci-eval-gate.py`; в `web/` — `npm ci`, `npm test`, `npm run lint`, `npm run build`; в `obsidian-plugin/` — `npm ci`, `npm run build`, `npm test`.
 
