@@ -1,0 +1,94 @@
+# ROADMAP — RCSI journal profiles and article harvest (RuWritingStyles, 2026-Q3)
+
+_Created: 19-08-2026 · Last updated: 19-08-2026_
+
+Wave layer of [PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md).
+Ruling references (D01–D20) point at that document's decisions table.
+
+## Wave 0 — the extractor bake-off (blocks everything that touches a PDF)
+
+Wave 0 exists because D08 makes the extractor a measured choice, and because the rest of the
+pipeline needs a pinned winner before it can extract anything. It is small, self-contained,
+and produces a document rather than a feature.
+
+- [ ] **W0.1 Candidate discovery.** Inventory every text extractor and OCR path reachable
+      from this machine — the four named in D09, plus a sweep of installed skills
+      (`~/.claude/skills`), installed Python distributions, and the `PATH` — and shortlist
+      any modern layout-aware extractor worth a throwaway-venv install (`marker`, `docling`,
+      `unstructured` are the named candidates; none is installed today).
+- [ ] **W0.2 Sample set.** Assemble a fixed benchmark sample: one PDF galley from each of the
+      six in-scope journals, plus the two known-garbled corpus PDFs that
+      [.ai_state.md](https://github.com/gasyoun/RuWritingStyles/blob/main/.ai_state.md)
+      names as `pdftotext` failures (`Digital_Humanities-2023.pdf`,
+      `Digital-Humanities_IgorPilshchikov.pdf`). The failures are the point: an extractor
+      that only handles the easy PDFs has not been tested.
+- [ ] **W0.3 Scored run.** Run every candidate over every sample, scoring Cyrillic character
+      ratio, replacement-character rate, real-word hit rate, word count against the article's
+      declared page range, and wall-clock seconds per page.
+- [ ] **W0.4 Verdict.** Commit `docs/BENCHMARK_pdf-extractors_ru_19-08-2026.md` with the score
+      table, the pinned winner, the fallback order, and the calibrated sanity-gate thresholds.
+      Pin the winner in the harvester config.
+
+**Unblocked by:** nothing. **Unblocks:** W1.4, W1.5 and all of wave 2.
+
+## Wave 1 — the harvester, proven on the pinned articles
+
+- [ ] **W1.1 Platform client.** `rcsi.py`: throttled cached HTTP, OAI `Identify` /
+      `ListRecords` with `resumptionToken` paging, `citation_*` meta parsing, galley URL
+      resolution.
+- [ ] **W1.2 Schema extension.** Extend
+      [schemas/journal-profile.schema.json](https://github.com/gasyoun/RuWritingStyles/blob/main/schemas/journal-profile.schema.json)
+      per D10 and confirm all five existing profiles still validate.
+- [ ] **W1.3 Profile derivation.** `rws journal-add <slug>` — fetch `/about/submissions`,
+      derive what is mechanically derivable, draft the judgment fields, write the profile with
+      `verified: false`, and refuse to overwrite an existing profile in place (emit a proposed
+      diff instead).
+- [ ] **W1.4 Extraction and gate.** `extract.py` with the wave-0 winner pinned, the fallback
+      chain, the Cyrillic sanity gate and the OCR escalation of D14.
+- [ ] **W1.5 Pinned-article harvest.** `rws journal-harvest --pinned` ingests the five named
+      articles end to end: text into `PDFtoTXT/`, sidecar JSON, bibliography row, FTS5 index.
+- [ ] **W1.6 The guarantee.** `knowledge/rcsi/pinned_articles.json` plus `rws corpus-verify`
+      plus the test that fails when any pinned article stops satisfying D13.
+- [ ] **W1.7 Registration.** `SOURCES.md` rows for the six journals with licence facts;
+      `.ai_state.md` and `changelog.md` updated; release cut.
+
+**Unblocked by:** W0.4 for W1.4 onward; W1.1 for everything else.
+**Unblocks:** wave 2, and the corpus gate on H944 / H1882.
+
+## Wave 2 — catalogue discovery and the bounded bulk harvest
+
+- [ ] **W2.1 Catalogue crawl.** Walk the paginated platform index, resolve every slug's OAI
+      `Identify` and `/about` scope text, and write `knowledge/rcsi/catalogue.json` with a
+      per-journal `include` / `exclude` / `uncertain` verdict and the evidence for it.
+- [ ] **W2.2 Subject filter.** The ru+en term list and the article-level classifier of D04,
+      with its own fixture-backed tests.
+- [ ] **W2.3 Review queue.** Uncertain journals and uncertain articles rendered as a
+      [/review-sheet](https://github.com/gasyoun/claude-config/blob/main/commands/review-sheet.md)
+      voting sheet, registered in
+      [Uprava/REVIEW_SHEETS_INDEX.md](https://github.com/gasyoun/Uprava/blob/main/REVIEW_SHEETS_INDEX.md).
+- [ ] **W2.4 Bounded harvest.** Run the capped harvest of D20 across every `include` journal;
+      commit and push texts to the private corpus repo; report counts, quarantine size and
+      the per-journal extraction-source split.
+- [ ] **W2.5 Corpus re-index and report.** `rws corpus-ingest`, then `rws corpus-status`, then
+      a written statement of what the corpus gate on H944 / H1882 now permits.
+
+**Unblocked by:** wave 1 complete. **Unblocks:** the corpus-gated passport work.
+
+## Non-goals
+
+Named explicitly so an execution agent does not drift into them.
+
+- **No new style passports.** This plan supplies corpus material; deciding which scholar's
+  voice deserves a passport stays with H944 / H1882 and their own gates.
+- **No changes to eval scoring.** `evals/baselines/gold.json`, `evals/manifest.json` and
+  `styles/passports/` are untouched. Harvesting cannot change a score, so a baseline refresh
+  would be masking something.
+- **No rewrite of `vya.json` or the other four hand-verified profiles.** Re-derivations are
+  written as proposed diffs, never applied in place.
+- **No publisher beyond RCSI.** eLIBRARY, Cyberleninka and direct journal sites are out of
+  scope; the platform-specific facts in the PLAN do not transfer to them.
+- **No public-repo corpus.** Restated because it is the one hard fence (D18).
+- **No `corpus.py` rewrite.** Sidecars are written in wave 1 but not yet read; teaching the
+  indexer to prefer them is deliberately deferred so wave 1 cannot regress indexing.
+
+_Dr. Mārcis Gasūns_
