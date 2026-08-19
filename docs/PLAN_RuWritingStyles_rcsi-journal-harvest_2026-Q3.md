@@ -49,6 +49,8 @@ These are measured, not assumed. Re-verify only if a fetch starts failing.
 | Article HTML also carries the body text | the Плунгян page yields about 5 600 words of stripped text |
 | The URL slug is not always the ISSN in the metadata | slug `0869-5873`, `citation_issn` `3034-5200` — the **slug** is the profile `id`, never the metadata ISSN |
 | The journal catalogue is crawlable | the platform home page lists 49 slug links on page one, paginated |
+| **Every fact above depends on the User-Agent** (added 19-08-2026, H3153) | the harvester UA this plan prescribes in S1.1 is **403'd site-wide**; a browser UA is served 200 on the same URLs in the same second, on both `/{slug}/oai?verb=Identify` and `/{slug}/article/view/{id}`. Not an endpoint problem, not a rate limit. The rows above were established with a different client — re-read them as "reachable *with a served UA*". See [BENCHMARK](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/BENCHMARK_pdf-extractors_ru_19-08-2026.md) § *Findings that bind wave 1* |
+| **Not every article is in Russian** (added 19-08-2026, H3153) | Acta Linguistica Petropolitana 21.1 is entirely English. A clean extraction scores `cyrillic_ratio` 0.06, so a Cyrillic-expecting gate applied blind discards it as garbled; language is a classification input (S1.4), not an extraction verdict |
 
 ## Decisions taken
 

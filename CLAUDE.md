@@ -112,4 +112,14 @@ Maintain this exact section structure in `.ai_state.md`:
 
 - `ClaudeStyles/*-style.md` — these are the human-facing product. Don't edit prose without a review reason; they are referenced from `README.md` and from passports.
 - The research corpus (source PDFs/txt) lives in the **private sibling repo** `../RuWritingStyles-corpus/PDFtoTXT` — copyrighted texts must never be committed here (see `SOURCES.md`). `CorpusManager` resolves it via `RWS_CORPUS_DIR` or the sibling path. `PDFtoTXT/update.py` there is *not* a generic converter (it serves `AAZ_Zametki_2025` indices specifically).
+
+## PDF text extraction — never reach for `pdftotext`
+
+On this material poppler returns **zero Cyrillic**: the output has the right shape (spaces, punctuation, a plausible word count) with every Cyrillic run blanked, so a length or emptiness check does not catch it. It scored 1/8 in the 19-08-2026 bake-off against 8/8 for four other readers.
+
+The trap has a second face: `pdftotext` is also the obvious way to read *someone else's* OCR output back (e.g. the text layer `ocrmypdf` writes). Doing that re-measures the poppler bug rather than the OCR engine and made OCR look useless at 1/8 when it was really 8/8. **Poppler must not appear anywhere in a pipeline over this corpus — not as the extractor, not as the reader at the end of another extractor.**
+
+Sync rule: extraction order lives in `PDF_EXTRACTOR_CHAIN` and the accept/reject thresholds in `SANITY_THRESHOLDS`, both in `config.py`; the gate itself is `sanity()` in `extract.py`, shared by production and the bake-off harness so the two cannot drift. **Change a threshold or the chain ⇒ re-run `python tools/benchmark_extractors.py --report` and update [`docs/BENCHMARK_pdf-extractors_ru_19-08-2026.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/BENCHMARK_pdf-extractors_ru_19-08-2026.md) in the same PR** — a pinned verdict with no matching matrix is a claim without evidence.
+
+`sanity()` defaults to expecting Cyrillic. Sources known to be in another language must pass `expect_cyrillic=False`, or a cleanly extracted English article scores `cyrillic_ratio` 0.06 and is discarded as garbled.
 - The `mvp_style_ids` list in `styles/manifest.yml` — `rws list-styles --mvp` and the default council set depend on it. The `councils:` block beside it defines named panels (`general` = `mvp_style_ids`, `sanskrit`, `indology`, `lexicography`) selectable via `rws run --council <name>` / `rws councils`; `validate_project` fails if a council names a non-existent passport, so edit ids carefully.
