@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+_Created: 08-05-2026 · Last updated: 20-08-2026_
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project nature
@@ -78,7 +80,7 @@ Every JSON artifact has a schema in `schemas/`: `segments.schema.json`, `review.
 
 ## Code organization in `src/ruwritingstyles/`
 
-Roughly one module per pipeline stage: `segment`, `review`, `council`, `revision`, `verification`, plus orchestration (`pipeline`, `runs`, `execution`), reporting (`report`, `html_summary`, `findings`, `council_summary`, `provider_log`), eval (`evals`, `assess`, `scrutiny`, `peer_review`), tooling (`migration`, `dashboard`, `generation`, `styleguide`, `repl`), provider plumbing (`providers`, `provider_status`, `provider_log`, `config`), and a FastAPI surface (`api`) that the React frontend in `web/` consumes. The CLI `cli.py` is a thin argparse layer wiring those modules together (~80 subcommands).
+Roughly one module per pipeline stage: `segment`, `review`, `council`, `revision`, `verification`, plus orchestration (`pipeline`, `runs`, `execution`), reporting (`report`, `html_summary`, `findings`, `council_summary`, `provider_log`), eval (`evals`, `assess`, `scrutiny`, `peer_review`), tooling (`migration`, `dashboard`, `generation`, `styleguide`, `repl`), provider plumbing (`providers`, `provider_status`, `provider_log`, `config`), and a FastAPI surface (`api`) that the React frontend in `web/` consumes. The CLI `cli.py` is a thin argparse layer wiring those modules together (60 subcommands).
 
 ## Windows / encoding notes
 
@@ -123,3 +125,5 @@ Sync rule: extraction order lives in `PDF_EXTRACTOR_CHAIN` and the accept/reject
 
 `sanity()` defaults to expecting Cyrillic. Sources known to be in another language must pass `expect_cyrillic=False`, or a cleanly extracted English article scores `cyrillic_ratio` 0.06 and is discarded as garbled.
 - The `mvp_style_ids` list in `styles/manifest.yml` — `rws list-styles --mvp` and the default council set depend on it. The `councils:` block beside it defines named panels (`general` = `mvp_style_ids`, `sanskrit`, `indology`, `lexicography`) selectable via `rws run --council <name>` / `rws councils`; `validate_project` fails if a council names a non-existent passport, so edit ids carefully.
+
+_Dr. Mārcis Gasūns_
