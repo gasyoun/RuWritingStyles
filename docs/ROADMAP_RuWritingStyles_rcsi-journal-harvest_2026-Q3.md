@@ -1,6 +1,6 @@
 # ROADMAP — RCSI journal profiles and article harvest (RuWritingStyles, 2026-Q3)
 
-_Created: 19-08-2026 · Last updated: 23-08-2026_
+_Created: 19-08-2026 · Last updated: 24-08-2026_
 
 Wave layer of [PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md).
 Ruling references (D01–D20) point at that document's decisions table.
@@ -34,9 +34,17 @@ and produces a document rather than a feature.
 
 ## Wave 1 — the harvester, proven on the pinned articles
 
-- [ ] **W1.1 Platform client.** `rcsi.py`: throttled cached HTTP, OAI `Identify` /
+- [x] **W1.1 Platform client.** `rcsi.py`: throttled cached HTTP, OAI `Identify` /
       `ListRecords` with `resumptionToken` paging, `citation_*` meta parsing, galley URL
-      resolution.
+      resolution. ✅ DONE 23-08-2026 — shipped in
+      [PR #175](https://github.com/gasyoun/RuWritingStyles/pull/175) (commit
+      [`970619e`](https://github.com/gasyoun/RuWritingStyles/commit/970619e5053dd0aba00bf8480f5e1e00c7d080c0),
+      H3154): `_throttled_get` (disk cache + 1 req/s throttle),
+      `identify()`, `list_records()` (resumptionToken loop), `article_meta()`
+      (`citation_*` tag parsing incl. ru/en variants), `galley_pdf_url()`.
+      5/5 tests green in
+      [tests/test_rcsi_client.py](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_rcsi_client.py).
+      (A09, tick-only pass — the code predates this roadmap-drain unit.)
 - [ ] **W1.2 Schema extension.** Extend
       [schemas/journal-profile.schema.json](https://github.com/gasyoun/RuWritingStyles/blob/main/schemas/journal-profile.schema.json)
       per D10 and confirm all five existing profiles still validate.
