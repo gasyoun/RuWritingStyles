@@ -331,3 +331,8 @@ passports:
     level: private
     cluster: orient_leningrad
     source_prompt: ClaudeStyles/bartold-style.md
+  - id: turaev
+    path: styles/passports/turaev.yml
+    level: private
+    cluster: orient_leningrad
+    source_prompt: ClaudeStyles/turaev-style.md
