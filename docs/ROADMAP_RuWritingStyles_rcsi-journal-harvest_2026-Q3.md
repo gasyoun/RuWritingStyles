@@ -1,33 +1,34 @@
 # ROADMAP — RCSI journal profiles and article harvest (RuWritingStyles, 2026-Q3)
 
-_Created: 19-08-2026 · Last updated: 19-08-2026_
+_Created: 19-08-2026 · Last updated: 23-08-2026_
 
 Wave layer of [PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md).
 Ruling references (D01–D20) point at that document's decisions table.
 
-## Wave 0 — the extractor bake-off (blocks everything that touches a PDF)
+## Wave 0 — the extractor bake-off (blocks everything that touches a PDF) ✅ DONE 19-08-2026 (H3153, v2.26.0)
 
 Wave 0 exists because D08 makes the extractor a measured choice, and because the rest of the
 pipeline needs a pinned winner before it can extract anything. It is small, self-contained,
 and produces a document rather than a feature.
 
-- [ ] **W0.1 Candidate discovery.** Inventory every text extractor and OCR path reachable
+- [x] **W0.1 Candidate discovery.** Inventory every text extractor and OCR path reachable
       from this machine — the four named in D09, plus a sweep of installed skills
       (`~/.claude/skills`), installed Python distributions, and the `PATH` — and shortlist
       any modern layout-aware extractor worth a throwaway-venv install (`marker`, `docling`,
       `unstructured` are the named candidates; none is installed today).
-- [ ] **W0.2 Sample set.** Assemble a fixed benchmark sample: one PDF galley from each of the
+- [x] **W0.2 Sample set.** Assemble a fixed benchmark sample: one PDF galley from each of the
       six in-scope journals, plus the two known-garbled corpus PDFs that
       [.ai_state.md](https://github.com/gasyoun/RuWritingStyles/blob/main/.ai_state.md)
       names as `pdftotext` failures (`Digital_Humanities-2023.pdf`,
       `Digital-Humanities_IgorPilshchikov.pdf`). The failures are the point: an extractor
       that only handles the easy PDFs has not been tested.
-- [ ] **W0.3 Scored run.** Run every candidate over every sample, scoring Cyrillic character
+- [x] **W0.3 Scored run.** Run every candidate over every sample, scoring Cyrillic character
       ratio, replacement-character rate, real-word hit rate, word count against the article's
       declared page range, and wall-clock seconds per page.
-- [ ] **W0.4 Verdict.** Commit `docs/BENCHMARK_pdf-extractors_ru_19-08-2026.md` with the score
-      table, the pinned winner, the fallback order, and the calibrated sanity-gate thresholds.
-      Pin the winner in the harvester config.
+- [x] **W0.4 Verdict.** Commit [docs/BENCHMARK_pdf-extractors_ru_19-08-2026.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/BENCHMARK_pdf-extractors_ru_19-08-2026.md) with the score
+      table, the pinned winner (`pymupdf-text`), the fallback order
+      (`pymupdf-text → pdfminer.six → pypdf → ocrmypdf+tesseract rus`, pinned as
+      `PDF_EXTRACTOR_CHAIN`), and the calibrated sanity-gate thresholds (`SANITY_THRESHOLDS`).
 
 **Unblocked by:** nothing. **Unblocks:** W1.4, W1.5 and all of wave 2.
 
