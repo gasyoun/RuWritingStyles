@@ -8,7 +8,7 @@ Claude содержимое файла в начале диалога и поп�
 > Прямой текст для копирования — кнопка **Raw** на странице файла на GitHub
 > (или `https://raw.githubusercontent.com/gasyoun/RuWritingStyles/main/<путь>`).
 
-Всего стилей: **47**. Регенерируется: `python tools/generate_style_gallery.py`.
+Всего стилей: **48**. Регенерируется: `python tools/generate_style_gallery.py`.
 
 ## Отдельные стили (по школам/кластерам)
 
@@ -65,6 +65,7 @@ Claude содержимое файла в начале диалога и поп�
 
 - [В. В. Бартольд](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/bartold-style.md) — `bartold`
 - [В. С. Голенищев](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/golenishchev-style.md) — `golenishchev`
+- [И. Ю. Крачковский](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/krachkovskij-style.md) — `krachkovskij`
 - [Б. А. Тураев](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/turaev-style.md) — `turaev`
 
 ## Школы целиком (кластерные стили)

@@ -60,7 +60,7 @@ order.
   become buildable (the H944 gate lifts). Each passport is a separate judgment-tier handoff
   in the H1861 mold (Lotman/Meletinsky precedent) — mint per-scholar when the intake lands;
   do not author passports inside the sprint.
-  **Progress 23-08-2026: Bartold ([H3381](https://github.com/gasyoun/Uprava/blob/main/handoffs/README.md)), Turaev ([H3382](https://github.com/gasyoun/Uprava/blob/main/handoffs/H3382-OxAlpha_RuWritingStyles_turaev-passport-build_23.08.26.md)) and Golenishchev ([H3384](https://github.com/gasyoun/Uprava/blob/main/handoffs/H3384-OxAlpha_RuWritingStyles_golenishchev-passport-build_23.08.26.md)) built and corpus-grounded — 3 of 5; Krachkovsky buildable next, Shileiko stays gated.**
+  **Progress 23-08-2026: Bartold ([H3381](https://github.com/gasyoun/Uprava/blob/main/handoffs/README.md)), Turaev ([H3382](https://github.com/gasyoun/Uprava/blob/main/handoffs/H3382-OxAlpha_RuWritingStyles_turaev-passport-build_23.08.26.md)), Krachkovskij ([H3383](https://github.com/gasyoun/Uprava/blob/main/handoffs/H3383-OxAlpha_RuWritingStyles_krachkovskij-passport-build_23.08.26.md)) and Golenishchev ([H3384](https://github.com/gasyoun/Uprava/blob/main/handoffs/H3384-OxAlpha_RuWritingStyles_golenishchev-passport-build_23.08.26.md)) built and corpus-grounded — 4 of 5; only Shileiko stays gated (texts via V. B. Emelyanov).**
 - **C1.3 — Lotman/Meletinsky verification (second in line).** «Структура художественного текста»
   / «Культура и взрыв» / «Поэтика мифа» extractions land via the same intake discipline, then
   the existing [H1861](https://github.com/gasyoun/Uprava/blob/main/handoffs/README.md) passports get corpus-grounded anchors.

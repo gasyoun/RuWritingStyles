@@ -336,6 +336,11 @@ passports:
     level: private
     cluster: orient_leningrad
     source_prompt: ClaudeStyles/turaev-style.md
+  - id: krachkovskij
+    path: styles/passports/krachkovskij.yml
+    level: private
+    cluster: orient_leningrad
+    source_prompt: ClaudeStyles/krachkovskij-style.md
   - id: golenishchev
     path: styles/passports/golenishchev.yml
     level: private
