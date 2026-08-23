@@ -39,7 +39,7 @@ TEMPLATE = PLUGIN / "release-repo"
 # Root-level files the dedicated repo needs, copied verbatim from the built plugin.
 ROOT_FILES = ["manifest.json", "versions.json", "styles.css", "main.js"]
 # Files copied from the release-repo template (dedicated-repo-specific docs/config).
-TEMPLATE_FILES = ["README.md", ".gitignore"]
+TEMPLATE_FILES = ["README.md", ".gitignore", "LICENSE"]
 
 
 def _versions_aligned() -> tuple[bool, str]:
