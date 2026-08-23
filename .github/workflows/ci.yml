@@ -43,7 +43,7 @@ jobs:
           cache: pip
 
       - name: Install dependencies
-        run: pip install -e .[test]
+        run: pip install -e .[test,harvest]
 
       - name: Compile Python files
         run: python -m compileall -q src tools tests

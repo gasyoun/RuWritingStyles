@@ -28,3 +28,4 @@ PDFtoTXT/
 *.log
 full.out
 full.err
+tests/fixtures/.cache-tmp/

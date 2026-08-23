@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="https://journals.rcsi.science/lib/pkp/xml/oai2.xsl" ?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+		http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+	<responseDate>2026-08-23T06:27:59Z</responseDate>
+	<request verb="Identify">https://journals.rcsi.science/2306-5737/oai</request>
+	<Identify>
+		<repositoryName>Acta Linguistica Petropolitana. Transactions of the Institute for Linguistic Studies</repositoryName>
+		<baseURL>https://journals.rcsi.science/2306-5737/oai</baseURL>
+		<protocolVersion>2.0</protocolVersion>
+		<adminEmail>alp-editor-in-chief@iling.spb.ru</adminEmail>
+		<earliestDatestamp>2015-01-15T16:51:06Z</earliestDatestamp>
+		<deletedRecord>persistent</deletedRecord>
+		<granularity>YYYY-MM-DDThh:mm:ssZ</granularity>
+		<compression>gzip</compression>
+		<compression>deflate</compression>
+		<description>
+			<oai-identifier
+				xmlns="http://www.openarchives.org/OAI/2.0/oai-identifier"
+				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai-identifier
+					http://www.openarchives.org/OAI/2.0/oai-identifier.xsd">
+				<scheme>oai</scheme>
+				<repositoryIdentifier>journals.rcsi.science</repositoryIdentifier>
+				<delimiter>:</delimiter>
+				<sampleIdentifier>oai:journals.rcsi.science:article/1</sampleIdentifier>
+			</oai-identifier>
+		</description>
+		<description>
+			<toolkit
+				xmlns="http://oai.dlib.vt.edu/OAI/metadata/toolkit"
+				xsi:schemaLocation="http://oai.dlib.vt.edu/OAI/metadata/toolkit
+					http://oai.dlib.vt.edu/OAI/metadata/toolkit.xsd">
+				<title>Open Journal Systems</title>
+				<author>
+					<name>Public Knowledge Project</name>
+					<email>pkp.contact@gmail.com</email>
+				</author>
+				<version>2.4.9.3</version>
+				<URL>http://pkp.sfu.ca/ojs/</URL>
+			</toolkit>
+		</description>
+	</Identify>
+</OAI-PMH>

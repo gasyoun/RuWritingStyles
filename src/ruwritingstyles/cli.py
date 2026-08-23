@@ -331,6 +331,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=Path(".rws-project"),
         help="Project directory holding project-context.json (default: .rws-project).",
     )
+    project_set_journal.add_argument(
+        "--allow-unverified",
+        action="store_true",
+        help="Attach a profile whose verified flag is not true (D10 gate escape).",
+    )
     project_set_journal.set_defaults(func=cmd_project_set_journal)
 
     corpus_status = subparsers.add_parser(
@@ -338,6 +343,41 @@ def build_parser() -> argparse.ArgumentParser:
         help="Show the corpus directory and FTS5 index status (Deep Retrieval).",
     )
     corpus_status.set_defaults(func=cmd_corpus_status)
+
+    journal_catalogue = subparsers.add_parser(
+        "journal-catalogue",
+        help="Print the RCSI journal catalogue verdicts (wave-2 crawl owns writing them).",
+    )
+    journal_catalogue.add_argument("--refresh", action="store_true", help="(wave 2) re-crawl the platform index.")
+    journal_catalogue.add_argument("--json", action="store_true", dest="as_json", help="Emit JSON instead of a table.")
+    journal_catalogue.set_defaults(func=cmd_journal_catalogue)
+
+    journal_add = subparsers.add_parser(
+        "journal-add",
+        help="Derive and write knowledge/journals/<slug>.json with verified:false (D10).",
+    )
+    journal_add.add_argument("slug", help="RCSI URL slug, e.g. 0869-5873.")
+    journal_add.add_argument("--force", action="store_true", help="Overwrite an existing profile in place.")
+    journal_add.set_defaults(func=cmd_journal_add)
+
+    journal_harvest = subparsers.add_parser(
+        "journal-harvest",
+        help="Harvest RCSI articles into the private corpus (D03/D07/D11).",
+    )
+    journal_harvest.add_argument("slug", nargs="?", help="RCSI URL slug, or omit with --pinned.")
+    journal_harvest.add_argument("--pinned", action="store_true", help="Harvest exactly the pinned manifest articles.")
+    journal_harvest.add_argument("--limit", type=int, default=None, help="Max articles accepted this run.")
+    journal_harvest.add_argument("--since", default=None, help="OAI from= date (YYYY-MM-DD).")
+    journal_harvest.add_argument("--dry-run", action="store_true", help="Enumerate and classify only; write nothing.")
+    journal_harvest.add_argument("--force", action="store_true", help="Re-harvest even when a passing sidecar exists.")
+    journal_harvest.set_defaults(func=cmd_journal_harvest)
+
+    corpus_verify = subparsers.add_parser(
+        "corpus-verify",
+        help="Re-check every pinned article against the D13 guarantee; exit 1 on failure.",
+    )
+    corpus_verify.add_argument("--json", action="store_true", dest="as_json", help="Emit JSON.")
+    corpus_verify.set_defaults(func=cmd_corpus_verify)
 
     corpus_ingest = subparsers.add_parser(
         "corpus-ingest",
@@ -2570,7 +2610,7 @@ def cmd_journals(_: argparse.Namespace) -> int:
 
 def cmd_project_set_journal(args: argparse.Namespace) -> int:
     from .journals import list_journal_presets, load_journal_preset
-    from .project import set_journal_profile
+    from .project import UnverifiedJournalProfile, set_journal_profile
 
     repo_root = repo_root_from()
     preset = load_journal_preset(repo_root, args.journal_id)
@@ -2580,9 +2620,119 @@ def cmd_project_set_journal(args: argparse.Namespace) -> int:
         return 1
 
     project_dir = args.project_dir if args.project_dir.is_absolute() else (Path.cwd() / args.project_dir)
-    context_path = set_journal_profile(project_dir, preset)
+    try:
+        context_path = set_journal_profile(project_dir, preset, allow_unverified=args.allow_unverified)
+    except UnverifiedJournalProfile as exc:
+        print(f"error: {exc}")
+        return 3
     print(f"set journal profile '{preset.get('name', args.journal_id)}' in {context_path}")
     return 0
+
+
+def _cmd_journal_catalogue_impl(args: argparse.Namespace) -> int:
+    import json as _json
+
+    from .config import repo_root_from
+
+    path = repo_root_from() / "knowledge" / "rcsi" / "catalogue.json"
+    if not path.exists():
+        if args.refresh:
+            print("error: catalogue crawling lands in wave 2 (PLAN W2.1); no catalogue file exists yet.")
+            return 3
+        print("no catalogue yet — knowledge/rcsi/catalogue.json appears in wave 2")
+        return 1
+    records = _json.loads(path.read_text(encoding="utf-8"))
+    if args.as_json:
+        print(_json.dumps(records, ensure_ascii=False, indent=2))
+        return 0
+    for record in records:
+        print(f"{record.get('slug', ''):14} {record.get('verdict', '?'):9} {record.get('repository_name', '')}")
+    return 0
+
+
+def cmd_journal_catalogue(args: argparse.Namespace) -> int:
+    return _cmd_journal_catalogue_impl(args)
+
+
+def cmd_journal_add(args: argparse.Namespace) -> int:
+    import json as _json
+
+    from .journals import derive_profile, load_journal_preset, proposed_profile_diff
+
+    repo_root = repo_root_from()
+    target = repo_root / "knowledge" / "journals" / f"{args.slug}.json"
+    draft = derive_profile(args.slug)
+    if target.exists():
+        existing = load_journal_preset(repo_root, args.slug) or {}
+        diff = proposed_profile_diff(existing, draft)
+        if not args.force:
+            print(f"refusing to overwrite {target.name}; proposed diff:")
+            for line in diff:
+                print(line)
+            print("pass --force to overwrite in place.")
+            return 3
+    target.write_text(_json.dumps(draft, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(f"wrote {target.name} (verified: false — confirm against the guidelines page before use)")
+    return 0
+
+
+def cmd_journal_harvest(args: argparse.Namespace) -> int:
+    from .harvest import harvest_journal, harvest_pinned
+
+    if args.pinned:
+        summary = harvest_pinned(force=args.force)
+        _print_harvest_summary(summary)
+        return 0
+    if not args.slug:
+        print("error: give a slug or pass --pinned")
+        return 1
+    try:
+        summary = harvest_journal(
+            args.slug,
+            limit=args.limit,
+            since=args.since,
+            dry_run=args.dry_run,
+            force=args.force,
+        )
+    except Exception as exc:
+        print(f"error: {exc}")
+        return 1
+    _print_harvest_summary(summary)
+    return 0
+
+
+def _print_harvest_summary(summary: dict) -> None:
+    written = summary.get("written", [])
+    skipped = summary.get("skipped", [])
+    quarantined = summary.get("quarantined", [])
+    failed = summary.get("failed", [])
+    scope = summary.get("slug", "--pinned")
+    print(f"[{scope}] written: {len(written)}  skipped(already-pass): {len(skipped)}  "
+          f"quarantined: {len(quarantined)}  failed: {len(failed)}")
+    for item in written:
+        if isinstance(item, dict):
+            extra = item.get("bibliography_id") or item.get("verdict", "")
+            print(f"  + {item.get('stem', item)}" + (f"  [{extra}]" if extra else ""))
+    for stem in quarantined:
+        print(f"  ! quarantined: {stem}")
+
+
+def cmd_corpus_verify(args: argparse.Namespace) -> int:
+    import json as _json
+
+    from .harvest import corpus_verify
+
+    results = corpus_verify()
+    ok_count = sum(1 for row in results if row["ok"])
+    if args.as_json:
+        print(_json.dumps(results, ensure_ascii=False, indent=2))
+    else:
+        for row in results:
+            mark = "OK " if row["ok"] else "FAIL"
+            problems = "; ".join(row.get("problems", []))
+            print(f"{mark} {row.get('file', '—')} {row['url']}" + (f"  [{problems}]" if problems else ""))
+    print(f"{ok_count}/{len(results)} pinned articles verified")
+    return 0 if ok_count == len(results) else 1
 
 
 def cmd_corpus_status(_: argparse.Namespace) -> int:

@@ -21,6 +21,9 @@ VYA = {
     "citation_format": "GOST-R-7.0.100-2018",
     "transliteration_scheme": "IAST",
     "first_mention_rule": "ru+iast",
+    # The D10 gate refuses unverified profiles on attach; this fixture stands
+    # for the hand-verified repo presets (which carry verified: true).
+    "verified": True,
 }
 
 TERMS = [

@@ -4,6 +4,20 @@ All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
 
+## [2.27.0] - 2026-08-23
+
+### Added
+- **RCSI journal harvest, wave 1 — the pinned five-article guarantee ([H3154](https://github.com/gasyoun/Uprava/blob/main/handoffs/H3154-Opus_RuWritingStyles_rcsi-journal-harvester-wave1_19.08.26.md); D01–D20).** New [`src/ruwritingstyles/rcsi.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/rcsi.py) (throttled 1 req/s client, on-disk URL cache, OAI `Identify`/`ListRecords` with resumptionToken paging, `citation_*` meta parsing with ru/en separation), [`harvest.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/harvest.py) (per-article orchestration: classify → extract → gate → write text + sidecar into the private corpus → bibliography row; quarantine on total failure), [`journal_scope.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/journal_scope.py) + [`knowledge/rcsi/subject_terms.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/knowledge/rcsi/subject_terms.json) (include/exclude/uncertain classifier with a negative group for general-science noise), and four CLI subcommands (`journal-catalogue` read-only, `journal-add`, `journal-harvest`, `corpus-verify`) documented in [docs/cli.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/cli.md).
+- **Extraction chain in [`extract.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/extract.py):** `extract_html` (`<article>` body container, spike-verified across all six journals), the PDF registry over the wave-0 winner chain, `escalate_ocr` (ocrmypdf + tesseract rus+eng), and `extract_best` implementing D07/D14 with a logged language-flip retry for English-language articles in Russian journals. Return contract is always `(text|None, provenance)` — a bad document is normal.
+- **Pinned manifest and guarantee:** [`knowledge/rcsi/pinned_articles.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/knowledge/rcsi/pinned_articles.json) (five articles, expected stems backfilled from the live harvest) plus `rws corpus-verify`, which re-checks text presence, sidecar schema validity, DOI-or-URL bibliography keying, sanity verdict and FTS retrievability per entry. Live result: **5/5 verified**, zero quarantined (three via HTML body, two via PDF fallback).
+
+### Changed
+- **The D10 `verified` gate is live.** [`project.set_journal_profile`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/project.py) refuses profiles without `verified: true` (`UnverifiedJournalProfile`, exit 3) unless `--allow-unverified`; the five hand-authored presets are now stamped `verified: true`. `journal-add` derives mechanical profile fields only and always writes drafts as unverified.
+- Schemas extended: journal-profile gains the D10 provenance block (`verified`, `checked_on`, `platform`, `slug`, `issn[]`, `url`, `guidelines_url`, `oai_endpoint`, `license`, `subjects[]`, `derived_by`); new [`schemas/article-sidecar.schema.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/schemas/article-sidecar.schema.json) (D11 sidecars beside every harvested text); bibliography accepts `issue`/`doi`/`url`.
+
+### Fixed
+- The platform's own OAI XML occasionally carries raw NUL bytes (measured on Вестник РАН ListRecords): the client strips C0 controls before parsing instead of failing the walk. Improvised rulings recorded in [`docs/rcsi-harvest-decisions.log.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/rcsi-harvest-decisions.log.md).
+
 ## [2.26.0] - 2026-08-19
 
 ### Added

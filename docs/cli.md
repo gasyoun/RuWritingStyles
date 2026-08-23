@@ -541,6 +541,33 @@ same index the `search_corpus` MCP tool queries during a real-provider run, so
 ingesting once makes Deep Retrieval available both from the CLI and inside the
 Council.
 
+## RCSI journal harvest
+
+Everything against `journals.rcsi.science` lives behind four subcommands
+(wave 1 of [PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md)).
+Article texts and sidecars land **only** in the private
+`RuWritingStyles-corpus` (D03/D18); bibliography rows are metadata and stay in
+the public repo.
+
+```bash
+rws journal-catalogue [--json]          # read knowledge/rcsi/catalogue.json (crawl = wave 2)
+rws journal-add 2306-5737               # derive a profile draft with verified:false
+rws journal-harvest --pinned            # the five pinned articles, end to end
+rws journal-harvest 0869-5873 --limit 5 # bounded per-journal run (--dry-run to classify only)
+rws corpus-verify                       # re-check every pinned article; exit 1 on any failure
+```
+
+- `journal-add` refuses to overwrite an existing profile without `--force`
+  (exit 3) and always writes `verified: false`; `rws project-set-journal`
+  then refuses unverified profiles unless `--allow-unverified` is passed (D10).
+- `journal-harvest --pinned` is idempotent: an article whose sidecar already
+  carries a `pass` verdict is skipped unless `--force`.
+- `corpus-verify` checks, per pinned entry: text present and non-empty,
+  sidecar validates against `article-sidecar.schema.json`, DOI (or URL key
+  where the platform exposes none), a bibliography row, a `pass` sanity
+  verdict, and FTS retrievability.
+
+
 ## Inspect findings
 
 ```bash

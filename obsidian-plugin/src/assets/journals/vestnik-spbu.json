@@ -5,8 +5,16 @@
   "citation_format": "GOST-R-7.0.100-2018",
   "transliteration_scheme": "IAST",
   "first_mention_rule": "ru+iast",
-  "abstract_required": ["ru", "en"],
+  "abstract_required": [
+    "ru",
+    "en"
+  ],
   "abstract_max_words": 200,
-  "keywords_required": ["ru", "en"],
-  "notes": "Университетский востоковедный журнал. Расширенная аннотация (до 200 слов; проверяется через abstract_max_words) и оформление списка литературы по ГОСТ."
+  "keywords_required": [
+    "ru",
+    "en"
+  ],
+  "notes": "Университетский востоковедный журнал. Расширенная аннотация (до 200 слов; проверяется через abstract_max_words) и оформление списка литературы по ГОСТ.",
+  "verified": true,
+  "checked_on": "23-08-2026"
 }
