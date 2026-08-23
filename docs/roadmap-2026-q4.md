@@ -78,6 +78,16 @@ where the author's pending benchmark decision belongs: adjudicate
 
 ## Wave P1 — polish and publication residue
 
+Status 23-08-2026 (H3370 execution): dependabot triaged — #118/#120 closed superseded
+(main already runs `checkout@v7` / `setup-python@v7`), #163–#166 on auto-merge per repo
+policy (patch/minor; they rebase+land autonomously). `gasyoun/ruwritingstyles-obsidian`
+created public behind a publish-safety GO, bare tag `0.1.0` released with artifacts
+([release](https://github.com/ruwritingstyles-obsidian/releases/tag/0.1.0)) — bare, not
+`obsidian-v`, because the release workflow and the obsidianmd/BRAT contract require it.
+`.zenodo.json` version drift fixed (2.16.0 → 2.26.0). LICENSE now ships in the release
+payload. Remaining author buttons: obsidianmd PR, BRAT listing, Zenodo link+deposit,
+A29 submission — all in GTD.
+
 Executor for the agent-doable half: [H3370 (Sonnet 5) — Q4 polish sweep](https://github.com/gasyoun/Uprava/blob/main/handoffs/H3370-Sonnet_RuWritingStyles_q4-polish-sweep_23.08.26.md):
 six open dependabot PRs triaged (#163–#166 web npm; #120 checkout 5→7; #118 setup-python 6→7),
 `gasyoun/ruwritingstyles-obsidian` created from the release-repo scaffold at tag

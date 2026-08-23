@@ -95,8 +95,12 @@ Handoff: [H074](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H07
       [obsidian-plugin/release-repo/](https://github.com/gasyoun/RuWritingStyles/tree/main/obsidian-plugin/release-repo)
       + [tools/sync_plugin_release_repo.py](https://github.com/gasyoun/RuWritingStyles/blob/main/tools/sync_plugin_release_repo.py)
       (синк проверен: standalone build + 59/59).
-- [ ] **Кнопки автора (открыто)**: создать `gasyoun/ruwritingstyles-obsidian`, пуш тега
-      `obsidian-v0.1.0`; PR в obsidianmd/obsidian-releases; BRAT.
+- [x] **Кнопки автора (частично, 23-08-2026 H3370)**: `gasyoun/ruwritingstyles-obsidian`
+      создан (public), релиз **bare** `0.1.0` опубликован workflow'ом
+      ([release](https://github.com/gasyoun/ruwritingstyles-obsidian/releases/tag/0.1.0);
+      bare-тег, не `obsidian-v`, как требует контракт obsidianmd/BRAT и
+      release.yml). Publish-safety GO пройден. Осталось за автором: PR в
+      obsidianmd/obsidian-releases; BRAT (@DO в GTD).
 
 Критерий готовности: CI ловит ломающий bump; из релизного репо ставится рабочий плагин.
 
@@ -104,11 +108,12 @@ Handoff: [H074](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H07
 
 Handoff: [H075](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H075-Opus_RuWritingStyles_RWS_publish_pass_03.07.26.md) · **✅ выполнена — v2.12.1 (03-07-2026)**, кроме кнопки DOI.
 
-- [ ] **Zenodo DOI**: метаданные release-ready ([CITATION.cff](https://github.com/gasyoun/RuWritingStyles/blob/main/CITATION.cff),
-      [.zenodo.json](https://github.com/gasyoun/RuWritingStyles/blob/main/.zenodo.json),
-      шаги в [docs/zenodo-doi-steps.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/zenodo-doi-steps.md));
-      релиз v2.12.0 опубликован. **Открыта кнопка автора**: включить репозиторий в
-      Zenodo, подтвердить релиз, вписать DOI.
+- [x] **Zenodo DOI (метаданные, 23-08-2026 H3370)**: метаданные release-ready ([CITATION.cff](https://github.com/gasyoun/RuWritingStyles/blob/main/CITATION.cff),
+      [.zenodo.json](https://github.com/gasyoun/RuWritingStyles/blob/main/.zenodo.json) —
+      версия выправлена 2.16.0 → 2.26.0 при H3370-верификации,
+      шаги в [docs/zenodo-doi-steps.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/zenodo-doi-steps.md)).
+      **Открыта кнопка автора**: включить репозиторий в
+      Zenodo, подтвердить свежий релиз (первый тег после связки), вписать DOI.
 - [x] **Пакет методологической статьи**: черновик
       [methodology-paper-draft.ru.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/methodology-paper-draft.ru.md)
       с усредненными числами H072/H073 + [docs/paper-pack/](https://github.com/gasyoun/RuWritingStyles/tree/main/docs/paper-pack);
