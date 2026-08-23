@@ -1082,5 +1082,21 @@
       "history",
       "egyptology"
     ]
+  },
+  {
+    "id": "Крачковский 1925",
+    "author": "Крачковский И. Ю.",
+    "year": 1925,
+    "title": "Неизвестное сочинение-автограф сирийского эмира Усамы",
+    "kind": "article",
+    "journal": "Записки Коллегии Востоковедов",
+    "volume": "I",
+    "city": "Петроград",
+    "pages": "1—29",
+    "tags": [
+      "oriental_studies",
+      "arabic_studies",
+      "manuscript_studies"
+    ]
   }
 ]
