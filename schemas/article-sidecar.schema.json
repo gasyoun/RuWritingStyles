@@ -1,0 +1,65 @@
+{
+  "$id": "article-sidecar.schema.json",
+  "title": "Harvested article sidecar",
+  "description": "Written as <stem>.json beside <stem>.txt in the private corpus directory (D11). corpus.py deliberately ignores it in wave 1.",
+  "type": "object",
+  "required": ["stem", "journal_slug", "article_id", "url", "title_ru", "year", "extraction"],
+  "properties": {
+    "stem": { "type": "string", "minLength": 1 },
+    "journal_slug": { "type": "string", "minLength": 1 },
+    "journal_name_ru": { "type": "string" },
+    "article_id": { "type": "string" },
+    "url": { "type": "string" },
+    "doi": { "type": "string" },
+    "edn": { "type": "string" },
+    "title_ru": { "type": "string" },
+    "title_en": { "type": "string" },
+    "authors_ru": { "type": "array", "items": { "type": "string" } },
+    "authors_en": { "type": "array", "items": { "type": "string" } },
+    "affiliations_ru": { "type": "array", "items": { "type": "string" } },
+    "year": { "type": "integer", "minimum": 1700, "maximum": 2200 },
+    "volume": { "type": "string" },
+    "issue": { "type": "string" },
+    "firstpage": { "type": "string" },
+    "lastpage": { "type": "string" },
+    "language": { "type": "string" },
+    "keywords_ru": { "type": "array", "items": { "type": "string" } },
+    "keywords_en": { "type": "array", "items": { "type": "string" } },
+    "license": { "type": "string" },
+    "pdf_url": { "type": "string" },
+    "extraction": {
+      "type": "object",
+      "required": ["verdict"],
+      "properties": {
+        "source": { "enum": ["html", "pdf", "ocr"] },
+        "extractor": { "type": "string" },
+        "fallback_chain": { "type": "array", "items": { "type": "string" } },
+        "sanity": {
+          "type": "object",
+          "properties": {
+            "cyrillic_ratio": { "type": "number" },
+            "replacement_ratio": { "type": "number" },
+            "word_hit_rate": { "type": "number" },
+            "words": { "type": "integer", "minimum": 0 },
+            "verdict": { "enum": ["pass", "fail"] }
+          },
+          "additionalProperties": false
+        },
+        "verdict": { "enum": ["pass", "fail"] },
+        "harvested_on": { "type": "string", "pattern": "^[0-9]{2}-[0-9]{2}-[0-9]{4}$" },
+        "attempts": { "type": "array", "items": { "type": "object" } }
+      },
+      "additionalProperties": false
+    },
+    "selection": {
+      "type": "object",
+      "properties": {
+        "verdict": { "enum": ["include", "exclude", "uncertain"] },
+        "matched_terms": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "pinned_reason": { "type": "string" }
+  },
+  "additionalProperties": false
+}

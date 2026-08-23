@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from pathlib import Path
 from typing import Any
 
 __all__ = [
@@ -32,6 +33,11 @@ __all__ = [
     "RUSSIAN_AFFIXES",
     "ENGLISH_STOPWORDS",
     "ENGLISH_AFFIXES",
+    "extract_html",
+    "PDF_EXTRACTORS",
+    "extract_pdf",
+    "escalate_ocr",
+    "extract_best",
 ]
 
 # Calibrated on the 19-08-2026 bake-off; re-exported through `config` so callers
@@ -203,3 +209,206 @@ def verdict_for(metrics: dict[str, Any], *, expect_cyrillic: bool = True) -> str
         )
         else "fail"
     )
+
+
+# --------------------------------------------------------------------------- #
+# Extraction chain (S1.5; D07 HTML-first, D08 pinned winner, D14 OCR rung).
+#
+# The return contract everywhere below is `(text_or_None, provenance_dict)` —
+# never an exception for a bad document, because a bad document is normal.
+# Spike finding (23-08-2026): the Филологические науки article page carries only
+# ~350 words of metadata block, and the RUDN pinned article publishes in
+# English — so a sub-threshold HTML body means "try the PDF", not "quarantine",
+# and language expectation comes from citation metadata via the caller.
+# --------------------------------------------------------------------------- #
+
+_ARTICLE_BODY_SELECTORS = (
+    "article",
+    "section.article-body",
+    "div.article-body",
+    "div.item.body",
+)
+
+
+def extract_html(html: str) -> tuple[str | None, dict[str, Any]]:
+    """Strip the article body container off one OJS article page."""
+    try:
+        from bs4 import BeautifulSoup
+    except ImportError:
+        return None, {"source": "html", "extractor": "none",
+                      "note": "bs4 not installed — install the [harvest] extra"}
+    soup = BeautifulSoup(html or "", "html.parser")
+    node = None
+    selector_used = ""
+    for selector in _ARTICLE_BODY_SELECTORS:
+        node = soup.select_one(selector)
+        if node is not None:
+            selector_used = selector
+            break
+    if node is None:
+        return None, {"source": "html", "extractor": "none", "note": "no body container"}
+    # Script/style content never survives get_text with these tags stripped;
+    # OJS pages inline citation formatter JS inside <article> occasionally.
+    for junk in node.find_all(["script", "style"]):
+        junk.decompose()
+    text = node.get_text(" ", strip=True)
+    provenance = {
+        "source": "html",
+        "extractor": f"bs4-{selector_used}",
+        "words": len(text.split()),
+    }
+    return (text if text else None), provenance
+
+
+_PDF_EXTRACTOR_ORDER = ("pymupdf-text", "pdfminer.six", "pypdf")
+
+
+def _pdf_pages_text(pdf_path: Path, extractor: str) -> str | None:
+    try:
+        if extractor == "pymupdf-text":
+            import fitz
+
+            doc = fitz.open(pdf_path)
+            try:
+                return "\n".join(page.get_text() for page in doc)
+            finally:
+                doc.close()
+        if extractor == "pdfminer.six":
+            from pdfminer.high_level import extract_text
+
+            return extract_text(str(pdf_path))
+        if extractor == "pypdf":
+            from pypdf import PdfReader
+
+            reader = PdfReader(str(pdf_path))
+            return "\n".join((page.extract_text() or "") for page in reader.pages)
+    except Exception:
+        return None
+    return None
+
+
+PDF_EXTRACTORS: tuple[str, ...] = _PDF_EXTRACTOR_ORDER
+
+
+def extract_pdf(pdf_path: Path) -> tuple[str | None, dict[str, Any]]:
+    """Run the pinned wave-0 chain (minus its OCR tail) over one PDF."""
+    for extractor in _PDF_EXTRACTOR_ORDER:
+        text = _pdf_pages_text(pdf_path, extractor)
+        if text and text.strip():
+            return text, {"source": "pdf", "extractor": extractor}
+    return None, {"source": "pdf", "extractor": "none"}
+
+
+def escalate_ocr(pdf_path: Path, *, language: str = "rus+eng") -> tuple[str | None, dict[str, Any]]:
+    """D14 last rung: rasterize + OCR via ocrmypydf/tesseract into a temp PDF.
+
+    Measured 23-08-2026 on the Digital_Humanities-2023 sample: rc 0, verdict
+    pass — the machinery works; PyMuPDF simply usually wins first.
+    """
+    import subprocess
+    import tempfile
+
+    try:
+        with tempfile.TemporaryDirectory(prefix="rws-ocr-") as tmp:
+            out_pdf = Path(tmp) / "ocr.pdf"
+            result = subprocess.run(
+                [
+                    "ocrmypdf", "--language", language, "--force-ocr",
+                    "--output-type", "pdf", str(pdf_path), str(out_pdf),
+                ],
+                capture_output=True,
+                text=True,
+                timeout=1200,
+            )
+            if result.returncode != 0 or not out_pdf.exists():
+                return None, {"source": "ocr", "extractor": "ocrmypdf-tesseract", "note": f"rc={result.returncode}"}
+            text = _pdf_pages_text(out_pdf, "pymupdf-text")
+            return (text if text and text.strip() else None), {
+                "source": "ocr",
+                "extractor": "ocrmypdf-tesseract-rus",
+            }
+    except Exception as exc:
+        return None, {"source": "ocr", "extractor": "ocrmypdf-tesseract", "note": str(exc)[:120]}
+
+
+def extract_best(
+    *,
+    html: str | None,
+    pdf_bytes: bytes | None,
+    expect_cyrillic: bool = True,
+) -> tuple[str | None, dict[str, Any]]:
+    """Implement the D07/D14 order over one article's candidate sources.
+
+    HTML body first; a failing gate escalates to the PDF galley, then to OCR;
+    quarantine is the caller's business. The returned provenance records every
+    attempt so the sidecar shows what was tried, not just what won.
+
+    Language-flip retry (spike finding, 23-08-2026): the RUDN pinned article
+    sits in a Russian journal whose page metadata still yields a decisively
+    non-Cyrillic body. When the whole chain fails under the expected script and
+    an attempt's own ratios are decisive the other way (>= 90 % Latin letters,
+    >= 100 words), the chain runs once more with the opposite expectation and
+    the flip is recorded in the won provenance.
+    """
+    def _run(expect_cyrillic_now: bool) -> tuple[str | None, dict[str, Any], list[dict[str, Any]]]:
+        attempts: list[dict[str, Any]] = []
+
+        def _scored(text: str | None, prov: dict[str, Any]) -> tuple[bool, dict[str, Any]]:
+            metrics = sanity(text, expect_cyrillic=expect_cyrillic_now)
+            record = dict(prov)
+            record["sanity"] = metrics
+            record["verdict"] = metrics["verdict"]
+            attempts.append(record)
+            return metrics["verdict"] == "pass", record
+
+        import tempfile
+
+        if html:
+            text, prov = extract_html(html)
+            passed, _ = _scored(text, prov)
+            if passed:
+                return text, {"attempts": attempts, "won": attempts[-1]}, attempts
+        else:
+            attempts.append({"source": "html", "note": "no page html"})
+
+        if pdf_bytes:
+            with tempfile.TemporaryDirectory(prefix="rws-pdf-") as tmp:
+                pdf_path = Path(tmp) / "galley.pdf"
+                pdf_path.write_bytes(pdf_bytes)
+                text, prov = extract_pdf(pdf_path)
+                passed, _ = _scored(text, prov)
+                if passed:
+                    return text, {"attempts": attempts, "won": attempts[-1]}, attempts
+                ocr_text, ocr_prov = escalate_ocr(pdf_path)
+                passed_ocr, _ = _scored(ocr_text, ocr_prov)
+                if passed_ocr:
+                    return ocr_text, {"attempts": attempts, "won": attempts[-1]}, attempts
+        else:
+            attempts.append({"source": "pdf", "note": "no galley url or fetch failed"})
+        return None, {"attempts": attempts, "won": None}, attempts
+
+    def _decisive_other_script(attempts: list[dict[str, Any]]) -> bool | None:
+        for attempt in attempts:
+            metrics = attempt.get("sanity") or {}
+            if int(metrics.get("words", 0)) < 100:
+                continue
+            ratio = float(metrics.get("cyrillic_ratio", 0.0))
+            if ratio <= 0.10:
+                return False
+            if ratio >= 0.90:
+                return True
+        return None
+
+    text, provenance, attempts = _run(expect_cyrillic)
+    if text is not None:
+        return text, provenance
+
+    flip = _decisive_other_script(attempts)
+    if flip is not None and flip != expect_cyrillic:
+        text, provenance, _ = _run(flip)
+        if text is not None:
+            provenance.setdefault("won", {})["language_flipped_to"] = (
+                "cyrillic" if flip else "latin"
+            )
+            return text, provenance
+    return None, provenance

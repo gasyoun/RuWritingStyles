@@ -31,9 +31,29 @@ def resolve_journal_profile(run_dir: Path) -> dict[str, Any] | None:
     return profile if isinstance(profile, dict) else None
 
 
-def set_journal_profile(project_dir: Path, profile: dict[str, Any]) -> Path:
+class UnverifiedJournalProfile(ValueError):
+    """A journal profile without verified:true was attached without --allow-unverified.
+
+    A scraped profile's judgment fields (max_chars, citation_format, ...) must
+    never drive report.journal_compliance until a human or verifying agent has
+    confirmed them against the journal's own rules (D10). Reading stays
+    ungated — only attaching to a project is.
+    """
+
+    def __init__(self, profile: dict[str, Any]) -> None:
+        self.profile = profile
+        guidelines = profile.get("guidelines_url") or "(no guidelines_url recorded)"
+        super().__init__(
+            "journal profile is not verified; confirm its judgment fields against "
+            f"{guidelines} and set verified: true (or pass --allow-unverified)"
+        )
+
+
+def set_journal_profile(project_dir: Path, profile: dict[str, Any], *, allow_unverified: bool = False) -> Path:
     """Write a journal profile into the project's project-context.json,
     preserving existing commitments."""
+    if not allow_unverified and profile.get("verified") is not True:
+        raise UnverifiedJournalProfile(profile)
     project_dir.mkdir(parents=True, exist_ok=True)
     context_path = project_dir / "project-context.json"
     if context_path.exists():

@@ -68,6 +68,27 @@ _Created: 12-06-2026 · Last updated: 07-08-2026_
 помет), а не пересказ словарных текстов; gold-кейсы `dict-*` построены на собственном
 материале проекта (pwg_ru-карточки), а не на текстах эталонов.
 
+## Статьи RCSI (корпус статей, не источники стилей; H3154, 23-08-2026)
+
+Отдельная секция по D16: это **статейный корпус для text & data mining** в приватном
+[`RuWritingStyles-corpus`](https://github.com/gasyoun/RuWritingStyles-corpus), а не опора
+стиль-моделей. Гальеты скачиваются открыто с платформы
+[journals.rcsi.science](https://journals.rcsi.science/) с вежливым троттлингом 1 запрос/с;
+полные тексты и сайдкары живут только в приватном репозитории (принцип 1).
+
+| # | Журнал (slug) | Права, как заявлены платформой |
+|---|---|---|
+| 1 | Вестник Российской академии наук (`0869-5873`) | открытая загрузка галет; авторский договор передачи на /about/submissions; машиночитаемого CC-заявления на страницах платформы нет (проверено 23-08-2026) |
+| 2 | RUDN Journal of Language Studies, Semiotics and Semantics (`2313-2299`) | та же картина: открытые галеты + договор на about; CC-бейджа нет (23-08-2026) |
+| 3 | Philological Sciences Bulletin (`2782-5329`) | открытые галеты + договор на about; CC-бейджа нет (23-08-2026) |
+| 4 | Вопросы языкознания (`0373-658X`) | открытые галеты + договор на about; CC-бейджа нет (23-08-2026) |
+| 5 | Acta Linguistica Petropolitana (`2306-5737`) | открытые галеты; заявление CC BY-NC-ND 4.0 зафиксировано ранее (ARCHITECTURE, D10-пример); страницы about дубль-текста договора (23-08-2026) |
+
+Пять закреплённых статей перечислены в
+[`knowledge/rcsi/pinned_articles.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/knowledge/rcsi/pinned_articles.json);
+каждая несёт DOI (или URL-ключ, где платформа DOI не выдаёт) и строку в
+[`knowledge/bibliography.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/knowledge/bibliography.json).
+
 ## Принципы
 
 1. В публичный репозиторий не попадает ни один охраняемый полный текст — ни PDF, ни
