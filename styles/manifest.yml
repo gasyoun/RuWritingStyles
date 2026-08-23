@@ -326,3 +326,8 @@ passports:
     level: private
     cluster: lit_mythopoetics
     source_prompt: ClaudeStyles/meletinsky-style.md
+  - id: bartold
+    path: styles/passports/bartold.yml
+    level: private
+    cluster: orient_leningrad
+    source_prompt: ClaudeStyles/bartold-style.md
