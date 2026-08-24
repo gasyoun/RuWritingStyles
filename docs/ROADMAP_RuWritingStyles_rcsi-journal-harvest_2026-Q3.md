@@ -45,9 +45,20 @@ and produces a document rather than a feature.
       5/5 tests green in
       [tests/test_rcsi_client.py](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_rcsi_client.py).
       (A09, tick-only pass — the code predates this roadmap-drain unit.)
-- [ ] **W1.2 Schema extension.** Extend
+- [x] **W1.2 Schema extension.** Extend
       [schemas/journal-profile.schema.json](https://github.com/gasyoun/RuWritingStyles/blob/main/schemas/journal-profile.schema.json)
-      per D10 and confirm all five existing profiles still validate.
+      per D10 and confirm all five existing profiles still validate. ✅ DONE 24-08-2026 —
+      shipped in [PR #175](https://github.com/gasyoun/RuWritingStyles/pull/175) (commit
+      [`970619e`](https://github.com/gasyoun/RuWritingStyles/commit/970619e5053dd0aba00bf8480f5e1e00c7d080c0),
+      H3154): all eleven D10 optional properties (`verified`, `checked_on`, `platform`,
+      `slug`, `issn`, `url`, `guidelines_url`, `oai_endpoint`, `license`, `subjects`,
+      `derived_by`) present with `additionalProperties: false` and `id`+`name` still the only
+      required pair; [schemas/article-sidecar.schema.json](https://github.com/gasyoun/RuWritingStyles/blob/main/schemas/article-sidecar.schema.json)
+      (D11, S1.2's second touched file) also shipped. `python tools/validate_project.py`
+      confirms all five existing profiles in
+      [knowledge/journals/](https://github.com/gasyoun/RuWritingStyles/tree/main/knowledge/journals)
+      still validate; `pytest -k "journal or schema"` is 46/46 green. (A10, tick-only pass —
+      the code predates this roadmap-drain unit, same pattern as W1.1/A09.)
 - [ ] **W1.3 Profile derivation.** `rws journal-add <slug>` — fetch `/about/submissions`,
       derive what is mechanically derivable, draft the judgment fields, write the profile with
       `verified: false`, and refuse to overwrite an existing profile in place (emit a proposed
