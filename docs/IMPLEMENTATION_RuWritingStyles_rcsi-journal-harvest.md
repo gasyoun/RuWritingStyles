@@ -192,7 +192,7 @@ Mirror the fixture-export convention already in
 [tools/export_journal_fixtures.py](https://github.com/gasyoun/RuWritingStyles/blob/main/tools/export_journal_fixtures.py).
 
 ### S1.10 Registration and release
-**Touches:** `SOURCES.md`, `knowledge/bibliography.json`, `.ai_state.md`, `changelog.md`, `CITATION.cff`
+**Touches:** `SOURCES.md`, `knowledge/bibliography.json`, `.ai_state.md`, `CHANGELOG.md`, `CITATION.cff`
 **Depends on:** S1.9
 
 One `SOURCES.md` row per journal with its licence verbatim, under a new subsection making

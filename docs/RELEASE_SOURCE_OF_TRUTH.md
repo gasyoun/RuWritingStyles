@@ -69,7 +69,7 @@ The report lists every `## [x.y.z]` with no matching `vX.Y.Z` tag, and every
 release tag with no heading. Headings **at or below** the latest real tag
 that were never tagged (this repo has a long pre-`v2.11.0` tail, plus
 `2.21.0`) are labelled `historical orphan`. They stay in
-[changelog.md](https://github.com/gasyoun/RuWritingStyles/blob/main/changelog.md).
+[CHANGELOG.md](https://github.com/gasyoun/RuWritingStyles/blob/main/CHANGELOG.md).
 This check will not delete them and will not back-fill tags for them.
 
 `reserve-vX.Y.Z` refs from [cut_release.py](https://github.com/gasyoun/Uprava/blob/main/tools/cut_release.py)

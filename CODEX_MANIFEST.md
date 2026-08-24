@@ -25,7 +25,7 @@ This document provides a structured map of the repository for rapid indexing and
 - **Strategy**: `GEMINI_ROADMAP.md` (Current project state)
 - **Onboarding**: `docs/onboarding.md` (Beginner guide)
 - **Technical**: `docs/cli.md`, `docs/deployment.md`, `docs/scenarios.md`
-- **History**: `changelog.md`
+- **History**: `CHANGELOG.md`
 
 ## 🛡️ Validation & Evals
 - **Schemas**: `schemas/*.schema.json` (Output shapes for all agents)

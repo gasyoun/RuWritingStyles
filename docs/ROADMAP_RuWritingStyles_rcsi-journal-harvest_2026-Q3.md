@@ -59,7 +59,7 @@ and produces a document rather than a feature.
 - [ ] **W1.6 The guarantee.** `knowledge/rcsi/pinned_articles.json` plus `rws corpus-verify`
       plus the test that fails when any pinned article stops satisfying D13.
 - [ ] **W1.7 Registration.** `SOURCES.md` rows for the six journals with licence facts;
-      `.ai_state.md` and `changelog.md` updated; release cut.
+      `.ai_state.md` and `CHANGELOG.md` updated; release cut.
 
 **Unblocked by:** W0.4 for W1.4 onward; W1.1 for everything else.
 **Unblocks:** wave 2, and the corpus gate on H944 / H1882.
