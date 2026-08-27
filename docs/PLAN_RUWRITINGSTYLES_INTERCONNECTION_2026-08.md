@@ -1,6 +1,6 @@
 # Plan — RuWritingStyles interconnection, 2026-08
 
-_Created: 26-08-2026 · Last updated: 26-08-2026_
+_Created: 26-08-2026 · Last updated: 27-08-2026_
 
 RuWritingStyles's slice of the spine-interconnection programme. Programme index:
 [PLAN_SPINE_INTERCONNECTION_2026H2.md](https://github.com/gasyoun/Uprava/blob/main/docs/PLAN_SPINE_INTERCONNECTION_2026H2.md).
@@ -12,8 +12,23 @@ all fourteen repos and live once in Uprava:
 - [IMPLEMENTATION_SPINE_INTERCONNECTION_W1.md](https://github.com/gasyoun/Uprava/blob/main/docs/IMPLEMENTATION_SPINE_INTERCONNECTION_W1.md) — execution order, per-handoff steps, isolation, risks
 - [VERIFICATION_SPINE_INTERCONNECTION.md](https://github.com/gasyoun/Uprava/blob/main/docs/VERIFICATION_SPINE_INTERCONNECTION.md) — the five gates and what "done" means
 
-**Nothing here has executed.** The handoff below is 🟡 queued and runs only when a human
-launches it.
+**✅ Executed 27-08-2026** by H3569 (Opus 5, `claude-opus-5`), shipped as
+[v2.28.0](https://github.com/gasyoun/RuWritingStyles/releases/tag/v2.28.0).
+
+The plan's two items resolved unevenly, and the difference is the point:
+
+1. **The F8 SHARED_CODE family row had already landed** as map row 29 under
+   [H3561](https://github.com/gasyoun/github-spine/pull/127) on the same day, run ahead of
+   programme order. Per the roadmap's own ruling
+   ([github-spine #130](https://github.com/gasyoun/github-spine/pull/130)) no second row was
+   added — a duplicate is not an adjacent row to keep. Instead row 29's factually wrong gloss
+   was corrected: it described the scorer alias policy as protecting a baseline from a
+   *renamed model*, a guard that exists nowhere in this repo
+   ([#131](https://github.com/gasyoun/github-spine/pull/131), spine v1.84.2).
+2. **The F1 local registry shipped in full** —
+   [`FINDINGS.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/FINDINGS.md) with five
+   findings, not the two the ruling set as its floor, so the drop-it-and-take-the-pointer-line
+   fallback was never reached ([#187](https://github.com/gasyoun/RuWritingStyles/pull/187)).
 
 ## Why RuWritingStyles is in scope
 
@@ -53,7 +68,7 @@ Full rulings table with every fork:
 
 ## Handoff
 
-- [H3569 (Opus 5) — interconnect ruwriting sovet pipeline family](https://github.com/gasyoun/Uprava/blob/main/handoffs/H3569-Opus_RuWritingStyles_interconnect-ruwriting-sovet-pipeline-family_26.08.26.md) · medium · 🟡 queued
+- [H3569 (Opus 5) — interconnect ruwriting sovet pipeline family](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H3569-Opus_RuWritingStyles_interconnect-ruwriting-sovet-pipeline-family_26.08.26.md) · medium · ✅ closed 27-08-2026 ([#187](https://github.com/gasyoun/RuWritingStyles/pull/187) · [#188](https://github.com/gasyoun/RuWritingStyles/pull/188) · [github-spine #131](https://github.com/gasyoun/github-spine/pull/131))
 
 ## Autonomy contract
 

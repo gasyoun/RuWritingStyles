@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-_Created: 08-05-2026 · Last updated: 20-08-2026_
+_Created: 08-05-2026 · Last updated: 27-08-2026_
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -12,6 +12,10 @@ RuWritingStyles is two layered things in one repo:
 2. An **agentic review pipeline** (`src/ruwritingstyles/`) that loads those styles as machine-readable passports and runs a multi-agent "Council" over a Markdown document: segment → independent style reviews → council deliberation → revision synthesis → verification.
 
 Adding a new style requires updating both layers: the `.md` in `ClaudeStyles/`, a passport in `styles/passports/`, the `passports:` block of `styles/manifest.yml`, and the navigation/source tables in `README.md` (`README.md` documents this multi-place rule explicitly). `tools/validate_project.py` enforces that the `ClaudeStyles/*.md` set matches the passports' `source_prompt` set. (The former `available_style_sources` manifest block was redundant — nothing read it; `rws list-styles` derives the user-facing list from the passports via `load_passport_summaries` — so it was removed.)
+
+## Where a gotcha goes
+
+This repo keeps its **own** [`FINDINGS.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/FINDINGS.md) — prose-tooling and style-eval facts only (scorer semantics, gold-case protocol, rater agreement, the mock/expert CI split). Sanskrit-data gotchas go to [SanskritLexicography/FINDINGS.md](https://github.com/gasyoun/SanskritLexicography/blob/master/FINDINGS.md), infra/CI/platform gotchas to [Uprava/FINDINGS.md](https://github.com/gasyoun/Uprava/blob/main/FINDINGS.md). No other epistemic registry lives here (ruling F1, 26-08-2026). The pipeline itself is registered as [SHARED_CODE row 29](https://github.com/gasyoun/github-spine/blob/main/SHARED_CODE.md) — a consumer reuses `core_pipeline` or the `rws` CLI rather than hand-rolling a review loop.
 
 ## Common commands
 
