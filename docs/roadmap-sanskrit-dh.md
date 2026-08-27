@@ -4,7 +4,11 @@
 > история. Актуальная единственная дорожная карта —
 > [`docs/roadmap-2026-q3.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-2026-q3.md).
 
-Дата: 2026-06-12 · Last updated: 07-08-2026 (H2369 Phase 0 doc honesty). Статус: архив фаз 0–4 (filter-repo history — human-only residual).
+Дата: 2026-06-12 · Last updated: 27-08-2026.
+
+> **Human-gate 27-08-2026** (Grok 4.6 `grok-4.6`). The next residual (purge PDF/txt from git history) is a human act, not `/roadmap-item-exec` for an agent. Do not tick a box. Do not run filter-repo. Prior: 07-08 Phase 0 doc honesty.
+
+Статус: архив фаз 0–4 (filter-repo history — human-only residual).
 Цель: превратить RuWritingStyles из каталога стилей в рабочий инструмент написания
 русскоязычных научных статей по санскритской лингвистике — при этом довести репозиторий
 до публикуемого (public) и архивного (DH-grade) состояния.
