@@ -76,8 +76,20 @@ and produces a document rather than a feature.
       Russian Academy of Sciences", refused with the full proposed diff, stub
       byte-identical after the run; `pytest -k "journal or schema"` 46/46 green.
       (A11, tick-only pass — same pattern as W1.1/A09 and W1.2/A10.)
-- [ ] **W1.4 Extraction and gate.** `extract.py` with the wave-0 winner pinned, the fallback
-      chain, the Cyrillic sanity gate and the OCR escalation of D14.
+- [x] **W1.4 Extraction and gate.** `extract.py` with the wave-0 winner pinned, the fallback
+      chain, the Cyrillic sanity gate and the OCR escalation of D14. ✅ DONE 28-08-2026 —
+      shipped in [PR #175](https://github.com/gasyoun/RuWritingStyles/pull/175)
+      (commit [`970619e`](https://github.com/gasyoun/RuWritingStyles/commit/970619e5053dd0aba00bf8480f5e1e00c7d080c0),
+      H3154; wave-0 chain pinned earlier by H3153, commit
+      [`924b1b6`](https://github.com/gasyoun/RuWritingStyles/commit/924b1b6)):
+      [`extract.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/extract.py)
+      walks `PDF_EXTRACTOR_CHAIN` (`pymupdf-text → pdfminer.six → pypdf → ocrmypdf+tesseract rus`,
+      `pdftotext` deliberately absent after its 1/8 Cyrillic blanking), `sanity()` /
+      `verdict_for()` gate every attempt, and `extract_best()` implements the D07/D14 order
+      HTML → PDF chain → `escalate_ocr()` with full attempts provenance plus the
+      language-flip retry; quarantine on total failure stays the caller's (`harvest.py`).
+      Verified 28-08-2026: `pytest -k "extract or sanity or journal or schema"` 58/58 green.
+      (A12, tick-only pass — same pattern as W1.1/A09, W1.2/A10 and W1.3/A11.)
 - [ ] **W1.5 Pinned-article harvest.** `rws journal-harvest --pinned` ingests the five named
       articles end to end: text into `PDFtoTXT/`, sidecar JSON, bibliography row, FTS5 index.
 - [ ] **W1.6 The guarantee.** `knowledge/rcsi/pinned_articles.json` plus `rws corpus-verify`
