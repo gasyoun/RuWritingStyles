@@ -59,10 +59,23 @@ and produces a document rather than a feature.
       [knowledge/journals/](https://github.com/gasyoun/RuWritingStyles/tree/main/knowledge/journals)
       still validate; `pytest -k "journal or schema"` is 46/46 green. (A10, tick-only pass —
       the code predates this roadmap-drain unit, same pattern as W1.1/A09.)
-- [ ] **W1.3 Profile derivation.** `rws journal-add <slug>` — fetch `/about/submissions`,
+- [x] **W1.3 Profile derivation.** `rws journal-add <slug>` — fetch `/about/submissions`,
       derive what is mechanically derivable, draft the judgment fields, write the profile with
       `verified: false`, and refuse to overwrite an existing profile in place (emit a proposed
-      diff instead).
+      diff instead). ✅ DONE 28-08-2026 — shipped in [PR #175](https://github.com/gasyoun/RuWritingStyles/pull/175)
+      (commit [`970619e`](https://github.com/gasyoun/RuWritingStyles/commit/970619e5053dd0aba00bf8480f5e1e00c7d080c0),
+      H3154): `cmd_journal_add` + `journals.derive_profile` / `proposed_profile_diff` —
+      the live OAI `Identify` fetch resolves the platform name; mechanically derivable
+      fields only (`url`, `guidelines_url` = `/about/submissions`, `oai_endpoint`,
+      `platform`, `slug`, `checked_on`, `derived_by`) are written with `verified: false`,
+      while judgment fields (`max_chars`, `citation_format`, `first_mention_rule`, …)
+      deliberately stay absent — an auto-derived draft never pretends to know them (D10
+      note in the docstring). An existing profile is never overwritten: refusal exit 3
+      with the key-level proposed diff, `--force` as the explicit escape. Verified live
+      28-08-2026: `journal-add 0869-5873` against a planted stub resolved "Herald of the
+      Russian Academy of Sciences", refused with the full proposed diff, stub
+      byte-identical after the run; `pytest -k "journal or schema"` 46/46 green.
+      (A11, tick-only pass — same pattern as W1.1/A09 and W1.2/A10.)
 - [ ] **W1.4 Extraction and gate.** `extract.py` with the wave-0 winner pinned, the fallback
       chain, the Cyrillic sanity gate and the OCR escalation of D14.
 - [ ] **W1.5 Pinned-article harvest.** `rws journal-harvest --pinned` ingests the five named
