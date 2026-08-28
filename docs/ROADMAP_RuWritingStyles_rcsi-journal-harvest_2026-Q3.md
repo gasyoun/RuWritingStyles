@@ -1,6 +1,6 @@
 # ROADMAP — RCSI journal profiles and article harvest (RuWritingStyles, 2026-Q3)
 
-_Created: 19-08-2026 · Last updated: 24-08-2026_
+_Created: 19-08-2026 · Last updated: 28-08-2026_
 
 Wave layer of [PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md).
 Ruling references (D01–D20) point at that document's decisions table.
@@ -90,8 +90,18 @@ and produces a document rather than a feature.
       language-flip retry; quarantine on total failure stays the caller's (`harvest.py`).
       Verified 28-08-2026: `pytest -k "extract or sanity or journal or schema"` 58/58 green.
       (A12, tick-only pass — same pattern as W1.1/A09, W1.2/A10 and W1.3/A11.)
-- [ ] **W1.5 Pinned-article harvest.** `rws journal-harvest --pinned` ingests the five named
+- [x] **W1.5 Pinned-article harvest.** `rws journal-harvest --pinned` ingests the five named
       articles end to end: text into `PDFtoTXT/`, sidecar JSON, bibliography row, FTS5 index.
+      — shipped in two halves. Harvest half 23-08-2026
+      ([RuWritingStyles PR #175](https://github.com/gasyoun/RuWritingStyles/pull/175), H3154/v2.27.0):
+      live harvest 5/5 pinned articles written to the private corpus, zero quarantined,
+      `rws corpus-verify` 5/5 — text + sidecars + bibliography rows recorded in
+      [.ai_state.md](https://github.com/gasyoun/RuWritingStyles/blob/main/.ai_state.md) (v2.27.0 entry).
+      FTS5 half 28-08-2026 (OxAlpha `opencode`, via `/drain`): the index had been left empty
+      (0 rows in `corpus_segments`) — `rws corpus-ingest` run against the private corpus:
+      **18 file(s), 5091 segment(s)** indexed; `rws corpus-search "национальный корпус русского языка"`
+      retrieves the pinned articles (Moldovan 2024, Plungian 2024, Savchuk 2024 confirmed in top hits).
+      `rws.db` stays gitignored — no corpus content in the public repo.
 - [ ] **W1.6 The guarantee.** `knowledge/rcsi/pinned_articles.json` plus `rws corpus-verify`
       plus the test that fails when any pinned article stops satisfying D13.
 - [ ] **W1.7 Registration.** `SOURCES.md` rows for the six journals with licence facts;
