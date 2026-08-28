@@ -4,7 +4,7 @@
 > история. Актуальная единственная дорожная карта —
 > [`docs/roadmap-2026-q3.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-2026-q3.md).
 
-Дата: 2026-06-12 · Last updated: 27-08-2026.
+Дата: 2026-06-12 · Last updated: 28-08-2026.
 
 > **Human-gate 27-08-2026** (Grok 4.6 `grok-4.6`). The next residual (purge PDF/txt from git history) is a human act, not `/roadmap-item-exec` for an agent. Do not tick a box. Do not run filter-repo. Prior: 07-08 Phase 0 doc honesty.
 
@@ -71,7 +71,16 @@ W2 (линтер транслитерации), W3 (профили журнал�
 - [ ] **ГОСТ-аппарат**: формирование списка литературы по ГОСТ Р 7.0.100-2018 из
       `references.bib` (через CSL-стиль `russian-gost-r-7-0-100-2018`); цели — ВЯ,
       «Письменные памятники Востока», Вестник СПбГУ.
-- [ ] **Линтер передачи санскрита** (детерминированный, без LLM, как этап `verify`):
+- [x] **Линтер передачи санскрита** (детерминированный, без LLM, как этап `verify`):
+      shipped 13-06-2026 as Phase 1 W2 (`translit_lint.py`, pipeline step after
+      `verify`, CLI sibling `rws lint-translit`; commit
+      [cfdd464](https://github.com/gasyoun/RuWritingStyles/commit/cfdd4643b6cfee470ab56eb0623ae434bbd2f7f3);
+      later FP fixes in [PR #76](https://github.com/gasyoun/RuWritingStyles/pull/76) / v2.14.0).
+      Re-verified 28-08-2026 (H3264): `pytest tests/test_translit_lint.py` 22 passed;
+      `--strict` flags the golden bad fixtures (`translit-mixed-scheme`,
+      `translit-first-mention`, `translit-cyrillic-latin-hybrid`) with no LLM call.
+      Markdown italic vs roman is not a separate finding type (tests accept
+      unitalicized IAST in parentheses).
       - первая встреча термина: русская передача + IAST в скобках — «бхашья (*bhāṣya*)»;
       - единообразие IAST по всему тексту (ṛ/ри, ś/ш и т. п. — один вариант на статью);
       - деванагари пропускается без порчи (UTF-8, NFC-нормализация);
