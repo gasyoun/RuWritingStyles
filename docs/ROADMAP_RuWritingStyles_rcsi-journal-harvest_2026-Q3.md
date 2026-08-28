@@ -102,8 +102,19 @@ and produces a document rather than a feature.
       **18 file(s), 5091 segment(s)** indexed; `rws corpus-search "национальный корпус русского языка"`
       retrieves the pinned articles (Moldovan 2024, Plungian 2024, Savchuk 2024 confirmed in top hits).
       `rws.db` stays gitignored — no corpus content in the public repo.
-- [ ] **W1.6 The guarantee.** `knowledge/rcsi/pinned_articles.json` plus `rws corpus-verify`
-      plus the test that fails when any pinned article stops satisfying D13.
+- [x] **W1.6 The guarantee.** `knowledge/rcsi/pinned_articles.json` plus `rws corpus-verify`
+      plus the test that fails when any pinned article stops satisfying D13. ✅ DONE 28-08-2026 —
+      shipped in [PR #175](https://github.com/gasyoun/RuWritingStyles/pull/175)
+      (commit [`970619e`](https://github.com/gasyoun/RuWritingStyles/commit/970619e5053dd0aba00bf8480f5e1e00c7d080c0),
+      H3154): the committed five-entry manifest with `expected_stem` backfilled from the live
+      harvest, `rws corpus-verify` re-checking text presence, sidecar schema validity,
+      DOI-or-URL bibliography keying, sanity verdict and FTS retrievability per entry
+      (self-healing re-index of an absent file, sidecar-URL match when a stem is renamed),
+      and [tests/test_pinned_articles.py](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_pinned_articles.py)
+      (manifest shape + verifier green path and bibliography/text-missing failure paths).
+      Verified live 28-08-2026: `rws corpus-verify` **5/5 pinned articles verified**, exit 0;
+      `pytest tests/test_pinned_articles.py` 7/7 green. (A06, tick-only pass — the code
+      predates this roadmap-drain unit, same pattern as W1.1/A09 through W1.4/A12.)
 - [ ] **W1.7 Registration.** `SOURCES.md` rows for the six journals with licence facts;
       `.ai_state.md` and `CHANGELOG.md` updated; release cut.
 
