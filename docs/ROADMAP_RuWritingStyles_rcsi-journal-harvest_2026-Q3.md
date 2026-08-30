@@ -1,6 +1,6 @@
 # ROADMAP — RCSI journal profiles and article harvest (RuWritingStyles, 2026-Q3)
 
-_Created: 19-08-2026 · Last updated: 28-08-2026_
+_Created: 19-08-2026 · Last updated: 30-08-2026_
 
 Wave layer of [PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md).
 Ruling references (D01–D20) point at that document's decisions table.
@@ -115,8 +115,18 @@ and produces a document rather than a feature.
       Verified live 28-08-2026: `rws corpus-verify` **5/5 pinned articles verified**, exit 0;
       `pytest tests/test_pinned_articles.py` 7/7 green. (A06, tick-only pass — the code
       predates this roadmap-drain unit, same pattern as W1.1/A09 through W1.4/A12.)
-- [ ] **W1.7 Registration.** `SOURCES.md` rows for the six journals with licence facts;
-      `.ai_state.md` and `CHANGELOG.md` updated; release cut.
+- [x] **W1.7 Registration.** `SOURCES.md` rows for the six journals with licence facts;
+      `.ai_state.md` and `CHANGELOG.md` updated; release cut. ✅ DONE 30-08-2026 —
+      shipped in [PR #197](https://github.com/gasyoun/RuWritingStyles/pull/197):
+      [`SOURCES.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/SOURCES.md)
+      one row per journal (D16) with licence facts live-re-verified 30-08-2026
+      (Вестник РАН: copy retained + exclusive first-publication licence, no CC statement;
+      RUDN: no CC badge; Филологические науки: **CC BY 3.0 declared on /about/submissions**
+      — correction of the 23-08 "no badge" note; Вопросы языкознания: copyright agreement
+      text, no CC; Acta: exclusive-right transfer to ИЛИ РАН on about + CC BY-NC-ND 4.0
+      stays the declared publication licence; sixth row — ИЯКФ/Тронские чтения behind
+      profile `iyakf`, off-platform). `.ai_state.md` + `CHANGELOG.md` updated;
+      registration-only change — no eval-gate impact, release carries the docs bump.
 
 **Unblocked by:** W0.4 for W1.4 onward; W1.1 for everything else.
 **Unblocks:** wave 2, and the corpus gate on H944 / H1882.

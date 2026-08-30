@@ -4,6 +4,9 @@ All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
 
+### Changed
+- **RCSI journal registration lands — wave 1 W1.7 closed (D16).** [`SOURCES.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/SOURCES.md) carries one row per journal with its licence facts verbatim-checked against the platform on 30-08-2026: Вестник РАН (copyright retained, exclusive first-publication licence to the publisher, no CC statement), RUDN Journal (no CC badge), Philological Sciences Bulletin (**CC BY 3.0 declared on /about/submissions** — upgraded from the earlier "no badge" note), Вопросы языкознания (copyright agreement text, no CC), Acta Linguistica Petropolitana (exclusive-right transfer contract to ILI RAN on /about/submissions; CC BY-NC-ND 4.0 stays the declared publication licence), plus the off-platform **ИЯКФ/Тронские чтения** row as the sixth journal behind profile `iyakf`. A SOURCES row for every new journal profile is now a stated registration principle (principle 2).
+
 ## [2.28.0] - 2026-08-27
 
 ### Added
