@@ -29,9 +29,18 @@ from typing import Any
 
 from .config import repo_root_from
 
-__all__ = ["harvest_journal", "harvest_pinned", "corpus_verify", "build_stem", "load_pinned_manifest"]
+__all__ = [
+    "harvest_journal",
+    "harvest_pinned",
+    "corpus_verify",
+    "build_stem",
+    "load_pinned_manifest",
+    "load_catalogue",
+    "build_catalogue",
+]
 
 _PINNED_PATH_PARTS = ("knowledge", "rcsi", "pinned_articles.json")
+_CATALOGUE_PATH_PARTS = ("knowledge", "rcsi", "catalogue.json")
 
 # GOST-style romanization, letters only — used for filename stems so Windows
 # path lengths stay safe and corpus.py's filename heuristics keep working. The
@@ -94,6 +103,63 @@ def load_pinned_manifest(repo_root: Path | None = None) -> list[dict[str, Any]]:
     root = repo_root or Path(repo_root_from())
     path = root.joinpath(*_PINNED_PATH_PARTS)
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def load_catalogue(repo_root: Path) -> list[dict[str, Any]]:
+    """Read the committed catalogue; D05 exclusion-reviewability contract."""
+    path = repo_root.joinpath(*_CATALOGUE_PATH_PARTS)
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def build_catalogue(repo_root: Path, *, checked_on: str) -> list[dict[str, Any]]:
+    """Crawl the platform index, classify each journal, write the catalogue (W2.1/D05).
+
+    One record per platform journal — exclusions are records with
+    ``verdict: "exclude"``, never omissions. The crawled URL is the profile
+    ``id`` (slug ≠ ISSN, S1.1 hazard); ``repository_name`` from the OAI
+    ``Identify`` payload overwrites the catalogue-page anchor text, and a
+    failed ``Identify`` degrades the record to ``uncertain`` with the error as
+    evidence (a single unreachable journal is not a stop condition, PLAN
+    §autonomy-contract 2).
+    """
+    from . import rcsi
+    from .journal_scope import classify_journal
+
+    index: dict[str, str] = rcsi.walk_index()
+    catalogue: list[dict[str, Any]] = []
+    for slug in sorted(index, key=lambda s: (len(s), s)):
+        url = f"{rcsi.BASE}/{slug}"
+        page_name = index[slug]
+        repository_name = ""
+        scope_text = ""
+        evidence_other: list[str] = []
+        try:
+            info = rcsi.identify(slug)
+            repository_name = str(info.get("repository_name", "") or "")
+        except rcsi.RcsiError as exc:
+            evidence_other.append(f"identify failed: {exc}")
+        scope_text = rcsi.fetch_scope_text(slug)
+        if not scope_text and not repository_name:
+            evidence_other.append("no Identify payload and no #focusAndScope paragraph on /about/editorialPolicies")
+        verdict = classify_journal(" \u00b7 ".join([repository_name, page_name, scope_text]))
+        catalogue.append(
+            {
+                "slug": slug,
+                "journal_name": page_name,
+                "repository_name": repository_name,
+                "url": url,
+                "scope_text_excerpt": scope_text[:500],
+                "verdict": verdict["verdict"],
+                "matched_terms": verdict["positive"][:8],
+                "negative_terms": verdict["negative"][:8],
+                "evidence_other": evidence_other,
+                "checked_on": checked_on,
+            }
+        )
+    path = repo_root.joinpath(*_CATALOGUE_PATH_PARTS)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(catalogue, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return catalogue
 
 
 def _corpus_dir() -> tuple[Path, Path]:

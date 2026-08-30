@@ -346,9 +346,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     journal_catalogue = subparsers.add_parser(
         "journal-catalogue",
-        help="Print the RCSI journal catalogue verdicts (wave-2 crawl owns writing them).",
+        help="Crawl the RCSI platform index and write knowledge/rcsi/catalogue.json verdicts (wave-2 crawl).",
     )
-    journal_catalogue.add_argument("--refresh", action="store_true", help="(wave 2) re-crawl the platform index.")
+    journal_catalogue.add_argument(
+        "--refresh", action="store_true", help="re-crawl the platform index even if a catalogue exists."
+    )
     journal_catalogue.add_argument("--json", action="store_true", dest="as_json", help="Emit JSON instead of a table.")
     journal_catalogue.set_defaults(func=cmd_journal_catalogue)
 
@@ -2631,22 +2633,31 @@ def cmd_project_set_journal(args: argparse.Namespace) -> int:
 
 def _cmd_journal_catalogue_impl(args: argparse.Namespace) -> int:
     import json as _json
+    from datetime import datetime as _datetime
 
+    from .harvest import build_catalogue, load_catalogue
     from .config import repo_root_from
 
-    path = repo_root_from() / "knowledge" / "rcsi" / "catalogue.json"
-    if not path.exists():
-        if args.refresh:
-            print("error: catalogue crawling lands in wave 2 (PLAN W2.1); no catalogue file exists yet.")
-            return 3
-        print("no catalogue yet — knowledge/rcsi/catalogue.json appears in wave 2")
-        return 1
-    records = _json.loads(path.read_text(encoding="utf-8"))
+    repo_root = repo_root_from()
+    path = repo_root / "knowledge" / "rcsi" / "catalogue.json"
+    if args.refresh or not path.exists():
+        try:
+            records = build_catalogue(repo_root, checked_on=_datetime.now().strftime("%d-%m-%Y"))
+        except Exception as exc:  # noqa: BLE001 - report platform-wide crawl failure
+            print(f"error: catalogue crawl failed: {exc}")
+            return 1
+        counts = {}
+        for record in records:
+            counts[record["verdict"]] = counts.get(record["verdict"], 0) + 1
+        summary = ", ".join(f"{key} {counts[key]}" for key in sorted(counts))
+        print(f"catalogue crawled: {len(records)} journals ({summary}) -> knowledge/rcsi/catalogue.json")
+    else:
+        records = load_catalogue(repo_root)
     if args.as_json:
         print(_json.dumps(records, ensure_ascii=False, indent=2))
         return 0
     for record in records:
-        print(f"{record.get('slug', ''):14} {record.get('verdict', '?'):9} {record.get('repository_name', '')}")
+        print(f"{record.get('slug', ''):14} {record.get('verdict', '?'):9} {record.get('repository_name', '') or record.get('journal_name', '')}")
     return 0
 
 

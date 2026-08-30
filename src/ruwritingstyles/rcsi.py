@@ -40,6 +40,9 @@ __all__ = [
     "list_records",
     "article_meta",
     "galley_pdf_url",
+    "index_pages",
+    "walk_index",
+    "fetch_scope_text",
 ]
 
 BASE = "https://journals.rcsi.science"
@@ -285,3 +288,94 @@ def galley_pdf_url(meta: dict[str, Any]) -> str:
     if not url:
         raise RcsiError(f"article {meta.get('article_id')} exposes no citation_pdf_url")
     return url
+
+
+# --------------------------------------------------------------------------- #
+# Catalogue crawl (wave 2, W2.1 / D05).
+#
+# Measured 30-08-2026: the journal index is paginated over
+# `{BASE}/index?searchInitial=&journalsPage=N` with 49 journal entries per
+# page (page 1 also links `/index` and `/vramn` non-journal targets, filtered
+# by the anchor class). Journal entries are
+# `<h2 class="journalName..."><a href="{BASE}/{slug}">{Name}</a></h2>`;
+# slugs are mostly ISSN-shaped but not always (`vramn` exists), so the crawl
+# keys on the URL slug (S1.1 hazard). The Aims & Scope text lives on
+# `{BASE}/{slug}/about/editorialPolicies` under `<div id="focusAndScope">`.
+# --------------------------------------------------------------------------- #
+
+_JOURNAL_ANCHOR_RE = re.compile(
+    r'<h2[^>]*class="[^"]*journalName[^"]*"[^>]*>\s*<a[^>]+href="'
+    + re.escape(BASE)
+    + r'/([^"/]+)"[^>]*>(.*?)</a>',
+    re.IGNORECASE,
+)
+
+_PAGE_URL = BASE + "/index?searchInitial=&journalsPage={page}"
+
+_MAX_INDEX_PAGES = 40  # hard stop; the platform showed 21 pages on 30-08-2026
+
+
+def _anchor_text(raw: str) -> str:
+    import html as _html
+
+    return _html.unescape(re.sub(r"<[^>]+>", "", raw)).strip()
+
+
+def index_pages() -> Iterator[tuple[int, list[tuple[str, str]]]]:
+    """Yield ``(page_number, [(slug, journal_name), …])`` per index page.
+
+    Walks the paginated platform index with the shared 1 req/s throttle. The
+    walk terminates on the first empty page, the first page whose entries are
+    byte-identical to the previous page's (measured 30-08-2026: out-of-range
+    pages keep serving the final 5-entry page forever instead of going
+    empty), or at ``_MAX_INDEX_PAGES``.
+    """
+    previous: list[tuple[str, str]] | None = None
+    for page in range(1, _MAX_INDEX_PAGES + 1):
+        html = _throttled_get(_PAGE_URL.format(page=page))
+        entries = [
+            (slug, _anchor_text(name))
+            for slug, name in _JOURNAL_ANCHOR_RE.findall(html)
+        ]
+        if not entries or entries == previous:
+            return
+        previous = entries
+        yield page, entries
+
+
+def walk_index() -> dict[str, str]:
+    """Collect ``{slug: journal_name}`` across every index page."""
+    seen: dict[str, str] = {}
+    for _page, entries in index_pages():
+        for slug, name in entries:
+            seen.setdefault(slug, name)
+    if not seen:
+        raise RcsiError("index walk found no journals — platform layout may have changed")
+    return seen
+
+
+def fetch_scope_text(slug: str) -> str:
+    """Aims & Scope text for one journal (D05 evidence field).
+
+    Source: ``/{slug}/about/editorialPolicies`` → ``#focusAndScope`` paragraph.
+    Returns ``""`` when the journal exposes no such anchor — that emptiness is
+    itself the evidence behind an ``uncertain`` verdict.
+    """
+    try:
+        html = _throttled_get(f"{BASE}/{slug}/about/editorialPolicies")
+    except RcsiError:
+        return ""
+    if "<div id=\"focusAndScope\"" not in html:
+        return ""
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(html, "html.parser")
+    for _t in soup(["script", "style", "noscript"]):
+        _t.decompose()
+    anchor = soup.find(id="focusAndScope")
+    if anchor is None:
+        return ""
+    part = anchor.find_next("p")
+    if part is None:
+        return ""
+    return part.get_text(" ", strip=True)

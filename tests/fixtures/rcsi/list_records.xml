@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
 		http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
-	<responseDate>2026-08-23T06:28:27Z</responseDate>
+	<responseDate>2026-08-30T15:11:11Z</responseDate>
 	<request verb="ListRecords" metadataPrefix="oai_dc" from="2024-09-01">https://journals.rcsi.science/0869-5873/oai</request>
 	<ListRecords>
 		<record>
@@ -4893,8 +4893,8 @@ The article was prepared on the basis of a report heard at a meeting of the pres
 </oai_dc:dc>
 			</metadata>
 		</record>
-		<resumptionToken expirationDate="2026-08-24T06:28:27Z"
-			completeListSize="12811"
-			cursor="0">2f2b9d221686f7397919d83e80782a4c</resumptionToken>
+		<resumptionToken expirationDate="2026-08-31T15:11:11Z"
+			completeListSize="13301"
+			cursor="0">b84c7460e0ebdcb48433885b62163791</resumptionToken>
 	</ListRecords>
 </OAI-PMH>

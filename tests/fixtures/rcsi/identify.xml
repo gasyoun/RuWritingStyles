@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
 		http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
-	<responseDate>2026-08-23T06:27:59Z</responseDate>
+	<responseDate>2026-08-30T15:10:36Z</responseDate>
 	<request verb="Identify">https://journals.rcsi.science/2306-5737/oai</request>
 	<Identify>
 		<repositoryName>Acta Linguistica Petropolitana. Transactions of the Institute for Linguistic Studies</repositoryName>

@@ -10,6 +10,8 @@ Fixtures written:
   article_plungian.html - the Плунгян article page (citation_* metas + body)
   mini_en.pdf           - a tiny generated PDF with English text (PyMuPDF)
   mojibake.txt          - a synthetic mojibake sample (gate must fail it)
+  catalogue_page1.html  - paginated platform index, journal entries + pager (W2.1)
+  editorial_policies.html - Aims & Scope page with #focusAndScope anchor (W2.1)
 
 Usage:
     python tools/export_rcsi_fixtures.py
@@ -68,6 +70,18 @@ def main() -> int:
     mojibake = "\ufffd" * 120 + "\u0401\u0401\u0401 \u00a4\u00a4\u00a4 " * 60
     (FIX / "mojibake.txt").write_text(mojibake, encoding="utf-8", newline="\n")
     print("  mojibake.txt")
+
+    page1 = rcsi._throttled_get(f"{rcsi.BASE}/index?searchInitial=&journalsPage=1")
+    if isinstance(page1, str):
+        page1 = page1.encode("utf-8")
+    (FIX / "catalogue_page1.html").write_bytes(page1)
+    print(f"  catalogue_page1.html ({len(page1)} bytes)")
+
+    policies = rcsi._throttled_get(f"{rcsi.BASE}/2306-5737/about/editorialPolicies")
+    if isinstance(policies, str):
+        policies = policies.encode("utf-8")
+    (FIX / "editorial_policies.html").write_bytes(policies)
+    print(f"  editorial_policies.html ({len(policies)} bytes)")
     return 0
 
 
