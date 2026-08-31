@@ -1,6 +1,6 @@
 # ROADMAP — RCSI journal profiles and article harvest (RuWritingStyles, 2026-Q3)
 
-_Created: 19-08-2026 · Last updated: 30-08-2026_
+_Created: 19-08-2026 · Last updated: 31-08-2026_
 
 Wave layer of [PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md).
 Ruling references (D01–D20) point at that document's decisions table.
@@ -133,9 +133,36 @@ and produces a document rather than a feature.
 
 ## Wave 2 — catalogue discovery and the bounded bulk harvest
 
-- [ ] **W2.1 Catalogue crawl.** Walk the paginated platform index, resolve every slug's OAI
+- [x] **W2.1 Catalogue crawl.** Walk the paginated platform index, resolve every slug's OAI
       `Identify` and `/about` scope text, and write `knowledge/rcsi/catalogue.json` with a
       per-journal `include` / `exclude` / `uncertain` verdict and the evidence for it.
+      ✅ DONE 31-08-2026 — shipped in
+      [PR #198](https://github.com/gasyoun/RuWritingStyles/pull/198):
+      [`rcsi.index_pages()` / `rcsi.walk_index()`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/rcsi.py)
+      walk the measured layout (`/index?searchInitial=&journalsPage=N`, 50 entries/page;
+      walk stops on the first empty page, the first page byte-identical to the previous one —
+      the platform re-serves its final 5-entry page forever past the end — or a 40-page hard
+      stop), `rcsi.fetch_scope_text()` reads
+      `/about/editorialPolicies#focusAndScope`,
+      [`harvest.build_catalogue()`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/harvest.py)
+      crawls the index, `Identify`s every slug, classifies via
+      `journal_scope.classify_journal` and writes
+      [`knowledge/rcsi/catalogue.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/knowledge/rcsi/catalogue.json)
+      (schema: [`schemas/rcsi-catalogue.schema.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/schemas/rcsi-catalogue.schema.json)).
+      **Live run 31-08-2026: 992 journals — include 61, exclude 302, uncertain 629.**
+      CLI: `rws journal-catalogue` (crawls when absent) / `--refresh` / `--json`; the
+      wave-2 placeholder is gone. Measured exceptions recorded as `evidence_other`:
+      five journals (incl. 2542-1816, 2782-4926) redirect their OAI endpoint to a Login
+      page — `_parse_oai` now degrades non-XML payloads to `RcsiError` and the record
+      carries the anomaly instead of crashing the crawl. Вестник РАН (`0869-5873`) is
+      honestly `uncertain` — its Editorial Policies page has no `#focusAndScope` section
+      at all; the five named journals stay pinned by name regardless of verdict.
+      Offline tests 16 strong against frozen live-layout fixtures
+      ([tests/test_journal_catalogue.py](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_journal_catalogue.py),
+      fixtures re-frozen through `tools/export_rcsi_fixtures.py`); full suite 364 green,
+      validate_project SUCCESS, ci-eval-gate 0 regressions.
+      (W2.2/W2.3 own the uncertain tail — the subject filter re-scores it at the article
+      level and the review sheet surfaces the residue.)
 - [ ] **W2.2 Subject filter.** The ru+en term list and the article-level classifier of D04,
       with its own fixture-backed tests.
 - [ ] **W2.3 Review queue.** Uncertain journals and uncertain articles rendered as a

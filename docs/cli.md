@@ -550,12 +550,18 @@ Article texts and sidecars land **only** in the private
 the public repo.
 
 ```bash
-rws journal-catalogue [--json]          # read knowledge/rcsi/catalogue.json (crawl = wave 2)
+rws journal-catalogue [--refresh] [--json] # crawl (or re-crawl) the platform index -> knowledge/rcsi/catalogue.json
 rws journal-add 2306-5737               # derive a profile draft with verified:false
 rws journal-harvest --pinned            # the five pinned articles, end to end
 rws journal-harvest 0869-5873 --limit 5 # bounded per-journal run (--dry-run to classify only)
 rws corpus-verify                       # re-check every pinned article; exit 1 on any failure
 ```
+
+- `journal-catalogue` crawls the paginated platform index (50 entries/page,
+  repeat-tail detection) and classifies every journal from its
+  `/about/editorialPolicies#focusAndScope` scope text, keeping per-record
+  evidence (`matched_terms`, `evidence_other` for closed-OAI anomalies);
+  run again with `--refresh` to re-verify verbatim.
 
 - `journal-add` refuses to overwrite an existing profile without `--force`
   (exit 3) and always writes `verified: false`; `rws project-set-journal`
