@@ -122,7 +122,13 @@ _XML_UNSAFE_CONTROLS = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
 def _parse_oai(text: str | bytes) -> "ElementTree.Element":
     if isinstance(text, bytes):
         text = text.decode("utf-8", errors="replace")
-    return ElementTree.fromstring(_XML_UNSAFE_CONTROLS.sub("", text))
+    try:
+        return ElementTree.fromstring(_XML_UNSAFE_CONTROLS.sub("", text))
+    except ElementTree.ParseError as exc:
+        # Measured 30-08-2026 (2542-1816): some journals redirect their OAI
+        # endpoint to a Login HTML page. A non-XML payload is a per-journal
+        # error, not a crash — callers degrade the record and continue.
+        raise RcsiError(f"OAI payload is not well-formed (HTML/login page?): {exc}") from exc
 
 
 def identify(slug: str) -> dict[str, Any]:
