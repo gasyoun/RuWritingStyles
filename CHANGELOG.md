@@ -5,6 +5,9 @@ All notable changes to RuWritingStyles are documented here.
 ## [Unreleased]
 <!-- entries land in changelog_queue/ -- appended via tools/changelog_queue_consume.py, consumed by cut_release.py at release-cut (H3355); direct bullets here are hook-blocked -->
 
+## [2.29.5] - 2026-09-02
+
+- **Ф3 GOLD_SANSKRIT reader-register-drift case (H3958).** New `sanskrit-reader-register-drift` case in [`evals/manifest.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/manifest.json) (`register_drift_to_academic`) with fixture [`examples/input/sanskrit-reader-register-drift.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/examples/input/sanskrit-reader-register-drift.md) — closes the last of the 8 sanskrit-contour categories the roadmap named; the other 7 already existed.
 ## [2.29.4] - 2026-09-02
 
 - **Ф2 passport provenance validation backfill (H3954).** All 29 style passports now carry `provenance.validated_by`/`last_validated` via [`scripts/backfill_passport_validation.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/scripts/backfill_passport_validation.py): the four H944 corpus-grounded orientalist passports (Bartold, Turaev, Krachkovskij, Golenishchev) cite the real content-fidelity claim, the rest cite the mechanical `validate_project.py` bibliography cross-reference check that actually passes today — no fabricated review claims.
