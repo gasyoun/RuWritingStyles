@@ -269,10 +269,10 @@ def harvest_journal(
                     summary["skipped"].append(stem)
                     continue
             meta.pop("html", "")
-            selection = classify_article(meta)
+            selection = classify_article(meta, selection_record=record)
             result = {"stem": stem, "status": "dry-run", "verdict": selection["verdict"]}
         else:
-            result = _harvest_one(slug, meta, force=force, pinned_reason="")
+            result = _harvest_one(slug, meta, force=force, pinned_reason="", selection_record=record)
 
         if result.get("status") == "already-pass":
             summary["skipped"].append(stem)
@@ -315,6 +315,7 @@ def _harvest_one(
     force: bool,
     pinned_reason: str,
     journal_name: str | None = None,
+    selection_record: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     from .extract import extract_best
     from .journal_scope import classify_article
@@ -322,7 +323,7 @@ def _harvest_one(
     repo_root = Path(repo_root_from())
     today = datetime.now().strftime("%d-%m-%Y")
     html = meta.pop("html", "")
-    selection = classify_article(meta)
+    selection = classify_article(meta, selection_record=selection_record)
     stem = build_stem(meta)
     corpus_dir, quarantine_dir = _corpus_dir()
 
@@ -369,7 +370,11 @@ def _harvest_one(
             "verdict": won.get("verdict", "fail"),
             "harvested_on": today,
         },
-        "selection": {"verdict": selection["verdict"], "matched_terms": selection["matched_terms"]},
+        "selection": {
+            "verdict": selection["verdict"],
+            "matched_terms": selection["matched_terms"],
+            "negative_terms": selection["negative_terms"],
+        },
         "pinned_reason": pinned_reason,
     }
     if text is None:

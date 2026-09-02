@@ -1,6 +1,6 @@
 # ROADMAP — RCSI journal profiles and article harvest (RuWritingStyles, 2026-Q3)
 
-_Created: 19-08-2026 · Last updated: 31-08-2026_
+_Created: 19-08-2026 · Last updated: 02-09-2026_
 
 Wave layer of [PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md).
 Ruling references (D01–D20) point at that document's decisions table.
@@ -163,8 +163,36 @@ and produces a document rather than a feature.
       validate_project SUCCESS, ci-eval-gate 0 regressions.
       (W2.2/W2.3 own the uncertain tail — the subject filter re-scores it at the article
       level and the review sheet surfaces the residue.)
-- [ ] **W2.2 Subject filter.** The ru+en term list and the article-level classifier of D04,
+- [x] **W2.2 Subject filter.** The ru+en term list and the article-level classifier of D04,
       with its own fixture-backed tests.
+      ✅ DONE 02-09-2026 — shipped in
+      [PR #200](https://github.com/gasyoun/RuWritingStyles/pull/200):
+      the classifier core (`journal_scope.classify_article` +
+      [`knowledge/rcsi/subject_terms.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/knowledge/rcsi/subject_terms.json))
+      existed since wave 1 (H3154, S1.4); this unit closed its two real gaps.
+      **The dead rescue path:** D04 filters over "OAI Dublin Core subject plus
+      title and keywords", but both `harvest.py` call sites dropped the OAI
+      record — `selection_record` is now threaded through `harvest_journal`
+      and `_harvest_one`, so an article the page metadata alone classifies
+      `uncertain` can be rescued by its `dc:subject` (live: «К лингвистическим
+      воззрениям Франца Боаса» — the title's «лингвистическим» is not a
+      substring of the term «лингвистика»; the OAI subject decides include).
+      Sidecar `selection` now also records `negative_terms` (schema extended,
+      optional — existing sidecars stay valid). **Fixture-backed tests:**
+      [`article_meta_samples.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/fixtures/rcsi/article_meta_samples.json)
+      freezes six real article metas + OAI subjects (exported live 02-09-2026
+      via `tools/export_rcsi_fixtures.py`, which now refuses to write a drifted
+      verdict over a frozen expectation), one per verdict class — linguistics
+      include, English-language include (`expect_cyrillic: false`), two
+      Вестник РАН general-science excludes, an honest uncertain, and the
+      dc:subject rescue;
+      [`tests/test_journal_scope.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_journal_scope.py)
+      gains 6 fixture-backed + wiring tests (13 total in the file), including
+      an offline `harvest_journal(dry_run=True)` test that fails if the OAI
+      subject ever stops reaching the classifier. Gates: pytest 371 + 74
+      subtests green (up from 364), validate_project SUCCESS, ci-eval-gate
+      0 regressions. The 629-journal `uncertain` tail is W2.3's review-queue
+      input and stays untouched here.
 - [ ] **W2.3 Review queue.** Uncertain journals and uncertain articles rendered as a
       [/review-sheet](https://github.com/gasyoun/claude-config/blob/main/commands/review-sheet.md)
       voting sheet, registered in

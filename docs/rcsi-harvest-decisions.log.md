@@ -40,3 +40,15 @@ improvised call stays visible here.
   19-08 probe saw (`DD`, `NW`, `PharmForm`, `ecolgenet`, …). The crawl keys on
   the URL slug verbatim — the S1.1 hazard ("slug is not always the ISSN")
   generalises to "slug is not always even ISSN-shaped".
+- 02-09-2026 (W2.2 subject filter): the classifier core existed since wave 1
+  (H3154, S1.4); W2.2 shipped as the unit's own completion — the D04 rescue
+  path (`selection_record`) was dead in `harvest.py` (both call sites dropped
+  the OAI record) and is now wired through, with `negative_terms` added to the
+  sidecar `selection` block (schema stays additive/optional) so the W2.3
+  review queue gets full evidence per verdict. The 629-journal `uncertain`
+  tail is not re-scored here: D04's re-scoring happens at the article level
+  during the W2.4 harvest, and the journal-level tail stays W2.3's input.
+- 02-09-2026 (W2.2 fixtures): `tools/export_rcsi_fixtures.py` now verifies the
+  live verdict against the frozen expectation at freeze time and refuses to
+  write a drift silently; the `mini_en.pdf` regeneration is guarded so re-runs
+  work without the `[harvest]` extra (pymupdf) installed.

@@ -55,7 +55,8 @@
       "type": "object",
       "properties": {
         "verdict": { "enum": ["include", "exclude", "uncertain"] },
-        "matched_terms": { "type": "array", "items": { "type": "string" } }
+        "matched_terms": { "type": "array", "items": { "type": "string" } },
+        "negative_terms": { "type": "array", "items": { "type": "string" } }
       },
       "additionalProperties": false
     },
