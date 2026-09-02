@@ -1,0 +1,413 @@
+[
+ {
+  "journal_slug": "0373-658X",
+  "article_id": "141140",
+  "meta": {
+   "journal_slug": "0373-658X",
+   "article_id": "141140",
+   "url": "https://journals.rcsi.science/0373-658X/article/view/141140",
+   "doi": "10.31857/0373-658X.2023.3.27-59",
+   "edn": "",
+   "title_ru": "Russian colloquial complement clauses with čto: Quotative use and other special properties",
+   "title_en": "Russian colloquial complement clauses with čto: Quotative use and other special properties",
+   "authors_ru": [
+    "Летучий Александр Борисович",
+    "Alexander B. Letuchiy"
+   ],
+   "authors_en": [
+    "Летучий Александр Борисович",
+    "Alexander B. Letuchiy"
+   ],
+   "year": 2023,
+   "volume": "0",
+   "issue": "3",
+   "firstpage": "27",
+   "lastpage": "59",
+   "language": "ru",
+   "keywords_ru": [
+    "бессоюзные конструкции",
+    "косвенная речь",
+    "лицо",
+    "подчинение",
+    "придаточное изъяснительное",
+    "разговорная речь",
+    "русский язык",
+    "сентенциальные актанты",
+    "синтаксис",
+    "союзы",
+    "цитатив",
+    "цитация",
+    "asyndetic complements",
+    "citation",
+    "complement clauses",
+    "conjunctions",
+    "indirect speech",
+    "person",
+    "quotative",
+    "reported speech",
+    "Russian",
+    "spoken discourse",
+    "subordination",
+    "syntax"
+   ],
+   "keywords_en": [
+    "бессоюзные конструкции",
+    "косвенная речь",
+    "лицо",
+    "подчинение",
+    "придаточное изъяснительное",
+    "разговорная речь",
+    "русский язык",
+    "сентенциальные актанты",
+    "синтаксис",
+    "союзы",
+    "цитатив",
+    "цитация",
+    "asyndetic complements",
+    "citation",
+    "complement clauses",
+    "conjunctions",
+    "indirect speech",
+    "person",
+    "quotative",
+    "reported speech",
+    "Russian",
+    "spoken discourse",
+    "subordination",
+    "syntax"
+   ],
+   "issn": "3034-5243",
+   "pdf_url": "https://journals.rcsi.science/0373-658X/article/download/141140/118863"
+  },
+  "selection_record": {},
+  "expect": {
+   "verdict": "include",
+   "expect_cyrillic": true
+  }
+ },
+ {
+  "journal_slug": "2306-5737",
+  "article_id": "416857",
+  "meta": {
+   "journal_slug": "2306-5737",
+   "article_id": "416857",
+   "url": "https://journals.rcsi.science/2306-5737/article/view/416857",
+   "doi": "10.30842/alp23065737211933",
+   "edn": "",
+   "title_ru": "Греческий в контакте с итало-романскими языками: заимствование глагольных форм и их интеграция в новогреческих диалектах",
+   "title_en": "Греческий в контакте с итало-романскими языками: заимствование глагольных форм и их интеграция в новогреческих диалектах",
+   "authors_ru": [
+    "Ралли Анжела",
+    "Angela Ralli"
+   ],
+   "authors_en": [
+    "Ралли Анжела",
+    "Angela Ralli"
+   ],
+   "year": 2025,
+   "volume": "21",
+   "issue": "1",
+   "firstpage": "9",
+   "lastpage": "33",
+   "language": "en",
+   "keywords_ru": [
+    "морфология",
+    "языковые контакты",
+    "заимствование глагольных форм",
+    "интеграция глагольных форм",
+    "новогреческие диалекты",
+    "итало-романские языки",
+    "morphology",
+    "language contact",
+    "verb borrowing",
+    "verb integration",
+    "Modern Greek varieties",
+    "Italo-Romance"
+   ],
+   "keywords_en": [
+    "морфология",
+    "языковые контакты",
+    "заимствование глагольных форм",
+    "интеграция глагольных форм",
+    "новогреческие диалекты",
+    "итало-романские языки",
+    "morphology",
+    "language contact",
+    "verb borrowing",
+    "verb integration",
+    "Modern Greek varieties",
+    "Italo-Romance"
+   ],
+   "issn": "2658-4069",
+   "pdf_url": "https://journals.rcsi.science/2306-5737/article/download/416857/683756"
+  },
+  "selection_record": {},
+  "expect": {
+   "verdict": "include",
+   "expect_cyrillic": false
+  }
+ },
+ {
+  "journal_slug": "0869-5873",
+  "article_id": "430087",
+  "meta": {
+   "journal_slug": "0869-5873",
+   "article_id": "430087",
+   "url": "https://journals.rcsi.science/0869-5873/article/view/430087",
+   "doi": "10.7868/S3034520026070027",
+   "edn": "",
+   "title_ru": "Active longevity in cardiac recipients",
+   "title_en": "Active longevity in cardiac recipients",
+   "authors_ru": [
+    "Шевченко А. О",
+    "A. O Shevchenko"
+   ],
+   "authors_en": [
+    "Шевченко А. О",
+    "A. O Shevchenko"
+   ],
+   "year": 2026,
+   "volume": "96",
+   "issue": "7",
+   "firstpage": "599",
+   "lastpage": "610",
+   "language": "ru",
+   "keywords_ru": [
+    "трансплантация сердца",
+    "персонализированная медицина",
+    "функциональная диагностика",
+    "прогнозирование",
+    "биомаркеры",
+    "heart transplantation",
+    "personalized medicine",
+    "functional diagnostics",
+    "prognosis",
+    "biomarkers"
+   ],
+   "keywords_en": [
+    "трансплантация сердца",
+    "персонализированная медицина",
+    "функциональная диагностика",
+    "прогнозирование",
+    "биомаркеры",
+    "heart transplantation",
+    "personalized medicine",
+    "functional diagnostics",
+    "prognosis",
+    "biomarkers"
+   ],
+   "issn": "3034-5200",
+   "pdf_url": "https://journals.rcsi.science/0869-5873/article/download/430087/695637"
+  },
+  "selection_record": {},
+  "expect": {
+   "verdict": "exclude",
+   "expect_cyrillic": true
+  }
+ },
+ {
+  "journal_slug": "0869-5873",
+  "article_id": "258762",
+  "meta": {
+   "journal_slug": "0869-5873",
+   "article_id": "258762",
+   "url": "https://journals.rcsi.science/0869-5873/article/view/258762",
+   "doi": "10.31857/S0869587324010026",
+   "edn": "HBHAGL",
+   "title_ru": "Национальная система микробиологического мониторинга микроорганизмов, устойчивых к противомикробным препаратам",
+   "title_en": "Национальная система микробиологического мониторинга микроорганизмов, устойчивых к противомикробным препаратам",
+   "authors_ru": [
+    "V. G. Akimkin",
+    "Акимкин Василий Геннадьевич"
+   ],
+   "authors_en": [
+    "V. G. Akimkin",
+    "Акимкин Василий Геннадьевич"
+   ],
+   "year": 2024,
+   "volume": "94",
+   "issue": "1",
+   "firstpage": "4",
+   "lastpage": "10",
+   "language": "ru",
+   "keywords_ru": [
+    "antimicrobial resistance",
+    "drug resistance of infectious disease agents",
+    "microbiological monitoring",
+    "epidemiology",
+    "healthcare-associated infections",
+    "антимикробная резистентность",
+    "устойчивость возбудителей инфекционных заболеваний к лекарственным средствам",
+    "микробиологический мониторинг",
+    "эпидемиология",
+    "инфекции",
+    "связанные с оказанием медицинской помощи"
+   ],
+   "keywords_en": [
+    "antimicrobial resistance",
+    "drug resistance of infectious disease agents",
+    "microbiological monitoring",
+    "epidemiology",
+    "healthcare-associated infections",
+    "антимикробная резистентность",
+    "устойчивость возбудителей инфекционных заболеваний к лекарственным средствам",
+    "микробиологический мониторинг",
+    "эпидемиология",
+    "инфекции",
+    "связанные с оказанием медицинской помощи"
+   ],
+   "issn": "3034-5200",
+   "pdf_url": "https://journals.rcsi.science/0869-5873/article/download/258762/237475"
+  },
+  "selection_record": {},
+  "expect": {
+   "verdict": "exclude",
+   "expect_cyrillic": true
+  }
+ },
+ {
+  "journal_slug": "0869-5873",
+  "article_id": "376609",
+  "meta": {
+   "journal_slug": "0869-5873",
+   "article_id": "376609",
+   "url": "https://journals.rcsi.science/0869-5873/article/view/376609",
+   "doi": "10.7868/S3034520025100053",
+   "edn": "",
+   "title_ru": "ON THE ACTIVITIES OF THE URAL BRANCH OF THE RUSSIAN ACADEMY OF SCIENCES IN 2024",
+   "title_en": "ON THE ACTIVITIES OF THE URAL BRANCH OF THE RUSSIAN ACADEMY OF SCIENCES IN 2024",
+   "authors_ru": [
+    "V. N Rudenko",
+    "Руденко В. Н"
+   ],
+   "authors_en": [
+    "V. N Rudenko",
+    "Руденко В. Н"
+   ],
+   "year": 2025,
+   "volume": "95",
+   "issue": "10",
+   "firstpage": "35",
+   "lastpage": "44",
+   "language": "ru",
+   "keywords_ru": [
+    "Уральское отделение РАН",
+    "научные достижения",
+    "научно-методическое руководство",
+    "востребованность научных разработок",
+    "связь науки и производства",
+    "Демидовская премия",
+    "международные научные связи",
+    "научные мероприятия",
+    "государственное задание",
+    "награды учёным",
+    "Ural Branch of the Russian Academy of Sciences",
+    "scientific achievements",
+    "scientific and methodological guidance",
+    "demand for scientific developments",
+    "links between science and production",
+    "Demidov Prize",
+    "international scientific relations",
+    "scientific events",
+    "state assignment",
+    "awards for scientists"
+   ],
+   "keywords_en": [
+    "Уральское отделение РАН",
+    "научные достижения",
+    "научно-методическое руководство",
+    "востребованность научных разработок",
+    "связь науки и производства",
+    "Демидовская премия",
+    "международные научные связи",
+    "научные мероприятия",
+    "государственное задание",
+    "награды учёным",
+    "Ural Branch of the Russian Academy of Sciences",
+    "scientific achievements",
+    "scientific and methodological guidance",
+    "demand for scientific developments",
+    "links between science and production",
+    "Demidov Prize",
+    "international scientific relations",
+    "scientific events",
+    "state assignment",
+    "awards for scientists"
+   ],
+   "issn": "3034-5200",
+   "pdf_url": "https://journals.rcsi.science/0869-5873/article/download/376609/349398"
+  },
+  "selection_record": {},
+  "expect": {
+   "verdict": "uncertain",
+   "expect_cyrillic": true
+  }
+ },
+ {
+  "journal_slug": "0373-658X",
+  "article_id": "141145",
+  "meta": {
+   "journal_slug": "0373-658X",
+   "article_id": "141145",
+   "url": "https://journals.rcsi.science/0373-658X/article/view/141145",
+   "doi": "10.31857/0373-658X.2023.3.143-157",
+   "edn": "",
+   "title_ru": "Towards Franz Boas’s linguistic views",
+   "title_en": "Towards Franz Boas’s linguistic views",
+   "authors_ru": [
+    "Кузнецов Игорь Валерьевич",
+    "Igor Valer'evich Kuznetsov"
+   ],
+   "authors_en": [
+    "Кузнецов Игорь Валерьевич",
+    "Igor Valer'evich Kuznetsov"
+   ],
+   "year": 2023,
+   "volume": "0",
+   "issue": "3",
+   "firstpage": "143",
+   "lastpage": "157",
+   "language": "ru",
+   "keywords_ru": [
+    "Боас Ф.",
+    "история лингвистики",
+    "лингвистика в США",
+    "лингвистическая относительность",
+    "фонология",
+    "этнолингвистика",
+    "Boas F.",
+    "ethnolinguistics",
+    "history of linguistics",
+    "linguistic relativity",
+    "linguistics in the USA",
+    "phonology"
+   ],
+   "keywords_en": [
+    "Боас Ф.",
+    "история лингвистики",
+    "лингвистика в США",
+    "лингвистическая относительность",
+    "фонология",
+    "этнолингвистика",
+    "Boas F.",
+    "ethnolinguistics",
+    "history of linguistics",
+    "linguistic relativity",
+    "linguistics in the USA",
+    "phonology"
+   ],
+   "issn": "3034-5243",
+   "pdf_url": "https://journals.rcsi.science/0373-658X/article/download/141145/118868"
+  },
+  "selection_record": {
+   "subject": [
+    "Боас Ф.; история лингвистики; лингвистика в США; лингвистическая относительность; фонология; этнолингвистика",
+    "Boas F.; ethnolinguistics; history of linguistics; linguistic relativity; linguistics in the USA; phonology"
+   ]
+  },
+  "expect": {
+   "verdict": "include",
+   "expect_cyrillic": true
+  }
+ }
+]
