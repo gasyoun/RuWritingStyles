@@ -26,7 +26,7 @@
 3. ~~**[Ф1] Унифицировать CLI и Web/API**~~ — **done 02-09-2026**, was already shared code, gap was test coverage; see [`tests/test_api_report_parity.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_api_report_parity.py).
 4. ~~**[Ф2] Провенанс в паспортах**~~ — **done 02-09-2026**, schema was already shipped; backfilled `validated_by`/`last_validated` on all 29 passports via [`scripts/backfill_passport_validation.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/scripts/backfill_passport_validation.py).
 5. ~~**[Ф3] 10–15 eval-кейсов**~~ — **done 02-09-2026**, 7/8 already existed; added the missing `sanskrit-reader-register-drift` case.
-6. **[Ф4] `CITATION.cff` + релиз на Zenodo с DOI** — agents may mint DOIs and cut public releases (standing ruling, MG 16-08-2026); publish-safety-check still gates (Ф4, unit "CITATION.cff").
+6. ~~**[Ф4] `CITATION.cff` + релиз на Zenodo с DOI**~~ — **RETAGGED [HUMAN-ONLY] 02-09-2026**: `CITATION.cff`/`.zenodo.json` are ready, but the Zenodo↔GitHub sync toggle is an author-OAuth click at zenodo.org with no agent-accessible API — see the Ф4 item below for the corrected reasoning.
 7. **[Ф4] Раздел «Как сообщать об использовании ИИ»** в README — готовая формула для сноски (Ф4, unit "AI-usage README").
 8. **[Ф4] Экспорт метаданных паспортов в Dublin Core** (поле→dc-мэппинг в `tools/`) (Ф4, unit "Dublin Core export").
 9. **[Ф4] Расширить `knowledge/bibliography.json` индологическим ядром** (Елизаренкова, Топоров, Monier-Williams, Böhtlingk, Whitney, Renou — все public-domain, со ссылками на Кельнские словари); FTS5-поиск сам уже рабочий (Ф2 статус выше) — эта строка теперь только про библиографию (Ф4, unit "FTS5/библиография").
@@ -275,8 +275,22 @@ mock-safe + 5 экспертных gold). Протокол экспертной 
 
 ## Фаза 4 — Архивный DH-уровень (квартал 4, параллельно)
 
-- [ ] **[AGENT]** `CITATION.cff` + релиз на Zenodo с DOI (обновляемый при каждом релизе) —
+- [ ] **[HUMAN-ONLY]** `CITATION.cff` + релиз на Zenodo с DOI (обновляемый при каждом релизе) —
       чтобы систему можно было цитировать в статьях, написанных с ее помощью.
+      **Триаж-коррекция (02-09-2026, `/roadmap-item-exec`):** был помечен [AGENT] в H3780,
+      это ошибка. `CITATION.cff` и
+      [`.zenodo.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/.zenodo.json)
+      полностью готовы (версия/дата автообновляются `cut_release.py` при каждом релизе),
+      но минтинг DOI блокирован единственным шагом, который **не является** релизом или
+      минтингом — это OAuth-переключатель на zenodo.org («Account → GitHub → toggle ON»),
+      требующий логина автора; см.
+      [`docs/zenodo-doi-steps.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/zenodo-doi-steps.md)
+      п. 1. У Zenodo нет публичного API для этого конкретного переключателя без личного
+      токена автора. Стандинг-решение «agents may mint DOIs» здесь не применимо: агент не
+      блокируется на самом минтинге DOI, а на предшествующем человеческом OAuth-клике.
+      После переключения — минтинг тега/релиза, вписывание DOI в `CITATION.cff`/README
+      снова агентское (готовый патч уже есть в `zenodo-doi-steps.md`). GTD-строка в
+      [Uprava/GTD_NEXT_ACTIONS.md](https://github.com/gasyoun/Uprava/blob/main/GTD_NEXT_ACTIONS.md).
 - [ ] **[AGENT]** Раздел «Как сообщать об использовании ИИ» в README: готовая формула для
       сноски в статье (журналы всё чаще требуют декларацию).
 - [ ] **[AGENT]** Экспорт метаданных паспортов в Dublin Core (поле→dc-мэппинг в `tools/`).
