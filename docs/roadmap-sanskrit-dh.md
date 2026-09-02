@@ -23,7 +23,7 @@
 
 1. ~~**[Ф1] ГОСТ-аппарат**~~ — **done, DUPLICATE-SHIPPED 02-09-2026** (checkbox was stale; see the Ф1 item below for evidence).
 2. ~~**[Ф1] Прогнать пример статьи**~~ — **done 02-09-2026**, see [`examples/output/phase1-council-example/`](https://github.com/gasyoun/RuWritingStyles/tree/main/examples/output/phase1-council-example).
-3. **[Ф1] Унифицировать CLI и Web/API** — `rws run` тоже пишет `report.tex` и `references.bib` (Ф1, unit "Унифицировать CLI и Web/API").
+3. ~~**[Ф1] Унифицировать CLI и Web/API**~~ — **done 02-09-2026**, was already shared code, gap was test coverage; see [`tests/test_api_report_parity.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_api_report_parity.py).
 4. **[Ф2] Провенанс в паспортах** — расширить `schemas/style.schema.json` (`provenance_sources`, `derived_by`, `derivation_date`, `validated_by`, `last_validated`) и дозаполнить все 16 существующих паспортов (Ф2, unit "Провенанс в паспортах").
 5. **[Ф3] 10–15 eval-кейсов** в `evals/manifest.json` + документы в `examples/input/` (Ф3, unit "eval-кейсы").
 6. **[Ф4] `CITATION.cff` + релиз на Zenodo с DOI** — agents may mint DOIs and cut public releases (standing ruling, MG 16-08-2026); publish-safety-check still gates (Ф4, unit "CITATION.cff").
@@ -153,8 +153,22 @@ W2 (линтер транслитерации), W3 (профили журнал�
       advice under `mock` is still a stub (real judgment needs the paid-provider
       run — separate GTD `@DECIDE` row) — this unit is about exercising the
       deterministic pipeline end to end, which it does for real.
-- [ ] **[AGENT]** Унифицировать CLI и Web/API: `rws run` тоже пишет `report.tex` и `references.bib`
+- [x] Унифицировать CLI и Web/API: `rws run` тоже пишет `report.tex` и `references.bib`
       (давний пункт из `.ai_state.md`).
+      **DUPLICATE-SHIPPED, now test-pinned (02-09-2026, `/roadmap-item-exec`):** code
+      inspection confirmed the CLI and the Web/API entry point already share the same
+      `do_reports()` step inside
+      [`core_pipeline`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/pipeline.py)
+      — `api.execute_run` calls `run_full_pipeline`, which calls `core_pipeline`
+      unconditionally through the same `write_bibtex`/`write_latex_report` code the
+      CLI uses (`cmd_run` → `core_pipeline` directly). Nothing to unify; the gap was
+      **test coverage**, not code: `tests/test_cli_reports.py` existed for the CLI
+      side only. New
+      [`tests/test_api_report_parity.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_api_report_parity.py)
+      exercises the exact API-path functions (`create_prepare_run` +
+      `run_full_pipeline`) and asserts `report.tex`/`references.bib`/`references-gost.md`
+      all land, pinning the parity so a future divergence fails a test. `pytest -k
+      "report or gost or api"` — 41 passed 02-09-2026.
 
 Критерий готовности: один реальный текст прошел цикл; список литературы в ГОСТ;
 линтер транслитерации ловит подсаженные ошибки.
