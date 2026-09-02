@@ -5,6 +5,9 @@ All notable changes to RuWritingStyles are documented here.
 ## [Unreleased]
 <!-- entries land in changelog_queue/ -- appended via tools/changelog_queue_consume.py, consumed by cut_release.py at release-cut (H3355); direct bullets here are hook-blocked -->
 
+## [2.29.6] - 2026-09-02
+
+- **Ф4 Zenodo-DOI retag + AI-disclosure fix (H3963).** The 'CITATION.cff + Zenodo DOI' roadmap unit was mis-tagged agent-doable — minting is blocked on an author-only OAuth toggle at zenodo.org, retagged [HUMAN-ONLY] (GTD row already existed). The 'AI-usage README' unit was already shipped in [`docs/AI_DISCLOSURE.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/AI_DISCLOSURE.md); fixed a stale hardcoded `v2.7.0` to a `vX.Y.Z` placeholder synced from `CITATION.cff`.
 ## [2.29.5] - 2026-09-02
 
 - **Ф3 GOLD_SANSKRIT reader-register-drift case (H3958).** New `sanskrit-reader-register-drift` case in [`evals/manifest.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/manifest.json) (`register_drift_to_academic`) with fixture [`examples/input/sanskrit-reader-register-drift.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/examples/input/sanskrit-reader-register-drift.md) — closes the last of the 8 sanskrit-contour categories the roadmap named; the other 7 already existed.
