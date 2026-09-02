@@ -1247,6 +1247,36 @@
       }
     },
     {
+      "id": "sanskrit-reader-register-drift",
+      "input": "examples/input/sanskrit-reader-register-drift.md",
+      "purpose": "Expert reviewer must flag a reader/textbook-register analysis sliding into needlessly academic jargon (theta-role/configurational-syntax terminology for a plain locative case), losing the pedagogical clarity a hrestomatiya passage needs.",
+      "default_styles": [
+        "sanskrit-reader"
+      ],
+      "expected_risks": [
+        "register_drift_to_academic"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "register_drift_to_academic"
+        ],
+        "accepted_finding_aliases": {
+          "register_drift_to_academic": [
+            "reader_register_drift",
+            "overacademized_reader_text"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
       "id": "dict-circular-gloss",
       "input": "examples/input/dict-circular-gloss.md",
       "purpose": "Dictionary-register reviewer must flag a transliteration-passthrough gloss (agni glossed as 'agni' instead of a Russian translation) as a circular gloss.",

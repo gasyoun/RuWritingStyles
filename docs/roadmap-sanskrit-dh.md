@@ -25,7 +25,7 @@
 2. ~~**[Ф1] Прогнать пример статьи**~~ — **done 02-09-2026**, see [`examples/output/phase1-council-example/`](https://github.com/gasyoun/RuWritingStyles/tree/main/examples/output/phase1-council-example).
 3. ~~**[Ф1] Унифицировать CLI и Web/API**~~ — **done 02-09-2026**, was already shared code, gap was test coverage; see [`tests/test_api_report_parity.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_api_report_parity.py).
 4. ~~**[Ф2] Провенанс в паспортах**~~ — **done 02-09-2026**, schema was already shipped; backfilled `validated_by`/`last_validated` on all 29 passports via [`scripts/backfill_passport_validation.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/scripts/backfill_passport_validation.py).
-5. **[Ф3] 10–15 eval-кейсов** в `evals/manifest.json` + документы в `examples/input/` (Ф3, unit "eval-кейсы").
+5. ~~**[Ф3] 10–15 eval-кейсов**~~ — **done 02-09-2026**, 7/8 already existed; added the missing `sanskrit-reader-register-drift` case.
 6. **[Ф4] `CITATION.cff` + релиз на Zenodo с DOI** — agents may mint DOIs and cut public releases (standing ruling, MG 16-08-2026); publish-safety-check still gates (Ф4, unit "CITATION.cff").
 7. **[Ф4] Раздел «Как сообщать об использовании ИИ»** в README — готовая формула для сноски (Ф4, unit "AI-usage README").
 8. **[Ф4] Экспорт метаданных паспортов в Dublin Core** (поле→dc-мэппинг в `tools/`) (Ф4, unit "Dublin Core export").
@@ -236,9 +236,10 @@ mock-safe + 5 экспертных gold). Протокол экспертной 
 Открыто: платный прогон на реальных провайдерах + экспертная разметка (решение
 автора).
 
-Сейчас все 33 кейса — русистика; санскритский контур не проверяется ничем.
+~~Сейчас все 33 кейса — русистика; санскритский контур не проверяется ничем.~~ **Устарело
+(02-09-2026)** — `evals/manifest.json` теперь несет 61 кейс, санскритский контур покрыт (см. ниже).
 
-- [ ] **[AGENT]** 10–15 кейсов в `evals/manifest.json` + документы в `examples/input/`:
+- [x] 10–15 кейсов в `evals/manifest.json` + документы в `examples/input/`:
       - псевдоэтимология на санскритском материале (мокша, тапас, «рус. бог ← бхага»);
       - непоследовательная транслитерация (смешение IAST/Harvard-Kyoto/русской передачи);
       - неверное употребление панинеевского термина (карака ≠ падеж);
@@ -247,6 +248,23 @@ mock-safe + 5 экспертных gold). Протокол экспертной 
       - регистр ридера: сползание учебного текста в наукообразие;
       - комментаторский кейс: смешение слоев мула-текста и комментария;
       - ГОСТ-кейс: битые ссылки на Елизаренкову/Monier-Williams.
+      **PARTIAL-SHIPPED, closed 02-09-2026 (`/roadmap-item-exec`):** 7 из 8 названных
+      категорий уже существовали в `evals/manifest.json` под тегом `GOLD_SANSKRIT` —
+      `sanskrit-pseudo-etymology`, `translit-mixed-scheme`/`translit-inconsistent-rendering`/
+      `translit-cyrillic-latin-hybrid`, `karaka-not-padezh`, `vedic-classical-anachronism`,
+      `samasa-misclassification`, `commentary-layer-mix`, `gost-hallucinated-ref`/`gost-broken-ref`.
+      Настоящим пробелом была только «регистр ридера» — добавлен
+      [`sanskrit-reader-register-drift`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/manifest.json)
+      (`default_styles: sanskrit-reader`, `required_finding_types: register_drift_to_academic`
+      — тип уже объявлен в `checks` паспорта
+      [`sanskrit-reader.yml`](https://github.com/gasyoun/RuWritingStyles/blob/main/styles/passports/sanskrit-reader.yml)),
+      с новым фикстур-документом
+      [`examples/input/sanskrit-reader-register-drift.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/examples/input/sanskrit-reader-register-drift.md)
+      (простой локатив, разбираемый сначала педагогически, затем — наукообразным
+      жаргоном тета-ролей). `validate_project.py` SUCCESS; `pytest -k eval` 34 passed
+      + 39 subtests; `rws eval-run --case sanskrit-reader-register-drift --provider mock`
+      runs clean, `needs_human_review` (expert-gold behaviour, matching its 7 siblings —
+      real detection needs a paid-provider run, gated by the separate GTD row below).
 - [ ] **[HUMAN-ONLY]** Задокументировать золотой стандарт: кто эксперт-разметчик, протокол проверки,
       согласие разметчиков (хотя бы 2 оценщика на кейс) — файл `evals/GOLD_PROTOCOL.md`.
 - [ ] **[HUMAN-ONLY]** Прогнать полный suite на реальных провайдерах (Anthropic/OpenAI/Google),
