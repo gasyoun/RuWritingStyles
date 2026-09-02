@@ -27,7 +27,7 @@
 4. ~~**[Ф2] Провенанс в паспортах**~~ — **done 02-09-2026**, schema was already shipped; backfilled `validated_by`/`last_validated` on all 29 passports via [`scripts/backfill_passport_validation.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/scripts/backfill_passport_validation.py).
 5. ~~**[Ф3] 10–15 eval-кейсов**~~ — **done 02-09-2026**, 7/8 already existed; added the missing `sanskrit-reader-register-drift` case.
 6. ~~**[Ф4] `CITATION.cff` + релиз на Zenodo с DOI**~~ — **RETAGGED [HUMAN-ONLY] 02-09-2026**: `CITATION.cff`/`.zenodo.json` are ready, but the Zenodo↔GitHub sync toggle is an author-OAuth click at zenodo.org with no agent-accessible API — see the Ф4 item below for the corrected reasoning.
-7. **[Ф4] Раздел «Как сообщать об использовании ИИ»** в README — готовая формула для сноски (Ф4, unit "AI-usage README").
+7. ~~**[Ф4] Раздел «Как сообщать об использовании ИИ»**~~ — **done 02-09-2026**, already shipped in `docs/AI_DISCLOSURE.md`; fixed a stale hardcoded version in the formulas.
 8. **[Ф4] Экспорт метаданных паспортов в Dublin Core** (поле→dc-мэппинг в `tools/`) (Ф4, unit "Dublin Core export").
 9. **[Ф4] Расширить `knowledge/bibliography.json` индологическим ядром** (Елизаренкова, Топоров, Monier-Williams, Böhtlingk, Whitney, Renou — все public-domain, со ссылками на Кельнские словари); FTS5-поиск сам уже рабочий (Ф2 статус выше) — эта строка теперь только про библиографию (Ф4, unit "FTS5/библиография").
 
@@ -291,8 +291,15 @@ mock-safe + 5 экспертных gold). Протокол экспертной 
       После переключения — минтинг тега/релиза, вписывание DOI в `CITATION.cff`/README
       снова агентское (готовый патч уже есть в `zenodo-doi-steps.md`). GTD-строка в
       [Uprava/GTD_NEXT_ACTIONS.md](https://github.com/gasyoun/Uprava/blob/main/GTD_NEXT_ACTIONS.md).
-- [ ] **[AGENT]** Раздел «Как сообщать об использовании ИИ» в README: готовая формула для
+- [x] Раздел «Как сообщать об использовании ИИ» в README: готовая формула для
       сноски в статье (журналы всё чаще требуют декларацию).
+      **DUPLICATE-SHIPPED, staleness fixed 02-09-2026 (`/roadmap-item-exec`):**
+      `README.md` § «Цитирование и декларация об использовании ИИ» already links to
+      [`docs/AI_DISCLOSURE.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/AI_DISCLOSURE.md),
+      which carries ready RU/EN footnote formulas (minimal + provider-model variants).
+      Real gap found: the formulas hardcoded a stale `v2.7.0` — fixed to a `vX.Y.Z`
+      placeholder pointing at `CITATION.cff`'s auto-synced `version` field, so it never
+      goes stale again. `validate_project.py` SUCCESS.
 - [ ] **[AGENT]** Экспорт метаданных паспортов в Dublin Core (поле→dc-мэппинг в `tools/`).
 - [ ] **[AGENT]** (FTS5-часть уже сделана — см. статус фазы 2 выше; открыт только пункт про bibliography.json) Реализовать (или честно отложить) FTS5-поиск по приватному корпусу;
       расширить `knowledge/bibliography.json` индологическим ядром

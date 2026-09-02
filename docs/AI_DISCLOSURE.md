@@ -22,25 +22,27 @@ ICMJE и большинства редакций, ИИ-инструмент не
 под детектор. Декларация ниже — это и есть честная альтернатива детектированию.
 
 Готовые формулы для сноски или раздела «Благодарности / Acknowledgements».
-Подставьте версию (текущая — **v2.7.0**) и, после первого релиза на Zenodo, DOI.
+Подставьте текущую версию (`vX.Y.Z` — см.
+[`CITATION.cff`](https://github.com/gasyoun/RuWritingStyles/blob/main/CITATION.cff),
+поле `version`, автообновляется при каждом релизе) и, после первого релиза на Zenodo, DOI.
 
 **Русский (минимальная формула):**
 
 > При подготовке рукописи для саморедактирования и стилистической вычитки использовался
-> инструмент RuWritingStyles (v2.7.0; набор пользовательских стилей Claude и агентный
+> инструмент RuWritingStyles (vX.Y.Z; набор пользовательских стилей Claude и агентный
 > конвейер рецензирования). Все правки, формулировки и выводы проверены и одобрены автором;
 > ответственность за содержание полностью лежит на авторе.
 
 **Русский (с указанием модели провайдера):**
 
 > Для стилистического анализа и проверки санскритской транслитерации (IAST/кириллица) и
-> библиографии (ГОСТ Р 7.0.100-2018) использовался RuWritingStyles (v2.7.0) поверх
+> библиографии (ГОСТ Р 7.0.100-2018) использовался RuWritingStyles (vX.Y.Z) поверх
 > большой языковой модели &lt;провайдер/модель&gt;. Содержательные суждения модели носили
 > рекомендательный характер и были верифицированы автором.
 
 **English:**
 
-> The manuscript was self-edited with the assistance of RuWritingStyles (v2.7.0), a
+> The manuscript was self-edited with the assistance of RuWritingStyles (vX.Y.Z), a
 > catalogue of Russian-language Claude custom styles and an agentic review pipeline. All
 > wording, edits and conclusions were reviewed and approved by the author, who takes full
 > responsibility for the content.
