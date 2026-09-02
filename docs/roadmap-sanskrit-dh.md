@@ -21,8 +21,8 @@
 
 ## Триаж — что можно начать прямо сейчас (агентское, приоритет сверху вниз)
 
-1. **[Ф1] ГОСТ-аппарат** — bibliography list from `references.bib` via the `russian-gost-r-7-0-100-2018` CSL style (Ф1, unit "ГОСТ-аппарат").
-2. **[Ф1] Прогнать пример статьи** через prepare → review → council → revise → verify → report на нечувствительном фрагменте, зафиксировать в `examples/` (Ф1, unit "Прогнать статью").
+1. ~~**[Ф1] ГОСТ-аппарат**~~ — **done, DUPLICATE-SHIPPED 02-09-2026** (checkbox was stale; see the Ф1 item below for evidence).
+2. ~~**[Ф1] Прогнать пример статьи**~~ — **done 02-09-2026**, see [`examples/output/phase1-council-example/`](https://github.com/gasyoun/RuWritingStyles/tree/main/examples/output/phase1-council-example).
 3. **[Ф1] Унифицировать CLI и Web/API** — `rws run` тоже пишет `report.tex` и `references.bib` (Ф1, unit "Унифицировать CLI и Web/API").
 4. **[Ф2] Провенанс в паспортах** — расширить `schemas/style.schema.json` (`provenance_sources`, `derived_by`, `derivation_date`, `validated_by`, `last_validated`) и дозаполнить все 16 существующих паспортов (Ф2, unit "Провенанс в паспортах").
 5. **[Ф3] 10–15 eval-кейсов** в `evals/manifest.json` + документы в `examples/input/` (Ф3, unit "eval-кейсы").
@@ -107,9 +107,19 @@ W2 (линтер транслитерации), W3 (профили журнал�
 или глава пособия по самасам) и провести ее через конвейер от черновика до файла,
 готового к подаче в журнал.
 
-- [ ] **[AGENT]** **ГОСТ-аппарат**: формирование списка литературы по ГОСТ Р 7.0.100-2018 из
-      `references.bib` (через CSL-стиль `russian-gost-r-7-0-100-2018`); цели — ВЯ,
-      «Письменные памятники Востока», Вестник СПбГУ.
+- [x] **ГОСТ-аппарат**: формирование списка литературы по ГОСТ Р 7.0.100-2018 из
+      `references.bib`; цели — ВЯ, «Письменные памятники Востока», Вестник СПбГУ.
+      **DUPLICATE-SHIPPED (02-09-2026, H3780 residual, `/roadmap-item-exec`):** checkbox
+      was stale — the apparatus shipped 13-06-2026 alongside the transliteration linter
+      (commit [cfdd464](https://github.com/gasyoun/RuWritingStyles/commit/cfdd4643b6cfee470ab56eb0623ae434bbd2f7f3)):
+      [`gost.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/gost.py)
+      (`format_gost`, `write_gost_references` — hand-rolled Python formatter per
+      ГОСТ Р 7.0.100-2018 п. 4.9, not a Pandoc/CSL style file — same output contract, no
+      external CSL dependency) plus
+      [`bibtex.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/bibtex.py)
+      writing both `references.bib` and `references-gost.md` per run, wired into the
+      `report` pipeline stage (`pipeline.py:508`, `cli.py:2909`) and the LaTeX report
+      (`latex.py`). `python -m pytest -q -k gost` — 13 passed 02-09-2026.
 - [x] **Линтер передачи санскрита** (детерминированный, без LLM, как этап `verify`):
       shipped 13-06-2026 as Phase 1 W2 (`translit_lint.py`, pipeline step after
       `verify`, CLI sibling `rws lint-translit`; commit
@@ -126,9 +136,23 @@ W2 (линтер транслитерации), W3 (профили журнал�
       - курсив для латинской транслитерации, прямой шрифт для русской передачи.
 - [ ] **[HUMAN-ONLY]** Профиль журнала в `.rws-project/project-context.json`: целевой журнал, лимит знаков,
       требования к аннотации/ключевым словам (рус.+англ.).
-- [ ] **[AGENT]** Прогнать статью: prepare → review (совет: Зализняк-очерк + Казанский + Лидова +
+- [x] Прогнать статью: prepare → review (совет: Зализняк-очерк + Казанский + Лидова +
       Tronsky-Readings) → council → revise → verify → report; зафиксировать рабочий
       пример в `examples/` (на нечувствительном фрагменте).
+      **Готово 02-09-2026 (H3780 residual, `/roadmap-item-exec`):**
+      [`examples/output/phase1-council-example/`](https://github.com/gasyoun/RuWritingStyles/tree/main/examples/output/phase1-council-example)
+      — full pipeline run over
+      [`examples/input/article-snippet.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/examples/input/article-snippet.md)
+      (public non-sensitive excerpt of the same manuscript
+      [case-study-phase1.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/case-study-phase1.md)
+      measured) with exactly the named council (`zalizniak-ocherk`,
+      `kazanskiy-korpus`, `lidova-commentary`, `tronsky-readings`), journal
+      profile `vya`, `--execute --provider mock`. `validate-run` OK; transliteration
+      linter 0 findings; citations 4/4 verified; `report.tex` +
+      `references.bib` + `references-gost.md` all produced. Content-level council
+      advice under `mock` is still a stub (real judgment needs the paid-provider
+      run — separate GTD `@DECIDE` row) — this unit is about exercising the
+      deterministic pipeline end to end, which it does for real.
 - [ ] **[AGENT]** Унифицировать CLI и Web/API: `rws run` тоже пишет `report.tex` и `references.bib`
       (давний пункт из `.ai_state.md`).
 

@@ -1,0 +1,95 @@
+{
+  "run_id": "phase1-council-example",
+  "status": "completed",
+  "prompt_path": "runs/phase1-council-example/council.prompt.md",
+  "review_files": [
+    "runs/phase1-council-example/reviews/kazanskiy-korpus.review.json",
+    "runs/phase1-council-example/reviews/lidova-commentary.review.json",
+    "runs/phase1-council-example/reviews/tronsky-readings.review.json",
+    "runs/phase1-council-example/reviews/zalizniak-ocherk.review.json"
+  ],
+  "replies": [
+    {
+      "reply_to": "finding-001",
+      "style_id": "mock-style",
+      "bloom_level": "Analyze",
+      "position": "agree",
+      "comment": "Mock analysis of finding."
+    },
+    {
+      "reply_to": "finding-001",
+      "style_id": "mock-style",
+      "bloom_level": "Analyze",
+      "position": "agree",
+      "comment": "Mock analysis of finding."
+    },
+    {
+      "reply_to": "finding-001",
+      "style_id": "mock-style",
+      "bloom_level": "Analyze",
+      "position": "agree",
+      "comment": "Mock analysis of finding."
+    },
+    {
+      "reply_to": "finding-001",
+      "style_id": "mock-style",
+      "bloom_level": "Analyze",
+      "position": "agree",
+      "comment": "Mock analysis of finding."
+    }
+  ],
+  "decisions": [
+    {
+      "finding_id": "finding-001",
+      "bloom_level": "Evaluate",
+      "status": "informational",
+      "primary_school": "ling_iesh",
+      "influence": {
+        "ling_iesh": 0.8,
+        "ling_mss": 0.2
+      },
+      "reason": "Mock council keeps placeholder findings informational."
+    },
+    {
+      "finding_id": "finding-001",
+      "bloom_level": "Evaluate",
+      "status": "informational",
+      "primary_school": "ling_iesh",
+      "influence": {
+        "ling_iesh": 0.8,
+        "ling_mss": 0.2
+      },
+      "reason": "Mock council keeps placeholder findings informational."
+    },
+    {
+      "finding_id": "finding-001",
+      "bloom_level": "Evaluate",
+      "status": "informational",
+      "primary_school": "ling_iesh",
+      "influence": {
+        "ling_iesh": 0.8,
+        "ling_mss": 0.2
+      },
+      "reason": "Mock council keeps placeholder findings informational."
+    },
+    {
+      "finding_id": "finding-001",
+      "bloom_level": "Evaluate",
+      "status": "informational",
+      "primary_school": "ling_iesh",
+      "influence": {
+        "ling_iesh": 0.8,
+        "ling_mss": 0.2
+      },
+      "reason": "Mock council keeps placeholder findings informational."
+    }
+  ],
+  "profile": "researcher",
+  "stylistic_commitments": [
+    {
+      "term": "Mock Term",
+      "decision": "Keep it as is.",
+      "rationale": "Mock provider uses a stable placeholder commitment for schema validation."
+    }
+  ]
+}

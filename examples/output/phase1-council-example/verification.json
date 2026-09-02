@@ -1,0 +1,14 @@
+{
+  "run_id": "phase1-council-example",
+  "status": "needs_human_review",
+  "prompt_path": "runs/phase1-council-example/verification.prompt.md",
+  "revision_file": "runs/phase1-council-example/revision.json",
+  "passed": [
+    "artifacts_parse"
+  ],
+  "warnings": [
+    {
+      "message": "Mock provider cannot verify factual fidelity; run a real provider for substantive verification."
+    }
+  ]
+}
