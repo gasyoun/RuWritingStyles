@@ -1,6 +1,12 @@
 # Дорожная карта Q3 2026 — «Доверенный бенчмарк» (канонический план)
 
-_Created: 03-07-2026 · Last updated: 14-08-2026_
+_Created: 03-07-2026 · Last updated: 02-09-2026_
+
+> **Truth-pass 02-09-2026** (H3775) — `roadmap_handoff_truth.py --check` flagged this
+> page drained but still living: **9 of 9 referenced handoffs have shipped, zero remain OPEN**.
+> Kept at this path per MG ruling 31-08-2026 (do not archive) — the strategy/plan
+> layer still holds even though its backlog has fully closed. A future session
+> reopening work here should mint a fresh H### rather than un-close these.
 
 **Статус: принята.** Четыре решения зафиксированы автором 03-07-2026 (сессия Fable 5,
 `claude-fable-5`):

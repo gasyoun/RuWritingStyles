@@ -1,6 +1,12 @@
 # ROADMAP — RuWritingStyles 2026-Q4 (waves H1 · C1 · E1 · P1)
 
-_Created: 23-08-2026 · Last updated: 23-08-2026_
+_Created: 23-08-2026 · Last updated: 02-09-2026_
+
+> **Truth-pass 02-09-2026** (H3775) — `roadmap_handoff_truth.py --check` flagged this
+> page drained but still living: **12 of 12 referenced handoffs have shipped, zero remain OPEN**.
+> Kept at this path per MG ruling 31-08-2026 (do not archive) — the strategy/plan
+> layer still holds even though its backlog has fully closed. A future session
+> reopening work here should mint a fresh H### rather than un-close these.
 
 Authored via `/roadmap-interview` on 23-08-2026 after an evidence audit (repo state v2.26.0,
 [Q3 roadmap](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-2026-q3.md)
