@@ -48,3 +48,5 @@ provenance:
     - "Paribok 2011"
   derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника"
   derivation_date: "2026-06"
+  validated_by: "RuWritingStyles CI — validate_project.py bibliography cross-reference check"
+  last_validated: "2026-09-02"

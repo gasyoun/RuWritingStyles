@@ -36,3 +36,5 @@ provenance:
     - "Аверинцев С. С. Работы по поэтике и истории культуры"
   derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника"
   derivation_date: "2026-05"
+  validated_by: "RuWritingStyles CI — validate_project.py bibliography cross-reference check"
+  last_validated: "2026-09-02"

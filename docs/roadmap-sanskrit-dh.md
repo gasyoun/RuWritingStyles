@@ -24,7 +24,7 @@
 1. ~~**[Ф1] ГОСТ-аппарат**~~ — **done, DUPLICATE-SHIPPED 02-09-2026** (checkbox was stale; see the Ф1 item below for evidence).
 2. ~~**[Ф1] Прогнать пример статьи**~~ — **done 02-09-2026**, see [`examples/output/phase1-council-example/`](https://github.com/gasyoun/RuWritingStyles/tree/main/examples/output/phase1-council-example).
 3. ~~**[Ф1] Унифицировать CLI и Web/API**~~ — **done 02-09-2026**, was already shared code, gap was test coverage; see [`tests/test_api_report_parity.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_api_report_parity.py).
-4. **[Ф2] Провенанс в паспортах** — расширить `schemas/style.schema.json` (`provenance_sources`, `derived_by`, `derivation_date`, `validated_by`, `last_validated`) и дозаполнить все 16 существующих паспортов (Ф2, unit "Провенанс в паспортах").
+4. ~~**[Ф2] Провенанс в паспортах**~~ — **done 02-09-2026**, schema was already shipped; backfilled `validated_by`/`last_validated` on all 29 passports via [`scripts/backfill_passport_validation.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/scripts/backfill_passport_validation.py).
 5. **[Ф3] 10–15 eval-кейсов** в `evals/manifest.json` + документы в `examples/input/` (Ф3, unit "eval-кейсы").
 6. **[Ф4] `CITATION.cff` + релиз на Zenodo с DOI** — agents may mint DOIs and cut public releases (standing ruling, MG 16-08-2026); publish-safety-check still gates (Ф4, unit "CITATION.cff").
 7. **[Ф4] Раздел «Как сообщать об использовании ИИ»** в README — готовая формула для сноски (Ф4, unit "AI-usage README").
@@ -202,10 +202,25 @@ sanskrit-reader, samasa-manual, panini-traditional) добавлены с пас
         (таблица типов самас) → правило → пример с разбором → исключение → упражнение;
       - `panini-traditional-style` — изложение с опорой на туземную традицию
         (сутра → вритти → пример), терминология вьякараны по-русски.
-- [ ] **[AGENT]** **Провенанс в паспортах** (расширить `schemas/style.schema.json`):
+- [x] **Провенанс в паспортах** (расширить `schemas/style.schema.json`):
       `provenance_sources` (источник + страницы), `derived_by`, `derivation_date`,
       `validated_by`, `last_validated` — и заполнить для всех 16 существующих паспортов
       задним числом.
+      **PARTIAL-SHIPPED, closed 02-09-2026 (`/roadmap-item-exec`):** the
+      [`schemas/style.schema.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/schemas/style.schema.json)
+      `provenance` block (`sources`/`derived_by`/`derivation_date`/`validated_by`/
+      `last_validated`) already existed and `sources`/`derived_by`/`derivation_date`
+      were already filled on all 29 current passports (schema extension already
+      shipped, count grew 16→29 since this unit was written) — `validated_by`/
+      `last_validated` were the genuine gap. Backfilled via
+      [`scripts/backfill_passport_validation.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/scripts/backfill_passport_validation.py)
+      with two honest tiers: the four H944 corpus-grounded orientalist passports
+      (Bartold, Turaev, Krachkovskij, Golenishchev) cite the real content-fidelity
+      claim (quote-anchored against the primary text, H3369 intake, 29-08-2026);
+      every other passport cites what's actually true today — `validate_project.py`'s
+      bibliography cross-reference check passing (02-09-2026). `validate_project.py`
+      SUCCESS; `pytest -k "passport or schema or manifest or style"` 46 passed +
+      16 subtests.
 - [ ] **[BLOCKED: ждёт новые стили]** Блок «Источники и метод» в каждом новом `*-style.md`: из каких текстов выведена модель,
       кем и когда проверена.
 

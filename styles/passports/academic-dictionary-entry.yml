@@ -79,3 +79,5 @@ provenance:
     - "Kochergina 1987"
   derived_by: "RuWritingStyles project — аналитическая модель регистра, не пересказ источников; иерархия эталонов — ruling MG 18-07-2026 (H1213)"
   derivation_date: "2026-07"
+  validated_by: "RuWritingStyles CI — validate_project.py bibliography cross-reference check"
+  last_validated: "2026-09-02"

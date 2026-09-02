@@ -71,3 +71,5 @@ provenance:
     - "Крачковский 1925"
   derived_by: "RuWritingStyles project — аналитическая модель письма по атрибутированному тексту «Неизвестное сочинение-автограф сирийского эмира Усамы» (ЗКВ I, Пг., 1925; статья подписана «П. Август 1921 г.») из приватного корпуса (интэйк H3369 addendum, 23-08-2026); все стилевые утверждения заякорены цитатами из этого текста"
   derivation_date: "2026-08"
+  validated_by: "H944 corpus-grounding intake (H3369 addendum, OxAlpha opencode/z-ai/glm-5.3-flash) — quote-anchored against the primary text"
+  last_validated: "2026-08-29"

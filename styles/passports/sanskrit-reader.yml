@@ -48,3 +48,5 @@ provenance:
     - "Tubb Boose 2007"
   derived_by: "RuWritingStyles project — аналитическая модель письма, не пересказ источника; доводка 2026-07 по корпусному тексту Tubb-ScholasticSans-2007 (анвая, mūla/комментарий)"
   derivation_date: "2026-07"
+  validated_by: "RuWritingStyles CI — validate_project.py bibliography cross-reference check"
+  last_validated: "2026-09-02"

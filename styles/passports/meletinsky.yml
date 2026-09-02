@@ -61,3 +61,5 @@ provenance:
     - "Meletinsky 1976"
   derived_by: "RuWritingStyles project — аналитическая модель письма по docs/roadmap_literary_clusters.md §3.4 и кластеру lit_mythopoetics; тексты Мелетинского в приватном корпусе отсутствуют (находка H770), стилевые утверждения не выверены по первоисточнику"
   derivation_date: "2026-08"
+  validated_by: "RuWritingStyles CI — validate_project.py bibliography cross-reference check"
+  last_validated: "2026-09-02"

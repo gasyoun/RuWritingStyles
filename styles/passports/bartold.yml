@@ -63,3 +63,5 @@ provenance:
     - "Бартольд 1927"
   derived_by: "RuWritingStyles project — аналитическая модель письма по атрибутированному тексту «Киргизы: исторический очерк» (Фрунзе, 1927) из приватного корпуса (интэйк H3369, 23-08-2026); все стилевые утверждения заякорены цитатами из этого текста"
   derivation_date: "2026-08"
+  validated_by: "H944 corpus-grounding intake (H3369, OxAlpha opencode/z-ai/glm-5.3-flash) — quote-anchored against the primary text"
+  last_validated: "2026-08-29"
