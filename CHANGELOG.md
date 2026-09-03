@@ -5,6 +5,8 @@ All notable changes to RuWritingStyles are documented here.
 ## [Unreleased]
 <!-- entries land in changelog_queue/ -- appended via tools/changelog_queue_consume.py, consumed by cut_release.py at release-cut (H3355); direct bullets here are hook-blocked -->
 
+- **RCSI subject filter tick — wave 2 W2.2 (D04).** The ru+en term list ([`knowledge/rcsi/subject_terms.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/knowledge/rcsi/subject_terms.json)) and the article-level classifier ([`journal_scope.classify_article`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/journal_scope.py)) already shipped in wave 1 (H3154); this pass ties off the wave-2 checkbox with fixture-backed test re-verification (7/7 green) and no code change.
+
 ## [2.29.1] - 2026-09-02
 
 - **sanskrit-dh roadmap triage (H3780).** [`docs/roadmap-sanskrit-dh.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-sanskrit-dh.md) was gated as a whole because its first open unit is human-only; all 17 open units are now individually tagged **[AGENT]** (9) / **[BLOCKED: ...]** (3) / **[HUMAN-ONLY]** (5), with the agent-doable ones listed first in start order and a GTD row filed for each human-only unit in [Uprava/GTD_NEXT_ACTIONS.md](https://github.com/gasyoun/Uprava/blob/main/GTD_NEXT_ACTIONS.md).

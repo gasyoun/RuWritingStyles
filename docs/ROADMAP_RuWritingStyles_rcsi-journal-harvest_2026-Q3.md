@@ -1,6 +1,6 @@
 # ROADMAP — RCSI journal profiles and article harvest (RuWritingStyles, 2026-Q3)
 
-_Created: 19-08-2026 · Last updated: 31-08-2026_
+_Created: 19-08-2026 · Last updated: 02-09-2026_
 
 Wave layer of [PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md).
 Ruling references (D01–D20) point at that document's decisions table.
@@ -163,8 +163,24 @@ and produces a document rather than a feature.
       validate_project SUCCESS, ci-eval-gate 0 regressions.
       (W2.2/W2.3 own the uncertain tail — the subject filter re-scores it at the article
       level and the review sheet surfaces the residue.)
-- [ ] **W2.2 Subject filter.** The ru+en term list and the article-level classifier of D04,
-      with its own fixture-backed tests.
+- [x] **W2.2 Subject filter.** The ru+en term list and the article-level classifier of D04,
+      with its own fixture-backed tests. ✅ DONE (tick-only pass, A07) — the deliverable
+      already shipped in [PR #175](https://github.com/gasyoun/RuWritingStyles/pull/175)
+      (commit [`970619e`](https://github.com/gasyoun/RuWritingStyles/commit/970619e5053dd0aba00bf8480f5e1e00c7d080c0),
+      H3154), same pattern as W1.1/A09 through W1.6/A06 above: the three positive groups
+      plus `negative` group in
+      [knowledge/rcsi/subject_terms.json](https://github.com/gasyoun/RuWritingStyles/blob/main/knowledge/rcsi/subject_terms.json)
+      back
+      [`journal_scope.classify_article`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/journal_scope.py)
+      (title/keywords/OAI-subject haystack, `expect_cyrillic` derived from citation
+      metadata per D07/D14) and
+      [`journal_scope.classify_journal`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/journal_scope.py)
+      (scope-text verdict, already consumed by W2.1's catalogue crawl). Fixture-backed
+      tests in
+      [tests/test_journal_scope.py](https://github.com/gasyoun/RuWritingStyles/blob/main/tests/test_journal_scope.py)
+      (7/7 green, re-verified 02-09-2026); `python tools/validate_project.py` SUCCESS.
+      Article-level classification is not yet called from `harvest.py` — that wiring is
+      W2.4's bounded-harvest job, not this checkbox's.
 - [ ] **W2.3 Review queue.** Uncertain journals and uncertain articles rendered as a
       [/review-sheet](https://github.com/gasyoun/claude-config/blob/main/commands/review-sheet.md)
       voting sheet, registered in
