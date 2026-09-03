@@ -193,10 +193,36 @@ and produces a document rather than a feature.
       subtests green (up from 364), validate_project SUCCESS, ci-eval-gate
       0 regressions. The 629-journal `uncertain` tail is W2.3's review-queue
       input and stays untouched here.
-- [ ] **W2.3 Review queue.** Uncertain journals and uncertain articles rendered as a
+- [x] **W2.3 Review queue.** Uncertain journals and uncertain articles rendered as a
       [/review-sheet](https://github.com/gasyoun/claude-config/blob/main/commands/review-sheet.md)
       voting sheet, registered in
       [Uprava/REVIEW_SHEETS_INDEX.md](https://github.com/gasyoun/Uprava/blob/main/REVIEW_SHEETS_INDEX.md).
+      ✅ DONE 03-09-2026 — sheet
+      `ruwritingstyles-rcsi-catalogue_uncertain-628` cut by
+      [tools/build_rcsi_review_sheet.py](https://github.com/gasyoun/RuWritingStyles/blob/main/tools/build_rcsi_review_sheet.py)
+      from the committed catalogue: **628 cards → 63 packs + parent** (csl-pyutil
+      0.23.0 V16 packset), published to the
+      [vote hub](https://gasyoun.github.io/vote/sheets/rws_rcsi_uncertain_628.html),
+      registered in
+      [Uprava/REVIEW_SHEETS_INDEX.md](https://github.com/gasyoun/Uprava/blob/main/REVIEW_SHEETS_INDEX.md).
+      Screening (Phase 0-bis, [evidence](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/SCREENING_EVIDENCE_rcsi-uncertain-review_03-09-2026.md)):
+      (a) 1 — Вестник РАН stays pinned by name (roadmap W2.1), (b) 0 — the five
+      hand-verified profiles are all include, (c) 0 — deliberate, D04 keeps the
+      tail human-visible, (d) 628 in three classes: 15 term conflicts, 325 no
+      Focus & Scope section, 288 scope text without terms (U7 chips carry
+      count + share over the 629 tail on every card). Uncertain ARTICLES:
+      empty with reason — the W2.4 harvest produces article-level verdicts; a
+      separate article-level sheet follows it. V9 manifest joins
+      catalogue.json on slug; V13 identity gate = escaped catalogue slugs
+      (year ranges in verbatim English prose correctly trip nothing); SLP1
+      allow-list computed per render over verbatim English excerpts.
+      github_inbox NOT wired (no device-flow client_id on this machine) —
+      per-pack `_pack-NN_decisions.json` exports with the V8 banner naming
+      `RuWritingStyles/review/` as the drop path. Shaper
+      ([rcsi_review.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/rcsi_review.py))
+      is derive-don't-store: tests recompute 992/629/628 and the 15/325/288
+      split from the committed catalogue on every run. Gates: pytest 379 +
+      74 subtests green, validate_project SUCCESS, ci-eval-gate 0 regressions.
 - [ ] **W2.4 Bounded harvest.** Run the capped harvest of D20 across every `include` journal;
       commit and push texts to the private corpus repo; report counts, quarantine size and
       the per-journal extraction-source split.
