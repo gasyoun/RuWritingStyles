@@ -1,10 +1,12 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # P3 — real full-article run on DeepSeek (case study)
 
 First end-to-end run of a **full-length** article through the agentic pipeline on a real
-provider. Draft: [`examples/input/lexicography-guna.md`](../examples/input/lexicography-guna.md)
+provider. Draft: [`examples/input/lexicography-guna.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/examples/input/lexicography-guna.md)
 (~12.1k chars / ~22k with markup, Russian, Sanskrit lexicography of *guṇa*, for *Вестник
 СПбГУ. Востоковедение*). Council: **`--council sanskrit`** (the F1 panel) on
-`deepseek-chat`. Grading key: [`p3-seed-key.md`](p3-seed-key.md).
+`deepseek-chat`. Grading key: [`p3-seed-key.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/p3-seed-key.md).
 
 ## Headline: all 3 seeded problems caught, revision stayed proportionate
 
@@ -48,7 +50,7 @@ claim contradicts the dates in the bibliography); only the label differs. Accept
    alarm was a small-doc artifact.** On this full article the revision applied 16 targeted
    changes: **char-delta 0.18, changed-line 0.22** — well inside the gold caps (0.50 / 0.75)
    that the tiny ~500-char benchmark docs blew through. The over-rewriting in
-   [`benchmark.md`](benchmark.md) is now understood as ratio-sensitivity on short inputs,
+   [`benchmark.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/benchmark.md) is now understood as ratio-sensitivity on short inputs,
    not a general defect. (Still worth tightening for short notes.)
 
 ## Other observations
@@ -90,3 +92,5 @@ section, which now **checks** (not just echoes) the journal's requirements:
 It correctly flags that the draft has a Russian abstract and keywords but is **missing the
 English abstract and keywords** the journal requires — a real, actionable submission gap,
 caught deterministically (no provider call).
+
+_Dr. Mārcis Gasūns_

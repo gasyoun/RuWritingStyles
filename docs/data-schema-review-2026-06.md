@@ -1,9 +1,11 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Data / Schema Review — 2026-06
 
 Scope: the data layer — 32 JSON schemas, the human-editable data files
 (bibliography, sanskrit-terms, journals, manifest, passports, model_policy,
 eval manifest), the run-artifact contract, and the SQLite DB. Companion to
-[architecture-review-2026-06.md](architecture-review-2026-06.md).
+[architecture-review-2026-06.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/architecture-review-2026-06.md).
 
 Method: three parallel read-only sweeps over `schemas/`, `knowledge/`,
 `styles/`, `evals/`, `src/ruwritingstyles/{schema_validation,validation,db}.py`,
@@ -114,3 +116,5 @@ Healthy content, under-enforced contracts. The system trusts authors not to use
 unsupported keywords and trusts maintainers to keep cross-references in sync by
 hand. Items #1, #5 and #3 convert that manual discipline into CI enforcement for
 very little code — the highest-leverage work here.
+
+_Dr. Mārcis Gasūns_

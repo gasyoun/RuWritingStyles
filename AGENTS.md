@@ -1,10 +1,12 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Project: RuWritingStyles Agent Engineering
 
 Этот проект следует строгому агентскому протоколу и персонализированному роадмапу.
 
 **При каждом начале сессии:**
-1. Прочитать [GEMINI_ROADMAP.md](./GEMINI_ROADMAP.md) — актуальный план действий.
-2. Прочитать [CHANGELOG.md](./CHANGELOG.md) — последние изменения.
+1. Прочитать [GEMINI_ROADMAP.md](https://github.com/gasyoun/RuWritingStyles/blob/main/GEMINI_ROADMAP.md) — актуальный план действий.
+2. Прочитать [CHANGELOG.md](https://github.com/gasyoun/RuWritingStyles/blob/main/CHANGELOG.md) — последние изменения.
 3. Определить текущий шаг из раздела "Следующее действие" в роадмапе.
 4. Если меняется форма JSON-артефакта, синхронно обновить `schemas/`, `tools/validate_project.py`, тесты и документацию.
 5. Извлекая русский текст из PDF — **никогда `pdftotext`** (poppler возвращает ноль кириллицы на этом материале, вывод выглядит правдоподобно). Цепочка — `PDF_EXTRACTOR_CHAIN` в `config.py`, проверка — `sanity()` в `extract.py`. Обоснование: [`docs/BENCHMARK_pdf-extractors_ru_19-08-2026.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/BENCHMARK_pdf-extractors_ru_19-08-2026.md).
@@ -32,3 +34,5 @@ python scripts/verify-runtime-assets.py dist/*.whl dist/*.tar.gz
 ```
 
 CI also runs clean-wheel consumers on Ubuntu/Windows (Python 3.10/3.14) and a Docker API/SPA/mock-run smoke; all jobs feed strict `CI / Required gate`.
+
+_Dr. Mārcis Gasūns_

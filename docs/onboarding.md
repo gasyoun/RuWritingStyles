@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Welcome to RuWritingStyles! 🚀
 
 Hello! You are about to use a "Scientific Super-Brain" for your writing. Imagine having a team of the world’s best professors (like Zaliznyak or Bakhtin) sitting next to you, checking every word you write. That is what this project does!
@@ -85,3 +87,5 @@ If the AI is moving in the wrong direction, you can **shout** at it!
 - [ ] **I tried selecting text in Obsidian/Word.**
 
 **Happy Scholarly Writing!** If you get stuck, check the `docs/` folder or just ask the AI! 🎓✍️
+
+_Dr. Mārcis Gasūns_

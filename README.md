@@ -1,14 +1,14 @@
 # Каталог пользовательских стилей для Claude
 
-_Created: 03-05-2026 · Last updated: 19-08-2026_
+_Created: 03-05-2026 · Last updated: 05-09-2026_
 
 Этот README объясняет, какие пользовательские стили для Claude уже созданы, чем они отличаются и как ими пользоваться. Он рассчитан на человека, который впервые открыл эту папку и еще не знает, какой файл брать для своей задачи.
 
 Файл стиля - это `.md`-инструкция для Claude. Ее можно использовать двумя способами: загрузить или вставить в настройку Custom Style, либо временно дать Claude в начале диалога и попросить писать по этому профилю. Сами стили не являются пересказами исходных книг и статей. Это рабочие модели письма: тон, композиция, способ доказательства, тип примеров, допустимая терминология и запреты.
 
-> 🚀 **Хотите прогнать свою статью через «Совет» стилей?** За пять шагов от установки до первой рецензии (с ключом DeepSeek) — [`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md).
+> 🚀 **Хотите прогнать свою статью через «Совет» стилей?** За пять шагов от установки до первой рецензии (с ключом DeepSeek) — [`docs/QUICKSTART.ru.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/QUICKSTART.ru.md).
 
-**Status**: v2.23.0 (см. [`CHANGELOG.md`](CHANGELOG.md)). Каталог стилей + CLI-конвейер «Совет» + eval-харнесс + Web Studio. Честная граница «что уже есть / что ещё нет» — в разделах [Реализовано](#реализовано) и [Запланировано](#запланировано) ниже (H2369).
+**Status**: v2.23.0 (см. [`CHANGELOG.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/CHANGELOG.md)). Каталог стилей + CLI-конвейер «Совет» + eval-харнесс + Web Studio. Честная граница «что уже есть / что ещё нет» — в разделах [Реализовано](#реализовано) и [Запланировано](#запланировано) ниже (H2369).
 
 ### Установка конвейера
 
@@ -31,7 +31,7 @@ rws web                  # production SPA + API: http://localhost:8000
 | Возможность | Где | Условие |
 |---|---|---|
 | Каталог Claude Custom Styles (≈44 файла) | [`ClaudeStyles/`](ClaudeStyles/) | без API-ключа |
-| CLI-конвейер prepare → review → council → revise → verify | `rws run`, [`docs/ENGINE.md`](docs/ENGINE.md) | mock offline; live — ключ провайдера |
+| CLI-конвейер prepare → review → council → revise → verify | `rws run`, [`docs/ENGINE.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/ENGINE.md) | mock offline; live — ключ провайдера |
 | Именованные советы (`general` / `sanskrit` / `indology` / `lexicography`) | `rws councils`, `--council` | — |
 | Провайдер DeepSeek | `--provider deepseek` | `DEEPSEEK_API_KEY` |
 | OpenAlex (живые запросы) | `researcher.py` → api.openalex.org | сеть |
@@ -41,7 +41,7 @@ rws web                  # production SPA + API: http://localhost:8000
 | Eval-харнесс + mock CI gate | `evals/`, `scripts/ci-eval-gate.py` | mock без ключей |
 | Журнальные профили + ГОСТ-аппарат | `knowledge/journals/`, citation path | — |
 | Obsidian-плагин (код + CI) | [`obsidian-plugin/`](obsidian-plugin/) | сборка/тесты в репо; **не** = публикация в Community Plugins |
-| Библиография опорных источников + права | [`SOURCES.md`](SOURCES.md) | полные тексты только в private corpus |
+| Библиография опорных источников + права | [`SOURCES.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/SOURCES.md) | полные тексты только в private corpus |
 
 ## Запланировано
 
@@ -50,8 +50,8 @@ rws web                  # production SPA + API: http://localhost:8000
 | Пункт | Статус |
 |---|---|
 | **Вычистка `PDFtoTXT` из истории git** (`git filter-repo` + force-push + бэкап) | **только автор (human-only)**; в рабочем дереве каталога уже нет, в истории — ещё есть. Агенты **не** запускают filter-repo |
-| DOI на Zenodo → вписать в [`CITATION.cff`](CITATION.cff) | релизное действие автора |
-| Подача методологической статьи | [`docs/methodology-paper-outline.md`](docs/methodology-paper-outline.md) |
+| DOI на Zenodo → вписать в [`CITATION.cff`](https://github.com/gasyoun/RuWritingStyles/blob/main/CITATION.cff) | релизное действие автора |
+| Подача методологической статьи | [`docs/methodology-paper-outline.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/methodology-paper-outline.md) |
 | Публикация Obsidian-плагина (BRAT / Community Plugins, тег `obsidian-v*`) | кнопки автора; код плагина уже в репо |
 | Word-плагин | только прототип HTML/manifest в [`docs/rws-word-*.html`](docs/) / XML — **не** store-ready |
 | Новые паспортные стили без текста в private corpus | блокированы gate H1882 (нет attributable source) |
@@ -59,14 +59,14 @@ rws web                  # production SPA + API: http://localhost:8000
 ## Цитирование и декларация об использовании ИИ
 
 - **Как цитировать.** Проект оформлен по стандарту Citation File Format —
-  [`CITATION.cff`](CITATION.cff); на GitHub работает кнопка «Cite this repository».
-  Архивирование с DOI готовится на Zenodo ([`.zenodo.json`](.zenodo.json)): после первого
+  [`CITATION.cff`](https://github.com/gasyoun/RuWritingStyles/blob/main/CITATION.cff); на GitHub работает кнопка «Cite this repository».
+  Архивирование с DOI готовится на Zenodo ([`.zenodo.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/.zenodo.json)): после первого
   релиза DOI добавляется в `CITATION.cff`.
 - **Использование ИИ в статье.** Готовые формулы для сноски/«Благодарностей» (рус./англ.) и
-  объяснение роли ИИ в самом конвейере — в [`docs/AI_DISCLOSURE.md`](docs/AI_DISCLOSURE.md).
+  объяснение роли ИИ в самом конвейере — в [`docs/AI_DISCLOSURE.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/AI_DISCLOSURE.md).
   Кратко: ИИ — инструмент рецензирования, не соавтор; ответственность за текст несет автор.
 - **Метаданные Dublin Core.** Экспорт паспортов стилей в DCMI —
-  [`metadata/dublin-core.xml`](metadata/dublin-core.xml), регенерируется
+  [`metadata/dublin-core.xml`](https://github.com/gasyoun/RuWritingStyles/blob/main/metadata/dublin-core.xml), регенерируется
   `python tools/passports_to_dublin_core.py`.
 
 ## Основные этапы (Roadmap)
@@ -81,22 +81,22 @@ rws web                  # production SPA + API: http://localhost:8000
 **Sanskrit DH — публичный ресурс для русскоязычной санскритологии на движке DeepSeek (v2.5–v2.9):**
 
 - [x] **v2.5.0**: Deep Retrieval корпуса доступен из CLI (`rws corpus-status` / `corpus-ingest` / `corpus-search`).
-- [x] **v2.5.x**: санскритские eval-кейсы и золотой протокол ([`evals/GOLD_PROTOCOL.md`](evals/GOLD_PROTOCOL.md), каркас [`docs/benchmark.md`](docs/benchmark.md)); ужесточение JSON-схем, self-describing `run.json` и security-review веб-слоя.
+- [x] **v2.5.x**: санскритские eval-кейсы и золотой протокол ([`evals/GOLD_PROTOCOL.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/GOLD_PROTOCOL.md), каркас [`docs/benchmark.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/benchmark.md)); ужесточение JSON-схем, self-describing `run.json` и security-review веб-слоя.
 - [x] **v2.6.0**: именованные советы (`rws councils`: `general` / `sanskrit` / `indology`, выбор через `--council`) и аудит-след отбора стилей в `run.json`.
-- [x] **v2.7.0**: архивные DH-метаданные ([`CITATION.cff`](CITATION.cff), [`.zenodo.json`](.zenodo.json), [`docs/AI_DISCLOSURE.md`](docs/AI_DISCLOSURE.md), Dublin Core) + закрытие security-review (input-allowlist, bearer-token).
+- [x] **v2.7.0**: архивные DH-метаданные ([`CITATION.cff`](https://github.com/gasyoun/RuWritingStyles/blob/main/CITATION.cff), [`.zenodo.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/.zenodo.json), [`docs/AI_DISCLOSURE.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/AI_DISCLOSURE.md), Dublin Core) + закрытие security-review (input-allowlist, bearer-token).
 - [x] **v2.8.0**: провайдер **DeepSeek** — основной реальный бэкенд (`--provider deepseek`).
-- [x] **v2.8.1–2.8.2**: первый бенчмарк на реальном провайдере и кейс-стади настоящей статьи (лексикография *guṇa*, совет `sanskrit` — все три заложенные проблемы пойманы) — [`docs/benchmark.md`](docs/benchmark.md), [`docs/case-study-p3-guna.md`](docs/case-study-p3-guna.md).
+- [x] **v2.8.1–2.8.2**: первый бенчмарк на реальном провайдере и кейс-стади настоящей статьи (лексикография *guṇa*, совет `sanskrit` — все три заложенные проблемы пойманы) — [`docs/benchmark.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/benchmark.md), [`docs/case-study-p3-guna.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/case-study-p3-guna.md).
 - [x] **v2.8.3–2.8.4**: дисциплина правки для коротких заметок и проверка соответствия журналу (`rws run --journal <id>` — реальная проверка наличия аннотации и ключевых слов по языкам).
-- [x] **v2.8.5–2.8.6**: русский quickstart ([`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md)) и углубление базы знаний (индологическое ядро библиографии + ссылки CDSL).
-- [x] **v2.9.0–2.9.1**: углубленная документация ([`docs/USE_CASES.ru.md`](docs/USE_CASES.ru.md), карта [`docs/README.md`](docs/README.md)) и галерея стилей ([`docs/STYLE_GALLERY.ru.md`](docs/STYLE_GALLERY.ru.md)).
-- [x] **v2.10.x**: журнальная проверка с лимитом слов аннотации (`abstract_max_words`), CLI/CI parity-guard, ARS-совместимые протоколы claim-faithfulness и калибровки рецензентов ([`SOURCES.md`](SOURCES.md)).
+- [x] **v2.8.5–2.8.6**: русский quickstart ([`docs/QUICKSTART.ru.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/QUICKSTART.ru.md)) и углубление базы знаний (индологическое ядро библиографии + ссылки CDSL).
+- [x] **v2.9.0–2.9.1**: углубленная документация ([`docs/USE_CASES.ru.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/USE_CASES.ru.md), карта [`docs/README.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/README.md)) и галерея стилей ([`docs/STYLE_GALLERY.ru.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/STYLE_GALLERY.ru.md)).
+- [x] **v2.10.x**: журнальная проверка с лимитом слов аннотации (`abstract_max_words`), CLI/CI parity-guard, ARS-совместимые протоколы claim-faithfulness и калибровки рецензентов ([`SOURCES.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/SOURCES.md)).
 - [x] **v2.11.0**: достоверный бенчмарк — N-прогонный eval-харнесс (`eval-run`/`eval-suite --repeat N` → `eval-aggregate.json`), политика алиасов скорера, температурный зонд DeepSeek.
-- [x] **v2.12.0–2.12.1**: over-rewrite побежден по построению — span-patch-реконструкция + growth-губернатор (pass-rate **0.48 → 0.92**), консолидация Zenodo/статьи/документации, движок вынесен в [`docs/ENGINE.md`](docs/ENGINE.md).
+- [x] **v2.12.0–2.12.1**: over-rewrite побежден по построению — span-patch-реконструкция + growth-губернатор (pass-rate **0.48 → 0.92**), консолидация Zenodo/статьи/документации, движок вынесен в [`docs/ENGINE.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/ENGINE.md).
 - [x] **v2.13.0** (H588 Phase N): span-привязанные стилевые обязательства верификатора, двухэкспертная разметка золотого набора (согласие 24/25, κ Коэна), wall-clock-дедлайн провайдера, маршрутизация моделей `--routes`, обобщенный навык `/rws-council`, черновик методологической статьи в форме подачи (§4.6, EN Abstract/Keywords).
-- [x] **v2.14.0** (H770 Фаза O): маршрутизированный v4-pro N=5 бенчмарк (0.72/0.92/25-25 — строгость судьи как новая ось, [`docs/benchmark.md`](docs/benchmark.md) + §4.7 статьи), A29 контентно submission-ready (ГОСТ-«Литература», варианты адъюдикации, EN abstract 198/200, финальное Zenodo-описание), корпус проиндексирован (FTS5) + 40-й стиль `smirnov-mahabharata` + доводка `sanskrit-reader`, профиль «Восток (Oriens)» + `keywords_max_words`, детерминированный фикс `missing_iast_on_first_mention`.
+- [x] **v2.14.0** (H770 Фаза O): маршрутизированный v4-pro N=5 бенчмарк (0.72/0.92/25-25 — строгость судьи как новая ось, [`docs/benchmark.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/benchmark.md) + §4.7 статьи), A29 контентно submission-ready (ГОСТ-«Литература», варианты адъюдикации, EN abstract 198/200, финальное Zenodo-описание), корпус проиндексирован (FTS5) + 40-й стиль `smirnov-mahabharata` + доводка `sanskrit-reader`, профиль «Восток (Oriens)» + `keywords_max_words`, детерминированный фикс `missing_iast_on_first_mention`.
 - [x] **v2.15.0** (H1213): первый стиль жанра словарной дефиниции `academic-dictionary-entry` (эталоны: Зализняк > Апресян/Мельчук; Кочергина — сверка эквивалентов) + совет `lexicography` + 8 gold-кейсов `GOLD_DICTIONARY` на pwg_ru-материале; бенчмарк 0.925/0.975 (40 прогонов), двухэкспертная разметка 0.97; реестр эталонов и права — `SOURCES.md` №№ 13–21.
 - [x] **v2.15.1–2.15.3**: адъюдикация `vedic-r02`; audit-hardening; затем явные режимы pipeline, восстановление из `run.json`, fail-closed бюджеты, самостоятельные wheel/workspace/Web/Docker и packaging consumer matrix.
-- [ ] **Дальше (релизные действия автора)**: DOI на Zenodo (→ вписать в [`CITATION.cff`](CITATION.cff)), финализация и подача методологической статьи ([`docs/methodology-paper-outline.md`](docs/methodology-paper-outline.md)); плагин для Obsidian — план реализации (MVP: легкие детерминированные проверки) в [`docs/obsidian-plugin-plan.md`](docs/obsidian-plugin-plan.md).
+- [ ] **Дальше (релизные действия автора)**: DOI на Zenodo (→ вписать в [`CITATION.cff`](https://github.com/gasyoun/RuWritingStyles/blob/main/CITATION.cff)), финализация и подача методологической статьи ([`docs/methodology-paper-outline.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/methodology-paper-outline.md)); плагин для Obsidian — план реализации (MVP: легкие детерминированные проверки) в [`docs/obsidian-plugin-plan.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/obsidian-plugin-plan.md).
 
 ## Навигация
 
@@ -139,7 +139,7 @@ rws web                  # production SPA + API: http://localhost:8000
 
 ## Все созданные стили
 
-> 🎨 **Галерея со ссылками для прямого использования** (открыть → скопировать → вставить в Claude Custom Style): [`docs/STYLE_GALLERY.ru.md`](docs/STYLE_GALLERY.ru.md) — все 44 стиля, сгруппированные по школам.
+> 🎨 **Галерея со ссылками для прямого использования** (открыть → скопировать → вставить в Claude Custom Style): [`docs/STYLE_GALLERY.ru.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/STYLE_GALLERY.ru.md) — все 44 стиля, сгруппированные по школам.
 
 | Файл | Стиль | Для чего нужен | Главная интонация |
 |---|---|---|---|
@@ -172,7 +172,7 @@ rws web                  # production SPA + API: http://localhost:8000
 
 ## Исходные материалы
 
-Эта таблица связывает готовые стили с текстами исследовательского корпуса. Сами тексты охраняются авторским правом и **не входят в публичный репозиторий**: они хранятся в приватном репозитории-спутнике [`RuWritingStyles-corpus`](https://github.com/gasyoun/RuWritingStyles-corpus) (каталог `PDFtoTXT/`), доступном только участникам проекта. Библиографические описания и правовой статус — в [`SOURCES.md`](SOURCES.md). В одних случаях источник прямой, в других указан опорный материал: он помогает проверить тематику, лексику и научный регистр, но не является единственным образцом для стиля.
+Эта таблица связывает готовые стили с текстами исследовательского корпуса. Сами тексты охраняются авторским правом и **не входят в публичный репозиторий**: они хранятся в приватном репозитории-спутнике [`RuWritingStyles-corpus`](https://github.com/gasyoun/RuWritingStyles-corpus) (каталог `PDFtoTXT/`), доступном только участникам проекта. Библиографические описания и правовой статус — в [`SOURCES.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/SOURCES.md). В одних случаях источник прямой, в других указан опорный материал: он помогает проверить тематику, лексику и научный регистр, но не является единственным образцом для стиля.
 
 | Стиль | Файл стиля | Исходные и опорные материалы |
 |---|---|---|
@@ -189,7 +189,7 @@ rws web                  # production SPA + API: http://localhost:8000
 | [Казанский][kazanskiy-korpus] | [`ClaudeStyles/kazanskiy-korpus-style.md`][kazanskiy-korpus] | Сборник с материалом Н. Н. Казанского: [`2025_1а_Part 1-1.pdf`][src-tronsky-pdf], [`2025_1а_Part 1-1.txt`][src-tronsky-txt]. |
 | [Лидова][lidova-commentary] | [`ClaudeStyles/lidova-commentary-style.md`][lidova-commentary] | Опорные материалы по комментарию и санскритской ученой традиции: [`2025_1а_Part 1-1.pdf`][src-tronsky-pdf], [`2025_1а_Part 1-1.txt`][src-tronsky-txt], [`Tubb-ScholasticSans-2007.txt`][src-tubb-txt]. |
 | [Tronsky-Readings][tronsky-readings] | [`ClaudeStyles/tronsky-readings-style.md`][tronsky-readings] | [`2025_1а_Part 1-1.pdf`][src-tronsky-pdf], [`2025_1а_Part 1-1.txt`][src-tronsky-txt]. |
-| [Академическая-словарная-статья][academic-dictionary-entry] | [`ClaudeStyles/academic-dictionary-entry-style.md`][academic-dictionary-entry] | Опубликованные академические словари (реестр эталонов и правовой статус — [`SOURCES.md`](SOURCES.md), №№ 13–21): Зализняк 2010, Апресян 1995, Фасмер, Ожегов–Шведова, МАС, Даль (ред. Бодуэна де Куртенэ), семантический словарь Шведовой, Абрамов. Выдержки эталонов — только в приватном корпусе-спутнике. |
+| [Академическая-словарная-статья][academic-dictionary-entry] | [`ClaudeStyles/academic-dictionary-entry-style.md`][academic-dictionary-entry] | Опубликованные академические словари (реестр эталонов и правовой статус — [`SOURCES.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/SOURCES.md), №№ 13–21): Зализняк 2010, Апресян 1995, Фасмер, Ожегов–Шведова, МАС, Даль (ред. Бодуэна де Куртенэ), семантический словарь Шведовой, Абрамов. Выдержки эталонов — только в приватном корпусе-спутнике. |
 
 ## Быстрый выбор по задаче
 
@@ -559,29 +559,29 @@ rws run статья.md --execute --provider deepseek --council sanskrit --journ
 6-стилевая санскритская панель) и `/zaliznyak-council` (девять зализняковских паспортов) —
 см. [SKILLS_INDEX](https://github.com/gasyoun/github-spine/blob/main/SKILLS_INDEX.md).
 
-Основной провайдер — **`deepseek`** (см. [`QUICKSTART.ru.md`](docs/QUICKSTART.ru.md)); также поддерживаются `openai`, `google`, `anthropic`, `openrouter`, `local`, `ollama` и детерминированный `mock`. **Подробные рабочие сценарии** (этимология, журнал, ведийский период, самаса, сверка словарей) — в [`docs/USE_CASES.ru.md`](docs/USE_CASES.ru.md); карта всей документации — в [`docs/README.md`](docs/README.md).
+Основной провайдер — **`deepseek`** (см. [`QUICKSTART.ru.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/QUICKSTART.ru.md)); также поддерживаются `openai`, `google`, `anthropic`, `openrouter`, `local`, `ollama` и детерминированный `mock`. **Подробные рабочие сценарии** (этимология, журнал, ведийский период, самаса, сверка словарей) — в [`docs/USE_CASES.ru.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/USE_CASES.ru.md); карта всей документации — в [`docs/README.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/README.md).
 
 ## Документация разработки
 
-Точка входа — курированная карта документации [`docs/README.md`](docs/README.md), которая раскладывает 35+ файлов `docs/` по аудиториям (с чего начать / доказательная база / цитирование и ИИ / как устроено / рецензии / разработка). Ниже — ключевые документы.
+Точка входа — курированная карта документации [`docs/README.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/README.md), которая раскладывает 35+ файлов `docs/` по аудиториям (с чего начать / доказательная база / цитирование и ИИ / как устроено / рецензии / разработка). Ниже — ключевые документы.
 
-- [`docs/README.md`](docs/README.md) — курированная карта всей документации по аудиториям; основа будущего русского docs-сайта.
-- [`docs/QUICKSTART.ru.md`](docs/QUICKSTART.ru.md) — русский quickstart за пять шагов (установка → ключ DeepSeek в `.env` → первый прогон на готовом примере → своя статья с `--council sanskrit --journal vestnik-spbu` → чтение отчета), плюс offline-путь без ключа.
-- [`docs/USE_CASES.ru.md`](docs/USE_CASES.ru.md) — семь развернутых командных сценариев русскоязычного санскритолога (этимология, подготовка к журналу, ведийский vs классический санскрит, самаса, сверка словарей PW/MW/Apte, транслитерация, сравнение прогонов): ситуация → команда → результат.
-- [`docs/benchmark.md`](docs/benchmark.md) — реальные числа бенчмарка на DeepSeek (детекция / верификация / дисциплина правки) и методологические оговорки (недетерминированность, нужно усреднение по N прогонам).
-- [`docs/case-study-p3-guna.md`](docs/case-study-p3-guna.md) — кейс-стади настоящей статьи (лексикография *guṇa* для «Вестника СПбГУ»): совет `sanskrit` на `deepseek-chat` поймал все три заложенные проблемы на верных спанах.
-- [`docs/roadmap.md`](docs/roadmap.md) описывает развитие проекта от каталога стилей к агентной системе проверки и редакции документов.
-- [`docs/agent-protocol.md`](docs/agent-protocol.md) задает протокол, по которому разные стили проверяют документ, отвечают друг другу и участвуют в итоговой редакции.
-- [`docs/deployment.md`](docs/deployment.md) содержит инструкции по локальному запуску, Docker Compose, FastAPI static deployment и smoke checks.
-- [`docs/project-v2-vision.md`](docs/project-v2-vision.md) суммирует стратегические решения по переходу к промышленному веб-сервису (SQLite, фоновые задачи, локальные LLM).
-- [`docs/scenarios.md`](docs/scenarios.md) содержит практические сценарии использования для филологов, редакторов и разработчиков.
-- [`docs/style-contract.md`](docs/style-contract.md) описывает машинный паспорт стиля: роль, проверки, ограничения и участие в совете стилей.
-- [`docs/provider-roadmaps.md`](docs/provider-roadmaps.md) описывает версии roadmap для OpenAI GPT-5.5, Google Gemini 3.1 Pro и Anthropic Claude Sonnet 4.6.
-- [`docs/cli.md`](docs/cli.md) описывает CLI-слой: загрузку конфигурации, подготовку документа, агентный прогон, `report.md`, `summary.html` и export bundle.
-- [`docs/quickstart.md`](docs/quickstart.md) показывает минимальный запуск пайплайна на демонстрационном документе.
-- [`model_policy.yml`](model_policy.yml) задает стартовую маршрутизацию моделей по задачам.
-- [`styles/manifest.yml`](styles/manifest.yml) и [`styles/passports/`](styles/passports/) начинают машинно-читаемый слой стилей.
-- [`.github/workflows/ci.yml`](.github/workflows/ci.yml) запускает базовые проверки проекта на GitHub Actions.
+- [`docs/README.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/README.md) — курированная карта всей документации по аудиториям; основа будущего русского docs-сайта.
+- [`docs/QUICKSTART.ru.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/QUICKSTART.ru.md) — русский quickstart за пять шагов (установка → ключ DeepSeek в `.env` → первый прогон на готовом примере → своя статья с `--council sanskrit --journal vestnik-spbu` → чтение отчета), плюс offline-путь без ключа.
+- [`docs/USE_CASES.ru.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/USE_CASES.ru.md) — семь развернутых командных сценариев русскоязычного санскритолога (этимология, подготовка к журналу, ведийский vs классический санскрит, самаса, сверка словарей PW/MW/Apte, транслитерация, сравнение прогонов): ситуация → команда → результат.
+- [`docs/benchmark.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/benchmark.md) — реальные числа бенчмарка на DeepSeek (детекция / верификация / дисциплина правки) и методологические оговорки (недетерминированность, нужно усреднение по N прогонам).
+- [`docs/case-study-p3-guna.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/case-study-p3-guna.md) — кейс-стади настоящей статьи (лексикография *guṇa* для «Вестника СПбГУ»): совет `sanskrit` на `deepseek-chat` поймал все три заложенные проблемы на верных спанах.
+- [`docs/roadmap.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap.md) описывает развитие проекта от каталога стилей к агентной системе проверки и редакции документов.
+- [`docs/agent-protocol.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/agent-protocol.md) задает протокол, по которому разные стили проверяют документ, отвечают друг другу и участвуют в итоговой редакции.
+- [`docs/deployment.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/deployment.md) содержит инструкции по локальному запуску, Docker Compose, FastAPI static deployment и smoke checks.
+- [`docs/project-v2-vision.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/project-v2-vision.md) суммирует стратегические решения по переходу к промышленному веб-сервису (SQLite, фоновые задачи, локальные LLM).
+- [`docs/scenarios.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/scenarios.md) содержит практические сценарии использования для филологов, редакторов и разработчиков.
+- [`docs/style-contract.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/style-contract.md) описывает машинный паспорт стиля: роль, проверки, ограничения и участие в совете стилей.
+- [`docs/provider-roadmaps.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/provider-roadmaps.md) описывает версии roadmap для OpenAI GPT-5.5, Google Gemini 3.1 Pro и Anthropic Claude Sonnet 4.6.
+- [`docs/cli.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/cli.md) описывает CLI-слой: загрузку конфигурации, подготовку документа, агентный прогон, `report.md`, `summary.html` и export bundle.
+- [`docs/quickstart.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/quickstart.md) показывает минимальный запуск пайплайна на демонстрационном документе.
+- [`model_policy.yml`](https://github.com/gasyoun/RuWritingStyles/blob/main/model_policy.yml) задает стартовую маршрутизацию моделей по задачам.
+- [`styles/manifest.yml`](https://github.com/gasyoun/RuWritingStyles/blob/main/styles/manifest.yml) и [`styles/passports/`](styles/passports/) начинают машинно-читаемый слой стилей.
+- [`.github/workflows/ci.yml`](https://github.com/gasyoun/RuWritingStyles/blob/main/.github/workflows/ci.yml) запускает базовые проверки проекта на GitHub Actions.
 
 ## Быстрая формула
 
@@ -602,7 +602,7 @@ rws run статья.md --execute --provider deepseek --council sanskrit --journ
 ## Внутренняя документация проекта
 
 - [`ClaudeStyles/`](ClaudeStyles/) хранит готовые пользовательские стили. Один файл - один стиль; файл должен быть самодостаточной инструкцией, которую можно целиком вставить в Claude Custom Style.
-- Исходные PDF, DOC и текстовые извлечения хранятся в приватном репозитории [`RuWritingStyles-corpus`](https://github.com/gasyoun/RuWritingStyles-corpus) (каталог `PDFtoTXT/`); правовой статус — в [`SOURCES.md`](SOURCES.md). Если для стиля есть прямой источник, он должен быть указан в разделе «Исходные материалы». Если источник не один или связь тематическая, это нужно явно называть опорным материалом.
+- Исходные PDF, DOC и текстовые извлечения хранятся в приватном репозитории [`RuWritingStyles-corpus`](https://github.com/gasyoun/RuWritingStyles-corpus) (каталог `PDFtoTXT/`); правовой статус — в [`SOURCES.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/SOURCES.md). Если для стиля есть прямой источник, он должен быть указан в разделе «Исходные материалы». Если источник не один или связь тематическая, это нужно явно называть опорным материалом.
 - При добавлении нового стиля обновляйте как минимум четыре места: «Все созданные стили», «Исходные материалы», «Быстрый выбор по задаче» и reference-ссылки внизу README.
 - При переименовании файла стиля сначала меняйте путь в [`ClaudeStyles/`](ClaudeStyles/), затем все ссылки в README. Видимое русское название стиля может отличаться от технического имени файла.
 - Для зализняковских стилей держите единый принцип именования: в видимом тексте `Зализняк-...`, в файлах допускается существующая латинская транслитерация `zalizniak-...` или `zaliznyak-...`, если так уже назван файл.
@@ -615,7 +615,7 @@ rws run статья.md --execute --provider deepseek --council sanskrit --journ
 
 RuWritingStyles — это не просто набор промптов, а полноценная платформа для высокоточного филологического аудита и миграции текстов: мультиагентный «Совет», иерархическая таксономия из 17 филологических школ, контракт артефактов на JSON-схемах, Web/API-слой на FastAPI и eval-дисциплина.
 
-**Инженерная документация движка** (возможности, филологические школы-кластеры, быстрый старт CLI, feedback loop) вынесена в [`docs/ENGINE.md`](docs/ENGINE.md). Ниже README остается человеко-ориентированным каталогом стилей.
+**Инженерная документация движка** (возможности, филологические школы-кластеры, быстрый старт CLI, feedback loop) вынесена в [`docs/ENGINE.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/ENGINE.md). Ниже README остается человеко-ориентированным каталогом стилей.
 
 [albedil-sbornik]: ClaudeStyles/albedil-sbornik-style.md
 [kazanskiy-korpus]: ClaudeStyles/kazanskiy-korpus-style.md
@@ -664,3 +664,5 @@ RuWritingStyles — это не просто набор промптов, а п�
 _Dr. Mārcis Gasūns_
 
 © 2026 RuWritingStyles Team
+
+_Dr. Mārcis Gasūns_

@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Галерея стилей — ссылки для Custom Style
 
 Каждый стиль — это `.md`-инструкция, которую можно использовать как
@@ -91,3 +93,5 @@ Claude содержимое файла в начале диалога и поп�
 - [Базовый стиль: Литературоведческий структурализм](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/lit_structural-style.md) — `lit_structural`
 - [Базовый стиль: Текстология](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/lit_textology-style.md) — `lit_textology`
 - [Стиль: Ленинградская востоковедная школа — кластерный профиль](https://github.com/gasyoun/RuWritingStyles/blob/main/ClaudeStyles/orient_leningrad-style.md) — `orient_leningrad`
+
+_Dr. Mārcis Gasūns_

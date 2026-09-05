@@ -1,10 +1,12 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Сценарии использования (агентный конвейер)
 
 Готовые рабочие процессы для исследователя-санскритолога: ситуация → команда →
 что вернет конвейер. Все примеры — на провайдере **DeepSeek** (`--provider
 deepseek`, ключ в `.env`); замените на `--provider mock` для бесплатной офлайн-
 проверки структуры. Команды проверены на реальном прогоне (см.
-[`case-study-p3-guna.md`](case-study-p3-guna.md)).
+[`case-study-p3-guna.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/case-study-p3-guna.md)).
 
 > Где смотреть результат: всегда `runs/<id>/report.md` (плюс `references-gost.md`,
 > `revised.md`, `revision.diff`). Находку по фрагменту — `rws findings <id> --span p016`.
@@ -115,4 +117,6 @@ rws validate-run runs/<id>                    # проверить целост�
 | `--council general` | общефилологическая панель (= историческое значение по умолчанию) |
 | `--styles a,b,c` | точечный набор под конкретную задачу (см. `rws list-styles`) |
 
-Полный справочник команд — [`cli.md`](cli.md); установка с нуля — [`QUICKSTART.ru.md`](QUICKSTART.ru.md).
+Полный справочник команд — [`cli.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/cli.md); установка с нуля — [`QUICKSTART.ru.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/QUICKSTART.ru.md).
+
+_Dr. Mārcis Gasūns_

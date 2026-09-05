@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Refactoring Roadmap
 
 This note records the architectural review and the first refactoring pass for
@@ -125,3 +127,5 @@ Potential future migrations:
 
 Add these only when evaluation cases prove the need; otherwise the deterministic
 core should stay small, inspectable, and predictable.
+
+_Dr. Mārcis Gasūns_

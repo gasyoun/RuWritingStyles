@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Prompt / Style-Fidelity Review — 2026-06
 
 Scope: the *content* layer, not the code. Three questions — (1) do the
@@ -5,9 +7,9 @@ machine-readable passports faithfully encode their `ClaudeStyles/*.md` prompts;
 (2) do the styles actually carry a *distinctive philologist's method* or generic
 "be rigorous" boilerplate; (3) does that distinctiveness survive the pipeline
 (review → council → revision → verification). Companion to
-[architecture-review-2026-06.md](architecture-review-2026-06.md),
-[data-schema-review-2026-06.md](data-schema-review-2026-06.md),
-[security-review-2026-06.md](security-review-2026-06.md).
+[architecture-review-2026-06.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/architecture-review-2026-06.md),
+[data-schema-review-2026-06.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/data-schema-review-2026-06.md),
+[security-review-2026-06.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/security-review-2026-06.md).
 
 Method: three parallel read-only sweeps (layer-mapping / pipeline-flow /
 voice-authenticity), claims spot-verified against the manifest and code.
@@ -27,16 +29,16 @@ is broken; all of it is drift between what the catalog *is* and what this author
 
 - **`.md` ↔ passport is faithful and enforced both ways.** 39 `ClaudeStyles/*.md` map
   1:1 to 39 manifest passport entries (21 individual + 18 cluster-prompt); 0 orphans.
-  [validate_project.py](../tools/validate_project.py) compares the two sets for *equality*,
+  [validate_project.py](https://github.com/gasyoun/RuWritingStyles/blob/main/tools/validate_project.py) compares the two sets for *equality*,
   so an unpaired `.md` or a dangling `source_prompt` fails CI. Spot-checked
   zalizniak-method, tronsky-readings, melchuk, elizarenkova-veda, lidova-commentary —
   each passport's `checks`/`limits` compress the `.md`'s actual demands without
   inventing methods or dropping load-bearing ones.
 - **Voice reaches the model verbatim at the stages that judge.** The review prompt
   injects **both** the full passport YAML and the full `.md` instruction
-  ([review.py:244-301](../src/ruwritingstyles/review.py)); deliberation re-injects
+  ([review.py:244-301](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/review.py)); deliberation re-injects
   the passport and every *other* style's findings with `style_id` attribution
-  ([review.py:179-224](../src/ruwritingstyles/review.py)). Distinctiveness is fully
+  ([review.py:179-224](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/review.py)). Distinctiveness is fully
   preserved where a style forms and defends its opinion.
 - **The best passports are unmistakable.** ~16 of 21 encode a real signature:
   `anti_amateur_linguistics` (zalizniak-method), `formal_notation`/`semantic_decomposition`
@@ -49,7 +51,7 @@ is broken; all of it is drift between what the catalog *is* and what this author
 
 ### F1 · The default council is pointed away from the project's subject. `HIGH`
 `mvp_style_ids` = [zalizniak-method, zalizniak-novgorod, tronsky-readings, melchuk,
-averintsev, gasparov] ([manifest.yml:5](../styles/manifest.yml)). The project's whole
+averintsev, gasparov] ([manifest.yml:5](https://github.com/gasyoun/RuWritingStyles/blob/main/styles/manifest.yml)). The project's whole
 purpose is **Russian scientific papers on Sanskrit linguistics**, and the MVP set
 contains **zero of the eight Sanskrit/indology styles** (elizarenkova-veda,
 toporov-etym, panini-traditional, sanskrit-reader, samasa-manual, lidova-commentary,
@@ -75,7 +77,7 @@ signature checks (samasa-manual already has the good `wrong_samasa_type`/`missin
 voices" and label them so in the README.
 
 ### F3 · Generic `checks` dilute discriminability — but less than it looks. `LOW-MEDIUM`
-*(Corrected against measured data — see [audit_passport_checks.py](../tools/audit_passport_checks.py).)*
+*(Corrected against measured data — see [audit_passport_checks.py](https://github.com/gasyoun/RuWritingStyles/blob/main/tools/audit_passport_checks.py).)*
 The qualitative sweep read several check *concepts* as generic (`undefined_term`,
 `missing_example`, `weak_classification`) and inferred wide collusion. The objective
 overlap across the 21 individual passports is much smaller: of **85 distinct checks**,
@@ -94,13 +96,13 @@ overlap defect. `tools/audit_passport_checks.py` makes this re-checkable as pass
 ### F4 · Voice is preserved where styles *judge*, but unverifiable where text is *rewritten*. `MEDIUM`
 The honest finding from the pipeline trace: voice is fully present through review +
 deliberation, then progressively *finding-mediated*:
-- **Council** ([council.py:198-316](../src/ruwritingstyles/council.py)) works from the
+- **Council** ([council.py:198-316](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/council.py)) works from the
   *findings* + cluster weights + a hardcoded conflict matrix — it does **not** re-inject
   any passport/`.md` text. Defensible: the findings *are* each style's distilled verdict.
-- **Revision** ([revision.py:133-143](../src/ruwritingstyles/revision.py)) sees only
+- **Revision** ([revision.py:133-143](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/revision.py)) sees only
   `council.json`. A minority style voted down by the weighting **leaves no trace** in the
   rewrite — there is no "deferred dissent" record.
-- **Verification** ([verification.py:205-227](../src/ruwritingstyles/verification.py))
+- **Verification** ([verification.py:205-227](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/verification.py))
   checks facts-preservation + domain rules + journal limits, but has **no record of which
   styles were selected or what they committed to**, so it cannot confirm the revised text
   honored the council's own style verdict.
@@ -198,3 +200,5 @@ The author chose **drop `overstrong_conclusion`** (F2/F3) and **de-region the we
   explicit `styles/archetypes.yml` weights, which key on `cluster_id`, not city.
   `tests/test_cluster_weights.py` (2). The cluster *memberships* are left as the author's
   documentation, no longer a silent weighting hazard.
+
+_Dr. Mārcis Gasūns_

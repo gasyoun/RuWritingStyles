@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Быстрый старт
 
 От установки до первой рецензии статьи за пять шагов. Конвейер запускает «Совет»
@@ -102,7 +104,9 @@ rws validate-run <run>     # проверить целостность арте�
 ## Дальше
 
 - Как цитировать проект и как декларировать использование ИИ в статье —
-  [`AI_DISCLOSURE.md`](AI_DISCLOSURE.md) и [`../CITATION.cff`](../CITATION.cff).
-- Что модель ловит на реальной статье — [`case-study-p3-guna.md`](case-study-p3-guna.md).
-- Честная оценка качества по золотым кейсам — [`benchmark.md`](benchmark.md).
-- Полный список команд — [`cli.md`](cli.md).
+  [`AI_DISCLOSURE.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/AI_DISCLOSURE.md) и [`../CITATION.cff`](https://github.com/gasyoun/RuWritingStyles/blob/main/CITATION.cff).
+- Что модель ловит на реальной статье — [`case-study-p3-guna.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/case-study-p3-guna.md).
+- Честная оценка качества по золотым кейсам — [`benchmark.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/benchmark.md).
+- Полный список команд — [`cli.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/cli.md).
+
+_Dr. Mārcis Gasūns_

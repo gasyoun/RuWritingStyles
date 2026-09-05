@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Releasing the RuWritingStyles Obsidian plugin
 
 The plugin lives in this subdirectory of the RuWritingStyles monorepo. The three
@@ -92,3 +94,5 @@ deliberate manual actions — they are **not** automated here.
 - [ ] `isDesktopOnly` correct (this plugin is `false` — pure TS, mobile-capable)
 - [ ] tested in a real vault (load, lint a note, quick-fix, journal dropdown)
 - [ ] (official) dedicated repo with root `manifest.json` + bare-version tag
+
+_Dr. Mārcis Gasūns_

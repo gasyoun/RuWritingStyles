@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Провайдерные версии roadmap
 
 > **АРХИВ (помечено 2026-07-03, фаза R2).** Историческое поколение roadmap (GPT-5.5 /
@@ -144,3 +146,5 @@
 - Anthropic Claude models overview: https://platform.claude.com/docs/en/about-claude/models/overview
 - Anthropic Claude Sonnet: https://www.anthropic.com/claude/sonnet
 - Anthropic API rate limits: https://docs.anthropic.com/en/api/rate-limits
+
+_Dr. Mārcis Gasūns_

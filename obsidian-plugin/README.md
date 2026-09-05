@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # RuWritingStyles — Obsidian plugin
 
 Inline, **deterministic** philological checks for Russian Sanskrit-studies notes,
@@ -19,7 +21,7 @@ The MVP surfaces, on the current note (no Python, no server, no API key):
 (`rws web`), runs the multi-agent Council, and writes the revised text to a sibling
 note. Configure the engine URL / token / provider in settings.
 
-See [`docs/obsidian-plugin-plan.md`](../docs/obsidian-plugin-plan.md) for the full
+See [`docs/obsidian-plugin-plan.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/obsidian-plugin-plan.md) for the full
 implementation plan and milestones.
 
 ## Status
@@ -39,7 +41,7 @@ inserts ` (iast)` from the term dictionary.
 
 Both the transliteration linter and the journal check are parity-tested ports of the
 engine — see [Testing](#testing). Releasing (tagging, BRAT, official submission) is
-covered in [`RELEASE.md`](RELEASE.md); official community submission needs a dedicated
+covered in [`RELEASE.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/obsidian-plugin/RELEASE.md); official community submission needs a dedicated
 repo (a monorepo subdirectory can't be submitted directly).
 
 ## Development
@@ -76,3 +78,5 @@ engine's** [`knowledge/`](../knowledge) (single source of truth) by
 ## License
 
 Apache-2.0, matching the parent repository.
+
+_Dr. Mārcis Gasūns_

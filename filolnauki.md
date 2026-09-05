@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 ---
 title:
 source:
@@ -7,3 +9,5 @@ created:
 description:
 tags:
 ---
+
+_Dr. Mārcis Gasūns_

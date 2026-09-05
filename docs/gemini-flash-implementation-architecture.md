@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Gemini Flash Implementation Architecture
 
 Updated: 2026-05-08.
@@ -487,3 +489,4 @@ Feature-specific tests:
 - Do not let Gemini Flash choose provider model IDs without checking official provider docs and updating `model_policy.yml`.
 - Do not make final export possible without traceable human resolution once finalization exists.
 
+_Dr. Mārcis Gasūns_

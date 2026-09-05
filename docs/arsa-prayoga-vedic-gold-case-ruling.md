@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Ruling: *ārṣa prayoga* does not invalidate the `vedic-classical-anachronism` gold case
 
 _Created: 14-08-2026 · Last updated: 14-08-2026 (Q3 ruled YES the same day — the epic passport now carries the clause; §4)_

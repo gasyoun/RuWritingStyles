@@ -1,9 +1,11 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Сценарии использования RuWritingStyles
 
 Этот документ описывает типовые рабочие процессы (workflows) для разных ролей пользователей.
 
 > 📌 **Командная (CLI) версия сценариев с актуальными примерами** (DeepSeek,
-> `--council`, `--journal`, реальный кейс) — в [`USE_CASES.ru.md`](USE_CASES.ru.md).
+> `--council`, `--journal`, реальный кейс) — в [`USE_CASES.ru.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/USE_CASES.ru.md).
 > Этот файл описывает в т. ч. локальную Web Studio и ролевые процессы.
 
 ## 1. Исследователь (Филолог)
@@ -68,3 +70,5 @@
 3. В **Web Studio**:
    - Используйте панель **"Thinking Trace"** для мониторинга живых запросов агента в Zotero, OpenAlex или по локальному корпусу текстов.
    - Если агент нашел цитату в Deep Retrieval (FTS5), она автоматически появится в обосновании правки.
+
+_Dr. Mārcis Gasūns_

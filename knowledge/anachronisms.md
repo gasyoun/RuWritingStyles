@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Dictionary of Philological Anachronisms
 
 ## "Идиом" (Idiom)
@@ -14,3 +16,5 @@
 - **Status**: Standard term.
 - **Context**: Refers specifically to documents on birch bark.
 - **Rule**: Do not confuse with "пергамен" (parchment) documents which follow different orthographic systems (Bookish vs. Everyday).
+
+_Dr. Mārcis Gasūns_

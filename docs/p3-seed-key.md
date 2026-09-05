@@ -1,6 +1,8 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # P3 real-paper run — seeded-problem key (grading rubric)
 
-The draft [`examples/input/lexicography-guna.md`](../examples/input/lexicography-guna.md)
+The draft [`examples/input/lexicography-guna.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/examples/input/lexicography-guna.md)
 is a genuine ~22k-character Russian article on the lexicographic treatment of *guṇa*,
 written for *Вестник СПбГУ. Востоковедение*. Into an otherwise sound draft, **3 problems
 were deliberately seeded** to test what the Council catches. This file is the grading key
@@ -50,7 +52,7 @@ years later.
 ## Scoring
 
 **Result (2026-06-14, `--council sanskrit` on `deepseek-chat`) — see
-[case-study-p3-guna.md](case-study-p3-guna.md):**
+[case-study-p3-guna.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/case-study-p3-guna.md):**
 
 | Seed | Caught? | Finding type(s) | By which style(s) |
 |---|---|---|---|
@@ -66,3 +68,5 @@ the benchmark's "over-rewrite" was a short-doc ratio artifact.
 
 A genuine pass = all 3 caught with on-target finding types and **no excessive false
 positives on the sound remainder of the article** (the rest is intentionally clean). ✅ met.
+
+_Dr. Mārcis Gasūns_
