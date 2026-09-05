@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # RCSI harvest — improvised rulings log (D17)
 
 Append-only. One line per improvised call; the run must finish, every
@@ -52,3 +54,5 @@ improvised call stays visible here.
   live verdict against the frozen expectation at freeze time and refuses to
   write a drift silently; the `mini_en.pdf` regeneration is guarded so re-runs
   work without the `[harvest]` extra (pymupdf) installed.
+
+_Dr. Mārcis Gasūns_

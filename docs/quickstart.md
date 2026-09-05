@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Quickstart
 
 This quickstart runs the current RuWritingStyles pipeline without external API keys.
@@ -132,3 +134,5 @@ $env:OPENAI_API_KEY='...'
 rws provider-status --provider openai --strict
 rws run examples/input/pseudo-etymology.md --execute --provider openai --model gpt-5.5
 ```
+
+_Dr. Mārcis Gasūns_

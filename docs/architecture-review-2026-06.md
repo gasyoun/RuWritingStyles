@@ -1,9 +1,11 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Architecture Review — 2026-06
 
 Scope: whole-system review of RuWritingStyles after Phases 0–2 (corpus split,
 deterministic Sanskrit layer, indology styles). Companion to the earlier
-[architecture-review-phase3.md](architecture-review-phase3.md) and
-[architecture-review-phase4.md](architecture-review-phase4.md).
+[architecture-review-phase3.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/architecture-review-phase3.md) and
+[architecture-review-phase4.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/architecture-review-phase4.md).
 
 Method: three parallel read-only sweeps over `src/ruwritingstyles/`, `tools/`,
 `schemas/`, `tests/`, `web/`, and the agentic modules. Line counts are
@@ -121,3 +123,5 @@ Architecturally healthy at the core, with concentrated, well-understood debt at
 the orchestration seam. The single most valuable change is collapsing the two
 pipelines — it removes the duplication, shrinks `cli.py`, and makes the risky
 code testable at once. Everything else is incremental.
+
+_Dr. Mārcis Gasūns_

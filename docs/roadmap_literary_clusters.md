@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # literary_clusters.md
 # RuWritingStyles: Литературоведческие кластеры и Gemini-Ready Plan
 
@@ -867,3 +869,5 @@ rws eval-suite --provider mock --suite-id literary-baselines-smoke
 ---
 
 *literary_clusters.md готов к передаче. Следующий шаг: L-01 (создать 9 файлов кластерных паспортов) или L-05 (наполнить eval-кейсы реальными фрагментами).*
+
+_Dr. Mārcis Gasūns_

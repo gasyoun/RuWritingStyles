@@ -1,8 +1,10 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Кейс-стади фазы 1: прогон реальной статьи через конвейер
 
 Дата: 2026-06-13. Завершает фазу 1 дорожной карты
-[roadmap-sanskrit-dh.md](roadmap-sanskrit-dh.md) (пункт W6 плана
-[implementation-plan-phase1.md](implementation-plan-phase1.md)).
+[roadmap-sanskrit-dh.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-sanskrit-dh.md) (пункт W6 плана
+[implementation-plan-phase1.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/implementation-plan-phase1.md)).
 
 Цель: прогнать настоящую русскоязычную статью по санскритологии через
 детерминированный слой конвейера (линтер транслитерации, ГОСТ-библиография,
@@ -149,3 +151,5 @@ rws run <article>.md --run-id case --project-dir .rws-project --execute --provid
 # смотреть: runs/case/translit-lint.json, citations.json, references-gost.md,
 #           секцию «Соответствие журналу» в runs/case/report.md
 ```
+
+_Dr. Mārcis Gasūns_

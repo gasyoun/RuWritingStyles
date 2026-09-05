@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Claim-Faithfulness Audit Protocol
 
 This protocol is the first RuWritingStyles borrow from Academic Research Skills
@@ -17,7 +19,7 @@ workflow for later human or paid-provider execution.
 ## Audit Packet
 
 Each audited claim is stored in `claim-faithfulness-audit.json` and validated by
-[`schemas/claim-faithfulness-audit.schema.json`](../schemas/claim-faithfulness-audit.schema.json).
+[`schemas/claim-faithfulness-audit.schema.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/schemas/claim-faithfulness-audit.schema.json).
 
 Required fields per claim:
 
@@ -67,3 +69,5 @@ Use `info` when the source supports the claim and the locator is sufficient.
   approval.
 - Do not treat missing local bibliography coverage as fabrication.
 - Do not copy ARS markdown or prompts into this Apache-licensed repository.
+
+_Dr. Mārcis Gasūns_

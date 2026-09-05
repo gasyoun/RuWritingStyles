@@ -1,12 +1,12 @@
 # Протокол золотого стандарта (GOLD) для санскритских eval-кейсов
 
-_Created: 13-06-2026 · Last updated: 14-08-2026_
+_Created: 13-06-2026 · Last updated: 05-09-2026_
 
 Этот файл задает, **как** санскритские оценочные кейсы (`tags: ["GOLD_SANSKRIT"]`
 в `evals/manifest.json`) становятся золотым стандартом, пригодным для измерения
 качества разных провайдеров (Anthropic / OpenAI / Google) и для статей о
 методике. Завершает пункт «золотой стандарт» фазы 3 дорожной карты
-[../docs/roadmap-sanskrit-dh.md](../docs/roadmap-sanskrit-dh.md).
+[../docs/roadmap-sanskrit-dh.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-sanskrit-dh.md).
 
 ## Два класса кейсов
 
@@ -139,7 +139,7 @@ python tools/gold_annotation.py agree --sheet evals/annotation/sheet-h073gov.jso
 между слоями и есть измеряемая величина: он оценивает дисциплину типизации, а не
 способность находить ошибку. Итог адъюдикации записывается в `gold-annotation-*.json`
 блоком `adjudication` (разметчик, дата, вердикт, эффект, ссылка на аудит-запись). Первое применение и
-числа: [../docs/benchmark.md](../docs/benchmark.md) «Слой 2 (2026-07-11)».
+числа: [../docs/benchmark.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/benchmark.md) «Слой 2 (2026-07-11)».
 
 Итог разметки по каждому экспертному кейсу хранится рядом с прогоном как
 `gold-annotation.json` со схемой:
@@ -205,7 +205,7 @@ rws eval-suite --provider deepseek --repeat 5
 ```
 
 Агрегат (`runs/<agg-id>/eval-aggregate.json`, схема
-[../schemas/eval-aggregate.schema.json](../schemas/eval-aggregate.schema.json),
+[../schemas/eval-aggregate.schema.json](https://github.com/gasyoun/RuWritingStyles/blob/main/schemas/eval-aggregate.schema.json),
 валидируется `rws validate-eval-aggregate`) дает по каждому кейсу: `pass_rate`,
 `detection_rate` (доля прогонов, где ожидаемый тип пойман — независимо от
 diff-лимитов), `diff_ok_rate`, распределение `verification_status` и

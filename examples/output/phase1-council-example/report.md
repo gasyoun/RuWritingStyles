@@ -1,3 +1,5 @@
+_Created: 02-09-2026 · Last updated: 05-09-2026_
+
 # Run Report: phase1-council-example
 
 ## Input
@@ -116,3 +118,5 @@ Status: `completed`
 Схемы в тексте: iast
 
 Замечаний нет.
+
+_Dr. Mārcis Gasūns_

@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Gemini Agent Roadmap: RuWritingStyles
 
 > **АРХИВ (помечено 2026-07-03, фаза R2).** Историческое провайдер-специфичное
@@ -162,3 +164,5 @@
 ### Phase VII: Editor Integrations (Foundation Ready)
 - [x] Obsidian Plugin: Интеграция через Selection API (PoC готов в `docs/obsidian-integration-poc.js`).
 - [x] MS Word Add-in: Академический плагин для Word на базе Selection API.
+
+_Dr. Mārcis Gasūns_

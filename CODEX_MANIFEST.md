@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # RuWritingStyles Codex Manifest (v2.4.0)
 
 This document provides a structured map of the repository for rapid indexing and cross-referencing by AI agents and automated auditors.
@@ -38,3 +40,5 @@ This document provides a structured map of the repository for rapid indexing and
 
 ---
 *Generated automatically for the v2.4.0 Agentic Evolution.*
+
+_Dr. Mārcis Gasūns_

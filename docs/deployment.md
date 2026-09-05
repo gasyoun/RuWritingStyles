@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Инструкция по развертыванию RuWritingStyles
 
 Этот документ различает четыре режима: checkout для разработки, установленный wheel с редактируемым workspace, production Web Studio из wheel и контейнер с одним writable volume.
@@ -175,3 +177,5 @@ npm run build
 - `run.json` — durable source of truth; `rws.db` является rebuildable index.
 - `provider.log.jsonl` пишет duration/retry/status и budget consumption без API-ключей и полного request body.
 - Для конфиденциальных текстов используйте `mock`, `local` или `ollama`; внешние провайдеры всегда opt-in через явный `--provider`.
+
+_Dr. Mārcis Gasūns_

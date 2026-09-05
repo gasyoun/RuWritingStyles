@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Phase III Architecture: Zotero MCP Integration
 
 ## 1. Executive Summary
@@ -49,3 +51,5 @@ The current verification logic must be updated to support the MCP fallback:
 ## 5. Security & Isolation (Sandbox Boundaries)
 - The Zotero API key must **never** be exposed to the LLM. It remains securely within the environment variables accessed only by the MCP Server.
 - The MCP Client will strictly validate all tool calls originating from the LLM before passing them to the server to prevent prompt injection attacks aimed at deleting or modifying Zotero libraries (Read-Only access enforced).
+
+_Dr. Mārcis Gasūns_

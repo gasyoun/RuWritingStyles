@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Borrowing from Academic Research Skills (ARS) — integration notes
 
 **Status:** first non-provider scaffold landed 2026-06-26 · **Author of note:** Claude Code session 2026-06-22 · **Decision owner:** M. Gasūns
@@ -24,14 +26,14 @@ machinery ARS has already hardened. ARS is a *parts donor*, not a competitor.
 
 | Repo | License | Nature |
 |---|---|---|
-| RuWritingStyles | **Apache 2.0** ([LICENSE](../LICENSE)) | permissive — allows commercial use |
+| RuWritingStyles | **Apache 2.0** ([LICENSE](https://github.com/gasyoun/RuWritingStyles/blob/main/LICENSE)) | permissive — allows commercial use |
 | ARS | **CC BY-NC 4.0** | source-available, **non-commercial**, attribution required, *not* OSI open source |
 
 These do **not** mix cleanly:
 
 - **CC BY-NC 4.0 content cannot be relicensed under Apache 2.0.** If we copy ARS markdown
   verbatim, those files stay CC BY-NC 4.0 per-file; the repo's blanket Apache grant in
-  [LICENSE](../LICENSE) / [SOURCES.md](../SOURCES.md) no longer covers them, and the **NC clause
+  [LICENSE](https://github.com/gasyoun/RuWritingStyles/blob/main/LICENSE) / [SOURCES.md](https://github.com/gasyoun/RuWritingStyles/blob/main/SOURCES.md) no longer covers them, and the **NC clause
   taints that subtree** — downstream commercial reuse of those specific files is forbidden. That
   is a meaningful regression for an Apache repo whose whole point is permissive reuse.
 
@@ -50,7 +52,7 @@ These do **not** mix cleanly:
 
 If a specific ARS file is ever worth vendoring **verbatim**, isolate it: put it under
 `third_party/ars/` with its own `LICENSE` (CC BY-NC 4.0) + `NOTICE`, and record the carve-out in
-[SOURCES.md](../SOURCES.md). Accept that that subtree loses Apache's commercial-use freedom. Prefer
+[SOURCES.md](https://github.com/gasyoun/RuWritingStyles/blob/main/SOURCES.md). Accept that that subtree loses Apache's commercial-use freedom. Prefer
 not to.
 
 ### Ready-to-paste attribution (use when the first borrow lands)
@@ -91,20 +93,20 @@ refuse classes (claim-not-supported, fabricated-reference, anchorless, …).
 - [`academic-pipeline/agents/claim_ref_alignment_audit_agent.md`](https://github.com/Imbad0202/academic-research-skills/blob/main/academic-pipeline/agents/claim_ref_alignment_audit_agent.md)
 - [`academic-paper/references/anti_leakage_protocol.md`](https://github.com/Imbad0202/academic-research-skills/blob/main/academic-paper/references/anti_leakage_protocol.md)
 
-**RuWritingStyles today:** [citations.py](../src/ruwritingstyles/citations.py) +
-[verification.py](../src/ruwritingstyles/verification.py) emit a `hallucinated_citation` finding,
-grounded against [knowledge/bibliography.json](../knowledge/bibliography.json). But grounding is
+**RuWritingStyles today:** [citations.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/citations.py) +
+[verification.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/verification.py) emit a `hallucinated_citation` finding,
+grounded against [knowledge/bibliography.json](https://github.com/gasyoun/RuWritingStyles/blob/main/knowledge/bibliography.json). But grounding is
 **presence-only** — the Phase-1 open item is that an unpopulated bib flags every real citation as
-hallucinated ([docs/case-study-phase1.md](case-study-phase1.md)).
+hallucinated ([docs/case-study-phase1.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/case-study-phase1.md)).
 
 **Upgrade:** re-implement ARS's claim→source *support* check as a new deterministic-ish stage
 (claim is anchored to a `span_id`; verifier checks the cited source backs the claim, not just that
 the ref resolves). Adds HIGH-WARN classes to `verification.schema.json`. **Unblocks** the Phase-1
 citation-grounding gap. No ARS files copied.
 
-**First scaffold landed 2026-06-26:** [`claim-faithfulness-audit.md`](claim-faithfulness-audit.md)
+**First scaffold landed 2026-06-26:** [`claim-faithfulness-audit.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/claim-faithfulness-audit.md)
 defines the local packet/workflow, and
-[`claim-faithfulness-audit.schema.json`](../schemas/claim-faithfulness-audit.schema.json)
+[`claim-faithfulness-audit.schema.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/schemas/claim-faithfulness-audit.schema.json)
 validates claim-level support status, locator, severity, rationale, and reviewer action. This is
 still a protocol scaffold, not a provider run over unpublished text.
 
@@ -113,16 +115,16 @@ still a protocol scaffold, not a provider run over unpublished text.
 **ARS:** measures its own false-negative / false-positive rate against a user-supplied gold set —
 [`academic-paper-reviewer/references/calibration_mode_protocol.md`](https://github.com/Imbad0202/academic-research-skills/blob/main/academic-paper-reviewer/references/calibration_mode_protocol.md).
 
-**RuWritingStyles today:** [evals.py](../src/ruwritingstyles/evals.py) +
-[assess.py](../src/ruwritingstyles/assess.py) + [scrutiny.py](../src/ruwritingstyles/scrutiny.py),
+**RuWritingStyles today:** [evals.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/evals.py) +
+[assess.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/assess.py) + [scrutiny.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/scrutiny.py),
 44 eval cases, [evals/GOLD_PROTOCOL.md] — but roadmap **P2** ("measure real DeepSeek quality →
-fill [docs/benchmark.md](benchmark.md)") is blocked on *how to measure*. [benchmark.md](benchmark.md)
+fill [docs/benchmark.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/benchmark.md)") is blocked on *how to measure*. [benchmark.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/benchmark.md)
 is empty.
 
 **Upgrade:** adopt ARS's FNR/FPR-against-gold methodology as the protocol for the DeepSeek council
 benchmark. Plugs straight into the existing gold cases. **Unblocks P2.**
 
-**First scaffold landed 2026-06-26:** [`reviewer-calibration-protocol.md`](reviewer-calibration-protocol.md)
+**First scaffold landed 2026-06-26:** [`reviewer-calibration-protocol.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/reviewer-calibration-protocol.md)
 defines true/false positive and false-negative measurements, reviewer agreement, and the gate
 before claim-faithfulness warnings feed the main verification report.
 
@@ -136,13 +138,13 @@ Revision Roadmap, and has a `re-review` verification mode. See
 and [`templates/editorial_decision_template.md`](https://github.com/Imbad0202/academic-research-skills/blob/main/academic-paper-reviewer/templates/editorial_decision_template.md).
 
 **RuWritingStyles today:** named councils (`general`/`sanskrit`/`indology`) in
-`styles/manifest.yml`, driven by [council.py](../src/ruwritingstyles/council.py) +
-[peer_review.py](../src/ruwritingstyles/peer_review.py) + [review.py](../src/ruwritingstyles/review.py)
+`styles/manifest.yml`, driven by [council.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/council.py) +
+[peer_review.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/peer_review.py) + [review.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/review.py)
 — the F1 "named councils" feature, but thinner.
 
 **Upgrade:** model the `indology` council on ARS's persona structure — add a devil's-advocate
 seat, non-overlapping perspective assignment, an editorial-decision-letter output, and a re-review
-mode in [revision.py](../src/ruwritingstyles/revision.py)/[verification.py](../src/ruwritingstyles/verification.py).
+mode in [revision.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/revision.py)/[verification.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/verification.py).
 
 ### 4. Russian "AI-tells" writing-quality check
 
@@ -151,9 +153,9 @@ catches machine-prose patterns (overused terms, em-dash overuse, throat-clearing
 paragraph length, monotonous rhythm) + Style Calibration that learns voice from 3+ past papers.
 
 **RuWritingStyles today:** the whole point of the repo is style — passports +
-[styleguide.py](../src/ruwritingstyles/styleguide.py) + [profiling.py](../src/ruwritingstyles/profiling.py)
-+ [style_evolution.py](../src/ruwritingstyles/style_evolution.py) +
-[docs/style-contract.md](style-contract.md).
+[styleguide.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/styleguide.py) + [profiling.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/profiling.py)
++ [style_evolution.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/style_evolution.py) +
+[docs/style-contract.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/style-contract.md).
 
 **Upgrade:** build a **Russian** AI-tells checklist (Russian machine-prose patterns differ from
 English) as a deterministic check, complementing the style passports. Squarely in our wheelhouse;
@@ -165,7 +167,7 @@ re-implement, don't copy (ARS's list is English).
 > check must stay a **style-quality signal** — flag clichés / monotonous rhythm to *improve the
 > prose* — and must **never** be framed as an origin classifier, an "is this AI?" score, or an
 > accusation tool. It produces editing suggestions for the author, not a verdict on authorship.
-> This keeps the feature consistent with [AI_DISCLOSURE.md](AI_DISCLOSURE.md)'s
+> This keeps the feature consistent with [AI_DISCLOSURE.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/AI_DISCLOSURE.md)'s
 > disclose-don't-detect stance.
 
 ### 5. Plugin packaging for distribution
@@ -174,8 +176,8 @@ re-implement, don't copy (ARS's list is English).
 ([marketplace.json](https://github.com/Imbad0202/academic-research-skills/blob/main/.claude-plugin/marketplace.json),
 `/ars-plan`, `/ars-full`, …).
 
-**RuWritingStyles today:** a pip CLI ([cli.py](../src/ruwritingstyles/cli.py), ~80 subcommands) +
-[gallery.py](../src/ruwritingstyles/gallery.py). Roadmap 2.8 wants "installable CLI + Claude style
+**RuWritingStyles today:** a pip CLI ([cli.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/cli.py), ~80 subcommands) +
+[gallery.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/gallery.py). Roadmap 2.8 wants "installable CLI + Claude style
 gallery."
 
 **Upgrade:** wrap the core flows (`run`, `lint-translit`, `journals`, `councils`) as a thin Claude
@@ -192,11 +194,11 @@ sanctioned pattern.
 - **Citation-API protocols** — ARS's
   [`crossref_api_protocol.md`](https://github.com/Imbad0202/academic-research-skills/blob/main/deep-research/references/crossref_api_protocol.md)
   / `openalex_api_protocol.md` / `source_quality_hierarchy.md` can harden
-  [researcher.py](../src/ruwritingstyles/researcher.py) and auto-enrich GOST refs
-  ([gost.py](../src/ruwritingstyles/gost.py), [bibtex.py](../src/ruwritingstyles/bibtex.py)) from
+  [researcher.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/researcher.py) and auto-enrich GOST refs
+  ([gost.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/gost.py), [bibtex.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/bibtex.py)) from
   canonical metadata.
 - **AI-disclosure / process record** — ARS auto-generates a "Paper Creation Process Record"; we
-  already have [docs/AI_DISCLOSURE.md](AI_DISCLOSURE.md), so this is a small enhancement matching
+  already have [docs/AI_DISCLOSURE.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/AI_DISCLOSURE.md), so this is a small enhancement matching
   our ethos.
 
 ---
@@ -216,3 +218,5 @@ sanctioned pattern.
 - Do not let the AI-tells check (#4) become an AI-detector / authorship verdict — it is a
   style-quality signal only (Bassett et al. 2026; see the guardrail under borrow #4).
 - Do not assume ARS's `ANTHROPIC_API_KEY`-first defaults; our primary provider is DeepSeek.
+
+_Dr. Mārcis Gasūns_

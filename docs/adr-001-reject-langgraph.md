@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Architecture Decision Record (ADR) 001: Rejection of LangGraph and Future Phases Roadmap
 
 **Date**: 2026-05-10  
@@ -37,3 +39,5 @@ The following trajectory has been officially approved for the RuWritingStyles pr
 - **Integrations Approved**: **Obsidian** and **MS Word** plugins.
 - **Integrations Rejected**: VS Code (deemed unnecessary for the target demographic of academic philologists).
 - **Implementation**: Expose the FastAPI endpoints so a researcher can highlight a paragraph in Word/Obsidian, hit a hotkey, and have the Socratic Council rewrite it to match a specific stylistic passport (e.g., "Bakhtin" or "Zaliznyak") instantly.
+
+_Dr. Mārcis Gasūns_

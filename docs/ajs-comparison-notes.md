@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Comparison with Awesome-Journal-Skills (AJS) — notes
 
 **Status:** comparison / no borrow yet · **Author of note:** Claude Code session 2026-06-25 · **Decision owner:** M. Gasūns
@@ -22,7 +24,7 @@ over a single manuscript. The functional overlap is near-nil:
 
 - AJS has **no Russian, no GOST Р 7.0.100-2018, no IAST / русская передача, no indology, no
   multi-agent review council.** It does not make RuWritingStyles redundant and is not the same
-  genre as it (cf. [ars-integration-notes.md](ars-integration-notes.md) — ARS *is* the same genre
+  genre as it (cf. [ars-integration-notes.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/ars-integration-notes.md) — ARS *is* the same genre
   and *is* a methods donor; AJS is neither).
 - AJS's target venues (econ / Nature / Cell / Chinese-language) **do not include any
   RuWritingStyles target** (Вестник СПбГУ, ИЯКФ / чтения памяти Тронского, DH journals). So there
@@ -39,22 +41,22 @@ over a single manuscript. The functional overlap is near-nil:
 So AJS is the *easier* donor legally: you could adapt pack text directly. The reason to still
 re-implement is practical (its packs are for the wrong venues/languages), not legal. If any AJS
 text is ever copied verbatim, keep the MIT `LICENSE`/attribution with it and record it in
-[SOURCES.md](../SOURCES.md) — but a one-line MIT credit, not the `third_party/` carve-out ARS needs.
+[SOURCES.md](https://github.com/gasyoun/RuWritingStyles/blob/main/SOURCES.md) — but a one-line MIT credit, not the `third_party/` carve-out ARS needs.
 
 ## The one concrete borrow: a richer journal-profile schema
 
 RuWritingStyles' journal layer is thin — 3 presets
 ([knowledge/journals/](../knowledge/journals/): `vya`, `ppv`, `vestnik-spbu`) over a small
-[journal-profile.schema.json](../schemas/journal-profile.schema.json) (`max_chars`,
+[journal-profile.schema.json](https://github.com/gasyoun/RuWritingStyles/blob/main/schemas/journal-profile.schema.json) (`max_chars`,
 `citation_format`, `transliteration_scheme`, `first_mention_rule`, `abstract_required`,
 `keywords_required`, `notes`). AJS's value is the **wider model of what a journal profile should
 capture**, observed across hundreds of venues. Candidate fields to lift from AJS's structure
 (re-implemented for our deterministic checks, not copied):
 
 - **abstract word limit** — ✅ **SHIPPED (v2.10.4).** `abstract_max_words` is now a checkable
-  field: [report.py](../src/ruwritingstyles/report.py)'s `journal_compliance` extracts the abstract
+  field: [report.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/report.py)'s `journal_compliance` extracts the abstract
   body per language and counts words; over-limit is flagged in the report and the Obsidian panel.
-  Backfilled on [vestnik-spbu.json](../knowledge/journals/vestnik-spbu.json) (`200`), converting
+  Backfilled on [vestnik-spbu.json](https://github.com/gasyoun/RuWritingStyles/blob/main/knowledge/journals/vestnik-spbu.json) (`200`), converting
   the old prose note "расширенная, до 200 слов" into an enforced rule. The gúṇa article reports
   114/200 — OK. This was the concrete trigger that motivated the whole AJS comparison.
 - **structure / section order** — required sections and their order (e.g. IMRaD vs. humanities
@@ -65,10 +67,10 @@ capture**, observed across hundreds of venues. Candidate fields to lift from AJS
   "rebuttal helper" rather than the review pipeline.
 
 **Pattern for the remaining fields (prose note → enforced rule):** add the optional field to
-`journal-profile.schema.json`; teach [report.py](../src/ruwritingstyles/report.py)'s
+`journal-profile.schema.json`; teach [report.py](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/report.py)'s
 `journal_compliance` to check it deterministically (no provider call); **mirror it in the Obsidian
-port** [obsidian-plugin/src/lint/journal.ts](../obsidian-plugin/src/lint/journal.ts) +
-[types.ts](../obsidian-plugin/src/lint/types.ts) and regenerate fixtures
+port** [obsidian-plugin/src/lint/journal.ts](https://github.com/gasyoun/RuWritingStyles/blob/main/obsidian-plugin/src/lint/journal.ts) +
+[types.ts](https://github.com/gasyoun/RuWritingStyles/blob/main/obsidian-plugin/src/lint/types.ts) and regenerate fixtures
 (`python tools/export_journal_fixtures.py`); backfill the presets. The `abstract_max_words` commit
 is the worked example to copy — note the engine↔TS parity obligation enforced by
 `obsidian-plugin/test/journal.test.ts`.
@@ -80,3 +82,5 @@ is the worked example to copy — note the engine↔TS parity obligation enforce
   discipline-specific and none match our target journals.
 - Do not over-build the journal schema speculatively — add a field only when a real target
   journal needs it (Вестник СПбГУ's 200-word abstract is the one concrete trigger today).
+
+_Dr. Mārcis Gasūns_

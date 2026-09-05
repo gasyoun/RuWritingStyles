@@ -1,6 +1,6 @@
 # Бенчмарк провайдеров по санскритским eval-кейсам
 
-_Created: 13-06-2026 · Last updated: 31-07-2026_
+_Created: 13-06-2026 · Last updated: 05-09-2026_
 
 Точность реальных провайдеров на экспертных золотых кейсах: санскритских
 (`tags: ["GOLD_SANSKRIT"]` без `deterministic`) и — с 18-07-2026 (H1213) —
@@ -17,7 +17,7 @@ _Created: 13-06-2026 · Last updated: 31-07-2026_
    уложилась ли ревизия в пределы точности правки (diff-fidelity). Дешево,
    воспроизводимо, не требует человека.
 2. **Экспертная разметка (еще впереди).** «Золотой стандарт» по
-   [../evals/GOLD_PROTOCOL.md](../evals/GOLD_PROTOCOL.md) требует ≥2 независимых
+   [../evals/GOLD_PROTOCOL.md](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/GOLD_PROTOCOL.md) требует ≥2 независимых
    разметчиков на кейс. Автоматическое совпадение типа находки **не равно**
    экспертно подтвержденному качеству; цифры ниже — слой 1, не слой 2.
 
@@ -57,7 +57,7 @@ _Created: 13-06-2026 · Last updated: 31-07-2026_
 промпта/политики, а не детекции.
 
 **Уточнение (P3, полная статья ~22k знаков, см.
-[case-study-p3-guna.md](case-study-p3-guna.md)):** на тексте реальной длины ревизия
+[case-study-p3-guna.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/case-study-p3-guna.md)):** на тексте реальной длины ревизия
 осталась соразмерной (Δ символов 0.18 / строк 0.22 — в пределах лимитов). Превышение
 выше — артефакт коротких (~500 знаков) кейсов, где любая вставка дает большую долю.
 Ужесточать ревизию по-прежнему полезно для коротких заметок, но это не общий дефект. После нее — повторить прогон и, при стабильной
@@ -166,7 +166,7 @@ deepseek-chat. **Симптом `missing` устранен полностью:**
 
 ## Протокол N=5 (2026-07-03): усредненный бенчмарк — конец single-run цифрам
 
-Полный платный протокол фазы B1 ([roadmap-2026-q3.md](roadmap-2026-q3.md)):
+Полный платный протокол фазы B1 ([roadmap-2026-q3.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-2026-q3.md)):
 5 золотых кейсов × **N=5 независимых прогонов** на `deepseek-chat` через новый
 харнесс `rws eval-run --repeat N` (агрегат `eval-aggregate.json`). Модель:
 `deepseek-chat`, который API DeepSeek на 2026-07-03 **резолвит в
@@ -197,7 +197,7 @@ Claude Opus 4.8 (`claude-opus-4-8`), 2026-07-03.
 3. **Прежние одиночные прогоны (0/5…3/5) были выборками из этого распределения** —
    ни одна из тех цифр не была «регрессией» или «прогрессом».
 4. **Политика меток работает:** `accepted_finding_aliases` (см.
-   [../evals/GOLD_PROTOCOL.md](../evals/GOLD_PROTOCOL.md)) сняла провал типа
+   [../evals/GOLD_PROTOCOL.md](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/GOLD_PROTOCOL.md)) сняла провал типа
    «нашел `unsupported_etymology` вместо `unsupported_sanskrit_etymology`» из
    прогона 2026-06-30 — детекция засчитывается по каноническому типу.
 
@@ -297,7 +297,7 @@ eval-путь (`execution.py`) вообще **не читал** `model_policy.ym
 
 Повтор того же протокола (5 золотых кейсов × N=5, `deepseek-chat` →
 `deepseek-v4-flash`) на пайплайне со **span-patch-реконструкцией + growth-губернатором**
-(Phase B2 [roadmap-2026-q3.md](roadmap-2026-q3.md)): модель возвращает только
+(Phase B2 [roadmap-2026-q3.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-2026-q3.md)): модель возвращает только
 пер-спановые `applied_changes` (`{span_id, replacement_text, …}`), движок сам
 собирает `revised.md`, копируя нетронутые спаны байт-в-байт, и **отклоняет**
 патчи, превышающие бюджет роста документа
@@ -474,7 +474,7 @@ hedge» — ревизия действительно оставила смеш�
 ## Словарный регистр GOLD_DICTIONARY (2026-07-18, H1213): 37/40 = 0.925, детекция 39/40 = 0.975
 
 Первый прогон нового словарного золотого набора (8 кейсов `dict-*`,
-[../evals/GOLD_PROTOCOL.md](../evals/GOLD_PROTOCOL.md) § «Словарный золотой набор»):
+[../evals/GOLD_PROTOCOL.md](https://github.com/gasyoun/RuWritingStyles/blob/main/evals/GOLD_PROTOCOL.md) § «Словарный золотой набор»):
 каждый кейс — pwg_ru-карточка с одним заложенным нарушением регистра; рецензируют
 `academic-dictionary-entry` + профильный второй стиль кейса. Конфигурация —
 продакшен-маршрутизация как в H770 O4 (`use_routes`: рецензии/синтез на
@@ -519,3 +519,5 @@ hedge» — ревизия действительно оставила смеш�
 (min_required_matches=1), но это измеренный резерв доводки `should_defer`.
 Артефакты: [../evals/annotation/](../evals/annotation/) `sheet-h1213dict.json`,
 `raterB-h1213dict.json`, `gold-annotation-dict-*.json`.
+
+_Dr. Mārcis Gasūns_

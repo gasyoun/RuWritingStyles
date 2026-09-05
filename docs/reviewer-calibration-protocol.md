@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Reviewer Calibration Protocol
 
 This protocol turns claim-faithfulness review into a measurable process before
@@ -8,7 +10,7 @@ it is used for publication decisions.
 - A frozen run directory with `segments.json`, `revised.md` or `normalized.md`,
   `citations.json`, and any human notes.
 - A `claim-faithfulness-audit.json` packet following
-  [`schemas/claim-faithfulness-audit.schema.json`](../schemas/claim-faithfulness-audit.schema.json).
+  [`schemas/claim-faithfulness-audit.schema.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/schemas/claim-faithfulness-audit.schema.json).
 - Two independent reviewers for expert cases, named anonymously as `A` and `B`.
 
 ## Measures
@@ -43,3 +45,5 @@ For a calibrated packet, report:
 Claim-faithfulness warnings may feed the main verification report only after a
 calibration note records at least one double-reviewed packet and the false
 positive / false negative definitions above are applied consistently.
+
+_Dr. Mārcis Gasūns_

@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # CLI
 
 RuWritingStyles CLI starts with a deliberately small command set. It prepares reproducible run artifacts, creates prompts for style agents, can execute them through a provider, and keeps Markdown plus static HTML reports for each run.
@@ -714,3 +716,5 @@ The current tests cover Markdown segmentation, the full offline pipeline, mock p
 ```text
 rws run README.md --run-id unittest-readme
 ```
+
+_Dr. Mārcis Gasūns_

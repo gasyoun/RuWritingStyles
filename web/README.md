@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # RuWritingStyles Web Studio
 
 React/Vite frontend for the RuWritingStyles FastAPI backend.
@@ -34,3 +36,5 @@ The production bundle is written to `web/dist`. When `web/dist` exists, `python 
 - Profile view: methodological compass and Bloom/council metadata.
 - Syntax view: significant syntax shift artifacts.
 - Compare view: multi-run profile comparison through `/api/compare`.
+
+_Dr. Mārcis Gasūns_

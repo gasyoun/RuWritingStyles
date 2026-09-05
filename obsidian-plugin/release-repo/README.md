@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # RuWritingStyles for Obsidian
 
 Inline philological checks for Russian Sanskrit-studies notes: IAST transliteration
@@ -48,3 +50,5 @@ Everything upstream — engine, tests, roadmap — lives in the monorepo:
 ## License
 
 Apache-2.0.
+
+_Dr. Mārcis Gasūns_

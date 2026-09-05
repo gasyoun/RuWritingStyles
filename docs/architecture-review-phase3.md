@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Architectural Review: Phase II Completion & Phase III Design
 
 **Date**: 2026-05-10
@@ -44,3 +46,5 @@ The proposed architecture in `phase3-zotero-mcp-architecture.md` correctly ident
 3. **Rejection of LangGraph Orchestration**
    - **Risk**: The current project roadmap suggests migrating to LangGraph or Smolagents for Phase III orchestration. Our existing linear pipeline backed by SQLite provides superior observability, durable checkpointing (`rws resume`), and strict adherence to the "Harness Over Model" standard.
    - **Constraint**: **Do not migrate to LangGraph.** Maintain the custom harness. MCP routing and tool-use logic can be implemented directly within our existing `council.py` and `verification.py` nodes without abandoning the highly stable SQLite-backed infrastructure.
+
+_Dr. Mārcis Gasūns_

@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # Obsidian plugin — implementation plan (lightweight inline checks MVP)
 
 > **Кратко (рус.):** план плагина для Obsidian. **MVP** — легкие детерминированные
@@ -37,9 +39,9 @@ about sending drafts to a provider.
 - **Markdown is the native format.** A note *is* the Markdown the engine already
   ingests — no `.docx` ↔ Markdown bridge (the thing that makes Word the harder target).
 - **The deterministic layer is already isolated** in the engine
-  ([`src/ruwritingstyles/translit_lint.py`](../src/ruwritingstyles/translit_lint.py)
+  ([`src/ruwritingstyles/translit_lint.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/translit_lint.py)
   and the journal section of
-  [`src/ruwritingstyles/report.py`](../src/ruwritingstyles/report.py)). It has no LLM
+  [`src/ruwritingstyles/report.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/report.py)). It has no LLM
   dependency, so it ports cleanly to TypeScript.
 - **Instant feedback loop.** Inline highlights as you write beat a multi-minute
   council run for the everyday "did I gloss every term on first mention?" question.
@@ -68,7 +70,7 @@ target is the Python, enforced by golden fixtures ([§9](#9-parity-testing-keep-
 
 ### 4.1 Transliteration linter
 
-Port of [`translit_lint.py`](../src/ruwritingstyles/translit_lint.py). Five finding
+Port of [`translit_lint.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/translit_lint.py). Five finding
 types (the `FINDING_TYPES` tuple), unchanged:
 
 | type | severity | scope | rule (Python ref) |
@@ -98,7 +100,7 @@ Helpers to port verbatim (all pure-string, all portable to JS):
 
 ### 4.2 Journal-compliance presence check
 
-Port of `_journal_section` in [`report.py`](../src/ruwritingstyles/report.py). Given a
+Port of `_journal_section` in [`report.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/report.py). Given a
 selected journal profile it reports, **deterministically**:
 
 - **Length:** `chars / max_chars` with an over-limit flag. *Parity caveat:* Python
@@ -115,7 +117,7 @@ The profile's `first_mention_rule` also feeds the linter (§4.1).
 
 The plugin bundles copies of:
 
-- [`knowledge/sanskrit-terms.json`](../knowledge/sanskrit-terms.json) — the term
+- [`knowledge/sanskrit-terms.json`](https://github.com/gasyoun/RuWritingStyles/blob/main/knowledge/sanskrit-terms.json) — the term
   dictionary (`{ru, iast, source, note?, proper_noun?}`; currently 61 terms).
 - [`knowledge/journals/*.json`](../knowledge/journals) — the journal profiles
   (`vya`, `ppv`, `vestnik-spbu`).
@@ -250,7 +252,7 @@ a one-click "Вставить IAST" fix.
 `obsidian-v0.1.0` tag (the workflow builds + attaches the assets); for official
 community-directory submission, publish from a **dedicated repo** with root
 `manifest.json` (the monorepo subdirectory can't be submitted directly). Full
-steps + the dedicated-repo rationale: [`obsidian-plugin/RELEASE.md`](../obsidian-plugin/RELEASE.md).
+steps + the dedicated-repo rationale: [`obsidian-plugin/RELEASE.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/obsidian-plugin/RELEASE.md).
 
 > **Development note:** the work runs in a dedicated git **worktree** on
 > `feat/obsidian-plugin` (an external actor repeatedly switches the main checkout's
@@ -263,7 +265,7 @@ steps + the dedicated-repo rationale: [`obsidian-plugin/RELEASE.md`](../obsidian
 | **M2** ✅ | Inline UI | Findings render via `@codemirror/lint` (underlines + hover + problems panel + F8 nav); locator maps findings to editor ranges; status-bar counts. |
 | **M3** ✅ | Journal compliance | Journal dropdown drives `first_mention_rule`; length + abstract/keywords presence match the engine report on the gúṇa article (parity-tested via a pure `journal_compliance()` helper). |
 | **M4** ✅ | Quick-fix + settings | First-mention IAST insertion (CM6 lint action, dictionary-resolved); per-finding-type toggles. (Lint-on-save dropped — M2's native linter is already continuous + debounced, so it's redundant.) |
-| **M5** ✅ | Packaging | Release workflow (tag `obsidian-v*` → builds + tests + attaches `main.js`/`manifest.json`/`styles.css` + zip) and [`RELEASE.md`](../obsidian-plugin/RELEASE.md) (manual/BRAT install + the dedicated-repo path for official submission). The release/tag, BRAT add, and community PR are author actions — outward + need the repo-structure decision. |
+| **M5** ✅ | Packaging | Release workflow (tag `obsidian-v*` → builds + tests + attaches `main.js`/`manifest.json`/`styles.css` + zip) and [`RELEASE.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/obsidian-plugin/RELEASE.md) (manual/BRAT install + the dedicated-repo path for official submission). The release/tag, BRAT add, and community PR are author actions — outward + need the repo-structure decision. |
 
 M0–M3 are the MVP the author signed off on; M4–M5 are fast-follow.
 
@@ -335,3 +337,5 @@ This operationalizes the roadmap item that v2.9.2 honestly re-labelled: the
 Obsidian/Word plugins are *deferred prototypes* with only the FastAPI API layer built.
 This plan is the path from "API layer only" to a shipped, zero-setup Obsidian plugin,
 with the full Council audit as the documented Tier-2 follow-on.
+
+_Dr. Mārcis Gasūns_

@@ -1,3 +1,5 @@
+_Created: 24-08-2026 · Last updated: 05-09-2026_
+
 # RuWritingStyles: Критика, Стилистические группы и Gemini-Ready Plan
 
 > **АРХИВ (помечено 29-07-2026, H1879).** Этот документ отражает ранний
@@ -1060,3 +1062,5 @@ eval_suite: evals/clusters/mts_suite.json
 ---
 
 *Документ обновлен: добавлены паспорта пяти лингвистов и восьмой кластер МТШ. Следующий шаг — `literary_clusters.md`.*
+
+_Dr. Mārcis Gasūns_
