@@ -66,7 +66,7 @@ The two tiers share the **Finding** shape so both render through the same lint-d
 ## 4. The checks to port (source of truth + exact semantics)
 
 The port must be **behaviour-identical** to the engine. Source of truth and parity
-target is the Python, enforced by golden fixtures ([§9](#9-parity-testing-keep-ts--python)).
+target is the Python, enforced by golden fixtures ([§9](#9-parity-testing-keep-ts-python)).
 
 ### 4.1 Transliteration linter
 
