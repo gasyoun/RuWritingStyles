@@ -30,7 +30,7 @@ to `127.0.0.1`.
 ## Corrections to the raw sweep (verified)
 
 - **"Live API keys committed to a public repo" — FALSE.** `git ls-files .env` is empty and
-  `git log --all -- .env` is empty: `.env` is gitignored ([.gitignore:8](.gitignore)) and
+  `git log --all -- .env` is empty: `.env` is gitignored (.gitignore:8) and
   **was never committed**. The agent read the *local working-copy* `.env`, which correctly
   holds real keys for local use, and wrongly inferred public exposure. No public leak; no
   forced key rotation. (One real side effect: the subagent **printed the key values into

@@ -30,7 +30,7 @@ this dedicated repo publishes — unlike the monorepo, whose releases are prefix
 ### Manual
 
 Download `main.js`, `manifest.json`, and `styles.css` from the
-[latest release](../../releases/latest) into
+latest release into
 `<vault>/.obsidian/plugins/ruwritingstyles/`, then enable the plugin.
 
 ## What it does
