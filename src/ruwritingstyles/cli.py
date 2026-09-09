@@ -188,6 +188,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Enable deep linguistic scrutiny (expert philological audit).",
     )
     run.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="Fan out the per-style review and deliberation loops across N threads "
+             "(default 1 = sequential). Each style writes its own review/deliberation "
+             "artifact file, so concurrent workers do not race on output.",
+    )
+    run.add_argument(
         "--project-dir",
         type=Path,
         help="Optional project directory to store shared stylistic context.",
@@ -851,6 +859,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Resume a failed or interrupted run from the last completed step.",
     )
     resume.add_argument("run_dir", type=Path, help="Run directory to resume.")
+    resume.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="Fan out the per-style review and deliberation loops across N threads "
+             "(default 1 = sequential).",
+    )
     _add_execute_args(resume)
     resume.set_defaults(func=cmd_resume)
 
@@ -1368,6 +1383,7 @@ def _execute_run_pipeline(repo_root: Path, run_dir: Path, args: argparse.Namespa
         emit=print,
         post_run=post_run,
         options=options,
+        workers=max(1, getattr(args, "workers", 1) or 1),
     )
     return 0
 

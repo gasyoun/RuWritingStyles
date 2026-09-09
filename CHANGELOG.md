@@ -1,4 +1,4 @@
-_Created: 24-08-2026 · Last updated: 05-09-2026_
+_Created: 24-08-2026 · Last updated: 09-09-2026_
 
 # Changelog
 
@@ -6,6 +6,10 @@ All notable changes to RuWritingStyles are documented here.
 
 ## [Unreleased]
 <!-- entries land in changelog_queue/ -- appended via tools/changelog_queue_consume.py, consumed by cut_release.py at release-cut (H3355); direct bullets here are hook-blocked -->
+
+## [2.29.9] - 2026-09-09
+
+- **H4406 partial (OxAlpha (opencode/z-ai/glm-5.3-flash), 09-09-2026): resume guard + `--workers` fan-out.** [`review.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/review.py) `create_review_bundle`/`create_deliberation_bundle` now skip the unconditional overwrite when an existing `{style}.review.json`/`{style}.delib.json` is already `status:completed` with valid findings/replies — a crash mid-run no longer re-spends a paid call on already-graded styles on `rws resume`. [`pipeline.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/pipeline.py) `core_pipeline` gains a `workers: int = 1` parameter fanning the per-style review and deliberation loops out over a `ThreadPoolExecutor` (each style writes its own artifact file; `BudgetController` is already lock-protected; `Database`/`provider.log.jsonl` writes are per-call-safe) — exposed as `rws run --workers N` / `rws resume --workers N`. New tests: `test_core_pipeline.py::test_workers_flag_produces_same_artifacts_as_sequential`, `::test_resume_guard_skips_completed_review_bundle`. **NOT done in this pass (residual, PARTIAL close):** the `rws chunk-split/chunk-drive/chunk-aggregate` coarse-chunk CLI layer (H432 completion) and the `evals.py` per-case resume/done-marker work — both are substantial standalone subsystems that did not fit this unit's time budget; tracked as follow-on scope, see the handoff close note.
 
 ## [2.29.8] - 2026-09-03
 
