@@ -55,6 +55,18 @@ def create_review_bundle(
     prompt_path = review_dir / f"{style_id}.prompt.md"
     review_path = review_dir / f"{style_id}.review.json"
 
+    if review_path.exists():
+        try:
+            existing = json.loads(review_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            existing = {}
+        if (
+            existing.get("status") == "completed"
+            and isinstance(existing.get("findings"), list)
+            and prompt_path.exists()
+        ):
+            return ReviewBundle(review_json=review_path, prompt_md=prompt_path)
+
     atomic_write_text(
         prompt_path,
         _render_prompt(
@@ -124,6 +136,18 @@ def create_deliberation_bundle(
 
     prompt_path = delib_dir / f"{style_id}.delib.prompt.md"
     delib_path = delib_dir / f"{style_id}.delib.json"
+
+    if delib_path.exists():
+        try:
+            existing = json.loads(delib_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            existing = {}
+        if (
+            existing.get("status") == "completed"
+            and isinstance(existing.get("replies"), list)
+            and prompt_path.exists()
+        ):
+            return DeliberationBundle(deliberation_json=delib_path, prompt_md=prompt_path)
 
     # Filter out own findings from the prompt to avoid self-critique confusion
     other_reviews = [d for d in review_docs if d.get("style_id") != style_id]
