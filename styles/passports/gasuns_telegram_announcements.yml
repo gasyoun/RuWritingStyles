@@ -39,7 +39,7 @@ council:
     - price_or_schedule_not_verified
 
 provenance:
-  derived_by: "RuWritingStyles project — предварительный паспорт по шести публично атрибутированным анонсам Mārcis Gasūns и «Оповещений санскритян»: t.me/MarcisGasuns/3156, /3165, /3167, /3169; t.me/samskrte/595, /601. Требует пересборки после полной выгрузки."
+  derived_by: "RuWritingStyles project — паспорт по полным Telegram-выгрузкам 11-09-2026: 3 086 сообщений @MarcisGasuns (110 пересылок) и 570 сообщений «Оповещений санскритян» (131 пересылка); анонсный слой проверен по собственным постам и по каналу организации."
   derivation_date: "2026-09"
   validated_by: "RuWritingStyles CI — validate_project.py; ручная сверка с публичным корпусом 11-09-2026"
   last_validated: "2026-09-11"
