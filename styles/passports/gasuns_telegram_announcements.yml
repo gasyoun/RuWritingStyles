@@ -1,0 +1,45 @@
+id: gasuns_telegram_announcements
+name: Гасунс — Telegram-анонсы
+source_prompt: ClaudeStyles/gasuns-telegram-announcements-style.md
+role: clarity_reviewer
+language: ru
+level: private
+cluster: indology
+
+best_for:
+  - Telegram-анонс курса или открытого занятия
+  - набор в малую онлайн-группу по санскриту
+  - краткое напоминание о стриме или начале занятий
+
+checks:
+  - missing_schedule_in_lede
+  - generic_marketing_language
+  - unclear_single_cta
+  - unsupported_learning_promise
+  - unconfirmed_start_date
+  - biography_over_programme
+
+limits:
+  - не применяется к академической статье, учебному разбору или личной заметке
+  - не доказывает качество курса и не заменяет проверку фактов анонса
+  - не переносит в пост внутренние коды атрибуции
+
+review_mode:
+  rewrite_allowed: false
+  requires_span_ids: true
+  output_format: findings_json
+
+council:
+  can_reply_to:
+    - clarity
+    - pedagogy
+    - audience
+  should_defer:
+    - domain_claim_outside_indology
+    - price_or_schedule_not_verified
+
+provenance:
+  derived_by: "RuWritingStyles project — паспорт по публично атрибутированным анонсам Mārcis Gasūns и «Оповещений санскритян»: t.me/MarcisGasuns/3156, /3165, /3167, /3169; t.me/samskrte/595, /601"
+  derivation_date: "2026-09"
+  validated_by: "RuWritingStyles CI — validate_project.py; ручная сверка с публичным корпусом 11-09-2026"
+  last_validated: "2026-09-11"

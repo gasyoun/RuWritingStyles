@@ -167,6 +167,7 @@ rws web                  # production SPA + API: http://localhost:8000
 | [`ClaudeStyles/toporov-etym-style.md`][toporov-etym] | [Топоров-этимология][toporov-etym] | Этимология и семантическая реконструкция санскритских и индоевропейских лексем. | Широкий сравнительный фон, подчиненный регулярности. |
 | [`ClaudeStyles/sanskrit-reader-style.md`][sanskrit-reader] | [Санскрит-ридер][sanskrit-reader] | Учебный разбор отрывка, комментированная хрестоматия для студентов. | Ясность без упрощения, уважение к читателю. |
 | [`ClaudeStyles/samasa-manual-style.md`][samasa-manual] | [Самаса-пособие][samasa-manual] | Грамматическое пособие по сложным словам: определение, классификация, правило, пример, исключение. | Сухая алгоритмическая ясность. |
+| [`ClaudeStyles/gasuns-telegram-announcements-style.md`][gasuns-telegram-announcements] | [Гасунс — Telegram-анонсы][gasuns-telegram-announcements] | Анонс курса, набора или открытого занятия в каналах Марциса Гасунса и «Оповещениях санскритян». | Фактура и расписание прежде рекламной риторики. |
 | [`ClaudeStyles/panini-traditional-style.md`][panini-traditional] | [Панини-традиция][panini-traditional] | Изложение грамматики с опорой на туземную традицию: сутра, вритти, пример. | Дисциплинированное описание категории изнутри традиции. |
 | [`ClaudeStyles/smirnov-mahabharata-style.md`][smirnov-mahabharata] | [Смирнов-Махабхарата][smirnov-mahabharata] | Эпический перевод с полным аппаратом: введение-обрамление, ритмическая строка, примечания с разночтениями изданий, толковый словарь реалий. | Повествовательная ровность введения, протокольная строгость примечаний. |
 
@@ -189,7 +190,8 @@ rws web                  # production SPA + API: http://localhost:8000
 | [Казанский][kazanskiy-korpus] | [`ClaudeStyles/kazanskiy-korpus-style.md`][kazanskiy-korpus] | Сборник с материалом Н. Н. Казанского: [`2025_1а_Part 1-1.pdf`][src-tronsky-pdf], [`2025_1а_Part 1-1.txt`][src-tronsky-txt]. |
 | [Лидова][lidova-commentary] | [`ClaudeStyles/lidova-commentary-style.md`][lidova-commentary] | Опорные материалы по комментарию и санскритской ученой традиции: [`2025_1а_Part 1-1.pdf`][src-tronsky-pdf], [`2025_1а_Part 1-1.txt`][src-tronsky-txt], [`Tubb-ScholasticSans-2007.txt`][src-tubb-txt]. |
 | [Tronsky-Readings][tronsky-readings] | [`ClaudeStyles/tronsky-readings-style.md`][tronsky-readings] | [`2025_1а_Part 1-1.pdf`][src-tronsky-pdf], [`2025_1а_Part 1-1.txt`][src-tronsky-txt]. |
-| [Академическая-словарная-статья][academic-dictionary-entry] | [`ClaudeStyles/academic-dictionary-entry-style.md`][academic-dictionary-entry] | Опубликованные академические словари (реестр эталонов и правовой статус — [`SOURCES.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/SOURCES.md), №№ 13–21): Зализняк 2010, Апресян 1995, Фасмер, Ожегов–Шведова, МАС, Даль (ред. Бодуэна де Куртенэ), семантический словарь Шведовой, Абрамов. Выдержки эталонов — только в приватном корпусе-спутнике. |
+| [Академическая-словарная-статья][academic-dictionary-entry] | [`ClaudeStyles/academic-dictionary-entry-style.md`][academic-dictionary-entry] | Опубликованные академические словари (реестр эталонов и правовой статус — [`SOURCES.md`](SOURCES.md), №№ 13–21): Зализняк 2010, Апресян 1995, Фасмер, Ожегов–Шведова, МАС, Даль (ред. Бодуэна де Куртенэ), семантический словарь Шведовой, Абрамов. Выдержки эталонов — только в приватном корпусе-спутнике. |
+| [Гасунс — Telegram-анонсы][gasuns-telegram-announcements] | [`ClaudeStyles/gasuns-telegram-announcements-style.md`][gasuns-telegram-announcements] | Публичные посты [@MarcisGasuns](https://t.me/MarcisGasuns/3156) и [«Оповещений санскритян»](https://t.me/samskrte/595): расписание, программа, условия и один призыв к записи. |
 
 ## Быстрый выбор по задаче
 
@@ -626,6 +628,7 @@ RuWritingStyles — это не просто набор промптов, а п�
 [toporov-etym]: ClaudeStyles/toporov-etym-style.md
 [sanskrit-reader]: ClaudeStyles/sanskrit-reader-style.md
 [samasa-manual]: ClaudeStyles/samasa-manual-style.md
+[gasuns-telegram-announcements]: ClaudeStyles/gasuns-telegram-announcements-style.md
 [panini-traditional]: ClaudeStyles/panini-traditional-style.md
 [smirnov-mahabharata]: ClaudeStyles/smirnov-mahabharata-style.md
 [academic-dictionary-entry]: ClaudeStyles/academic-dictionary-entry-style.md

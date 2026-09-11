@@ -225,6 +225,11 @@ passports:
     level: private
     cluster: indology
     source_prompt: ClaudeStyles/samasa-manual-style.md
+  - id: gasuns_telegram_announcements
+    path: styles/passports/gasuns_telegram_announcements.yml
+    level: private
+    cluster: indology
+    source_prompt: ClaudeStyles/gasuns-telegram-announcements-style.md
   - id: panini-traditional
     path: styles/passports/panini-traditional.yml
     level: private
