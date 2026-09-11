@@ -25,7 +25,7 @@ limits:
   - не переносит в пост внутренние коды атрибуции
 
 review_mode:
-  rewrite_allowed: false
+  rewrite_allowed: true
   requires_span_ids: true
   output_format: findings_json
 
@@ -39,7 +39,7 @@ council:
     - price_or_schedule_not_verified
 
 provenance:
-  derived_by: "RuWritingStyles project — паспорт по полным Telegram-выгрузкам 11-09-2026: 3 086 сообщений @MarcisGasuns (110 пересылок) и 570 сообщений «Оповещений санскритян» (131 пересылка); анонсный слой проверен по собственным постам и по каналу организации."
+  derived_by: "RuWritingStyles project — стиль-гайд по полным Telegram-выгрузкам 11-09-2026: 3 086 сообщений @MarcisGasuns (110 пересылок) и 570 сообщений «Оповещений санскритян» (131 пересылка); правила голоса подтверждены дословными собственными постами 264, 266, 259, 3156, 3165, 3167, 3173 и сообщениями организации 45, 60, 79, 602."
   derivation_date: "2026-09"
   validated_by: "RuWritingStyles CI — validate_project.py; ручная сверка с публичным корпусом 11-09-2026"
   last_validated: "2026-09-11"
