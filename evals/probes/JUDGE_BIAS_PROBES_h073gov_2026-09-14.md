@@ -31,7 +31,7 @@ Design: the SAME 25 runs, findings list **reversed** and positions renumbered (o
 |---|---|
 | caught flips (B vs C) | **0 / 25** (both raters: 25/25 caught=yes) |
 | type_correct flips | **0 / 25** (both raters: 24/25 true — same single miss, vedic-r02) |
-| false-positive localization flips | **0 / 25** (both raters localize the same 4 FP findings: spet-r01, spet-r05, vedic-r01, comm-r03) |
+| false-positive localization flips | **0 / 25** (both raters flag FP>0 on the same 5 runs: spet-r01, spet-r05, vedic-r01, samasa-r05, comm-r03, with identical per-run counts) |
 | **verdict-flip rate** | **0.00** |
 
 Mechanical layer (recomputed from the sheet, label policy per GOLD_PROTOCOL): rater A detected 24/25; verification statuses: 15 passed / 9 needs_human_review / 1 failed.
