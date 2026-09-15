@@ -374,6 +374,16 @@ def build_parser() -> argparse.ArgumentParser:
     journal_harvest.add_argument("--force", action="store_true", help="Re-harvest even when a passing sidecar exists.")
     journal_harvest.set_defaults(func=cmd_journal_harvest)
 
+    journal_harvest_all = subparsers.add_parser(
+        "journal-harvest-all",
+        help="Bounded harvest across every catalogue 'include' journal (D20/W2.4).",
+    )
+    journal_harvest_all.add_argument("--cap", type=int, default=50, help="Max articles accepted per journal (D20 default 50).")
+    journal_harvest_all.add_argument("--since", default=None, help="OAI from= date (YYYY-MM-DD).")
+    journal_harvest_all.add_argument("--dry-run", action="store_true", help="Enumerate and classify only; write nothing.")
+    journal_harvest_all.add_argument("--force", action="store_true", help="Re-harvest even when a passing sidecar exists.")
+    journal_harvest_all.set_defaults(func=cmd_journal_harvest_all)
+
     corpus_verify = subparsers.add_parser(
         "corpus-verify",
         help="Re-check every pinned article against the D13 guarantee; exit 1 on failure.",
@@ -2709,6 +2719,31 @@ def cmd_journal_harvest(args: argparse.Namespace) -> int:
         print(f"error: {exc}")
         return 1
     _print_harvest_summary(summary)
+    return 0
+
+
+def cmd_journal_harvest_all(args: argparse.Namespace) -> int:
+    from .harvest import harvest_all_include
+
+    overall = harvest_all_include(
+        cap=args.cap,
+        since=args.since,
+        dry_run=args.dry_run,
+        force=args.force,
+    )
+    totals = overall["totals"]
+    print(
+        f"include journals: {overall['include_journals']}  harvested: {overall['journals_harvested']}  "
+        f"failed: {overall['journals_failed']}"
+    )
+    print(
+        f"written: {totals['written']}  skipped(already-pass): {totals['skipped']}  "
+        f"quarantined: {totals['quarantined']}"
+    )
+    split = ", ".join(f"{k} {v}" for k, v in sorted(overall["extraction_source_split"].items())) or "none"
+    print(f"extraction source split: {split}")
+    for entry in overall["failed_journals"]:
+        print(f"  ! failed journal {entry['slug']}: {entry['error']}")
     return 0
 
 

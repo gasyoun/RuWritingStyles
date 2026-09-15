@@ -32,6 +32,7 @@ from .config import repo_root_from
 __all__ = [
     "harvest_journal",
     "harvest_pinned",
+    "harvest_all_include",
     "corpus_verify",
     "build_stem",
     "load_pinned_manifest",
@@ -285,6 +286,69 @@ def harvest_journal(
 
     _write_run_manifest(summary, slug)
     return summary
+
+
+def harvest_all_include(
+    *,
+    cap: int = 50,
+    since: str | None = None,
+    dry_run: bool = False,
+    force: bool = False,
+    repo_root: Path | None = None,
+) -> dict[str, Any]:
+    """Loop ``harvest_journal`` over every catalogue ``include`` slug (D20/W2.4).
+
+    One journal's failure never stops the run — the same "a single
+    unreachable journal is not a stop condition" guarantee ``build_catalogue``
+    makes for the identify crawl. It is recorded under ``failed_journals``
+    with its error and the loop continues to the next slug.
+    """
+    root = repo_root or Path(repo_root_from())
+    catalogue = load_catalogue(root)
+    include = [record for record in catalogue if record.get("verdict") == "include"]
+
+    per_journal: list[dict[str, Any]] = []
+    failed_journals: list[dict[str, Any]] = []
+    source_split: dict[str, int] = {}
+    totals = {"written": 0, "skipped": 0, "quarantined": 0}
+
+    for record in include:
+        slug = record["slug"]
+        try:
+            summary = harvest_journal(slug, limit=cap, since=since, dry_run=dry_run, force=force)
+        except Exception as exc:  # noqa: BLE001 - one journal's failure must not stop the bulk run
+            failed_journals.append({"slug": slug, "error": str(exc)})
+            continue
+        written = summary.get("written", [])
+        for item in written:
+            extraction = item.get("extraction") if isinstance(item, dict) else None
+            source = (extraction or {}).get("source") or "unknown"
+            source_split[source] = source_split.get(source, 0) + 1
+        per_journal.append(
+            {
+                "slug": slug,
+                "journal_name": record.get("repository_name") or record.get("journal_name", ""),
+                "written": len(written),
+                "skipped": len(summary.get("skipped", [])),
+                "quarantined": len(summary.get("quarantined", [])),
+            }
+        )
+        totals["written"] += len(written)
+        totals["skipped"] += len(summary.get("skipped", []))
+        totals["quarantined"] += len(summary.get("quarantined", []))
+
+    overall: dict[str, Any] = {
+        "cap_per_journal": cap,
+        "include_journals": len(include),
+        "journals_harvested": len(per_journal),
+        "journals_failed": len(failed_journals),
+        "totals": totals,
+        "extraction_source_split": source_split,
+        "per_journal": per_journal,
+        "failed_journals": failed_journals,
+    }
+    _write_run_manifest(overall, "bulk-include")
+    return overall
 
 
 def harvest_pinned(*, force: bool = False) -> dict[str, Any]:
