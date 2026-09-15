@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-_Created: 08-05-2026 · Last updated: 02-09-2026_
+_Created: 08-05-2026 · Last updated: 15-09-2026_
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -129,5 +129,9 @@ Sync rule: extraction order lives in `PDF_EXTRACTOR_CHAIN` and the accept/reject
 
 `sanity()` defaults to expecting Cyrillic. Sources known to be in another language must pass `expect_cyrillic=False`, or a cleanly extracted English article scores `cyrillic_ratio` 0.06 and is discarded as garbled.
 - The `mvp_style_ids` list in `styles/manifest.yml` — `rws list-styles --mvp` and the default council set depend on it. The `councils:` block beside it defines named panels (`general` = `mvp_style_ids`, `sanskrit`, `indology`, `lexicography`) selectable via `rws run --council <name>` / `rws councils`; `validate_project` fails if a council names a non-existent passport, so edit ids carefully.
+
+## Memory store
+
+This repo keeps a committed memory store at [`.claude/projects/RuWritingStyles/memory/`](https://github.com/gasyoun/RuWritingStyles/tree/main/.claude/projects/RuWritingStyles/memory) per the org Memory-routing rule ([`/danger-memory`](https://github.com/gasyoun/claude-config/blob/main/commands/danger-memory.md)) — write dangerous/durable facts there and index each in its `MEMORY.md` (H4547).
 
 _Dr. Mārcis Gasūns_
