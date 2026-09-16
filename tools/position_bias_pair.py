@@ -128,7 +128,11 @@ def wilson(k: int, n: int, z: float = 1.959963984540054) -> tuple:
     d = 1 + z * z / n
     c = p + z * z / (2 * n)
     h = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n))
-    return (p, max(0.0, (c - h) / d), min(1.0, (c + h) / d))
+    lo = max(0.0, (c - h) / d)
+    hi = min(1.0, (c + h) / d)
+    lo = 0.0 if lo < 1e-12 else lo
+    hi = 1.0 if hi > 1 - 1e-12 else hi
+    return (p, lo, hi)
 
 
 CAUGHT_RANK = {"no": 0, "partial": 1, "yes": 2}
@@ -150,6 +154,8 @@ def pair_stats(orig: dict, rev: dict) -> dict:
 
 def analyze(judgments_path: Path, mapping_path: Path, out_path: Path) -> dict:
     judgments = json.loads(judgments_path.read_text(encoding="utf-8"))
+    if "judgments" in judgments and isinstance(judgments["judgments"], dict):
+        judgments = judgments["judgments"]
     mp = json.loads(mapping_path.read_text(encoding="utf-8"))
     by_pres = mp["by_pres"]
     rows, invalid = [], []
