@@ -395,7 +395,23 @@
   "tool": "tools/position_order_paired.py"
  },
  "verifier": {
-  "model": "PENDING - DeepSeek 4.1 Flash (openrouter route)",
-  "verdict": "PENDING"
+  "model": "DeepSeek 4.1 Flash (openrouter/deepseek/deepseek-v4.1-flash)",
+  "verdict": "PASS (paired, with notes)",
+  "date": "2026-09-17",
+  "mode": "static independent recomputation (verifier lane has no shell/interpreter); tool reveal+selftest executed by the executor session in the same pass",
+  "checks": {
+   "recompute_parity": "PASS (artifact diff + hand check)",
+   "pairing_coverage": "PASS (50 responses, 25 original + 25 reversed, no run missing a condition)",
+   "independent_discordance": "PASS (0/25 by hand-join of mapping->responses)",
+   "wilson95_0_of_25": "CONFIRMED [0.000, 0.133]",
+   "controls_selftest": "PASS (static review; executed by executor session: selftest PASS)",
+   "confound_isolation": "ADEQUATE-WITH-NOTES"
+  },
+  "notes": [
+   "Residual (now disclosed): task_payload embeds run_label, so the judge can re-identify the same item across its two presentations within one session and anchor on its earlier verdict - systematically biases toward 0 flips; the 0/25 must be read as order-invariance partly inflated by same-session re-identification, not as proof of no position bias.",
+   "No call provenance (timestamps/session ids) in responses_raw.json; preregistration SHA and 50/50 budget are asserted, independently auditable only via git history.",
+   "caught is degenerate (50/50 yes) and the directional block has 0 negatives, so first-position preference is untestable on the real data; the probe effectively tests type_correct/FP.",
+   "Sheet sha256 consistent across protocol/result/tasks files; verifier (read-only, no shell) could not recompute it independently."
+  ]
  }
 }
