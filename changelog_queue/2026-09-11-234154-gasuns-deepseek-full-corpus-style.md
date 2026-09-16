@@ -1,1 +1,0 @@
-- Verified the Gasuns Telegram announcement style against all 2,772 original public posts using DeepSeek 4.1 Flash in 28 packets; added the evidence synthesis and strengthened the passport.
