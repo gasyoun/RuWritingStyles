@@ -77,6 +77,19 @@ class ProviderError(RuntimeError):
     """Raised when a provider cannot complete a request."""
 
 
+class ProviderQuotaExhaustedError(ProviderError):
+    """HTTP 402 (payment required) from a provider — the account balance ran out.
+
+    DeepSeek's API returns 402 with an "Insufficient Balance" error body when
+    the account balance is exhausted (https://api-docs.deepseek.com/quick_start/error_codes,
+    confirmed live 16-09-2026). It is deliberately excluded from the retryable
+    status set (`_is_retryable_status`) — a repeat call never fixes it, only a
+    top-up does — so `_post_json_with_retries` raises this subtype immediately
+    on the first attempt instead of burning retry budget. DeepSeekProvider
+    catches specifically this type to fall back to OpenRouter without
+    swallowing unrelated 4xx/5xx failures."""
+
+
 class BaseProvider:
     name = "base"
 
@@ -961,10 +974,31 @@ class DeepSeekProvider(BaseProvider):
     ``deepseek-chat`` (V3); use ``deepseek-reasoner`` (R1) via ``--model`` or
     ``model_policy.yml`` for the heavier judgement stages. DeepSeek's JSON mode
     requires the word "json" in the prompt — the RWS stage prompts already ask
-    for JSON output, so this is satisfied by construction."""
+    for JSON output, so this is satisfied by construction.
+
+    Balance-exhausted fallback (H#### "when money runs out on DeepSeek, use
+    OpenRouter"): a 402 response ("Insufficient Balance") is raised by
+    ``_post_json_with_retries`` as ``ProviderQuotaExhaustedError`` — caught here
+    and retried ONCE through :class:`OpenRouterProvider` with an equivalent
+    DeepSeek model slug, so a council/verify stage does not hard-fail mid-run
+    just because the DeepSeek account ran dry. Set
+    ``RWS_DEEPSEEK_OPENROUTER_FALLBACK=0`` to disable and fail on 402 as
+    before. Requires ``OPENROUTER_API_KEY`` (or ``NOUS_PORTAL_API_KEY``) —
+    read exactly the way ``DEEPSEEK_API_KEY`` is read, never hardcoded; if
+    neither is set the original 402 is what surfaces (via ``raise ... from``),
+    not a confusing OpenRouter key error."""
 
     name = "deepseek"
     endpoint = "https://api.deepseek.com/v1/chat/completions"
+
+    # OpenRouter's DeepSeek model slugs, used only as the balance-exhausted
+    # fallback route. Override via RWS_OPENROUTER_DEEPSEEK_FALLBACK_MODEL if
+    # OpenRouter renames/retires a slug.
+    _OPENROUTER_FALLBACK_MODELS = {
+        "deepseek-chat": "deepseek/deepseek-chat",
+        "deepseek-reasoner": "deepseek/deepseek-r1",
+    }
+    _DEFAULT_OPENROUTER_FALLBACK_MODEL = "deepseek/deepseek-chat"
 
     def __init__(self, api_key: str | None = None, endpoint: str | None = None) -> None:
         self.api_key = api_key or os.environ.get("DEEPSEEK_API_KEY")
@@ -1000,16 +1034,21 @@ class DeepSeekProvider(BaseProvider):
         last_exc: json.JSONDecodeError | None = None
         try:
             for content_attempt in range(2):  # one retry on truncated content
-                data = _post_json_with_retries(
-                    provider_name="DeepSeek",
-                    url=self.endpoint,
-                    body=body,
-                    headers={
-                        "Authorization": f"Bearer {self.api_key}",
-                        "Content-Type": "application/json",
-                    },
-                    telemetry=telemetry,
-                )
+                try:
+                    data = _post_json_with_retries(
+                        provider_name="DeepSeek",
+                        url=self.endpoint,
+                        body=body,
+                        headers={
+                            "Authorization": f"Bearer {self.api_key}",
+                            "Content-Type": "application/json",
+                        },
+                        telemetry=telemetry,
+                    )
+                except ProviderQuotaExhaustedError as exc:
+                    if os.environ.get("RWS_DEEPSEEK_OPENROUTER_FALLBACK", "1") == "0":
+                        raise
+                    return self._fallback_to_openrouter(provider_request, model, telemetry, exc)
 
                 usage = data.get("usage", {})
                 self._set_usage(ProviderUsage(
@@ -1038,6 +1077,66 @@ class DeepSeekProvider(BaseProvider):
         raise ProviderError(
             f"DeepSeek response did not contain parseable JSON: {text[:500]}"
         ) from last_exc
+
+    def _fallback_to_openrouter(
+        self,
+        provider_request: ProviderRequest,
+        deepseek_model: str,
+        telemetry: ProviderRetryTelemetry,
+        cause: ProviderQuotaExhaustedError,
+    ) -> dict[str, Any]:
+        """Retry the SAME judge prompt through OpenRouter after a DeepSeek 402.
+
+        Reuses OpenRouterProvider.generate_json() wholesale (its own retry/
+        timeout/logging path via `_post_json_with_retries`) instead of
+        re-implementing an HTTP call here. Usage/retry telemetry from the
+        fallback call is merged onto THIS provider instance so callers that
+        asked for --provider deepseek still see one coherent record, tagged
+        so it is visible that a fallback happened.
+        """
+        fallback_model = (
+            os.environ.get("RWS_OPENROUTER_DEEPSEEK_FALLBACK_MODEL")
+            or self._OPENROUTER_FALLBACK_MODELS.get(deepseek_model)
+            or self._DEFAULT_OPENROUTER_FALLBACK_MODEL
+        )
+        try:
+            fallback_provider = OpenRouterProvider()
+        except ProviderError as exc:
+            # No OPENROUTER_API_KEY / NOUS_PORTAL_API_KEY configured -- surface
+            # the ORIGINAL DeepSeek balance error as the primary cause, not a
+            # confusing "OpenRouter key missing" as if that were the root issue.
+            raise ProviderError(
+                "DeepSeek balance exhausted (HTTP 402) and the OpenRouter fallback "
+                f"is not configured ({exc}); original DeepSeek error: {cause}"
+            ) from cause
+
+        fallback_request = ProviderRequest(
+            task=provider_request.task,
+            prompt=provider_request.prompt,
+            schema=provider_request.schema,
+            metadata=provider_request.metadata,
+            model=fallback_model,
+            tools=provider_request.tools,
+            injection_queue=provider_request.injection_queue,
+        )
+        if telemetry.retry_statuses is None:
+            telemetry.retry_statuses = []
+        telemetry.retry_statuses.append(f"deepseek_402_fallback_to_openrouter:{fallback_model}")
+        try:
+            result = fallback_provider.generate_json(fallback_request)
+        except ProviderError as exc:
+            raise ProviderError(
+                f"DeepSeek balance exhausted (HTTP 402) and the OpenRouter fallback "
+                f"({fallback_model}) also failed: {exc}"
+            ) from cause
+
+        or_telemetry = fallback_provider.retry_telemetry()
+        telemetry.retry_statuses.extend(
+            f"openrouter_fallback:{status}" for status in (or_telemetry.get("retry_statuses") or [])
+        )
+        telemetry.retry_delay_seconds += or_telemetry.get("retry_delay_seconds", 0.0)
+        self._set_usage(ProviderUsage(**fallback_provider.last_usage()))
+        return result
 
 
 def _deepseek_temperature() -> float | None:
@@ -1165,6 +1264,15 @@ def _post_json_with_retries(
             if telemetry is not None: telemetry.record("wall_clock_deadline", sleep_for)
         except error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="replace")
+            if exc.code == 402:
+                # Insufficient balance -- never retryable, raise immediately so
+                # the caller (DeepSeekProvider) can fall back to another
+                # provider without waiting through the normal retry ladder.
+                last_error = ProviderQuotaExhaustedError(
+                    f"{provider_name} API error 402 (insufficient balance): {detail}"
+                )
+                if telemetry is not None: telemetry.record("402_insufficient_balance", 0.0)
+                raise last_error from exc
             last_error = ProviderError(f"{provider_name} API error {exc.code}: {detail}")
             if not _is_retryable_status(exc.code) or attempt == attempts:
                 raise last_error from exc
