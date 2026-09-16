@@ -133,5 +133,78 @@ class DeepSeekProviderTests(unittest.TestCase):
             self.assertIsInstance(provider_from_name("deepseek"), DeepSeekProvider)
 
 
+class DeepSeekOpenRouterFallbackTests(unittest.TestCase):
+    """H#### 'when DeepSeek balance runs out, use OpenRouter' — mock-safe."""
+
+    def test_402_falls_back_to_openrouter_and_returns_result(self) -> None:
+        quota_error = providers.ProviderQuotaExhaustedError(
+            "DeepSeek API error 402 (insufficient balance): {}"
+        )
+        with patch.dict(os.environ, {"OPENROUTER_API_KEY": "or-key"}), patch.object(
+            providers,
+            "_post_json_with_retries",
+            side_effect=[quota_error, _ok(text='{"fallback": true}')],
+        ) as post:
+            provider = DeepSeekProvider(api_key="k")
+            result = provider.generate_json(_request())
+        self.assertEqual(result, {"fallback": True})
+        self.assertEqual(post.call_count, 2)
+        # First call is the normal DeepSeek request.
+        self.assertEqual(post.call_args_list[0].kwargs["url"], providers.DeepSeekProvider.endpoint)
+        # Second call went out through OpenRouter's endpoint with a DeepSeek slug.
+        second_kwargs = post.call_args_list[1].kwargs
+        self.assertEqual(second_kwargs["url"], providers.OpenRouterProvider.endpoint)
+        self.assertEqual(second_kwargs["body"]["model"], "deepseek/deepseek-chat")
+        self.assertIn("Bearer or-key", second_kwargs["headers"]["Authorization"])
+        statuses = provider.retry_telemetry()["retry_statuses"]
+        self.assertTrue(any(s.startswith("deepseek_402_fallback_to_openrouter:") for s in statuses))
+
+    def test_402_reasoner_model_maps_to_r1_slug(self) -> None:
+        quota_error = providers.ProviderQuotaExhaustedError("402")
+        with patch.dict(os.environ, {"OPENROUTER_API_KEY": "or-key"}), patch.object(
+            providers,
+            "_post_json_with_retries",
+            side_effect=[quota_error, _ok()],
+        ) as post:
+            DeepSeekProvider(api_key="k").generate_json(_request(model="deepseek-reasoner"))
+        self.assertEqual(post.call_args_list[1].kwargs["body"]["model"], "deepseek/deepseek-r1")
+
+    def test_fallback_disabled_by_env_reraises_quota_error(self) -> None:
+        quota_error = providers.ProviderQuotaExhaustedError("402")
+        with patch.dict(
+            os.environ, {"OPENROUTER_API_KEY": "or-key", "RWS_DEEPSEEK_OPENROUTER_FALLBACK": "0"}
+        ), patch.object(providers, "_post_json_with_retries", side_effect=[quota_error]) as post:
+            with self.assertRaises(providers.ProviderQuotaExhaustedError):
+                DeepSeekProvider(api_key="k").generate_json(_request())
+        self.assertEqual(post.call_count, 1)
+
+    def test_no_openrouter_key_surfaces_original_402(self) -> None:
+        quota_error = providers.ProviderQuotaExhaustedError(
+            "DeepSeek API error 402 (insufficient balance): out of funds"
+        )
+        with patch.dict(os.environ, {}, clear=True), patch.object(
+            providers, "_post_json_with_retries", side_effect=[quota_error]
+        ):
+            with self.assertRaises(ProviderError) as ctx:
+                DeepSeekProvider(api_key="k").generate_json(_request())
+        message = str(ctx.exception)
+        self.assertIn("402", message)
+        self.assertIn("OpenRouter fallback", message)
+
+    def test_openrouter_fallback_model_env_override(self) -> None:
+        quota_error = providers.ProviderQuotaExhaustedError("402")
+        with patch.dict(
+            os.environ,
+            {
+                "OPENROUTER_API_KEY": "or-key",
+                "RWS_OPENROUTER_DEEPSEEK_FALLBACK_MODEL": "custom/slug",
+            },
+        ), patch.object(
+            providers, "_post_json_with_retries", side_effect=[quota_error, _ok()]
+        ) as post:
+            DeepSeekProvider(api_key="k").generate_json(_request())
+        self.assertEqual(post.call_args_list[1].kwargs["body"]["model"], "custom/slug")
+
+
 if __name__ == "__main__":
     unittest.main()
