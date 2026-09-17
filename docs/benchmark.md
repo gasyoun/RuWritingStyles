@@ -520,4 +520,86 @@ hedge» — ревизия действительно оставила смеш�
 Артефакты: [../evals/annotation/](../evals/annotation/) `sheet-h1213dict.json`,
 `raterB-h1213dict.json`, `gold-annotation-dict-*.json`.
 
+## Смещения LLM-судьи на корпусе h073gov (2026-09-14, H4658): длина — сигнала нет, перестановка — 0/25 флипов
+
+Два пробных измерения судейского слоя на замороженном 25-прогонном артефакте
+`20260703-h073gov` (5 золотых кейсов × 5 повторов); ограниченные расходы — **один**
+ре-судейский проход, без перезапуска пайплайна и платных вызовов. Инструмент —
+[`tools/judge_bias_probe.py`](../tools/judge_bias_probe.py) (Spearman, средние ранги,
+stdlib; `--selftest` с положительным и отрицательным контролем — PASS). Отчет:
+[`../evals/probes/JUDGE_BIAS_PROBES_h073gov_2026-09-14.md`](../evals/probes/JUDGE_BIAS_PROBES_h073gov_2026-09-14.md),
+машинные результаты: [`../evals/probes/judge-bias-h073gov-2026-09-14.json`](../evals/probes/judge-bias-h073gov-2026-09-14.json).
+
+**Проба длины (механическая).** Корреляция длины ответа судьи (суммарный текст находок)
+с осями оценок: chars~детекция ρ = +0.311, chars~скорер-pass ρ = +0.227,
+chars~type_correct ρ = +0.311, chars~FP ρ = +0.319 (n=25; порог значимости ≈0.40).
+Ось chars~caught вырождена (25/25 «да», нулевая дисперсия). **Правило флага |ρ| ≥ 0.5
+не сработало ни на одной оси — ревизия рубрики не требуется.** Один watch-пункт:
+частота ложных срабатываний растет с длиной (2349 против 1413 знаков) — рубрика уже
+считает FP отдельно, при росте корпуса — перетестировать.
+
+**Проба перестановки (позиционное смещение).** Те же 25 прогонов, список находок в
+**обратном** порядке (позиции перенумерованы, вердикты скорера скрыты); судья C —
+`z-ai glm-5.3-flash`, рубрика разметчика B дословно; суждения:
+[`../evals/annotation/raterC-h073gov-swap-2026-09-14.json`](../evals/annotation/raterC-h073gov-swap-2026-09-14.json).
+**Флип-рейт B(ориг. порядок, `claude-fable-5`) vs C(обратный порядок, glm): 0/25** —
+по caught, по type_correct и по локализации FP (те же 4 находки: spet-r01, spet-r05,
+vedic-r01, comm-r03). Раскрытие дизайна: сравнение кросс-судейское, поэтому ноль флипов —
+это сильное чтение («нет свидетельств позиционного смещения, устойчивых даже к смене
+судьи»), а высокий флип требовал бы контроля с тем же судьей. **Новых расхождений для
+адъюдикации нет**; единственный открытый пункт (vedic-r02, промах типизации при детекции
+по существу) воспроизвелся на обратном порядке у другой модели — он не позиционный,
+досье и человеческое решение остаются в
+[`../evals/annotation/decisions_applied_vedic-r02-adjudication_2026-07-19.md`](../evals/annotation/decisions_applied_vedic-r02-adjudication_2026-07-19.md).
+Реестровая строка в `evals/manifest.json` невозможна без слома схемы
+(`additionalProperties: false`) — проба зарегистрирована этим разделом и файлом в
+`evals/probes/`.
+
+_Dr. Mārcis Gasūns_
+
+## Позиционное смещение при фиксированном судье (2026-09-17, H5010): парный контроль — 0/25, верхняя граница 13.3%
+
+Коррекция вывода пробы перестановки от 2026-09-14: то сравнение было
+кросс-судейским (C `glm-5.3-flash`, обратный порядок vs B `claude-fable-5`,
+оригинальный), поэтому 0/25 не выделяло позиционный эффект. Здесь —
+прорегистрированный парный эксперимент с тем же судьей: **GLM 5.3 Flash**
+(сессия-линия `opencode/z-ai`, идентичность судьи C из H4658), та же
+замороженная таблица 25 прогонов (sha256 `8f92288f…42e62`), рубрика B дословно,
+два условия (оригинальный и обратный порядок с перенумерацией), слепая подача
+(непрозрачные id задач, маппинг скрыт до раздачи вердиктов), рандомизированный
+порядок вызовов (SEED=5010). Протокол закоммичен **до** каких-либо суждений:
+[`../evals/probes/PROTOCOL_ORDER_PAIRED_h5010_2026-09-17.md`](../evals/probes/PROTOCOL_ORDER_PAIRED_h5010_2026-09-17.md),
+коммит `9590614` (протокол + инструмент с офлайн-контролями).
+
+**Результат: 0/25 диссонансных пар** (caught 0, type_correct 0, FP 0;
+50/50 суждений бюджета, 0 повторов); флип-рейт 0.0%, Wilson-95 **[0.000, 0.133]**.
+Ноль флипов — не доказательство отсутствия смещения: порядковая
+чувствительность до ~13.3% совместима с данными. Флаг материальной
+чувствительности (≥0.20 + нижняя граница >0) — **false**; предпочтение первой
+позиции не обнаружено. Пост-хок наблюдение устойчивости (вне регистрации): тот
+же судья воспроизвел свои же вердикты от 14-09 (rater C, FP>0 на тех же пяти
+прогонах: spet-r01, spet-r05, vedic-r01, samasa-r05, comm-r03) 25/25 через
+~9 дней при полной переподаче.
+
+Контроли (офлайн, в коммите регистрации): синтетический селектор «первой
+позиции» обнаружен (ровно 16/25 диссонансов — позиции канонической находки на
+обоих концах неразличимы для чистого first-position селектора), селектор по
+содержанию остается инвариантным (0/25). Расходы: **$0.00** — сессионная
+линия, без платных вызовов (прецедент H4658). Артефакты:
+[`tools/position_order_paired.py`](../tools/position_order_paired.py),
+отчет [`../evals/probes/ORDER_PAIRED_h5010_2026-09-17.md`](../evals/probes/ORDER_PAIRED_h5010_2026-09-17.md),
+машинные результаты [`../evals/probes/order-paired-h5010-2026-09-17.json`](../evals/probes/order-paired-h5010-2026-09-17.json),
+сырые слепые суждения и маппинг в `../evals/probes/h5010_order_paired/`.
+Независимая верификация: DeepSeek 4.1 Flash (openrouter) — **PASS** (парный
+вердикт, 17-09-2026): покрытие 50=25×2 без пропусков, независимый пересчет
+диссонансов 0/25, Wilson-95 [0.000, 0.133] подтвержден, изоляция конфаунда —
+ADEQUATE-WITH-NOTES. Заявленный остаток: `run_label` в задаче позволяет судье
+опознать тот же предмет в обоих условиях и заякориться на прежний вердикт —
+давление в сторону 0 флипов; 0/25 читается как порядковая инвариантность,
+частично раздутая внутри-сессионным опознанием, а не как доказательство
+отсутствия смещения. Полный отчет — в поле `verifier` машинного артефакта.
+
+**Independent same-judge replication addendum (second H5010 drain session, same day; own protocol commit `bfdc5147116b`, own blinded judgment set, own tool `tools/position_bias_pair.py`; same preregistered design) — result concurs: 0/25 paired flips, Wilson 95% [0.000, 0.133]. Original entry: H5010, OxAlpha (opencode/z-ai/glm-5.3-flash), 17-09-2026):** preregistered correction of the H4658 confounded position-swap inference (protocol committed before any judgment, commit `bfdc5147116b`). Fixed judge `glm-5.3-flash` re-judged **both** orders of the same 25 frozen `20260703-h073gov` items: 50 identity-blinded presentations (seed-5010 shuffle, arm/run withheld, rater-B rubric verbatim), budget 50/50 judgments + 0 retries, $0.00 metered spend. **Paired flips 0/25 on caught (any- and adjacent-level), type_correct and FP-delta; Wilson 95% upper bound 13.3%** — zero flips is a bounded estimate, not proof of no bias; no rubric-revision flag (threshold rate>=20% or lower>10%). Offline positive control (synthetic first-position selector detected) and negative control (order-invariant judge stays invariant after identity mapping back) pass. Artifacts: [results](../evals/probes/POSITION_PAIR_RESULTS_h5010_2026-09-17.md), [machine JSON](../evals/probes/position-pair-h5010-2026-09-17.json), [raw blinded judgments](../evals/annotation/glm-h073gov-paired-2026-09-17.json), tool `tools/position_bias_pair.py`. Correction cross-linked to PR #220; Verifier status: the DeepSeek 4.1 Flash paired PASS (17-09-2026) recorded on the primary same-judge artifacts covers the primary set; this second-session judgment set was produced before the rebase and concurs (0/25), its own recomputation by the paired verifier is owed as a residual.
+
+
 _Dr. Mārcis Gasūns_
