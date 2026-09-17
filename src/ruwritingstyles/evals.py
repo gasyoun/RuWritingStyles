@@ -22,6 +22,7 @@ from .execution import (
     execute_impact_artifact,
 )
 from .providers import ProviderRequest, provider_from_name
+from .provider_log import load_provider_log
 from .report import write_run_report
 from .review import create_review_bundle, create_deliberation_bundle
 from .revision import create_revision_bundle
@@ -284,6 +285,57 @@ def _run_deterministic_checks(repo_root: Path, run_dir: Path) -> None:
         pass
 
 
+def _served_route_from_log_entry(entry: dict[str, Any]) -> str:
+    """Actually-served 'provider/model' of one provider-log entry (H5071).
+
+    Prefers the structured provenance block; falls back to the legacy
+    provider/model fields so older run dirs still aggregate sensibly."""
+    provenance = entry.get("provenance")
+    if isinstance(provenance, dict) and provenance.get("actual_provider"):
+        return f"{provenance['actual_provider']}/{provenance.get('actual_model') or ''}"
+    return f"{entry.get('provider') or ''}/{entry.get('model') or ''}"
+
+
+def _entry_is_fallback(entry: dict[str, Any]) -> bool:
+    provenance = entry.get("provenance")
+    if isinstance(provenance, dict) and provenance.get("fallback_reason"):
+        return True
+    return any("fallback" in str(status) for status in entry.get("retry_statuses") or [])
+
+
+def _suite_execution_conditions(
+    repo_root: Path,
+    *,
+    requested_provider: str,
+    requested_model: str,
+    run_dirs: list[Path],
+) -> dict[str, Any]:
+    """Summarise the actually-served routes across one suite/aggregate (H5071).
+
+    A mid-suite provider fallback (e.g. DeepSeek 402 → OpenRouter) must be
+    visible to downstream comparisons: this records every actually-served
+    route and counts fallback events, so a comparison can flag mixed
+    execution conditions instead of silently pooling them."""
+    routes: set[str] = set()
+    fallback_events = 0
+    executions = 0
+    for run_dir in run_dirs:
+        for entry in load_provider_log(repo_root / run_dir):
+            executions += 1
+            routes.add(_served_route_from_log_entry(entry))
+            if _entry_is_fallback(entry):
+                fallback_events += 1
+    actual_routes = sorted(routes)
+    return {
+        "requested_provider": requested_provider,
+        "requested_model": requested_model,
+        "actual_routes": actual_routes,
+        "fallback_events": fallback_events,
+        "executions": executions,
+        "conditions_comparable": bool(actual_routes) and fallback_events == 0,
+    }
+
+
 def run_eval_suite(
     *,
     repo_root: Path,
@@ -330,6 +382,12 @@ def run_eval_suite(
         "suite_id": actual_suite_id,
         "provider": provider_name,
         "model": model or "",
+        "execution_conditions": _suite_execution_conditions(
+            repo_root,
+            requested_provider=provider_name,
+            requested_model=model or "",
+            run_dirs=[Path(row["run_dir"]) for row in rows],
+        ),
         "case_count": len(rows),
         "passed_count": passed_count,
         "failed_count": len(rows) - passed_count,
@@ -397,6 +455,12 @@ def run_eval_repeat(
         repeat=repeat,
         scope="case",
         case_stats=[case_stats],
+        execution_conditions=_suite_execution_conditions(
+            repo_root,
+            requested_provider=provider_name,
+            requested_model=model or "",
+            run_dirs=[Path(row["run_dir"]) for row in rows],
+        ),
     )
     return _write_aggregate(repo_root, aggregate_dir, data)
 
@@ -434,6 +498,7 @@ def run_eval_suite_repeat(
             rows.append(_aggregate_run_row(repo_root, run_id, result))
         case_stats.append(_aggregate_case_stats(case.case_id, rows))
 
+    all_rows = [row for case in case_stats for row in case["runs"]]
     data = _build_aggregate(
         aggregate_id=actual_id,
         provider_name=provider_name,
@@ -441,6 +506,12 @@ def run_eval_suite_repeat(
         repeat=repeat,
         scope="suite",
         case_stats=case_stats,
+        execution_conditions=_suite_execution_conditions(
+            repo_root,
+            requested_provider=provider_name,
+            requested_model=model or "",
+            run_dirs=[Path(row["run_dir"]) for row in all_rows],
+        ),
     )
     return _write_aggregate(repo_root, aggregate_dir, data)
 
@@ -520,10 +591,11 @@ def _build_aggregate(
     repeat: int,
     scope: str,
     case_stats: list[dict[str, Any]],
+    execution_conditions: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     pass_rates = [case["pass_rate"] for case in case_stats]
     detection_rates = [case["detection_rate"] for case in case_stats]
-    return {
+    data: dict[str, Any] = {
         "kind": "eval-aggregate",
         "aggregate_id": aggregate_id,
         "scope": scope,
@@ -535,6 +607,9 @@ def _build_aggregate(
         "mean_detection_rate": round(statistics.fmean(detection_rates), 6) if detection_rates else 0.0,
         "cases": case_stats,
     }
+    if execution_conditions is not None:
+        data["execution_conditions"] = execution_conditions
+    return data
 
 
 def _write_aggregate(repo_root: Path, aggregate_dir: Path, data: dict[str, Any]) -> EvalAggregateResult:
@@ -651,9 +726,12 @@ def compare_eval_suites(baseline: Path, candidate: Path) -> EvalSuiteComparison:
     missing_candidate = [row["case_id"] for row in rows if row["status"] == "missing_candidate"]
     baseline_pass_rate = _number(baseline_data.get("pass_rate"))
     candidate_pass_rate = _number(candidate_data.get("pass_rate"))
+    baseline_summary = _suite_summary(baseline_data, baseline_path)
+    candidate_summary = _suite_summary(candidate_data, candidate_path)
+    mismatches = _condition_mismatches(baseline_summary, candidate_summary)
     data = {
-        "baseline": _suite_summary(baseline_data, baseline_path),
-        "candidate": _suite_summary(candidate_data, candidate_path),
+        "baseline": baseline_summary,
+        "candidate": candidate_summary,
         "case_count": len(case_ids),
         "baseline_pass_rate": baseline_pass_rate,
         "candidate_pass_rate": candidate_pass_rate,
@@ -662,6 +740,11 @@ def compare_eval_suites(baseline: Path, candidate: Path) -> EvalSuiteComparison:
         "regressed": regressed,
         "missing_baseline": missing_baseline,
         "missing_candidate": missing_candidate,
+        # H5071: execution conditions are comparable only when both sides ran
+        # under the same actual routes with no fallback events; unknown (null)
+        # for legacy suites that predate execution_conditions.
+        "conditions_comparable": None if mismatches is None else not mismatches,
+        "condition_mismatches": [] if mismatches is None else mismatches,
         "results": rows,
     }
     return EvalSuiteComparison(baseline_path=baseline_path, candidate_path=candidate_path, data=data)
@@ -673,11 +756,22 @@ def render_eval_suite_comparison(comparison: EvalSuiteComparison) -> str:
     data = comparison.data
     baseline = data["baseline"]
     candidate = data["candidate"]
+    comparable = data.get("conditions_comparable")
+    if comparable is True:
+        conditions_line = "- Conditions comparable: yes"
+    elif comparable is False:
+        reasons = "; ".join(str(reason) for reason in data.get("condition_mismatches") or [])
+        conditions_line = f"- Conditions comparable: **NO — do not pool**: {reasons}"
+    else:
+        conditions_line = (
+            "- Conditions comparable: unknown (suite data predates execution_conditions)"
+        )
     lines = [
         "# Eval Suite Comparison",
         "",
         f"- Baseline: `{baseline['suite_id']}` ({baseline['provider']}/{baseline['model']})",
         f"- Candidate: `{candidate['suite_id']}` ({candidate['provider']}/{candidate['model']})",
+        conditions_line,
         f"- Cases: {data['case_count']}",
         f"- Baseline pass rate: {data['baseline_pass_rate']}",
         f"- Candidate pass rate: {data['candidate_pass_rate']}",
@@ -1015,12 +1109,55 @@ def _comparison_status(baseline_passed: bool | None, candidate_passed: bool | No
 
 
 def _suite_summary(suite: dict[str, Any], path: Path) -> dict[str, Any]:
-    return {
+    summary = {
         "suite_id": str(suite.get("suite_id") or path.parent.name),
         "provider": str(suite.get("provider") or ""),
         "model": str(suite.get("model") or ""),
         "path": str(path),
     }
+    conditions = suite.get("execution_conditions")
+    if isinstance(conditions, dict):
+        summary["execution_conditions"] = conditions
+    return summary
+
+
+def _condition_mismatches(
+    baseline: dict[str, Any], candidate: dict[str, Any]
+) -> list[str] | None:
+    """H5071: list why two suite summaries are not execution-comparable.
+
+    Returns ``None`` when either side predates ``execution_conditions`` and
+    comparability is simply unknown (never silently assumed)."""
+    baseline_conditions = baseline.get("execution_conditions")
+    candidate_conditions = candidate.get("execution_conditions")
+    if not isinstance(baseline_conditions, dict) or not isinstance(candidate_conditions, dict):
+        return None
+    mismatches: list[str] = []
+    if baseline_conditions.get("requested_provider") != candidate_conditions.get("requested_provider"):
+        mismatches.append(
+            "requested provider differs: "
+            f"{baseline_conditions.get('requested_provider')!r} vs "
+            f"{candidate_conditions.get('requested_provider')!r}"
+        )
+    if baseline_conditions.get("requested_model") != candidate_conditions.get("requested_model"):
+        mismatches.append(
+            "requested model differs: "
+            f"{baseline_conditions.get('requested_model')!r} vs "
+            f"{candidate_conditions.get('requested_model')!r}"
+        )
+    baseline_routes = baseline_conditions.get("actual_routes") or []
+    candidate_routes = candidate_conditions.get("actual_routes") or []
+    if sorted(baseline_routes) != sorted(candidate_routes):
+        mismatches.append(
+            f"actually-served routes differ: {baseline_routes} vs {candidate_routes}"
+        )
+    if baseline_conditions.get("fallback_events") or candidate_conditions.get("fallback_events"):
+        mismatches.append(
+            "fallback events present: "
+            f"{baseline_conditions.get('fallback_events')} vs "
+            f"{candidate_conditions.get('fallback_events')}"
+        )
+    return mismatches
 
 
 def _passed(row: dict[str, Any] | None) -> bool | None:

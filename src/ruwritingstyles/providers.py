@@ -57,6 +57,37 @@ class ProviderRetryTelemetry:
 
 
 @dataclass
+class ProviderCallProvenance:
+    """Actual vs requested execution identity of the most recent call (H5071).
+
+    A provider-level fallback (e.g. DeepSeek 402 → OpenRouter) silently changes
+    which route actually served a response. Downstream budget accounting, run
+    manifests and eval comparisons must be able to distinguish the *requested*
+    provider/model from the *actual* one, so every adapter records this
+    after each ``generate_json`` call. Contains no secrets.
+    """
+
+    requested_provider: str = ""
+    requested_model: str = ""
+    actual_provider: str = ""
+    actual_model: str = ""
+    fallback_reason: str | None = None
+    outcome: str = "not_started"  # not_started | completed_direct | completed_fallback | failed_fallback
+    usage_available: bool = False
+
+    def to_json(self) -> dict[str, Any]:
+        return {
+            "requested_provider": self.requested_provider,
+            "requested_model": self.requested_model,
+            "actual_provider": self.actual_provider,
+            "actual_model": self.actual_model,
+            "fallback_reason": self.fallback_reason,
+            "outcome": self.outcome,
+            "usage_available": self.usage_available,
+        }
+
+
+@dataclass
 class ProviderUsage:
     """Token usage and cost estimates from a provider response."""
     input_tokens: int = 0
@@ -111,6 +142,13 @@ class BaseProvider:
     def _set_usage(self, usage: ProviderUsage) -> None:
         self._last_usage = usage.to_json()
 
+    def last_call_provenance(self) -> dict[str, Any]:
+        """Actual vs requested identity of the most recent call (H5071)."""
+        return getattr(self, "_last_call_provenance", ProviderCallProvenance().to_json())
+
+    def _set_call_provenance(self, provenance: ProviderCallProvenance) -> None:
+        self._last_call_provenance = provenance.to_json()
+
     def set_budget_controller(self, controller: Any) -> None:
         self._budget_controller = controller
 
@@ -129,6 +167,13 @@ class MockProvider(BaseProvider):
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
         self._set_retry_telemetry(ProviderRetryTelemetry())
         self._set_usage(ProviderUsage())
+        self._set_call_provenance(ProviderCallProvenance(
+            requested_provider=self.name,
+            requested_model=self.effective_model(provider_request),
+            actual_provider=self.name,
+            actual_model=self.effective_model(provider_request),
+            outcome="completed_direct",
+        ))
         task = provider_request.task
         metadata = provider_request.metadata
         
@@ -1025,6 +1070,15 @@ class DeepSeekProvider(BaseProvider):
             body["temperature"] = temperature
 
         telemetry = ProviderRetryTelemetry()
+        # H5071: record the requested identity up front so any observer (budget
+        # controller, run manifest) can tell requested from actually-served.
+        self._set_call_provenance(ProviderCallProvenance(
+            requested_provider=self.name,
+            requested_model=model,
+            actual_provider=self.name,
+            actual_model=model,
+            outcome="completed_direct",
+        ))
         # _post_json_with_retries retries transport/5xx errors, but a 200 whose
         # *content* is truncated mid-JSON (common on a flaky network) parses as
         # valid HTTP yet fails json.loads(content). That is transient too — retry
@@ -1056,6 +1110,9 @@ class DeepSeekProvider(BaseProvider):
                     output_tokens=usage.get("completion_tokens", 0),
                     total_tokens=usage.get("total_tokens", 0),
                 ))
+                provenance = ProviderCallProvenance(**self.last_call_provenance())
+                provenance.usage_available = bool(data.get("usage"))
+                self._set_call_provenance(provenance)
 
                 if "choices" not in data or not data["choices"]:
                     raise ProviderError(f"DeepSeek response missing choices: {data}")
@@ -1122,6 +1179,20 @@ class DeepSeekProvider(BaseProvider):
         if telemetry.retry_statuses is None:
             telemetry.retry_statuses = []
         telemetry.retry_statuses.append(f"deepseek_402_fallback_to_openrouter:{fallback_model}")
+        # H5071: the fallback is an ATTEMPT until it succeeds — record it before
+        # the call so a failed fallback still leaves the actual-served identity
+        # and the reason on this provider instance.
+        self._set_call_provenance(ProviderCallProvenance(
+            requested_provider=self.name,
+            requested_model=deepseek_model,
+            actual_provider=fallback_provider.name,
+            actual_model=fallback_model,
+            fallback_reason=(
+                f"deepseek_402_insufficient_balance (requested "
+                f"{self.name}/{deepseek_model}): {cause}"
+            ),
+            outcome="failed_fallback",
+        ))
         try:
             result = fallback_provider.generate_json(fallback_request)
         except ProviderError as exc:
@@ -1135,7 +1206,12 @@ class DeepSeekProvider(BaseProvider):
             f"openrouter_fallback:{status}" for status in (or_telemetry.get("retry_statuses") or [])
         )
         telemetry.retry_delay_seconds += or_telemetry.get("retry_delay_seconds", 0.0)
-        self._set_usage(ProviderUsage(**fallback_provider.last_usage()))
+        or_usage = fallback_provider.last_usage()
+        self._set_usage(ProviderUsage(**or_usage))
+        provenance = ProviderCallProvenance(**self.last_call_provenance())
+        provenance.outcome = "completed_fallback"
+        provenance.usage_available = bool(or_usage.get("total_tokens"))
+        self._set_call_provenance(provenance)
         return result
 
 

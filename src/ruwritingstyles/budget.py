@@ -56,6 +56,9 @@ class BudgetController:
         self._input_tokens = 0
         self._output_tokens = 0
         self._total_tokens = 0
+        # H5071: tokens attributed per actually-served route, not just the
+        # requested provider — a fallback serves usage through another route.
+        self._served_routes: dict[str, int] = {}
         self._exhaustion_reason: str | None = None
         self._lock = RLock()
 
@@ -103,7 +106,10 @@ class BudgetController:
             self._attempts += 1
             self._save()
 
-    def record_usage(self, usage: dict[str, Any]) -> None:
+    def record_usage(self, usage: dict[str, Any], served_by: str | None = None) -> None:
+        """Record token usage; ``served_by`` names the actually-served route
+        ("provider/model", H5071) when known, so fallback-served usage shows up
+        under its own route instead of the requested provider's name."""
         input_tokens = _nonnegative_int(usage.get("input_tokens"))
         output_tokens = _nonnegative_int(usage.get("output_tokens"))
         total_tokens = _nonnegative_int(usage.get("total_tokens"))
@@ -119,6 +125,8 @@ class BudgetController:
             self._input_tokens += input_tokens
             self._output_tokens += output_tokens
             self._total_tokens += total_tokens
+            route = served_by or self.provider
+            self._served_routes[route] = self._served_routes.get(route, 0) + total_tokens
             if self._total_tokens >= self.mode.max_tokens:
                 self._exhaustion_reason = f"token limit exhausted ({self.mode.max_tokens})"
             self._save()
@@ -139,6 +147,7 @@ class BudgetController:
                     "output_tokens": self._output_tokens,
                     "total_tokens": self._total_tokens,
                     "wall_seconds": round(max(0.0, self._clock() - self._started), 3),
+                    "served_routes": dict(sorted(self._served_routes.items())),
                 },
                 "exhaustion_reason": self._exhaustion_reason,
             }
@@ -168,7 +177,14 @@ def generate_with_budget(provider: Any, provider_request: Any) -> Any:
         return provider.generate_json(provider_request)
     with controller.logical_call():
         result = provider.generate_json(provider_request)
-    controller.record_usage(provider.last_usage())
+    # H5071: attribute the usage to the actually-served route, so a
+    # provider-level fallback (e.g. DeepSeek 402 → OpenRouter) is visible in
+    # budget accounting rather than silently billed to the requested provider.
+    served_by = None
+    provenance = provider.last_call_provenance() if hasattr(provider, "last_call_provenance") else {}
+    if provenance.get("actual_provider"):
+        served_by = f"{provenance['actual_provider']}/{provenance.get('actual_model') or ''}"
+    controller.record_usage(provider.last_usage(), served_by=served_by)
     return result
 
 
