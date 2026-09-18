@@ -342,6 +342,7 @@ def _generate_with_log(
             retry_statuses=_strings(telemetry.get("retry_statuses")),
             error=str(exc),
             budget=budget.snapshot() if budget is not None else None,
+            provenance=provider.last_call_provenance(),
         )
         raise
 
@@ -364,6 +365,7 @@ def _generate_with_log(
         cost_estimate=_float(usage.get("cost_estimate")),
         schema_repair=telemetry.get("schema_repair", False),
         budget=budget.snapshot() if budget is not None else None,
+        provenance=provider.last_call_provenance(),
     )
     return output
 

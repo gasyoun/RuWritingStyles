@@ -76,6 +76,22 @@
       "items": {
         "$ref": "eval-suite-comparison-row.schema.json"
       }
+    },
+    "conditions_comparable": {
+      "title": "Conditions comparable",
+      "description": "H5071: true when both suites ran under identical actual routes with no fallbacks; false when conditions differ; null when either suite predates execution_conditions.",
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "condition_mismatches": {
+      "title": "Condition mismatches",
+      "description": "Human-readable reasons the two suites are not execution-comparable; empty when comparable or unknown.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     }
   }
 }

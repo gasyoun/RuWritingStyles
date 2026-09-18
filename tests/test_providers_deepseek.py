@@ -206,5 +206,104 @@ class DeepSeekOpenRouterFallbackTests(unittest.TestCase):
         self.assertEqual(post.call_args_list[1].kwargs["body"]["model"], "custom/slug")
 
 
+class DeepSeekFallbackProvenanceTests(unittest.TestCase):
+    """H5071 — actual vs requested provider identity through the 402 fallback.
+
+    Offline only: the balance exhaustion is injected as a raised
+    ProviderQuotaExhaustedError, the real fallback adapter runs against a
+    mocked _post_json_with_retries. No secrets, no live calls."""
+
+    def _quota_error(self) -> providers.ProviderQuotaExhaustedError:
+        return providers.ProviderQuotaExhaustedError(
+            "DeepSeek API error 402 (insufficient balance): Not enough balance"
+        )
+
+    def test_direct_call_records_requested_equals_actual(self) -> None:
+        with patch.object(providers, "_post_json_with_retries", return_value=_ok()):
+            provider = DeepSeekProvider(api_key="k")
+            provider.generate_json(_request(model="deepseek-chat"))
+        provenance = provider.last_call_provenance()
+        self.assertEqual(provenance["requested_provider"], "deepseek")
+        self.assertEqual(provenance["requested_model"], "deepseek-chat")
+        self.assertEqual(provenance["actual_provider"], "deepseek")
+        self.assertEqual(provenance["actual_model"], "deepseek-chat")
+        self.assertIsNone(provenance["fallback_reason"])
+        self.assertEqual(provenance["outcome"], "completed_direct")
+        self.assertTrue(provenance["usage_available"])
+
+    def test_same_model_fallback_records_actual_provider_and_reason(self) -> None:
+        # deepseek-chat requested; OpenRouter serves the same underlying model
+        # under its own slug — the identity change must be persisted.
+        with patch.dict(os.environ, {"OPENROUTER_API_KEY": "or-key"}), patch.object(
+            providers,
+            "_post_json_with_retries",
+            side_effect=[self._quota_error(), _ok()],
+        ):
+            provider = DeepSeekProvider(api_key="k")
+            provider.generate_json(_request(model="deepseek-chat"))
+        provenance = provider.last_call_provenance()
+        self.assertEqual(provenance["requested_provider"], "deepseek")
+        self.assertEqual(provenance["requested_model"], "deepseek-chat")
+        self.assertEqual(provenance["actual_provider"], "openrouter")
+        self.assertEqual(provenance["actual_model"], "deepseek/deepseek-chat")
+        self.assertIn("402", provenance["fallback_reason"])
+        self.assertEqual(provenance["outcome"], "completed_fallback")
+        self.assertTrue(provenance["usage_available"])
+        # Usage from the actually-serving provider is what the caller sees.
+        self.assertEqual(provider.last_usage()["total_tokens"], 7)
+
+    def test_different_model_fallback_records_actual_model(self) -> None:
+        with patch.dict(
+            os.environ,
+            {
+                "OPENROUTER_API_KEY": "or-key",
+                "RWS_OPENROUTER_DEEPSEEK_FALLBACK_MODEL": "custom/slug",
+            },
+        ), patch.object(
+            providers,
+            "_post_json_with_retries",
+            side_effect=[self._quota_error(), _ok()],
+        ):
+            provider = DeepSeekProvider(api_key="k")
+            provider.generate_json(_request(model="deepseek-reasoner"))
+        provenance = provider.last_call_provenance()
+        self.assertEqual(provenance["requested_model"], "deepseek-reasoner")
+        self.assertEqual(provenance["actual_provider"], "openrouter")
+        self.assertEqual(provenance["actual_model"], "custom/slug")
+        self.assertEqual(provenance["outcome"], "completed_fallback")
+
+    def test_fallback_with_missing_usage_still_persists_provenance(self) -> None:
+        response_without_usage = {"choices": [{"message": {"content": '{"ok": true}'}}]}
+        with patch.dict(os.environ, {"OPENROUTER_API_KEY": "or-key"}), patch.object(
+            providers,
+            "_post_json_with_retries",
+            side_effect=[self._quota_error(), response_without_usage],
+        ):
+            provider = DeepSeekProvider(api_key="k")
+            result = provider.generate_json(_request())
+        self.assertEqual(result, {"ok": True})
+        provenance = provider.last_call_provenance()
+        self.assertEqual(provenance["actual_provider"], "openrouter")
+        self.assertEqual(provenance["outcome"], "completed_fallback")
+        self.assertFalse(provenance["usage_available"])
+        self.assertEqual(provider.last_usage()["total_tokens"], 0)
+
+    def test_failed_fallback_keeps_attempt_provenance_and_reason(self) -> None:
+        with patch.dict(os.environ, {"OPENROUTER_API_KEY": "or-key"}), patch.object(
+            providers,
+            "_post_json_with_retries",
+            side_effect=[self._quota_error(), ProviderError("openrouter exploded")],
+        ):
+            provider = DeepSeekProvider(api_key="k")
+            with self.assertRaises(ProviderError) as ctx:
+                provider.generate_json(_request())
+        self.assertIn("also failed", str(ctx.exception))
+        provenance = provider.last_call_provenance()
+        self.assertEqual(provenance["actual_provider"], "openrouter")
+        self.assertEqual(provenance["actual_model"], "deepseek/deepseek-chat")
+        self.assertIn("402", provenance["fallback_reason"])
+        self.assertEqual(provenance["outcome"], "failed_fallback")
+
+
 if __name__ == "__main__":
     unittest.main()
