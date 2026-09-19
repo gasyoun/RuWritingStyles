@@ -673,7 +673,7 @@ def build_parser() -> argparse.ArgumentParser:
     eval_compare.add_argument(
         "--strict",
         action="store_true",
-        help="Exit with status 1 when the candidate suite regresses against the baseline.",
+        help="Exit with status 1 when the candidate suite regresses against the baseline, or when execution conditions differ or are unknown (H5097).",
     )
     eval_compare.set_defaults(func=cmd_eval_compare)
 
@@ -2279,6 +2279,21 @@ def cmd_eval_compare(args: argparse.Namespace) -> int:
         json_output.write_text(json.dumps(comparison.data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(f"wrote {json_output}")
     if args.strict and _eval_comparison_has_regression(comparison.data):
+        return 1
+    # H5097: under --strict, a comparison whose execution conditions differ or
+    # are unknown is refused outright — the pass-rate delta of incompatible or
+    # unverifiable runs must never gate a decision.
+    if (
+        args.strict
+        and comparison.data.get("conditions_comparable") is not True
+    ):
+        comparable = comparison.data.get("conditions_comparable")
+        reasons = "; ".join(str(r) for r in comparison.data.get("condition_mismatches") or [])
+        print(
+            "error: refusing strict comparison — execution conditions are "
+            f"{'unknown (suite data predates execution_conditions)' if comparable is None else 'not comparable'}"
+            + (f": {reasons}" if reasons else ""),
+        )
         return 1
     return 0
 

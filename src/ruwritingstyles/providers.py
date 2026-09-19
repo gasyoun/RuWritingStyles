@@ -72,10 +72,25 @@ class ProviderCallProvenance:
     actual_provider: str = ""
     actual_model: str = ""
     fallback_reason: str | None = None
-    outcome: str = "not_started"  # not_started | completed_direct | completed_fallback | failed_fallback
+    outcome: str = "not_started"  # see OUTCOMES
     usage_available: bool = False
 
+    # H5097: closed outcome vocabulary of the shared provenance contract.
+    # ``failed_direct`` (added by H5097) covers calls that failed without any
+    # fallback; the other values are the H5071 vocabulary, unchanged.
+    OUTCOMES = (
+        "not_started",
+        "completed_direct",
+        "completed_fallback",
+        "failed_direct",
+        "failed_fallback",
+    )
+
     def to_json(self) -> dict[str, Any]:
+        if self.outcome not in self.OUTCOMES:
+            raise ProviderError(
+                f"unknown provenance outcome {self.outcome!r}; expected one of {list(self.OUTCOMES)}"
+            )
         return {
             "requested_provider": self.requested_provider,
             "requested_model": self.requested_model,
@@ -149,6 +164,41 @@ class BaseProvider:
     def _set_call_provenance(self, provenance: ProviderCallProvenance) -> None:
         self._last_call_provenance = provenance.to_json()
 
+    def _record_call_provenance(
+        self,
+        provider_request: ProviderRequest,
+        *,
+        outcome: str,
+        actual_provider: str | None = None,
+        actual_model: str | None = None,
+        fallback_reason: str | None = None,
+        usage_available: bool = False,
+    ) -> None:
+        """H5097 shared provenance contract: every adapter records the
+        requested identity, the actually-served identity when known, the
+        fallback reason when a fallback was involved, a truthful outcome and
+        whether usage was available — after every ``generate_json`` call,
+        success or failure. Direct adapters call this once on success (with
+        ``completed_direct`` + truthful ``usage_available``) and once in their
+        error path (with ``failed_direct``); fallback-capable adapters use the
+        ``completed_fallback``/``failed_fallback`` outcomes plus
+        ``fallback_reason``."""
+        if outcome not in ProviderCallProvenance.OUTCOMES:
+            raise ProviderError(
+                f"unknown provenance outcome {outcome!r}; expected one of "
+                f"{list(ProviderCallProvenance.OUTCOMES)}"
+            )
+        model = self.effective_model(provider_request)
+        self._set_call_provenance(ProviderCallProvenance(
+            requested_provider=self.name,
+            requested_model=model,
+            actual_provider=actual_provider or self.name,
+            actual_model=actual_model or model,
+            fallback_reason=fallback_reason,
+            outcome=outcome,
+            usage_available=usage_available,
+        ))
+
     def set_budget_controller(self, controller: Any) -> None:
         self._budget_controller = controller
 
@@ -165,15 +215,21 @@ class MockProvider(BaseProvider):
         return provider_request.model or "mock"
 
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
+        """H5097 shared provenance contract: even the deterministic mock must
+        not leave a completed_direct record behind when the task dispatch
+        fails — unsupported tasks record failed_direct truthfully."""
+        try:
+            return self._generate_json_recorded(provider_request)
+        except Exception:
+            self._record_call_provenance(provider_request, outcome="failed_direct")
+            raise
+
+    def _generate_json_recorded(self, provider_request: ProviderRequest) -> dict[str, Any]:
         self._set_retry_telemetry(ProviderRetryTelemetry())
         self._set_usage(ProviderUsage())
-        self._set_call_provenance(ProviderCallProvenance(
-            requested_provider=self.name,
-            requested_model=self.effective_model(provider_request),
-            actual_provider=self.name,
-            actual_model=self.effective_model(provider_request),
-            outcome="completed_direct",
-        ))
+        self._record_call_provenance(
+            provider_request, outcome="completed_direct", usage_available=False
+        )
         task = provider_request.task
         metadata = provider_request.metadata
         
@@ -485,6 +541,16 @@ class OpenAIProvider(BaseProvider):
         return provider_request.model or os.environ.get("RWS_OPENAI_MODEL") or "gpt-4o"
 
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
+        """H5097 shared provenance contract: a failed call leaves a truthful
+        ``failed_direct`` record; the success record is written by
+        ``_generate_json_recorded`` right before returning."""
+        try:
+            return self._generate_json_recorded(provider_request)
+        except Exception:
+            self._record_call_provenance(provider_request, outcome="failed_direct")
+            raise
+
+    def _generate_json_recorded(self, provider_request: ProviderRequest) -> dict[str, Any]:
         model = self.effective_model(provider_request)
         messages = [
             {
@@ -492,12 +558,13 @@ class OpenAIProvider(BaseProvider):
                 "content": provider_request.prompt,
             }
         ]
-        
+
         max_turns = 5
         total_input_tokens = 0
         total_output_tokens = 0
         telemetry = ProviderRetryTelemetry()
-        
+        usage_available = False
+
         for turn in range(max_turns):
             body = {
                 "model": model,
@@ -547,6 +614,7 @@ class OpenAIProvider(BaseProvider):
                 self._set_retry_telemetry(telemetry)
 
             usage = data.get("usage", {})
+            usage_available = bool(usage)
             total_input_tokens += usage.get("prompt_tokens", 0)
             total_output_tokens += usage.get("completion_tokens", 0)
             self._set_usage(ProviderUsage(
@@ -556,18 +624,25 @@ class OpenAIProvider(BaseProvider):
                 cost_estimate=0.0
             ))
 
-            choice = data.get("choices", [{}])[0]
+            choice = data.get("choices", [{}])[0] if data.get("choices") else None
+            if choice is None:
+                raise ProviderError(f"OpenAI response missing choices: {data}")
             message = choice.get("message", {})
             tool_calls = message.get("tool_calls", [])
-            
+
             if not tool_calls:
                 text = message.get("content")
                 if not text:
                     raise ProviderError("OpenAI response did not include output text")
                 try:
-                    return json.loads(text)
+                    parsed = json.loads(text)
                 except json.JSONDecodeError as exc:
                     raise ProviderError(f"OpenAI response did not contain parseable JSON: {text[:500]}") from exc
+                # H5097: truthful completed_direct record before returning.
+                self._record_call_provenance(
+                    provider_request, outcome="completed_direct", usage_available=usage_available
+                )
+                return parsed
 
             # Append assistant message with tool calls
             messages.append(message)
@@ -612,6 +687,14 @@ class GoogleProvider(BaseProvider):
         return provider_request.model or os.environ.get("RWS_GOOGLE_MODEL") or "gemini-1.5-pro"
 
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
+        """H5097 shared provenance contract wrapper (see OpenAIProvider)."""
+        try:
+            return self._generate_json_recorded(provider_request)
+        except Exception:
+            self._record_call_provenance(provider_request, outcome="failed_direct")
+            raise
+
+    def _generate_json_recorded(self, provider_request: ProviderRequest) -> dict[str, Any]:
         model = self.effective_model(provider_request)
         messages = [
             {
@@ -619,12 +702,13 @@ class GoogleProvider(BaseProvider):
                 "parts": [{"text": provider_request.prompt}],
             }
         ]
-        
+
         max_turns = 5
         total_input_tokens = 0
         total_output_tokens = 0
         telemetry = ProviderRetryTelemetry()
-        
+        usage_available = False
+
         for turn in range(max_turns):
             body = {
                 "contents": messages,
@@ -661,6 +745,7 @@ class GoogleProvider(BaseProvider):
                 self._set_retry_telemetry(telemetry)
 
             usage = data.get("usageMetadata", {})
+            usage_available = bool(usage)
             total_input_tokens += usage.get("promptTokenCount", 0)
             total_output_tokens += usage.get("candidatesTokenCount", 0)
             self._set_usage(ProviderUsage(
@@ -675,17 +760,22 @@ class GoogleProvider(BaseProvider):
             candidate = data["candidates"][0]
             content = candidate.get("content", {})
             parts = content.get("parts", [])
-            
+
             # Check for function calls
             function_calls = [p["functionCall"] for p in parts if "functionCall" in p]
-            
+
             if not function_calls:
                 # No tool calls, assume it's the final JSON response
                 text = _extract_gemini_text(data)
                 try:
-                    return json.loads(text)
+                    parsed = json.loads(text)
                 except json.JSONDecodeError as exc:
                     raise ProviderError(f"Google Gemini response did not contain parseable JSON: {text[:500]}") from exc
+                # H5097: truthful completed_direct record before returning.
+                self._record_call_provenance(
+                    provider_request, outcome="completed_direct", usage_available=usage_available
+                )
+                return parsed
             
             # 1. Append the model's function call to history
             messages.append({
@@ -736,6 +826,14 @@ class AnthropicProvider(BaseProvider):
         return provider_request.model or os.environ.get("RWS_ANTHROPIC_MODEL") or "claude-3-5-sonnet-20240620"
 
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
+        """H5097 shared provenance contract wrapper (see OpenAIProvider)."""
+        try:
+            return self._generate_json_recorded(provider_request)
+        except Exception:
+            self._record_call_provenance(provider_request, outcome="failed_direct")
+            raise
+
+    def _generate_json_recorded(self, provider_request: ProviderRequest) -> dict[str, Any]:
         model = self.effective_model(provider_request)
         max_tokens = int(os.environ.get("RWS_ANTHROPIC_MAX_TOKENS", "8192"))
         max_turns = 5
@@ -793,6 +891,7 @@ class AnthropicProvider(BaseProvider):
                 self._set_retry_telemetry(telemetry)
 
             usage = data.get("usage", {})
+            usage_available = bool(usage)
             total_input_tokens += usage.get("input_tokens", 0)
             total_output_tokens += usage.get("output_tokens", 0)
             self._set_usage(ProviderUsage(
@@ -810,9 +909,14 @@ class AnthropicProvider(BaseProvider):
             if data.get("stop_reason") != "tool_use" or not tool_use_blocks:
                 text = _extract_anthropic_text(data)
                 try:
-                    return json.loads(text)
+                    parsed = json.loads(text)
                 except json.JSONDecodeError as exc:
                     raise ProviderError(f"Anthropic response did not contain parseable JSON: {text[:500]}") from exc
+                # H5097: truthful completed_direct record before returning.
+                self._record_call_provenance(
+                    provider_request, outcome="completed_direct", usage_available=usage_available
+                )
+                return parsed
 
             # Carry the assistant turn (including the tool_use blocks) forward,
             # then answer each tool_use with a tool_result block.
@@ -854,6 +958,14 @@ class OpenRouterProvider(BaseProvider):
         return provider_request.model or os.environ.get("RWS_OPENROUTER_MODEL") or "google/gemini-2.0-flash-exp:free"
 
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
+        """H5097 shared provenance contract wrapper (see OpenAIProvider)."""
+        try:
+            return self._generate_json_recorded(provider_request)
+        except Exception:
+            self._record_call_provenance(provider_request, outcome="failed_direct")
+            raise
+
+    def _generate_json_recorded(self, provider_request: ProviderRequest) -> dict[str, Any]:
         model = self.effective_model(provider_request)
         body = {
             "model": model,
@@ -892,12 +1004,17 @@ class OpenRouterProvider(BaseProvider):
 
         if "choices" not in data or not data["choices"]:
             raise ProviderError(f"OpenRouter response missing choices: {data}")
-            
+
         text = data["choices"][0]["message"]["content"]
         try:
-            return json.loads(text)
+            parsed = json.loads(text)
         except json.JSONDecodeError as exc:
             raise ProviderError(f"OpenRouter response did not contain parseable JSON: {text[:500]}") from exc
+        # H5097: truthful completed_direct record before returning.
+        self._record_call_provenance(
+            provider_request, outcome="completed_direct", usage_available=bool(usage)
+        )
+        return parsed
 
 
 class LocalProvider(BaseProvider):
@@ -913,6 +1030,14 @@ class LocalProvider(BaseProvider):
         return provider_request.model or os.environ.get("RWS_LOCAL_LLM_MODEL") or "local-model"
 
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
+        """H5097 shared provenance contract wrapper (see OpenAIProvider)."""
+        try:
+            return self._generate_json_recorded(provider_request)
+        except Exception:
+            self._record_call_provenance(provider_request, outcome="failed_direct")
+            raise
+
+    def _generate_json_recorded(self, provider_request: ProviderRequest) -> dict[str, Any]:
         model = self.effective_model(provider_request)
         body = {
             "model": model,
@@ -949,12 +1074,17 @@ class LocalProvider(BaseProvider):
 
         if "choices" not in data or not data["choices"]:
             raise ProviderError(f"Local LLM response missing choices: {data}")
-            
+
         text = data["choices"][0]["message"]["content"]
         try:
-            return json.loads(text)
+            parsed = json.loads(text)
         except json.JSONDecodeError as exc:
             raise ProviderError(f"Local LLM response did not contain parseable JSON: {text[:500]}") from exc
+        # H5097: truthful completed_direct record before returning.
+        self._record_call_provenance(
+            provider_request, outcome="completed_direct", usage_available=bool(usage)
+        )
+        return parsed
 
 
 class OllamaProvider(BaseProvider):
@@ -969,6 +1099,14 @@ class OllamaProvider(BaseProvider):
         return provider_request.model or os.environ.get("RWS_OLLAMA_MODEL") or "llama3"
 
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
+        """H5097 shared provenance contract wrapper (see OpenAIProvider)."""
+        try:
+            return self._generate_json_recorded(provider_request)
+        except Exception:
+            self._record_call_provenance(provider_request, outcome="failed_direct")
+            raise
+
+    def _generate_json_recorded(self, provider_request: ProviderRequest) -> dict[str, Any]:
         model = self.effective_model(provider_request)
         body = {
             "model": model,
@@ -995,6 +1133,7 @@ class OllamaProvider(BaseProvider):
             self._set_retry_telemetry(telemetry)
 
         # Ollama doesn't always provide token usage in the chat response unless requested
+        usage_present = bool(data.get("prompt_eval_count") or data.get("eval_count"))
         self._set_usage(ProviderUsage(
             input_tokens=data.get("prompt_eval_count", 0),
             output_tokens=data.get("eval_count", 0),
@@ -1003,12 +1142,17 @@ class OllamaProvider(BaseProvider):
 
         if "message" not in data or "content" not in data["message"]:
             raise ProviderError(f"Ollama response missing content: {data}")
-            
+
         text = data["message"]["content"]
         try:
-            return json.loads(text)
+            parsed = json.loads(text)
         except json.JSONDecodeError as exc:
             raise ProviderError(f"Ollama response did not contain parseable JSON: {text[:500]}") from exc
+        # H5097: truthful completed_direct record before returning.
+        self._record_call_provenance(
+            provider_request, outcome="completed_direct", usage_available=usage_present
+        )
+        return parsed
 
 
 class DeepSeekProvider(BaseProvider):
@@ -1086,6 +1230,10 @@ class DeepSeekProvider(BaseProvider):
         # crash the caller (e.g. an eval case dying at the review stage).
         text = ""
         last_exc: json.JSONDecodeError | None = None
+        # H5097: any failure of the DIRECT attempt (before a fallback is even
+        # attempted) must leave a truthful failed_direct record — the optimistic
+        # completed_direct marker set above would otherwise outlive the failure.
+        fallback_attempted = False
         try:
             for content_attempt in range(2):  # one retry on truncated content
                 try:
@@ -1102,6 +1250,7 @@ class DeepSeekProvider(BaseProvider):
                 except ProviderQuotaExhaustedError as exc:
                     if os.environ.get("RWS_DEEPSEEK_OPENROUTER_FALLBACK", "1") == "0":
                         raise
+                    fallback_attempted = True
                     return self._fallback_to_openrouter(provider_request, model, telemetry, exc)
 
                 usage = data.get("usage", {})
@@ -1128,6 +1277,12 @@ class DeepSeekProvider(BaseProvider):
                     raise ProviderError(
                         f"DeepSeek response did not contain parseable JSON: {text[:500]}"
                     ) from exc
+        except Exception:
+            # H5097: failed fallback paths already recorded truthful provenance
+            # inside _fallback_to_openrouter — never overwrite those.
+            if not fallback_attempted:
+                self._record_call_provenance(provider_request, outcome="failed_direct")
+            raise
         finally:
             self._set_retry_telemetry(telemetry)
         # The loop returns on success or raises on the second parse failure.
@@ -1162,6 +1317,10 @@ class DeepSeekProvider(BaseProvider):
             # No OPENROUTER_API_KEY / NOUS_PORTAL_API_KEY configured -- surface
             # the ORIGINAL DeepSeek balance error as the primary cause, not a
             # confusing "OpenRouter key missing" as if that were the root issue.
+            # H5097: the fallback never ran, so this stays a truthful
+            # failed_direct record (no fallback_reason — nothing was served by
+            # another route).
+            self._record_call_provenance(provider_request, outcome="failed_direct")
             raise ProviderError(
                 "DeepSeek balance exhausted (HTTP 402) and the OpenRouter fallback "
                 f"is not configured ({exc}); original DeepSeek error: {cause}"
