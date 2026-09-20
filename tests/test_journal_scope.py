@@ -225,7 +225,7 @@ class TestHarvestSelectionWiring:
         )
         monkeypatch.setattr(
             "ruwritingstyles.rcsi.article_meta",
-            lambda slug, article_id: dict(metas[article_id.rsplit("/", 1)[-1]]),
+            lambda slug, article_id: dict(metas[article_id]),
         )
         monkeypatch.setattr(harvest, "_corpus_dir", lambda: (tmp_path, tmp_path / "quarantine"))
         harvested: list[str] = []
