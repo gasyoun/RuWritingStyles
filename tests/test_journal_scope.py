@@ -186,3 +186,93 @@ class TestHarvestSelectionWiring:
         summary = harvest.harvest_journal("2619-032X", dry_run=True)
 
         assert summary["written"][0]["verdict"] == "uncertain"
+
+    def test_harvest_journal_selection_gate_skips_non_include(self, tmp_path, monkeypatch):
+        """D04 bulk default: only include-verdict articles reach _harvest_one."""
+        records = [
+            {"oai_identifier": "oai:journals.rcsi.science:article/990010"},
+            {
+                "oai_identifier": "oai:journals.rcsi.science:article/990011",
+                "subject": ["экспериментальная физика; химия"],
+            },
+        ]
+        metas = {
+            "990010": {
+                "journal_slug": "2619-032X",
+                "article_id": "990010",
+                "url": "https://journals.rcsi.science/2619-032X/article/view/990010",
+                "title_ru": "О морфологии языка былин",
+                "title_en": "On the morphology of bylinas",
+                "authors_ru": [], "authors_en": [],
+                "year": 2025, "volume": "1", "issue": "1",
+                "firstpage": "1", "lastpage": "10",
+                "language": "ru", "keywords_ru": [], "keywords_en": [],
+            },
+            "990011": {
+                "journal_slug": "2619-032X",
+                "article_id": "990011",
+                "url": "https://journals.rcsi.science/2619-032X/article/view/990011",
+                "title_ru": "Эксперименты по химии высоких энергий",
+                "title_en": "High-energy chemistry experiments",
+                "authors_ru": [], "authors_en": [],
+                "year": 2025, "volume": "1", "issue": "1",
+                "firstpage": "11", "lastpage": "20",
+                "language": "ru", "keywords_ru": [], "keywords_en": [],
+            },
+        }
+        monkeypatch.setattr(
+            "ruwritingstyles.rcsi.list_records", lambda *a, **k: iter(records)
+        )
+        monkeypatch.setattr(
+            "ruwritingstyles.rcsi.article_meta",
+            lambda slug, article_id: dict(metas[article_id.rsplit("/", 1)[-1]]),
+        )
+        monkeypatch.setattr(harvest, "_corpus_dir", lambda: (tmp_path, tmp_path / "quarantine"))
+        harvested: list[str] = []
+        monkeypatch.setattr(
+            harvest,
+            "_harvest_one",
+            lambda slug, meta, **k: harvested.append(meta["article_id"])
+            or {"stem": meta["article_id"], "status": "written", "bibliography_id": "x"},
+        )
+
+        summary = harvest.harvest_journal("2619-032X")
+
+        assert harvested == ["990010"], "the exclude-verdict article must not be harvested"
+        assert summary["written"] and summary["written"][0]["stem"] == "990010"
+        assert [s["verdict"] for s in summary["selection_skipped"]] == ["exclude"]
+        assert summary["selection_skipped"][0]["url"].endswith("990011")
+
+    def test_harvest_journal_selection_all_harvests_everything(self, tmp_path, monkeypatch):
+        records = [
+            {"oai_identifier": "oai:journals.rcsi.science:article/990011",
+             "subject": ["экспериментальная физика; химия"]},
+        ]
+        meta = {
+            "journal_slug": "2619-032X",
+            "article_id": "990011",
+            "url": "https://journals.rcsi.science/2619-032X/article/view/990011",
+            "title_ru": "Эксперименты по химии высоких энергий",
+            "title_en": "High-energy chemistry experiments",
+            "authors_ru": [], "authors_en": [],
+            "year": 2025, "volume": "1", "issue": "1",
+            "firstpage": "11", "lastpage": "20",
+            "language": "ru", "keywords_ru": [], "keywords_en": [],
+        }
+        monkeypatch.setattr(
+            "ruwritingstyles.rcsi.list_records", lambda *a, **k: iter(records)
+        )
+        monkeypatch.setattr(
+            "ruwritingstyles.rcsi.article_meta", lambda *a, **k: dict(meta)
+        )
+        monkeypatch.setattr(harvest, "_corpus_dir", lambda: (tmp_path, tmp_path / "quarantine"))
+        monkeypatch.setattr(
+            harvest,
+            "_harvest_one",
+            lambda slug, meta, **k: {"stem": meta["article_id"], "status": "written", "bibliography_id": "x"},
+        )
+
+        summary = harvest.harvest_journal("2619-032X", selection="all")
+
+        assert summary["written"], "--selection all must restore enumerate-everything"
+        assert summary["selection_skipped"] == []

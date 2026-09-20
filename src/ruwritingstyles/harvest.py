@@ -244,12 +244,28 @@ def harvest_journal(
     since: str | None = None,
     dry_run: bool = False,
     force: bool = False,
+    selection: str = "include",
 ) -> dict[str, Any]:
-    """Enumerate, filter, extract, gate, write. Returns a summary dict."""
+    """Enumerate, filter, extract, gate, write. Returns a summary dict.
+
+    ``selection="include"`` (the D04 default for bulk runs) accepts only
+    articles the subject filter classifies ``include``; ``exclude`` and
+    ``uncertain`` verdicts are counted into ``selection_skipped`` (with their
+    terms) instead of being written, so the uncertain tail stays visible as
+    review-queue input rather than silently entering the corpus (R4).
+    ``selection="all"`` restores the enumerate-everything behaviour;
+    ``dry_run`` always enumerates and classifies everything regardless.
+    """
     from . import rcsi
     from .journal_scope import classify_article
 
-    summary: dict[str, Any] = {"slug": slug, "written": [], "skipped": [], "quarantined": []}
+    summary: dict[str, Any] = {
+        "slug": slug,
+        "written": [],
+        "skipped": [],
+        "quarantined": [],
+        "selection_skipped": [],
+    }
     accepted = 0
 
     for record in rcsi.list_records(slug, since=since):
@@ -259,6 +275,22 @@ def harvest_journal(
         article_id = identifier.rsplit(":", 1)[-1]
         meta = rcsi.article_meta(slug, article_id)
         stem = build_stem(meta)
+
+        if not dry_run and selection == "include":
+            gate = classify_article(dict(meta, **{"html": ""}), selection_record=record)
+            if gate["verdict"] != "include":
+                summary["selection_skipped"].append(
+                    {
+                        "stem": stem,
+                        "verdict": gate["verdict"],
+                        "url": meta.get("url", ""),
+                        "title_ru": meta.get("title_ru", ""),
+                        "title_en": meta.get("title_en", ""),
+                        "matched_terms": gate["matched_terms"],
+                        "negative_terms": gate["negative_terms"],
+                    }
+                )
+                continue
 
         if dry_run:
             corpus_dir = _corpus_dir()[0]

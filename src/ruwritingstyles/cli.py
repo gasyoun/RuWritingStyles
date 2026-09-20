@@ -371,6 +371,12 @@ def build_parser() -> argparse.ArgumentParser:
     journal_harvest.add_argument("--limit", type=int, default=None, help="Max articles accepted this run.")
     journal_harvest.add_argument("--since", default=None, help="OAI from= date (YYYY-MM-DD).")
     journal_harvest.add_argument("--dry-run", action="store_true", help="Enumerate and classify only; write nothing.")
+    journal_harvest.add_argument(
+        "--selection",
+        choices=["include", "all"],
+        default="include",
+        help="Article gate (D04): 'include' writes only include-verdict articles; 'all' writes everything.",
+    )
     journal_harvest.add_argument("--force", action="store_true", help="Re-harvest even when a passing sidecar exists.")
     journal_harvest.set_defaults(func=cmd_journal_harvest)
 
@@ -2719,6 +2725,7 @@ def cmd_journal_harvest(args: argparse.Namespace) -> int:
             since=args.since,
             dry_run=args.dry_run,
             force=args.force,
+            selection=args.selection,
         )
     except Exception as exc:
         print(f"error: {exc}")
