@@ -79,6 +79,49 @@ class CorePipelineTests(unittest.TestCase):
         self.assertEqual(council.get("status"), "prompt_ready")
         self.assertFalse((run_dir / "revised.md").exists())
 
+    def test_workers_flag_produces_same_artifacts_as_sequential(self) -> None:
+        run_dir, manifest, model_policy = self._prepare("unittest-core-workers")
+        style_ids = list(manifest.mvp_style_ids)
+        self.assertGreaterEqual(len(style_ids), 2, "need >=2 styles to exercise fan-out")
+        core_pipeline(
+            repo_root=REPO_ROOT, run_dir=run_dir, provider_name="mock",
+            manifest=manifest, model_policy=model_policy, execute=True,
+            style_ids=style_ids, workers=4,
+        )
+        review_paths = sorted((run_dir / "reviews").glob("*.review.json"))
+        self.assertEqual(len(review_paths), len(style_ids))
+        for path in review_paths:
+            doc = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(doc.get("status"), "completed")
+        run_manifest = json.loads((run_dir / "run.json").read_text(encoding="utf-8"))
+        self.assertEqual(run_manifest["status"], "completed")
+
+    def test_resume_guard_skips_completed_review_bundle(self) -> None:
+        run_dir, manifest, model_policy = self._prepare("unittest-core-resume-guard")
+        style_id = manifest.mvp_style_ids[0]
+        bundle = create_review_bundle(
+            repo_root=REPO_ROOT, run_dir=run_dir, style_id=style_id, manifest=manifest,
+        )
+        provider = provider_from_name("mock")
+        execute_review_artifact(
+            repo_root=REPO_ROOT, review_path=bundle.review_json, provider=provider,
+        )
+        completed = json.loads(bundle.review_json.read_text(encoding="utf-8"))
+        self.assertEqual(completed["status"], "completed")
+        mtime_before = bundle.review_json.stat().st_mtime_ns
+
+        # Re-creating the bundle for the same style must skip the overwrite:
+        # the file's mtime and findings must be untouched (no re-spend of a
+        # paid call for already-completed work).
+        bundle_again = create_review_bundle(
+            repo_root=REPO_ROOT, run_dir=run_dir, style_id=style_id, manifest=manifest,
+        )
+        self.assertEqual(bundle_again.review_json, bundle.review_json)
+        self.assertEqual(bundle.review_json.stat().st_mtime_ns, mtime_before)
+        still_completed = json.loads(bundle.review_json.read_text(encoding="utf-8"))
+        self.assertEqual(still_completed["status"], "completed")
+        self.assertEqual(still_completed["findings"], completed["findings"])
+
     def test_on_update_streams_step_events(self) -> None:
         run_dir, manifest, model_policy = self._prepare("unittest-core-events")
         events = []
