@@ -219,6 +219,12 @@ def execute_scrutiny_artifact(*, repo_root: Path, scrutiny_path: Path, provider:
     )
     scrutiny["status"] = "completed"
     scrutiny["findings"] = output.get("findings", [])
+    if scrutiny.get("nkrya"):
+        from .nkrya_evidence import NkryaEvidence, attach_nkrya_evidence
+
+        evidence = NkryaEvidence(repo_root / scrutiny["nkrya"]["cache_dir"],
+                                 offline=bool(scrutiny["nkrya"].get("offline", True)), repo_root=repo_root)
+        scrutiny["findings"] = attach_nkrya_evidence(scrutiny["findings"], evidence)
     _write_json(scrutiny_path, scrutiny)
 
 

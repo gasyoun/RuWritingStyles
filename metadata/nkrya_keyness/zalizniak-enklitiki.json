@@ -1,0 +1,319 @@
+{
+ "passport": "zalizniak-enklitiki",
+ "handoff": "H5283",
+ "measured": "23-09-2026",
+ "source_file": "RuWritingStyles-corpus/PDFtoTXT/2008_Zalizniak_Enklitiki.txt",
+ "source_label": "А. А. Зализняк, «Древнерусские энклитики» (2008)",
+ "source_sha256": "46d58e80d037bb9f0ba1e30f379ec8e43fafaa038bc9d157835caf9f18ef4ccb",
+ "lemmatizer": "pymorphy3",
+ "tokens": 98344,
+ "top_n": 30,
+ "keyness": "log2(text ipm / NKRYa ipm); NKRYa ipm floor 0.01 when no portrait",
+ "reference": "NKRYa word portrait PORTRAIT_FREQUENCY, main corpus",
+ "cache_keys": [
+  "02f9df915fb21010c2fb4f64",
+  "0cf2b80eeebaeb044b11beb5",
+  "10f1303dcccec5ecd550a4cc",
+  "17baed0ed29955d529376d5f",
+  "184cd3a8b9c3cd24cd6f4f9f",
+  "1f28231802135cca4462e57f",
+  "2bc3b537264bd2001b1c1f57",
+  "2be0fc28a5360c4ebabe31a0",
+  "2c38a025249a56fbdc59b7ff",
+  "346d1c4de9bfb1b2eab5c867",
+  "3474a24d3d436e9e73fce95f",
+  "3c00359bad7311712658a420",
+  "50cf47bee46d4b6daccbbe63",
+  "5273495dcbf045551c00775c",
+  "5fbd1fe04bfae43bcb0be2a7",
+  "7cedda84792ddac2740d0197",
+  "87e5106c757daf29c3849035",
+  "8fc77f5c9edd6a14bfb93491",
+  "9ffa5331bcf84b12ab290b6b",
+  "a074648cabc796755d01756c",
+  "ad307436fe8cc181e24b95bd",
+  "bee836e9252396588887fcd0",
+  "d2b34d3e6036003a74ae3642",
+  "d33bcc8d97dd27cdcdeec0bf",
+  "df593a1847c6d507c6bf5126",
+  "e098af5bf87abff281e9e871",
+  "e0bf7335bd1a057e46501485",
+  "ed90ac83e517356079315578",
+  "efa905f9ae8ca1bbff05aba2",
+  "f6ff6730ed670a4148920228"
+ ],
+ "rows": [
+  {
+   "lemma": "энклитика",
+   "pos": "S",
+   "count": 978,
+   "text_ipm": 9944.7,
+   "nkrya_ipm": 0.053967,
+   "band": 1,
+   "log_ratio": 17.49
+  },
+  {
+   "lemma": "постпозиция",
+   "pos": "S",
+   "count": 150,
+   "text_ipm": 1525.3,
+   "nkrya_ipm": 0.0187711,
+   "band": 1,
+   "log_ratio": 16.31
+  },
+  {
+   "lemma": "препозиция",
+   "pos": "S",
+   "count": 240,
+   "text_ipm": 2440.4,
+   "nkrya_ipm": 0.0868165,
+   "band": 1,
+   "log_ratio": 14.78
+  },
+  {
+   "lemma": "словоформа",
+   "pos": "S",
+   "count": 204,
+   "text_ipm": 2074.4,
+   "nkrya_ipm": 0.964367,
+   "band": 1,
+   "log_ratio": 11.07
+  },
+  {
+   "lemma": "сказуемое",
+   "pos": "S",
+   "count": 170,
+   "text_ipm": 1728.6,
+   "nkrya_ipm": 2.25488,
+   "band": 2,
+   "log_ratio": 9.58
+  },
+  {
+   "lemma": "местоимение",
+   "pos": "S",
+   "count": 238,
+   "text_ipm": 2420.1,
+   "nkrya_ipm": 3.98886,
+   "band": 2,
+   "log_ratio": 9.24
+  },
+  {
+   "lemma": "берестяной",
+   "pos": "A",
+   "count": 138,
+   "text_ipm": 1403.2,
+   "nkrya_ipm": 2.87433,
+   "band": 2,
+   "log_ratio": 8.93
+  },
+  {
+   "lemma": "древнерусский",
+   "pos": "A",
+   "count": 214,
+   "text_ipm": 2176.0,
+   "nkrya_ipm": 6.32118,
+   "band": 2,
+   "log_ratio": 8.43
+  },
+  {
+   "lemma": "связка",
+   "pos": "S",
+   "count": 310,
+   "text_ipm": 3152.2,
+   "nkrya_ipm": 11.807,
+   "band": 3,
+   "log_ratio": 8.06
+  },
+  {
+   "lemma": "барьер",
+   "pos": "S",
+   "count": 311,
+   "text_ipm": 3162.4,
+   "nkrya_ipm": 12.281,
+   "band": 3,
+   "log_ratio": 8.01
+  },
+  {
+   "lemma": "ранг",
+   "pos": "S",
+   "count": 186,
+   "text_ipm": 1891.3,
+   "nkrya_ipm": 15.1131,
+   "band": 3,
+   "log_ratio": 6.97
+  },
+  {
+   "lemma": "коэффициент",
+   "pos": "S",
+   "count": 158,
+   "text_ipm": 1606.6,
+   "nkrya_ipm": 13.9423,
+   "band": 3,
+   "log_ratio": 6.85
+  },
+  {
+   "lemma": "начальный",
+   "pos": "A",
+   "count": 171,
+   "text_ipm": 1738.8,
+   "nkrya_ipm": 21.2888,
+   "band": 3,
+   "log_ratio": 6.35
+  },
+  {
+   "lemma": "памятник",
+   "pos": "S",
+   "count": 479,
+   "text_ipm": 4870.7,
+   "nkrya_ipm": 71.823,
+   "band": 3,
+   "log_ratio": 6.08
+  },
+  {
+   "lemma": "фраза",
+   "pos": "S",
+   "count": 562,
+   "text_ipm": 5714.6,
+   "nkrya_ipm": 91.291,
+   "band": 3,
+   "log_ratio": 5.97
+  },
+  {
+   "lemma": "грамота",
+   "pos": "S",
+   "count": 202,
+   "text_ipm": 2054.0,
+   "nkrya_ipm": 35.3554,
+   "band": 3,
+   "log_ratio": 5.86
+  },
+  {
+   "lemma": "эволюция",
+   "pos": "S",
+   "count": 144,
+   "text_ipm": 1464.2,
+   "nkrya_ipm": 25.944,
+   "band": 3,
+   "log_ratio": 5.82
+  },
+  {
+   "lemma": "книжный",
+   "pos": "A",
+   "count": 165,
+   "text_ipm": 1677.8,
+   "nkrya_ipm": 31.6364,
+   "band": 3,
+   "log_ratio": 5.73
+  },
+  {
+   "lemma": "пример",
+   "pos": "S",
+   "count": 488,
+   "text_ipm": 4962.2,
+   "nkrya_ipm": 173.152,
+   "band": 4,
+   "log_ratio": 4.84
+  },
+  {
+   "lemma": "группа",
+   "pos": "S",
+   "count": 370,
+   "text_ipm": 3762.3,
+   "nkrya_ipm": 246.852,
+   "band": 4,
+   "log_ratio": 3.93
+  },
+  {
+   "lemma": "правило",
+   "pos": "S",
+   "count": 161,
+   "text_ipm": 1637.1,
+   "nkrya_ipm": 163.949,
+   "band": 4,
+   "log_ratio": 3.32
+  },
+  {
+   "lemma": "глава",
+   "pos": "S",
+   "count": 153,
+   "text_ipm": 1555.8,
+   "nkrya_ipm": 197.791,
+   "band": 4,
+   "log_ratio": 2.98
+  },
+  {
+   "lemma": "случай",
+   "pos": "S",
+   "count": 405,
+   "text_ipm": 4118.2,
+   "nkrya_ipm": 652.613,
+   "band": 4,
+   "log_ratio": 2.66
+  },
+  {
+   "lemma": "форма",
+   "pos": "S",
+   "count": 183,
+   "text_ipm": 1860.8,
+   "nkrya_ipm": 307.114,
+   "band": 4,
+   "log_ratio": 2.6
+  },
+  {
+   "lemma": "язык",
+   "pos": "S",
+   "count": 219,
+   "text_ipm": 2226.9,
+   "nkrya_ipm": 375.875,
+   "band": 4,
+   "log_ratio": 2.57
+  },
+  {
+   "lemma": "брат",
+   "pos": "S",
+   "count": 170,
+   "text_ipm": 1728.6,
+   "nkrya_ipm": 323.45,
+   "band": 4,
+   "log_ratio": 2.42
+  },
+  {
+   "lemma": "часть",
+   "pos": "S",
+   "count": 189,
+   "text_ipm": 1921.8,
+   "nkrya_ipm": 605.674,
+   "band": 4,
+   "log_ratio": 1.67
+  },
+  {
+   "lemma": "общий",
+   "pos": "A",
+   "count": 138,
+   "text_ipm": 1403.2,
+   "nkrya_ipm": 461.418,
+   "band": 4,
+   "log_ratio": 1.6
+  },
+  {
+   "lemma": "слово",
+   "pos": "S",
+   "count": 322,
+   "text_ipm": 3274.2,
+   "nkrya_ipm": 1151.61,
+   "band": 5,
+   "log_ratio": 1.51
+  },
+  {
+   "lemma": "дать",
+   "pos": "V",
+   "count": 178,
+   "text_ipm": 1810.0,
+   "nkrya_ipm": 723.709,
+   "band": 4,
+   "log_ratio": 1.32
+  }
+ ],
+ "report_rel": "metadata/nkrya_keyness/zalizniak-enklitiki.json",
+ "report_url": "https://github.com/gasyoun/RuWritingStyles/blob/main/metadata/nkrya_keyness/zalizniak-enklitiki.json"
+}
