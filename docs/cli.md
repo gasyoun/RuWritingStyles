@@ -1,4 +1,4 @@
-_Created: 24-08-2026 · Last updated: 05-09-2026_
+_Created: 24-08-2026 · Last updated: 23-09-2026_
 
 # CLI
 
@@ -454,6 +454,18 @@ runs/cli-smoke-readme/
 The verification prompt includes the original document, normalized document, revision artifact, and revised document if one has already been produced. Without `--execute`, it creates `status: prompt_ready`; with `--execute`, it fills `passed` and `warnings`.
 
 When `--execute` is used, `verification.json` is updated with a verifier status, passed checks, and warnings.
+
+## Philological scrutiny with NKRYa evidence
+
+```powershell
+rws scrutiny runs/<run-id> --nkrya offline
+```
+
+`rws scrutiny` writes a philological-audit prompt (etymology, anachronism, syntax, morphology). With `--nkrya` (needs the `nkrya` extra: `pip install ruwritingstyles[nkrya]`), words that look archaic are listed in the prompt with Russian National Corpus evidence. Candidates are pre-reform spellings, Church-Slavonic function words (`сей`, `дабы`, `токмо`…) and out-of-dictionary forms. For each one the prompt shows its ipm across the whole main corpus, its ipm in the 1800–1899 slice, and a one-phrase hint (for example, `19th-century-skewed: x2.4`). With `--execute`, each `anachronism` finding gets the same evidence as `nkrya_evidence`. The evidence is advisory: severity and confidence are never changed.
+
+`offline` reads only the committed cache in `metadata/nkrya_cache/`. `live` fetches cache misses through the official ruscorpora.ru API, at about 6 requests per minute. The token is read from the macOS keychain (`ruscorpora-api`), keyring or `RUSCORPORA_API_TOKEN`. Until the shared csl-pyutil client ships (H5282), `live` loads SanskritLexicography's `RussianTranslation/src/nkrya_client.py` from the sibling checkout, or from the path in `RWS_NKRYA_CLIENT`.
+
+The passports' «Лексическая подпись (НКРЯ)» tables are produced by `python scripts/nkrya_keyness.py --all [--offline]` (H5283). The per-passport reports live in `metadata/nkrya_keyness/`; method and caveats: [NKRYA_KEYNESS_STYLE_PASSPORTS_H5283_23-09-2026.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/NKRYA_KEYNESS_STYLE_PASSPORTS_H5283_23-09-2026.md).
 
 ## Lint Sanskrit transliteration
 

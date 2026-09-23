@@ -1,0 +1,319 @@
+{
+ "passport": "zalizniak-novgorod",
+ "handoff": "H5283",
+ "measured": "23-09-2026",
+ "source_file": "RuWritingStyles-corpus/PDFtoTXT/zaliznyak_drevnenovgorodsky_dialekt_2004.txt",
+ "source_label": "А. А. Зализняк, «Древненовгородский диалект» (2004)",
+ "source_sha256": "6006f1c776199851841a34c08c35c21b4238993c7ba41a501f3655fa71af667d",
+ "lemmatizer": "pymorphy3",
+ "tokens": 372826,
+ "top_n": 30,
+ "keyness": "log2(text ipm / NKRYa ipm); NKRYa ipm floor 0.01 when no portrait",
+ "reference": "NKRYa word portrait PORTRAIT_FREQUENCY, main corpus",
+ "cache_keys": [
+  "02aa8e4adee5fd499bd2d9c9",
+  "02f9df915fb21010c2fb4f64",
+  "0cf2b80eeebaeb044b11beb5",
+  "10f1303dcccec5ecd550a4cc",
+  "13eada36e5f35fca22aa2408",
+  "2bc3b537264bd2001b1c1f57",
+  "2be0fc28a5360c4ebabe31a0",
+  "35b555290960186a2c935735",
+  "3c6d76da2b07668d110eda03",
+  "50662cfead19a81a17195831",
+  "63eea20bcddd618e48cf4f64",
+  "780fc0be394194c701e459bc",
+  "78408b5c05a7a01dfc8bdb37",
+  "82af4eba6fd6dcb3fa137fe8",
+  "83200238a187f24a1025ab0c",
+  "87e5106c757daf29c3849035",
+  "8c093db5a881dad311a35817",
+  "9f70e1995482e9b1d757e2c8",
+  "9ffa5331bcf84b12ab290b6b",
+  "a074648cabc796755d01756c",
+  "afe7fe660f314c151035ec46",
+  "bee836e9252396588887fcd0",
+  "bf9a6efecdd91b79a60fba62",
+  "c9e3e42f9bb7ff166a97da70",
+  "d4670fa16dae76144c9a8ff2",
+  "ec98417bcb3e1d570e21c266",
+  "ecdb51c127c682e9f3b3283c",
+  "ed90ac83e517356079315578",
+  "ff3db94e442a8113a9328a43",
+  "ffc13ec39ec27902f456c4b9"
+ ],
+ "rows": [
+  {
+   "lemma": "словоформа",
+   "pos": "S",
+   "count": 390,
+   "text_ipm": 1046.1,
+   "nkrya_ipm": 0.964367,
+   "band": 1,
+   "log_ratio": 10.08
+  },
+  {
+   "lemma": "берестяной",
+   "pos": "A",
+   "count": 751,
+   "text_ipm": 2014.3,
+   "nkrya_ipm": 2.87433,
+   "band": 2,
+   "log_ratio": 9.45
+  },
+  {
+   "lemma": "морфология",
+   "pos": "S",
+   "count": 449,
+   "text_ipm": 1204.3,
+   "nkrya_ipm": 2.13052,
+   "band": 2,
+   "log_ratio": 9.14
+  },
+  {
+   "lemma": "грамота",
+   "pos": "S",
+   "count": 3235,
+   "text_ipm": 8677.0,
+   "nkrya_ipm": 35.3554,
+   "band": 3,
+   "log_ratio": 7.94
+  },
+  {
+   "lemma": "графика",
+   "pos": "S",
+   "count": 463,
+   "text_ipm": 1241.9,
+   "nkrya_ipm": 5.42016,
+   "band": 2,
+   "log_ratio": 7.84
+  },
+  {
+   "lemma": "гривна",
+   "pos": "S",
+   "count": 325,
+   "text_ipm": 871.7,
+   "nkrya_ipm": 6.06073,
+   "band": 2,
+   "log_ratio": 7.17
+  },
+  {
+   "lemma": "написание",
+   "pos": "S",
+   "count": 392,
+   "text_ipm": 1051.4,
+   "nkrya_ipm": 7.79002,
+   "band": 2,
+   "log_ratio": 7.08
+  },
+  {
+   "lemma": "новгородский",
+   "pos": "A",
+   "count": 329,
+   "text_ipm": 882.4,
+   "nkrya_ipm": 21.5,
+   "band": 3,
+   "log_ratio": 5.36
+  },
+  {
+   "lemma": "буква",
+   "pos": "S",
+   "count": 663,
+   "text_ipm": 1778.3,
+   "nkrya_ipm": 60.6964,
+   "band": 3,
+   "log_ratio": 4.87
+  },
+  {
+   "lemma": "строка",
+   "pos": "S",
+   "count": 545,
+   "text_ipm": 1461.8,
+   "nkrya_ipm": 58.4204,
+   "band": 3,
+   "log_ratio": 4.65
+  },
+  {
+   "lemma": "окончание",
+   "pos": "S",
+   "count": 556,
+   "text_ipm": 1491.3,
+   "nkrya_ipm": 61.093,
+   "band": 3,
+   "log_ratio": 4.61
+  },
+  {
+   "lemma": "поздний",
+   "pos": "A",
+   "count": 374,
+   "text_ipm": 1003.1,
+   "nkrya_ipm": 42.5893,
+   "band": 3,
+   "log_ratio": 4.56
+  },
+  {
+   "lemma": "отметить",
+   "pos": "V",
+   "count": 576,
+   "text_ipm": 1545.0,
+   "nkrya_ipm": 90.7373,
+   "band": 3,
+   "log_ratio": 4.09
+  },
+  {
+   "lemma": "пример",
+   "pos": "S",
+   "count": 1006,
+   "text_ipm": 2698.3,
+   "nkrya_ipm": 173.152,
+   "band": 4,
+   "log_ratio": 3.96
+  },
+  {
+   "lemma": "перевод",
+   "pos": "S",
+   "count": 510,
+   "text_ipm": 1367.9,
+   "nkrya_ipm": 88.7687,
+   "band": 3,
+   "log_ratio": 3.95
+  },
+  {
+   "lemma": "текст",
+   "pos": "S",
+   "count": 705,
+   "text_ipm": 1891.0,
+   "nkrya_ipm": 123.322,
+   "band": 4,
+   "log_ratio": 3.94
+  },
+  {
+   "lemma": "вариант",
+   "pos": "S",
+   "count": 357,
+   "text_ipm": 957.6,
+   "nkrya_ipm": 72.6701,
+   "band": 3,
+   "log_ratio": 3.72
+  },
+  {
+   "lemma": "ранний",
+   "pos": "A",
+   "count": 334,
+   "text_ipm": 895.9,
+   "nkrya_ipm": 70.2275,
+   "band": 3,
+   "log_ratio": 3.67
+  },
+  {
+   "lemma": "фраза",
+   "pos": "S",
+   "count": 339,
+   "text_ipm": 909.3,
+   "nkrya_ipm": 91.291,
+   "band": 3,
+   "log_ratio": 3.32
+  },
+  {
+   "lemma": "тип",
+   "pos": "S",
+   "count": 445,
+   "text_ipm": 1193.6,
+   "nkrya_ipm": 128.005,
+   "band": 4,
+   "log_ratio": 3.22
+  },
+  {
+   "lemma": "значение",
+   "pos": "S",
+   "count": 440,
+   "text_ipm": 1180.2,
+   "nkrya_ipm": 201.548,
+   "band": 4,
+   "log_ratio": 2.55
+  },
+  {
+   "lemma": "имя",
+   "pos": "S",
+   "count": 907,
+   "text_ipm": 2432.8,
+   "nkrya_ipm": 417.425,
+   "band": 4,
+   "log_ratio": 2.54
+  },
+  {
+   "lemma": "автор",
+   "pos": "S",
+   "count": 350,
+   "text_ipm": 938.8,
+   "nkrya_ipm": 231.652,
+   "band": 4,
+   "log_ratio": 2.02
+  },
+  {
+   "lemma": "форма",
+   "pos": "S",
+   "count": 408,
+   "text_ipm": 1094.3,
+   "nkrya_ipm": 307.114,
+   "band": 4,
+   "log_ratio": 1.83
+  },
+  {
+   "lemma": "слово",
+   "pos": "S",
+   "count": 1469,
+   "text_ipm": 3940.2,
+   "nkrya_ipm": 1151.61,
+   "band": 5,
+   "log_ratio": 1.77
+  },
+  {
+   "lemma": "случай",
+   "pos": "S",
+   "count": 702,
+   "text_ipm": 1882.9,
+   "nkrya_ipm": 652.613,
+   "band": 4,
+   "log_ratio": 1.53
+  },
+  {
+   "lemma": "письмо",
+   "pos": "S",
+   "count": 446,
+   "text_ipm": 1196.3,
+   "nkrya_ipm": 467.213,
+   "band": 4,
+   "log_ratio": 1.36
+  },
+  {
+   "lemma": "конец",
+   "pos": "S",
+   "count": 564,
+   "text_ipm": 1512.8,
+   "nkrya_ipm": 593.724,
+   "band": 4,
+   "log_ratio": 1.35
+  },
+  {
+   "lemma": "часть",
+   "pos": "S",
+   "count": 459,
+   "text_ipm": 1231.1,
+   "nkrya_ipm": 605.674,
+   "band": 4,
+   "log_ratio": 1.02
+  },
+  {
+   "lemma": "дать",
+   "pos": "V",
+   "count": 429,
+   "text_ipm": 1150.7,
+   "nkrya_ipm": 723.709,
+   "band": 4,
+   "log_ratio": 0.67
+  }
+ ],
+ "report_rel": "metadata/nkrya_keyness/zalizniak-novgorod.json",
+ "report_url": "https://github.com/gasyoun/RuWritingStyles/blob/main/metadata/nkrya_keyness/zalizniak-novgorod.json"
+}

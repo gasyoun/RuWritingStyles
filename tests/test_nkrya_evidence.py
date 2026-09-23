@@ -108,8 +108,11 @@ class CommittedPassportTests(unittest.TestCase):
 
 class ScrutinyEvidenceTests(unittest.TestCase):
     def test_hints(self) -> None:
-        self.assertEqual(evidence_hint(12.0, 3, 0), "modern-only: no 1800-1899 hits")
-        self.assertEqual(evidence_hint(0.3, 1, 40), "rare today, attested in 1800-1899 (archaism)")
+        self.assertEqual(evidence_hint(12.0, 0, 0.0), "modern-only: no 1800-1899 hits")
+        self.assertEqual(evidence_hint(490.0, 97723, 1191.0), "19th-century-skewed: x2.4 its whole-corpus rate")
+        self.assertTrue(evidence_hint(100.0, 50, 10.0).startswith("modern-skewed"))
+        self.assertEqual(evidence_hint(0.8, 102, 1.2), "rare in every period")
+        self.assertEqual(evidence_hint(None, 0, None), "unattested in NKRYa main corpus")
 
     def test_attach_is_advisory(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -120,7 +123,7 @@ class ScrutinyEvidenceTests(unittest.TestCase):
                          concordance_payload(lemma_query("блогер"), n=1,
                                              subcorpus_conditions=[{"fieldName": "created",
                                                                     "intRange": {"begin": 1800, "end": 1899}}]),
-                         {"queryStats": {"wordUsageCount": 0}})
+                         {"queryStats": {"wordUsageCount": 0}, "subcorpStats": {"wordUsageCount": 82049244}})
 
             findings = [{"span_id": "p001", "category": "anachronism", "severity": "warning", "finding": "x",
                          "suggestion": "y", "confidence": 0.7, "term": "блогер"},
@@ -154,7 +157,8 @@ class ScrutinyEvidenceTests(unittest.TestCase):
         self.assertTrue(rows and all(r.get("status") != "unavailable" for r in rows), rows)
         for r in rows:
             self.assertIn(f"| {r['lemma']} |", prompt)
-        self.assertTrue(any(r["hits_1800_1899"] for r in rows))
+        self.assertTrue(all(r["ipm_1800_1899"] is not None for r in rows))
+        self.assertTrue(any(r["hint"].startswith("19th-century-skewed") for r in rows), [r["hint"] for r in rows])
 
     def test_prompt_unchanged_without_nkrya(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

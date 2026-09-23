@@ -76,9 +76,11 @@ def _render_nkrya_section(rows: list[dict] | None) -> str:
 ## NKRYa Corpus Evidence (advisory)
 
 Measured in the Russian National Corpus (ruscorpora.ru, main corpus) for words in this document that look archaic
-(pre-reform spelling, Church-Slavonic function words, out-of-dictionary forms). **NKRYa ipm** is today's frequency
-(band 1 = under 1 ipm … 6 = over 10 000 ipm); **Hits 1800–1899** counts uses in 19th-century texts. The numbers are
-evidence, not a verdict: weigh them, cite them in a finding when they matter, and never reject a word on them alone.
+(pre-reform spelling, Church-Slavonic function words, out-of-dictionary forms). **ipm, all periods** is the rate
+across the whole main corpus (band 1 = under 1 ipm … 6 = over 10 000 ipm); **ipm 1800–1899** is the rate in its
+19th-century slice, and the hint compares the two (a word used several times more often in 1800–1899 is period-marked).
+The numbers are evidence, not a verdict: weigh them, cite them in a finding when they matter, and never reject a word
+on them alone.
 
 {body}
 """
