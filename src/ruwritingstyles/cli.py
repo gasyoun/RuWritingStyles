@@ -792,6 +792,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Perform deep philological scrutiny (etymology/anachronism check).",
     )
     scrutiny.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    scrutiny.add_argument(
+        "--nkrya",
+        choices=["offline", "live"],
+        help="Add NKRYa corpus evidence (advisory) for archaism candidates: 'offline' reads metadata/nkrya_cache only; "
+        "'live' fetches misses via the ruscorpora.ru API (token in keychain `ruscorpora-api`, ~6 requests/min).",
+    )
     _add_execute_args(scrutiny)
     scrutiny.set_defaults(func=cmd_scrutiny)
 
@@ -2487,7 +2493,12 @@ def cmd_scrutiny(args: argparse.Namespace) -> int:
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
     if args.execute and args.require_provider_ready:
         _require_provider_ready(args.provider)
-    bundle = create_scrutiny_bundle(repo_root=repo_root, run_dir=run_dir)
+    nkrya = None
+    if getattr(args, "nkrya", None):
+        from .nkrya_evidence import DEFAULT_CACHE_REL, NkryaEvidence
+
+        nkrya = NkryaEvidence(repo_root / DEFAULT_CACHE_REL, offline=args.nkrya == "offline", repo_root=repo_root)
+    bundle = create_scrutiny_bundle(repo_root=repo_root, run_dir=run_dir, nkrya=nkrya)
     print(f"created {bundle.scrutiny_json.relative_to(repo_root)}")
     if args.execute:
         execute_scrutiny_artifact(

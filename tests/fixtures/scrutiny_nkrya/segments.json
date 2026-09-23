@@ -1,0 +1,76 @@
+{
+  "run_id": "h5283-fixture",
+  "input_path": "scratch/h5283_src/archaism.md",
+  "segment_count": 3,
+  "segments": [
+    {
+      "span_id": "h001",
+      "type": "heading",
+      "text": "# Заметка о стиле",
+      "start_line": 1,
+      "end_line": 1,
+      "tags": [],
+      "metrics": {
+        "char_count": 17,
+        "word_count": 3,
+        "sentence_count": 1,
+        "cyrillic_word_count": 3,
+        "latin_word_count": 0,
+        "mixed_script_word_count": 0,
+        "historical_cyrillic_count": 0,
+        "yo_count": 0,
+        "accent_mark_count": 0,
+        "question_count": 0,
+        "exclamation_count": 0,
+        "long_sentence_count": 0,
+        "average_sentence_words": 3.0
+      }
+    },
+    {
+      "span_id": "p002",
+      "type": "paragraph",
+      "text": "Сей труд, дабы не утомить читателя, писан токмо для немногих. Автор вельми дорожит оным наблюдением.",
+      "start_line": 3,
+      "end_line": 3,
+      "tags": [],
+      "metrics": {
+        "char_count": 100,
+        "word_count": 15,
+        "sentence_count": 2,
+        "cyrillic_word_count": 15,
+        "latin_word_count": 0,
+        "mixed_script_word_count": 0,
+        "historical_cyrillic_count": 0,
+        "yo_count": 0,
+        "accent_mark_count": 0,
+        "question_count": 0,
+        "exclamation_count": 0,
+        "long_sentence_count": 0,
+        "average_sentence_words": 7.5
+      }
+    },
+    {
+      "span_id": "p003",
+      "type": "paragraph",
+      "text": "Нонче же всякий блогер мнит себя филологом.",
+      "start_line": 5,
+      "end_line": 5,
+      "tags": [],
+      "metrics": {
+        "char_count": 43,
+        "word_count": 7,
+        "sentence_count": 1,
+        "cyrillic_word_count": 7,
+        "latin_word_count": 0,
+        "mixed_script_word_count": 0,
+        "historical_cyrillic_count": 0,
+        "yo_count": 0,
+        "accent_mark_count": 0,
+        "question_count": 0,
+        "exclamation_count": 0,
+        "long_sentence_count": 0,
+        "average_sentence_words": 7.0
+      }
+    }
+  ]
+}
