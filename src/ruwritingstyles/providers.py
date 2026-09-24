@@ -823,7 +823,7 @@ class AnthropicProvider(BaseProvider):
             raise ProviderError("ANTHROPIC_API_KEY is required for provider 'anthropic'")
 
     def effective_model(self, provider_request: ProviderRequest) -> str:
-        return provider_request.model or os.environ.get("RWS_ANTHROPIC_MODEL") or "claude-3-5-sonnet-20240620"
+        return provider_request.model or os.environ.get("RWS_ANTHROPIC_MODEL") or "claude-sonnet-5"
 
     def generate_json(self, provider_request: ProviderRequest) -> dict[str, Any]:
         """H5097 shared provenance contract wrapper (see OpenAIProvider)."""
