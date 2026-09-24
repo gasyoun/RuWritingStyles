@@ -1,11 +1,11 @@
-_Created: 24-08-2026 · Last updated: 05-09-2026_
+_Created: 24-08-2026 · Last updated: 24-09-2026_
 
 # Project: RuWritingStyles Agent Engineering
 
 Этот проект следует строгому агентскому протоколу и персонализированному роадмапу.
 
 **При каждом начале сессии:**
-1. Прочитать [GEMINI_ROADMAP.md](https://github.com/gasyoun/RuWritingStyles/blob/main/GEMINI_ROADMAP.md) — актуальный план действий.
+1. Прочитать [docs/roadmap-2026-q3.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-2026-q3.md) — актуальный план действий.
 2. Прочитать [CHANGELOG.md](https://github.com/gasyoun/RuWritingStyles/blob/main/CHANGELOG.md) — последние изменения.
 3. Определить текущий шаг из раздела "Следующее действие" в роадмапе.
 4. Если меняется форма JSON-артефакта, синхронно обновить `schemas/`, `tools/validate_project.py`, тесты и документацию.
