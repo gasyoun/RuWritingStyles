@@ -245,6 +245,7 @@ def harvest_journal(
     dry_run: bool = False,
     force: bool = False,
     selection: str = "include",
+    max_records: int | None = None,
 ) -> dict[str, Any]:
     """Enumerate, filter, extract, gate, write. Returns a summary dict.
 
@@ -255,6 +256,9 @@ def harvest_journal(
     review-queue input rather than silently entering the corpus (R4).
     ``selection="all"`` restores the enumerate-everything behaviour;
     ``dry_run`` always enumerates and classifies everything regardless.
+    ``max_records`` bounds how many OAI records are examined at all, so a
+    bounded sample (D20) stays bounded even when a journal's archive yields
+    few include verdicts.
     """
     from . import rcsi
     from .journal_scope import classify_article
@@ -268,11 +272,15 @@ def harvest_journal(
     }
     accepted = 0
 
-    for record in rcsi.list_records(slug, since=since):
+    for record in rcsi.list_records(slug, since=since, max_records=max_records):
         if limit is not None and accepted >= limit:
             break
         identifier = str(record.get("oai_identifier", ""))
-        article_id = identifier.rsplit(":", 1)[-1]
+        # "oai:journals.rcsi.science:article/351602" -> "351602". The bare
+        # colon split leaves "article/351602", and /article/view/article/<id>
+        # serves the journal home page (200, zero citation_* meta) — every
+        # non-pinned harvest silently parsed empty metadata before this.
+        article_id = identifier.rsplit(":", 1)[-1].rsplit("/", 1)[-1]
         meta = rcsi.article_meta(slug, article_id)
         stem = build_stem(meta)
 

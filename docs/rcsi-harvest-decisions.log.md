@@ -56,3 +56,20 @@ improvised call stays visible here.
   work without the `[harvest]` extra (pymupdf) installed.
 
 _Dr. Mārcis Gasūns_
+
+- 20-09-2026 (W2.4, D17 default applied): the D20 "bounded sample" is bounded in enumeration
+  too — `harvest_journal` now takes `max_records` and the W2.4 driver passes 300 (3 OAI
+  pages per journal). Reason: journals with large archives and mostly-uncertain records
+  (measured: 0131-2812, 100 records/page) would otherwise enumerate for hours while writing
+  nothing; "about 50 articles each, small enough to inspect and re-run" bounds the sample,
+  not just the yield. Journal-level `include` verdicts are untouched; the uncertain tail
+  still lands in `knowledge/rcsi/article_review_queue.json`.
+
+- 20-09-2026 (W2.4, observed, NOT changed): ВЯ (0373-658X) English-language articles
+  quarantine at cyrillic_ratio 0.12-0.16 — the HTML body includes the Russian
+  abstract block, so the text is never "decisively" Latin enough (<= 0.10) for
+  the wave-1 language-flip retry to fire. Left as honest quarantine (D14:
+  score + reason retained; `--force` re-harvest possible after any future
+  recalibration). Recalibrating the flip bounds is wave-0-threshold territory
+  (change a threshold => re-run the extractor benchmark) and stays a residual,
+  not a W2.4 edit.

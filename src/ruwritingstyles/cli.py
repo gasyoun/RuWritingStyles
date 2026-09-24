@@ -370,6 +370,12 @@ def build_parser() -> argparse.ArgumentParser:
     journal_harvest.add_argument("--pinned", action="store_true", help="Harvest exactly the pinned manifest articles.")
     journal_harvest.add_argument("--limit", type=int, default=None, help="Max articles accepted this run.")
     journal_harvest.add_argument("--since", default=None, help="OAI from= date (YYYY-MM-DD).")
+    journal_harvest.add_argument(
+        "--max-records",
+        type=int,
+        default=None,
+        help="Examine at most N OAI records this run (keeps a bounded sample bounded).",
+    )
     journal_harvest.add_argument("--dry-run", action="store_true", help="Enumerate and classify only; write nothing.")
     journal_harvest.add_argument(
         "--selection",
@@ -2726,6 +2732,7 @@ def cmd_journal_harvest(args: argparse.Namespace) -> int:
             dry_run=args.dry_run,
             force=args.force,
             selection=args.selection,
+            max_records=args.max_records,
         )
     except Exception as exc:
         print(f"error: {exc}")

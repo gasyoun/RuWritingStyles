@@ -1,4 +1,4 @@
-_Created: 24-08-2026 · Last updated: 05-09-2026_
+_Created: 24-08-2026 · Last updated: 20-09-2026_
 
 # CLI
 
@@ -570,6 +570,14 @@ rws corpus-verify                       # re-check every pinned article; exit 1 
   then refuses unverified profiles unless `--allow-unverified` is passed (D10).
 - `journal-harvest --pinned` is idempotent: an article whose sidecar already
   carries a `pass` verdict is skipped unless `--force`.
+- `journal-harvest <slug>` applies the D04 article-level gate by default:
+  only `include`-verdict articles are written (`--selection all` restores
+  enumerate-everything; `--dry-run` classifies without writing either way),
+  exclude/uncertain verdicts are counted into the run manifest and
+  [knowledge/rcsi/article_review_queue.json](https://github.com/gasyoun/RuWritingStyles/blob/main/knowledge/rcsi/article_review_queue.json)
+  instead of entering the corpus (R4). `--max-records N` bounds how many OAI
+  records are examined at all, so a bounded sample (D20) stays bounded even
+  when a journal's archive yields few includes.
 - `corpus-verify` checks, per pinned entry: text present and non-empty,
   sidecar validates against `article-sidecar.schema.json`, DOI (or URL key
   where the platform exposes none), a bibliography row, a `pass` sanity

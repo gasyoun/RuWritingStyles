@@ -39,6 +39,7 @@ from ruwritingstyles import rcsi  # noqa: E402
 from ruwritingstyles.harvest import harvest_journal  # noqa: E402
 
 CAP = 50  # D20: about 50 articles per in-scope journal
+MAX_RECORDS = 300  # D17 default 20-09-2026: examine at most 3 OAI pages per journal
 QUEUE_PATH = ROOT / "knowledge" / "rcsi" / "article_review_queue.json"
 
 
@@ -82,7 +83,9 @@ def main() -> int:
             continue
         started = time.monotonic()
         try:
-            summary = harvest_journal(slug, limit=remaining, selection="include")
+            summary = harvest_journal(
+                slug, limit=remaining, selection="include", max_records=MAX_RECORDS
+            )
         except rcsi.RcsiRateLimited as exc:
             print(f"[{index}/{len(slugs)}] {slug}: RATE LIMITED ({exc}) — stopping run", flush=True)
             aggregate["journals"].append({"slug": slug, "status": "rate-limited", "error": str(exc)})
