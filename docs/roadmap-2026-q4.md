@@ -1,12 +1,19 @@
 # ROADMAP — RuWritingStyles 2026-Q4 (waves H1 · C1 · E1 · P1)
 
-_Created: 23-08-2026 · Last updated: 02-09-2026_
+_Created: 23-08-2026 · Last updated: 24-09-2026_
 
 > **Truth-pass 02-09-2026** (H3775) — `roadmap_handoff_truth.py --check` flagged this
 > page drained but still living: **12 of 12 referenced handoffs have shipped, zero remain OPEN**.
 > Kept at this path per MG ruling 31-08-2026 (do not archive) — the strategy/plan
 > layer still holds even though its backlog has fully closed. A future session
 > reopening work here should mint a fresh H### rather than un-close these.
+
+> **Truth-pass 24-09-2026** (H5376, verdict pass E015 wave 1) — re-verified against
+> live git history and the current `.ai_state.md`/`CITATION.cff`. Waves H1, C1.1,
+> C1.2 (4 of 5 passports), C1.3 and the agent-doable half of P1 are all SHIPPED and
+> MERGED (evidence in the unminted-prose table below). Kept ARCHIVE-eligible content
+> struck; kept alive because five items remain genuinely unminted or author-gated —
+> see **What is left** below, each with a GTD row.
 
 Authored via `/roadmap-interview` on 23-08-2026 after an evidence audit (repo state v2.26.0,
 [Q3 roadmap](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-2026-q3.md)
@@ -105,10 +112,44 @@ The genuinely human buttons are wired to GTD and stay there until ruled/done:
 
 | Action | Where |
 |---|---|
-| Submit A29 methodology paper to Вестник СПбГУ | GTD @DO (paper-pack ready, 5/5) |
-| Link repo to Zenodo + confirm deposit → DOI | existing GTD @DO row |
-| obsidianmd/obsidian-releases PR + BRAT listing | GTD mirror added by H3370 close |
-| GitHub Support GC of dangling corpus objects + archive local backup mirror | GTD @DO |
+| ~~Link repo to Zenodo + confirm deposit → DOI~~ | **SHIPPED** — `10.5281/zenodo.20696614` live in [`CITATION.cff`](https://github.com/gasyoun/RuWritingStyles/blob/main/CITATION.cff) (verified 24-09-2026) |
+| Submit A29 methodology paper to Вестник СПбГУ | [GTD @DO H5376-A29](https://github.com/gasyoun/Uprava/blob/main/GTD_NEXT_ACTIONS.md) |
+| obsidianmd/obsidian-releases PR + BRAT listing | [GTD @DO H5376-obsidian](https://github.com/gasyoun/Uprava/blob/main/GTD_NEXT_ACTIONS.md) |
+| GitHub Support GC of dangling corpus objects + archive local backup mirror | [GTD @DO H5376-gc](https://github.com/gasyoun/Uprava/blob/main/GTD_NEXT_ACTIONS.md) |
+
+## What is left (truth-pass 24-09-2026, H5376)
+
+All engineering waves shipped and merged — evidence: H3154 harvest wave 1
+([PR #175](https://github.com/gasyoun/RuWritingStyles/pull/175)), H3369 orientalist
+intake (Bartold/Turaev/Golenishchev/Kratchkovsky gates lifted, docs commits
+`8514b12`/`6b19da1`), H3381–H3384 four of five passports
+([#176](https://github.com/gasyoun/RuWritingStyles/pull/176)
+[#177](https://github.com/gasyoun/RuWritingStyles/pull/177)
+[#178](https://github.com/gasyoun/RuWritingStyles/pull/178)
+[#179](https://github.com/gasyoun/RuWritingStyles/pull/179)), H1861 Lotman/Meletinsky
+([#129](https://github.com/gasyoun/RuWritingStyles/pull/129)), H3370 polish sweep
+(dependabot triaged, Obsidian release repo live at tag `0.1.0`). Five items remain
+genuinely open, none of them an engineering gap an agent can close unattended:
+
+- [ ] **Shileiko passport** — gated on attributable texts via V. B. Emelyanov (external
+  human, not MG). [@WAITING H5376-shileiko](https://github.com/gasyoun/Uprava/blob/main/GTD_NEXT_ACTIONS.md), no date.
+- [ ] **E1 fresh N=5 DeepSeek re-baseline** — `rws eval-suite --provider deepseek --repeat 5`
+  → `rws eval-promote`; agent-doable, not human-gated, still unminted since H3154 merged
+  23-08-2026 (`.ai_state.md` line 14, also covers H5283's eight-passport prompt change).
+- [ ] **h1213dict-dict-zone-order-r05 adjudication** — the sole unresolved H1213 benchmark
+  decision, evidence prepared, needs the author's call.
+  [@DECIDE H5376-h1213](https://github.com/gasyoun/Uprava/blob/main/GTD_NEXT_ACTIONS.md), no date.
+- [ ] **A29 methodology paper → Вестник СПбГУ** — submission is author-only.
+  [@DO H5376-A29](https://github.com/gasyoun/Uprava/blob/main/GTD_NEXT_ACTIONS.md), no date.
+- [ ] **obsidianmd/obsidian-releases PR + BRAT listing** — the plugin mirror is live
+  (`gasyoun/ruwritingstyles-obsidian` tag `0.1.0`) but community-directory submission is
+  author-only per this repo's own classification (`.ai_state.md` line 15 "Author
+  publication actions"). [@DO H5376-obsidian](https://github.com/gasyoun/Uprava/blob/main/GTD_NEXT_ACTIONS.md), no date.
+- [ ] **GitHub Support GC of dangling corpus objects + archive local backup mirror** —
+  account-admin action, author-only. [@DO H5376-gc](https://github.com/gasyoun/Uprava/blob/main/GTD_NEXT_ACTIONS.md), no date.
+
+Kept alive at this path (not archived) per the same 31-08-2026 ruling as the 02-09
+truth-pass: the strategy/plan layer still holds even though most of its backlog closed.
 
 ## Sequencing
 
