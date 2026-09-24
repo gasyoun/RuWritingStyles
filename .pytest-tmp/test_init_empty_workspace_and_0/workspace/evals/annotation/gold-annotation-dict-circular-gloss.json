@@ -1,0 +1,70 @@
+{
+  "case_id": "dict-circular-gloss",
+  "provider": "deepseek",
+  "raters": [
+    "A (mechanical scorer, eval-result.json)",
+    "B (Fable 5, claude-fable-5 — вторая ИИ-модель, не совпадающая с оцениваемым провайдером; слепота на уровне листа: вердикты скорера не включались; роль ИИ раскрывается по docs/AI_DISCLOSURE.md)"
+  ],
+  "runs": [
+    {
+      "run": "h1213dict-dict-circular-gloss-r01",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "circular_gloss"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 5,
+      "rater_b_notes": "circular_gloss точно на p003; шум: zone на h001 (артефакт заголовка), пометы/лексические функции не по делу"
+    },
+    {
+      "run": "h1213dict-dict-circular-gloss-r02",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "circular_gloss"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 7,
+      "rater_b_notes": "канонический тип пойман; много мелкой педантики (окситон, класс., синонимы для имени собственного)"
+    },
+    {
+      "run": "h1213dict-dict-circular-gloss-r03",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "circular_gloss"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 4,
+      "rater_b_notes": "пойман + мельчуковская расшифровка circulus vitiosus; шум по правилам словообразования"
+    },
+    {
+      "run": "h1213dict-dict-circular-gloss-r04",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "circular_gloss"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 5,
+      "rater_b_notes": "пойман; ложный circular_reference на стандартные отсылки см.; выдуманное отсутствие указания основы"
+    },
+    {
+      "run": "h1213dict-dict-circular-gloss-r05",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "circular_gloss"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 3,
+      "rater_b_notes": "пойман; ложная циркулярность «бог огня» (определять Агни через огонь — корректно)"
+    }
+  ],
+  "caught": true,
+  "type_correct": true,
+  "false_positives": 24,
+  "agreement": 1.0,
+  "kappa": 1.0
+}

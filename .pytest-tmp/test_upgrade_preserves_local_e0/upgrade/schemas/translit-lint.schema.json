@@ -1,0 +1,47 @@
+{
+  "$id": "translit-lint.schema.json",
+  "title": "Deterministic Sanskrit transliteration lint artifact (translit-lint.json)",
+  "type": "object",
+  "required": ["status", "source_file", "findings", "summary"],
+  "properties": {
+    "status": { "const": "completed" },
+    "source_file": { "type": "string" },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["span_id", "type", "message", "severity"],
+        "properties": {
+          "span_id": { "type": "string" },
+          "type": {
+            "enum": [
+              "mixed_transliteration_scheme",
+              "inconsistent_term_rendering",
+              "missing_iast_on_first_mention",
+              "devanagari_nfc_issue",
+              "iast_in_cyrillic_word"
+            ]
+          },
+          "message": { "type": "string" },
+          "severity": { "enum": ["error", "warning", "info"] },
+          "fragment": { "type": "string" },
+          "term": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["segments_checked", "schemes_detected", "finding_counts"],
+      "properties": {
+        "segments_checked": { "type": "integer" },
+        "iast_word_count": { "type": "integer" },
+        "hk_word_count": { "type": "integer" },
+        "schemes_detected": { "type": "array", "items": { "type": "string" } },
+        "finding_counts": { "type": "object" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

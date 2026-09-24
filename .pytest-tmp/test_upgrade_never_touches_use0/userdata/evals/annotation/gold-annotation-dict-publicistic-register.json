@@ -1,0 +1,70 @@
+{
+  "case_id": "dict-publicistic-register",
+  "provider": "deepseek",
+  "raters": [
+    "A (mechanical scorer, eval-result.json)",
+    "B (Fable 5, claude-fable-5 — вторая ИИ-модель, не совпадающая с оцениваемым провайдером; слепота на уровне листа: вердикты скорера не включались; роль ИИ раскрывается по docs/AI_DISCLOSURE.md)"
+  ],
+  "runs": [
+    {
+      "run": "h1213dict-dict-publicistic-register-r01",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "publicistic_register"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 6,
+      "rater_b_notes": "оба публицистических пятна пойманы; FP: восклицание внутри цитируемой глоссы «горе!», нерасшифрованные сигла"
+    },
+    {
+      "run": "h1213dict-dict-publicistic-register-r02",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "publicistic_register"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 0,
+      "rater_b_notes": "чисто: публицистика + реструктуризация, без шума"
+    },
+    {
+      "run": "h1213dict-dict-publicistic-register-r03",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "publicistic_register"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 5,
+      "rater_b_notes": "пойман; серия missing_source на стандартные словарные сигла (Chr., KĀD., MBH.) — не по делу"
+    },
+    {
+      "run": "h1213dict-dict-publicistic-register-r04",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "publicistic_register"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 3,
+      "rater_b_notes": "пойман; FP: «горе!» из глоссы; выдуманное отсутствие основного значения"
+    },
+    {
+      "run": "h1213dict-dict-publicistic-register-r05",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "publicistic_register"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 4,
+      "rater_b_notes": "пойман (в т.ч. дубль-переформулировки); FP: спутанная жалоба на пунктуацию, требование множества примеров"
+    }
+  ],
+  "caught": true,
+  "type_correct": true,
+  "false_positives": 18,
+  "agreement": 1.0,
+  "kappa": 1.0
+}

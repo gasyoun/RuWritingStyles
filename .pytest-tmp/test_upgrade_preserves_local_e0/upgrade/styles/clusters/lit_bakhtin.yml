@@ -1,0 +1,53 @@
+id: cluster:lit_bakhtin
+name: "Диалогическая / Бахтинская школа"
+level: cluster
+source_prompt: ClaudeStyles/lit-bakhtin-cluster-base.md
+role: cultural_context_reviewer
+language: ru
+domains: ["literary_bakhtin"]
+best_for:
+  - поэтика Бахтина
+  - полифонический роман
+  - карнавализация
+checks:
+  - formalization_overreach
+  - simplification_of_concepts
+  - removal_of_polyphony
+limits:
+  - крайне высокий риск искажения при попытке «улучшить» стиль
+markers:
+  lexical:
+    - "полифония"
+    - "хронотоп"
+    - "карнавал"
+    - "диалог"
+    - "большое время"
+    - "чужое слово"
+  epistemic:
+    - "открытость"
+    - "незавершенность"
+forbidden_edits:
+  - "Нельзя определять «хронотоп» жестко"
+  - "Нельзя заменять «голос» на «точку зрения»"
+  - "Нельзя разбивать длинные медитативные периоды"
+  - "Нельзя «исправлять» эссеистичность на академичность"
+anchors:
+  - id: bakh_01
+    description: "Наличие терминов-метафор Бахтина"
+    signal: "\\b(хронотоп|полифония|карнавализац)\\b"
+    expected: found
+review_mode:
+  rewrite_allowed: false
+  requires_span_ids: true
+  output_format: findings_json
+council:
+  can_reply_to:
+    - cultural_context
+    - argument_structure
+  should_defer:
+    - nss
+conflict_priority:
+  default: high
+  when_domain:
+    - literary_bakhtin
+    - philosophy_of_language

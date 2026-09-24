@@ -1,0 +1,302 @@
+[
+ {
+  "task": "task-001",
+  "run": "20260703-h073gov-commentary-layer-mix-r05",
+  "condition": "reversed",
+  "n_findings": 8
+ },
+ {
+  "task": "task-002",
+  "run": "20260703-h073gov-karaka-not-padezh-r04",
+  "condition": "original",
+  "n_findings": 5
+ },
+ {
+  "task": "task-003",
+  "run": "20260703-h073gov-vedic-classical-anachronism-r02",
+  "condition": "original",
+  "n_findings": 2
+ },
+ {
+  "task": "task-004",
+  "run": "20260703-h073gov-samasa-misclassification-r02",
+  "condition": "original",
+  "n_findings": 2
+ },
+ {
+  "task": "task-005",
+  "run": "20260703-h073gov-karaka-not-padezh-r01",
+  "condition": "reversed",
+  "n_findings": 4
+ },
+ {
+  "task": "task-006",
+  "run": "20260703-h073gov-samasa-misclassification-r02",
+  "condition": "reversed",
+  "n_findings": 2
+ },
+ {
+  "task": "task-007",
+  "run": "20260703-h073gov-sanskrit-pseudo-etymology-r01",
+  "condition": "reversed",
+  "n_findings": 9
+ },
+ {
+  "task": "task-008",
+  "run": "20260703-h073gov-sanskrit-pseudo-etymology-r04",
+  "condition": "original",
+  "n_findings": 5
+ },
+ {
+  "task": "task-009",
+  "run": "20260703-h073gov-samasa-misclassification-r01",
+  "condition": "reversed",
+  "n_findings": 6
+ },
+ {
+  "task": "task-010",
+  "run": "20260703-h073gov-vedic-classical-anachronism-r03",
+  "condition": "original",
+  "n_findings": 2
+ },
+ {
+  "task": "task-011",
+  "run": "20260703-h073gov-vedic-classical-anachronism-r04",
+  "condition": "reversed",
+  "n_findings": 2
+ },
+ {
+  "task": "task-012",
+  "run": "20260703-h073gov-vedic-classical-anachronism-r05",
+  "condition": "reversed",
+  "n_findings": 2
+ },
+ {
+  "task": "task-013",
+  "run": "20260703-h073gov-vedic-classical-anachronism-r04",
+  "condition": "original",
+  "n_findings": 2
+ },
+ {
+  "task": "task-014",
+  "run": "20260703-h073gov-sanskrit-pseudo-etymology-r02",
+  "condition": "original",
+  "n_findings": 5
+ },
+ {
+  "task": "task-015",
+  "run": "20260703-h073gov-sanskrit-pseudo-etymology-r03",
+  "condition": "reversed",
+  "n_findings": 8
+ },
+ {
+  "task": "task-016",
+  "run": "20260703-h073gov-karaka-not-padezh-r03",
+  "condition": "reversed",
+  "n_findings": 3
+ },
+ {
+  "task": "task-017",
+  "run": "20260703-h073gov-commentary-layer-mix-r01",
+  "condition": "original",
+  "n_findings": 5
+ },
+ {
+  "task": "task-018",
+  "run": "20260703-h073gov-karaka-not-padezh-r05",
+  "condition": "original",
+  "n_findings": 4
+ },
+ {
+  "task": "task-019",
+  "run": "20260703-h073gov-sanskrit-pseudo-etymology-r05",
+  "condition": "reversed",
+  "n_findings": 10
+ },
+ {
+  "task": "task-020",
+  "run": "20260703-h073gov-karaka-not-padezh-r02",
+  "condition": "original",
+  "n_findings": 5
+ },
+ {
+  "task": "task-021",
+  "run": "20260703-h073gov-samasa-misclassification-r03",
+  "condition": "reversed",
+  "n_findings": 5
+ },
+ {
+  "task": "task-022",
+  "run": "20260703-h073gov-commentary-layer-mix-r05",
+  "condition": "original",
+  "n_findings": 8
+ },
+ {
+  "task": "task-023",
+  "run": "20260703-h073gov-sanskrit-pseudo-etymology-r04",
+  "condition": "reversed",
+  "n_findings": 5
+ },
+ {
+  "task": "task-024",
+  "run": "20260703-h073gov-sanskrit-pseudo-etymology-r02",
+  "condition": "reversed",
+  "n_findings": 5
+ },
+ {
+  "task": "task-025",
+  "run": "20260703-h073gov-samasa-misclassification-r01",
+  "condition": "original",
+  "n_findings": 6
+ },
+ {
+  "task": "task-026",
+  "run": "20260703-h073gov-commentary-layer-mix-r02",
+  "condition": "reversed",
+  "n_findings": 6
+ },
+ {
+  "task": "task-027",
+  "run": "20260703-h073gov-samasa-misclassification-r05",
+  "condition": "original",
+  "n_findings": 5
+ },
+ {
+  "task": "task-028",
+  "run": "20260703-h073gov-karaka-not-padezh-r04",
+  "condition": "reversed",
+  "n_findings": 5
+ },
+ {
+  "task": "task-029",
+  "run": "20260703-h073gov-samasa-misclassification-r04",
+  "condition": "reversed",
+  "n_findings": 2
+ },
+ {
+  "task": "task-030",
+  "run": "20260703-h073gov-commentary-layer-mix-r04",
+  "condition": "original",
+  "n_findings": 8
+ },
+ {
+  "task": "task-031",
+  "run": "20260703-h073gov-karaka-not-padezh-r01",
+  "condition": "original",
+  "n_findings": 4
+ },
+ {
+  "task": "task-032",
+  "run": "20260703-h073gov-commentary-layer-mix-r02",
+  "condition": "original",
+  "n_findings": 6
+ },
+ {
+  "task": "task-033",
+  "run": "20260703-h073gov-vedic-classical-anachronism-r01",
+  "condition": "original",
+  "n_findings": 3
+ },
+ {
+  "task": "task-034",
+  "run": "20260703-h073gov-sanskrit-pseudo-etymology-r05",
+  "condition": "original",
+  "n_findings": 10
+ },
+ {
+  "task": "task-035",
+  "run": "20260703-h073gov-samasa-misclassification-r05",
+  "condition": "reversed",
+  "n_findings": 5
+ },
+ {
+  "task": "task-036",
+  "run": "20260703-h073gov-vedic-classical-anachronism-r03",
+  "condition": "reversed",
+  "n_findings": 2
+ },
+ {
+  "task": "task-037",
+  "run": "20260703-h073gov-vedic-classical-anachronism-r02",
+  "condition": "reversed",
+  "n_findings": 2
+ },
+ {
+  "task": "task-038",
+  "run": "20260703-h073gov-samasa-misclassification-r03",
+  "condition": "original",
+  "n_findings": 5
+ },
+ {
+  "task": "task-039",
+  "run": "20260703-h073gov-sanskrit-pseudo-etymology-r03",
+  "condition": "original",
+  "n_findings": 8
+ },
+ {
+  "task": "task-040",
+  "run": "20260703-h073gov-commentary-layer-mix-r04",
+  "condition": "reversed",
+  "n_findings": 8
+ },
+ {
+  "task": "task-041",
+  "run": "20260703-h073gov-vedic-classical-anachronism-r01",
+  "condition": "reversed",
+  "n_findings": 3
+ },
+ {
+  "task": "task-042",
+  "run": "20260703-h073gov-commentary-layer-mix-r03",
+  "condition": "reversed",
+  "n_findings": 8
+ },
+ {
+  "task": "task-043",
+  "run": "20260703-h073gov-karaka-not-padezh-r03",
+  "condition": "original",
+  "n_findings": 3
+ },
+ {
+  "task": "task-044",
+  "run": "20260703-h073gov-samasa-misclassification-r04",
+  "condition": "original",
+  "n_findings": 2
+ },
+ {
+  "task": "task-045",
+  "run": "20260703-h073gov-commentary-layer-mix-r03",
+  "condition": "original",
+  "n_findings": 8
+ },
+ {
+  "task": "task-046",
+  "run": "20260703-h073gov-commentary-layer-mix-r01",
+  "condition": "reversed",
+  "n_findings": 5
+ },
+ {
+  "task": "task-047",
+  "run": "20260703-h073gov-karaka-not-padezh-r02",
+  "condition": "reversed",
+  "n_findings": 5
+ },
+ {
+  "task": "task-048",
+  "run": "20260703-h073gov-vedic-classical-anachronism-r05",
+  "condition": "original",
+  "n_findings": 2
+ },
+ {
+  "task": "task-049",
+  "run": "20260703-h073gov-sanskrit-pseudo-etymology-r01",
+  "condition": "original",
+  "n_findings": 9
+ },
+ {
+  "task": "task-050",
+  "run": "20260703-h073gov-karaka-not-padezh-r05",
+  "condition": "reversed",
+  "n_findings": 4
+ }
+]

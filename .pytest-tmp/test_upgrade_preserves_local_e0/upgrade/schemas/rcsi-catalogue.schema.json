@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rcsi-catalogue.schema.json",
+  "title": "RCSI journal catalogue (W2.1/D05)",
+  "description": "One record per platform journal. Exclusions are records with verdict \"exclude\", never omissions: a journal absent from the file has never been looked at.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "slug",
+      "journal_name",
+      "url",
+      "scope_text_excerpt",
+      "verdict",
+      "matched_terms",
+      "checked_on"
+    ],
+    "properties": {
+      "slug": {
+        "type": "string",
+        "description": "URL path component on the platform; the profile id. Not the ISSN (slug 0869-5873 carries citation_issn 3034-5200)."
+      },
+      "journal_name": {
+        "type": "string",
+        "description": "Journal name as shown in the platform catalogue index."
+      },
+      "repository_name": {
+        "type": "string",
+        "description": "OAI Identify repositoryName; empty when Identify failed for this slug."
+      },
+      "url": {
+        "type": "string",
+        "description": "Journal home URL (BASE/{slug})."
+      },
+      "scope_text_excerpt": {
+        "type": "string",
+        "description": "Aims & Scope paragraph from /about/editorialPolicies#focusAndScope; empty when the journal exposes none."
+      },
+      "verdict": {
+        "type": "string",
+        "enum": ["include", "exclude", "uncertain"]
+      },
+      "matched_terms": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "negative_terms": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "evidence_other": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Crawl anomalies (failed Identify, missing scope page) backing an uncertain verdict."
+      },
+      "checked_on": {
+        "type": "string",
+        "pattern": "^[0-9]{2}-[0-9]{2}-[0-9]{4}$",
+        "description": "Crawl date, DD-MM-YYYY."
+      }
+    }
+  }
+}

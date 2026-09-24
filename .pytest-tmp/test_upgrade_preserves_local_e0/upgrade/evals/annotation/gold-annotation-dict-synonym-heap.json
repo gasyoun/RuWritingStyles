@@ -1,0 +1,70 @@
+{
+  "case_id": "dict-synonym-heap",
+  "provider": "deepseek",
+  "raters": [
+    "A (mechanical scorer, eval-result.json)",
+    "B (Fable 5, claude-fable-5 — вторая ИИ-модель, не совпадающая с оцениваемым провайдером; слепота на уровне листа: вердикты скорера не включались; роль ИИ раскрывается по docs/AI_DISCLOSURE.md)"
+  ],
+  "runs": [
+    {
+      "run": "h1213dict-dict-synonym-heap-r01",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "undiscriminated_synonyms"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 6,
+      "rater_b_notes": "куча без различителей поймана; серия missing_source на стандартные сигла — не по делу"
+    },
+    {
+      "run": "h1213dict-dict-synonym-heap-r02",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "undiscriminated_synonyms"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 7,
+      "rater_b_notes": "пойман + повтор глоссы «доверенный» замечен; много мелкого шума по зонам и нотации"
+    },
+    {
+      "run": "h1213dict-dict-synonym-heap-r03",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "undiscriminated_synonyms"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 5,
+      "rater_b_notes": "пойман; FP: смешение зон в одном абзаце (нормальный словарный формат), пунктуация ряда"
+    },
+    {
+      "run": "h1213dict-dict-synonym-heap-r04",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "undiscriminated_synonyms"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 5,
+      "rater_b_notes": "пойман (+ дубль m.-строки замечен); FP: «также» как нарушение грамм. зоны; часть находок по-английски"
+    },
+    {
+      "run": "h1213dict-dict-synonym-heap-r05",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "undiscriminated_synonyms"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 5,
+      "rater_b_notes": "пойман; FP: требование этимологии у «Ср. āpta», валентности"
+    }
+  ],
+  "caught": true,
+  "type_correct": true,
+  "false_positives": 28,
+  "agreement": 1.0,
+  "kappa": 1.0
+}

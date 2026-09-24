@@ -1,0 +1,353 @@
+version: "2.10.4"
+schema: "../schemas/style.schema.json"
+description: "Hierarchical index of RuWritingStyles style clusters and passports."
+
+mvp_style_ids:
+  - zalizniak-method
+  - zalizniak-novgorod
+  - tronsky-readings
+  - melchuk
+  - averintsev
+  - gasparov
+
+# Named councils — selectable default review panels (`rws run --council <name>`,
+# `rws councils` to list). `mvp_style_ids` above is the historical default and
+# equals the `general` council. The `sanskrit` council aims the default panel at
+# this project's primary subject (Sanskrit linguistics), which the general panel
+# does not cover — see docs/prompt-fidelity-review-2026-06.md (F1).
+councils:
+  general:
+    - zalizniak-method
+    - zalizniak-novgorod
+    - tronsky-readings
+    - melchuk
+    - averintsev
+    - gasparov
+  sanskrit:
+    - elizarenkova-veda
+    - toporov-etym
+    - panini-traditional
+    - zalizniak-method
+    - tronsky-readings
+    - lidova-commentary
+  indology:
+    - elizarenkova-veda
+    - toporov-etym
+    - panini-traditional
+    - sanskrit-reader
+    - samasa-manual
+    - lidova-commentary
+    - smirnov-mahabharata
+  # H1213: регистр-слой для pwg_ru-карточек (словарная дефиниция, не исследовательская проза).
+  # Иерархия эталонов — ruling MG 18-07-2026: Зализняк > Апресян/Мельчук; Кочергина — только сверка эквивалентов.
+  lexicography:
+    - academic-dictionary-entry
+    - zalizniak-imennoe
+    - zalizniak-method
+    - melchuk
+    - toporov-etym
+
+clusters:
+  - id: ling_iesh
+    path: styles/clusters/ling_iesh.yml
+    name: "Историко-этимологическая школа"
+    location: "Leningrad"
+  - id: ling_mss
+    path: styles/clusters/ling_mss.yml
+    name: "Московская Семантическая Школа"
+    location: "Moscow"
+  - id: ling_mts
+    path: styles/clusters/ling_mts.yml
+    name: "Московско-Тартуская школа"
+    location: "Moscow-Tartu"
+  - id: ling_nss
+    path: styles/clusters/ling_nss.yml
+    name: "Нормативно-стилистическая школа"
+    location: "Petersburg"
+  - id: ling_pfg
+    path: styles/clusters/ling_pfg.yml
+    name: "Петербургская Функциональная Грамматика"
+    location: "Petersburg"
+  - id: ling_tsh
+    path: styles/clusters/ling_tsh.yml
+    name: "Типологическая Школа"
+    location: "Moscow"
+  - id: ling_kmsh
+    path: styles/clusters/ling_kmsh.yml
+    name: "Когнитивно-Метафорическая Школа"
+    location: "Moscow"
+  - id: ling_dss
+    path: styles/clusters/ling_dss.yml
+    name: "Диалектологическая Школа"
+    location: "Moscow"
+  - id: indology
+    path: styles/clusters/indology.yml
+    name: "Индология (санскритология)"
+    location: "Moscow-Petersburg"
+  - id: orient_leningrad
+    path: styles/clusters/orient_leningrad.yml
+    name: "Ленинградская востоковедная школа"
+    location: "Petersburg-Leningrad"
+  - id: lit_opoyaz
+    path: styles/clusters/lit_opoyaz.yml
+    name: "ОПОЯЗ"
+  - id: lit_structural
+    path: styles/clusters/lit_structural.yml
+    name: "Литературоведческий структурализм"
+  - id: lit_textology
+    path: styles/clusters/lit_textology.yml
+    name: "Текстология"
+  - id: lit_mythopoetics
+    path: styles/clusters/lit_mythopoetics.yml
+    name: "Мифопоэтика"
+  - id: lit_narratology
+    path: styles/clusters/lit_narratology.yml
+    name: "Нарратология"
+  - id: lit_bakhtin
+    path: styles/clusters/lit_bakhtin.yml
+    name: "Бахтинская школа"
+  - id: lit_historico_cultural
+    path: styles/clusters/lit_historico_cultural.yml
+    name: "Историко-культурная школа"
+  - id: lit_reception
+    path: styles/clusters/lit_reception.yml
+    name: "Рецептивная эстетика"
+  - id: lit_poststructural
+    path: styles/clusters/lit_poststructural.yml
+    name: "Постструктурализм"
+
+passports:
+  - id: zalizniak-ocherk
+    path: styles/passports/zalizniak-ocherk.yml
+    level: private
+    cluster: ling_iesh
+    source_prompt: ClaudeStyles/zalizniak-ocherk-style.md
+    weight: 1.5
+  - id: zalizniak-zametki
+    path: styles/passports/zalizniak-zametki.yml
+    level: private
+    cluster: ling_iesh
+    source_prompt: ClaudeStyles/zalizniak-zametki-style.md
+  - id: zalizniak-novgorod
+    path: styles/passports/zalizniak-novgorod.yml
+    level: private
+    cluster: ling_iesh
+    source_prompt: ClaudeStyles/zalizniak-novgorod-style.md
+  - id: zalizniak-udarenie
+    path: styles/passports/zalizniak-udarenie.yml
+    level: private
+    cluster: ling_mss
+    source_prompt: ClaudeStyles/zalizniak-udarenie-style.md
+  - id: zalizniak-enklitiki
+    path: styles/passports/zalizniak-enklitiki.yml
+    level: private
+    cluster: ling_mts
+    source_prompt: ClaudeStyles/zalizniak-enklitiki-style.md
+  - id: zalizniak-imennoe
+    path: styles/passports/zalizniak-imennoe.yml
+    level: private
+    cluster: ling_mts
+    source_prompt: ClaudeStyles/zalizniak-imennoe-style.md
+  - id: zalizniak-slovo
+    path: styles/passports/zalizniak-slovo.yml
+    level: private
+    cluster: ling_iesh
+    source_prompt: ClaudeStyles/zalizniak-slovo-style.md
+  - id: zalizniak-shkolnikov-1
+    path: styles/passports/zalizniak-shkolnikov-1.yml
+    level: private
+    cluster: ling_nss
+    source_prompt: ClaudeStyles/zalizniak-shkolnikov_1-style.md
+  - id: tronsky-readings
+    path: styles/passports/tronsky-readings.yml
+    level: private
+    cluster: ling_iesh
+    source_prompt: ClaudeStyles/tronsky-readings-style.md
+    weight: 1.2
+  - id: albedil-sbornik
+    path: styles/passports/albedil-sbornik.yml
+    level: private
+    cluster: ling_mts
+    source_prompt: ClaudeStyles/albedil-sbornik-style.md
+  - id: kazanskiy-korpus
+    path: styles/passports/kazanskiy-korpus.yml
+    level: private
+    cluster: ling_mts
+    source_prompt: ClaudeStyles/kazanskiy-korpus-style.md
+  - id: averintsev
+    path: styles/passports/averintsev.yml
+    level: private
+    cluster: lit_historico_cultural
+    source_prompt: ClaudeStyles/averintsev-style.md
+    weight: 1.3
+  - id: gasparov
+    path: styles/passports/gasparov.yml
+    level: private
+    cluster: lit_structural
+    source_prompt: ClaudeStyles/gasparov-style.md
+    weight: 1.3
+  - id: melchuk
+    path: styles/passports/melchuk.yml
+    level: private
+    cluster: ling_mss
+    source_prompt: ClaudeStyles/melchuk-style.md
+    weight: 2.0
+  - id: zalizniak-method
+    path: styles/passports/zalizniak-method.yml
+    level: private
+    cluster: ling_iesh
+    source_prompt: ClaudeStyles/zalizniak-method-style.md
+    weight: 2.0
+  - id: lidova-commentary
+    path: styles/passports/lidova-commentary.yml
+    level: private
+    cluster: ling_mts
+    source_prompt: ClaudeStyles/lidova-commentary-style.md
+  - id: elizarenkova-veda
+    path: styles/passports/elizarenkova-veda.yml
+    level: private
+    cluster: indology
+    source_prompt: ClaudeStyles/elizarenkova-veda-style.md
+    weight: 1.3
+  - id: toporov-etym
+    path: styles/passports/toporov-etym.yml
+    level: private
+    cluster: indology
+    source_prompt: ClaudeStyles/toporov-etym-style.md
+    weight: 1.2
+  - id: sanskrit-reader
+    path: styles/passports/sanskrit-reader.yml
+    level: private
+    cluster: indology
+    source_prompt: ClaudeStyles/sanskrit-reader-style.md
+  - id: samasa-manual
+    path: styles/passports/samasa-manual.yml
+    level: private
+    cluster: indology
+    source_prompt: ClaudeStyles/samasa-manual-style.md
+  - id: gasuns_telegram_announcements
+    path: styles/passports/gasuns_telegram_announcements.yml
+    level: private
+    cluster: indology
+    source_prompt: ClaudeStyles/gasuns-telegram-announcements-style.md
+  - id: panini-traditional
+    path: styles/passports/panini-traditional.yml
+    level: private
+    cluster: indology
+    source_prompt: ClaudeStyles/panini-traditional-style.md
+  - id: smirnov-mahabharata
+    path: styles/passports/smirnov-mahabharata.yml
+    level: private
+    cluster: indology
+    source_prompt: ClaudeStyles/smirnov-mahabharata-style.md
+  - id: indology
+    path: styles/clusters/indology.yml
+    level: cluster
+    source_prompt: ClaudeStyles/indology-style.md
+  - id: ling_iesh
+    path: styles/clusters/ling_iesh.yml
+    level: cluster
+    source_prompt: ClaudeStyles/ling_iesh-style.md
+  - id: ling_mss
+    path: styles/clusters/ling_mss.yml
+    level: cluster
+    source_prompt: ClaudeStyles/ling_mss-style.md
+  - id: ling_mts
+    path: styles/clusters/ling_mts.yml
+    level: cluster
+    source_prompt: ClaudeStyles/ling_mts-style.md
+  - id: ling_nss
+    path: styles/clusters/ling_nss.yml
+    level: cluster
+    source_prompt: ClaudeStyles/ling_nss-style.md
+  - id: ling_pfg
+    path: styles/clusters/ling_pfg.yml
+    level: cluster
+    source_prompt: ClaudeStyles/ling_pfg-style.md
+  - id: ling_tsh
+    path: styles/clusters/ling_tsh.yml
+    level: cluster
+    source_prompt: ClaudeStyles/ling_tsh-style.md
+  - id: ling_kmsh
+    path: styles/clusters/ling_kmsh.yml
+    level: cluster
+    source_prompt: ClaudeStyles/ling_kmsh-style.md
+  - id: ling_dss
+    path: styles/clusters/ling_dss.yml
+    level: cluster
+    source_prompt: ClaudeStyles/ling_dss-style.md
+  - id: lit_opoyaz
+    path: styles/clusters/lit_opoyaz.yml
+    level: cluster
+    source_prompt: ClaudeStyles/lit_opoyaz-style.md
+  - id: lit_structural
+    path: styles/clusters/lit_structural.yml
+    level: cluster
+    source_prompt: ClaudeStyles/lit_structural-style.md
+  - id: lit_textology
+    path: styles/clusters/lit_textology.yml
+    level: cluster
+    source_prompt: ClaudeStyles/lit_textology-style.md
+  - id: lit_mythopoetics
+    path: styles/clusters/lit_mythopoetics.yml
+    level: cluster
+    source_prompt: ClaudeStyles/lit_mythopoetics-style.md
+  - id: lit_narratology
+    path: styles/clusters/lit_narratology.yml
+    level: cluster
+    source_prompt: ClaudeStyles/lit_narratology-style.md
+  - id: lit_bakhtin
+    path: styles/clusters/lit_bakhtin.yml
+    level: cluster
+    source_prompt: ClaudeStyles/lit_bakhtin-style.md
+  - id: lit_historico_cultural
+    path: styles/clusters/lit_historico_cultural.yml
+    level: cluster
+    source_prompt: ClaudeStyles/lit_historico_cultural-style.md
+  - id: lit_reception
+    path: styles/clusters/lit_reception.yml
+    level: cluster
+    source_prompt: ClaudeStyles/lit_reception-style.md
+  - id: lit_poststructural
+    path: styles/clusters/lit_poststructural.yml
+    level: cluster
+    source_prompt: ClaudeStyles/lit_poststructural-style.md
+  - id: orient_leningrad
+    path: styles/clusters/orient_leningrad.yml
+    level: cluster
+    source_prompt: ClaudeStyles/orient_leningrad-style.md
+  - id: academic-dictionary-entry
+    path: styles/passports/academic-dictionary-entry.yml
+    level: private
+    cluster: ling_mss
+    source_prompt: ClaudeStyles/academic-dictionary-entry-style.md
+  - id: lotman
+    path: styles/passports/lotman.yml
+    level: private
+    cluster: lit_structural
+    source_prompt: ClaudeStyles/lotman-style.md
+  - id: meletinsky
+    path: styles/passports/meletinsky.yml
+    level: private
+    cluster: lit_mythopoetics
+    source_prompt: ClaudeStyles/meletinsky-style.md
+  - id: bartold
+    path: styles/passports/bartold.yml
+    level: private
+    cluster: orient_leningrad
+    source_prompt: ClaudeStyles/bartold-style.md
+  - id: turaev
+    path: styles/passports/turaev.yml
+    level: private
+    cluster: orient_leningrad
+    source_prompt: ClaudeStyles/turaev-style.md
+  - id: krachkovskij
+    path: styles/passports/krachkovskij.yml
+    level: private
+    cluster: orient_leningrad
+    source_prompt: ClaudeStyles/krachkovskij-style.md
+  - id: golenishchev
+    path: styles/passports/golenishchev.yml
+    level: private
+    cluster: orient_leningrad
+    source_prompt: ClaudeStyles/golenishchev-style.md

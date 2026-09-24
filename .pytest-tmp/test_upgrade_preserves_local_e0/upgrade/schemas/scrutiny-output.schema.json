@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/scrutiny-output.schema.json",
+  "title": "RuWritingStyles linguistic scrutiny output",
+  "type": "object",
+  "required": ["run_id", "status", "findings"],
+  "additionalProperties": false,
+  "properties": {
+    "run_id": { "type": "string" },
+    "status": { "type": "string", "enum": ["completed", "failed"] },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["span_id", "category", "severity", "finding", "suggestion", "confidence"],
+        "properties": {
+          "span_id": { "type": "string" },
+          "category": { 
+            "type": "string", 
+            "enum": ["etymology", "anachronism", "syntax", "semantics", "morphology"] 
+          },
+          "severity": { "type": "string", "enum": ["note", "warning", "critical"] },
+          "finding": { "type": "string" },
+          "suggestion": { "type": "string" },
+          "confidence": { "type": "number" }
+        }
+      }
+    }
+  }
+}

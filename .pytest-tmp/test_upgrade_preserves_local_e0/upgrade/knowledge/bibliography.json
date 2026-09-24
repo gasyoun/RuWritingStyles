@@ -1,0 +1,1118 @@
+[
+  {
+    "id": "Zaliznyak 2002",
+    "author": "Зализняк А. А.",
+    "year": 2002,
+    "title": "Русское именное словоизменение: с приложением избранных работ по современному русскому языку и общему языкознанию",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Языки славянской культуры",
+    "pages": "752",
+    "tags": [
+      "морфология",
+      "словоизменение",
+      "грамматика"
+    ]
+  },
+  {
+    "id": "Zaliznyak 2004",
+    "author": "Зализняк А. А.",
+    "year": 2004,
+    "title": "Древненовгородский диалект",
+    "kind": "book",
+    "edition": "2-е изд., перераб. с учетом материала находок 1995–2003 гг.",
+    "city": "М.",
+    "publisher": "Языки славянской культуры",
+    "pages": "872",
+    "tags": [
+      "лингвистика",
+      "диалектология",
+      "берестяные грамоты"
+    ]
+  },
+  {
+    "id": "Zaliznyak 2008",
+    "author": "Зализняк А. А.",
+    "year": 2008,
+    "title": "Из русского ударения",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Языки славянской культуры",
+    "tags": [
+      "акцентология",
+      "история языка"
+    ]
+  },
+  {
+    "id": "Zaliznyak 1987",
+    "author": "Зализняк А. А.",
+    "year": 1987,
+    "title": "Грамматический очерк санскрита",
+    "kind": "chapter",
+    "container": "Кочергина В. А. Санскритско-русский словарь",
+    "city": "М.",
+    "publisher": "Русский язык",
+    "pages": "785–895",
+    "tags": [
+      "санскрит",
+      "грамматика",
+      "морфология"
+    ]
+  },
+  {
+    "id": "Gasparov 1984",
+    "author": "Гаспаров М. Л.",
+    "year": 1984,
+    "title": "Очерк истории русского стиха",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Наука",
+    "tags": [
+      "стиховедение",
+      "метрика"
+    ]
+  },
+  {
+    "id": "NKRYA",
+    "author": "НКРЯ",
+    "year": 2024,
+    "title": "Национальный корпус русского языка",
+    "kind": "web",
+    "url": "https://ruscorpora.ru",
+    "tags": [
+      "корпус",
+      "статистика",
+      "узус"
+    ]
+  },
+  {
+    "id": "Ivanov 1974",
+    "author": "Иванов Вяч. Вс., Топоров В. Н.",
+    "year": 1974,
+    "title": "Исследования в области славянских древностей",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Наука",
+    "tags": [
+      "семиотика",
+      "мифология",
+      "славистика"
+    ]
+  },
+  {
+    "id": "Trubetzkoy 1939",
+    "author": "Trubetzkoy N. S.",
+    "year": 1939,
+    "title": "Grundzüge der Phonologie",
+    "kind": "book",
+    "city": "Prague",
+    "publisher": "Travaux du Cercle linguistique de Prague",
+    "tags": [
+      "фонология",
+      "структурализм"
+    ]
+  },
+  {
+    "id": "Jakobson 1958",
+    "author": "Jakobson R.",
+    "year": 1958,
+    "title": "Morfologičeskie nabljudenija nad slavjanskim skloneniem",
+    "kind": "book",
+    "city": "The Hague",
+    "publisher": "Mouton",
+    "tags": [
+      "морфология",
+      "типология"
+    ]
+  },
+  {
+    "id": "Uspensky 1987",
+    "author": "Успенский Б. А.",
+    "year": 1987,
+    "title": "История русского литературного языка (XI–XVII вв.)",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "МГУ",
+    "tags": [
+      "история языка",
+      "социолингвистика"
+    ]
+  },
+  {
+    "id": "Elizarenkova 1982",
+    "author": "Елизаренкова Т. Я.",
+    "year": 1982,
+    "title": "Грамматика ведийского языка",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Наука",
+    "pages": "439",
+    "tags": [
+      "санскрит",
+      "ведийский",
+      "грамматика"
+    ]
+  },
+  {
+    "id": "Elizarenkova 1993",
+    "author": "Елизаренкова Т. Я.",
+    "year": 1993,
+    "title": "Язык и стиль ведийских риши",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Наука ; Восточная литература",
+    "pages": "320",
+    "tags": [
+      "санскрит",
+      "ведийский",
+      "поэтика",
+      "Ригведа"
+    ]
+  },
+  {
+    "id": "Elizarenkova 1999",
+    "author": "Елизаренкова Т. Я.",
+    "year": 1999,
+    "title": "Слова и вещи в Ригведе",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Восточная литература",
+    "pages": "240",
+    "tags": [
+      "санскрит",
+      "Ригведа",
+      "семантика"
+    ]
+  },
+  {
+    "id": "Rigveda 1989",
+    "author": "Ригведа. Мандалы I–IV / изд. подгот. Т. Я. Елизаренкова",
+    "year": 1989,
+    "title": "",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Наука",
+    "pages": "767",
+    "tags": [
+      "санскрит",
+      "Ригведа",
+      "перевод"
+    ]
+  },
+  {
+    "id": "Elizarenkova Toporov 1965",
+    "author": "Елизаренкова Т. Я., Топоров В. Н.",
+    "year": 1965,
+    "title": "Язык пали",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Наука",
+    "pages": "248",
+    "tags": [
+      "пали",
+      "среднеиндийские языки",
+      "грамматика"
+    ]
+  },
+  {
+    "id": "Toporov 2004",
+    "author": "Топоров В. Н.",
+    "year": 2004,
+    "title": "Исследования по этимологии и семантике. Т. 1: Теория и некоторые частные ее приложения",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Языки славянской культуры",
+    "pages": "816",
+    "tags": [
+      "этимология",
+      "семантика",
+      "индоевропеистика"
+    ]
+  },
+  {
+    "id": "Vertogradova 2002",
+    "author": "Вертоградова В. В.",
+    "year": 2002,
+    "title": "Пракриты",
+    "kind": "book",
+    "edition": "2-е изд.",
+    "city": "М.",
+    "publisher": "Восточная литература",
+    "pages": "112",
+    "tags": [
+      "пракриты",
+      "среднеиндийские языки"
+    ]
+  },
+  {
+    "id": "Kochergina 1987",
+    "author": "Кочергина В. А.",
+    "year": 1987,
+    "title": "Санскритско-русский словарь",
+    "kind": "book",
+    "edition": "2-е изд., испр. и доп.",
+    "city": "М.",
+    "publisher": "Русский язык",
+    "pages": "944",
+    "tags": [
+      "санскрит",
+      "лексикография",
+      "словарь"
+    ]
+  },
+  {
+    "id": "Barrow 1976",
+    "author": "Барроу Т.",
+    "year": 1976,
+    "title": "Санскрит / пер. с англ. Н. Лариной",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Прогресс",
+    "pages": "411",
+    "tags": [
+      "санскрит",
+      "история языка",
+      "индоевропеистика"
+    ]
+  },
+  {
+    "id": "Smirnov 1962",
+    "author": "Смирнов Б. Л.",
+    "year": 1962,
+    "title": "Махабхарата. Вып. II: Бхагавадгита / пер., введ. и примеч. Б. Л. Смирнова",
+    "kind": "book",
+    "edition": "2-е изд.",
+    "city": "Ашхабад",
+    "publisher": "Изд-во АН ТССР",
+    "pages": "402",
+    "tags": [
+      "санскрит",
+      "Махабхарата",
+      "перевод",
+      "комментарий"
+    ]
+  },
+  {
+    "id": "Tronsky 2025",
+    "author": "Индоевропейское языкознание и классическая филология — XXIX: материалы чтений памяти И. М. Тронского / отв. ред. Н. Н. Казанский",
+    "year": 2025,
+    "title": "",
+    "kind": "book",
+    "city": "СПб.",
+    "publisher": "ИЛИ РАН",
+    "tags": [
+      "индоевропеистика",
+      "классическая филология",
+      "Тронский"
+    ]
+  },
+  {
+    "id": "Monier-Williams 1899",
+    "author": "Monier-Williams M.",
+    "year": 1899,
+    "title": "A Sanskrit-English Dictionary, Etymologically and Philologically Arranged",
+    "kind": "book",
+    "city": "Oxford",
+    "publisher": "Clarendon Press",
+    "pages": "1333",
+    "url": "https://github.com/sanskrit-lexicon/MWS",
+    "tags": [
+      "санскрит",
+      "лексикография",
+      "словарь",
+      "CDSL"
+    ]
+  },
+  {
+    "id": "Boehtlingk Roth 1855",
+    "author": "Böhtlingk O., Roth R.",
+    "year": 1855,
+    "title": "Sanskrit-Wörterbuch. Th. 1–7 (1855–1875)",
+    "kind": "book",
+    "city": "St. Petersburg",
+    "publisher": "Kaiserliche Akademie der Wissenschaften",
+    "url": "https://github.com/sanskrit-lexicon/PWG",
+    "tags": [
+      "санскрит",
+      "лексикография",
+      "словарь",
+      "PW",
+      "CDSL"
+    ]
+  },
+  {
+    "id": "Whitney 1885",
+    "author": "Whitney W. D.",
+    "year": 1885,
+    "title": "The Roots, Verb-Forms and Primary Derivatives of the Sanskrit Language",
+    "kind": "book",
+    "city": "Leipzig",
+    "publisher": "Breitkopf und Härtel",
+    "pages": "250",
+    "tags": [
+      "санскрит",
+      "глагол",
+      "корни"
+    ]
+  },
+  {
+    "id": "Whitney 1889",
+    "author": "Whitney W. D.",
+    "year": 1889,
+    "title": "Sanskrit Grammar, Including both the Classical Language, and the Older Dialects, of Veda and Brahmana",
+    "kind": "book",
+    "edition": "2nd ed.",
+    "city": "Cambridge (Mass.)",
+    "publisher": "Harvard University Press",
+    "pages": "552",
+    "tags": [
+      "санскрит",
+      "грамматика"
+    ]
+  },
+  {
+    "id": "Renou 1930",
+    "author": "Renou L.",
+    "year": 1930,
+    "title": "Grammaire sanscrite",
+    "kind": "book",
+    "city": "Paris",
+    "publisher": "Adrien-Maisonneuve",
+    "tags": [
+      "санскрит",
+      "грамматика"
+    ]
+  },
+  {
+    "id": "Tubb Boose 2007",
+    "author": "Tubb G. A., Boose E. R.",
+    "year": 2007,
+    "title": "Scholastic Sanskrit: A Handbook for Students",
+    "kind": "book",
+    "city": "New York",
+    "publisher": "American Institute of Buddhist Studies",
+    "pages": "320",
+    "tags": [
+      "санскрит",
+      "комментарий",
+      "шастра",
+      "учебник"
+    ]
+  },
+  {
+    "id": "Burba 2009",
+    "author": "Бурба Д.",
+    "year": 2009,
+    "title": "Бхагавадгита / пер. с санскрита, сост., предисл., примеч. Д. Бурбы",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "РИПОЛ-классик",
+    "tags": [
+      "санскрит",
+      "Бхагавадгита",
+      "перевод",
+      "комментарий"
+    ]
+  },
+  {
+    "id": "Erman 2009",
+    "author": "Эрман В. Г.",
+    "year": 2009,
+    "title": "Махабхарата. Книга шестая. Бхишмапарва / пер. с санскрита, предисл. и коммент. В. Г. Эрмана",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Ладомир",
+    "tags": [
+      "санскрит",
+      "Махабхарата",
+      "перевод",
+      "комментарий"
+    ]
+  },
+  {
+    "id": "Grintser 2006",
+    "author": "Гринцер П. А.",
+    "year": 2006,
+    "title": "Вальмики. Рамаяна. Кн. 1–3 / пер. с санскрита, ст., коммент. П. А. Гринцера",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Ладомир ; Наука",
+    "tags": [
+      "санскрит",
+      "Рамаяна",
+      "перевод",
+      "комментарий"
+    ]
+  },
+  {
+    "id": "Kalyanov 1950",
+    "author": "Кальянов В. И.",
+    "year": 1950,
+    "title": "Махабхарата. Кн. I, II, IV, V, VII, IX / пер. с санскрита и коммент. В. И. Кальянова (1950–1996)",
+    "kind": "book",
+    "city": "М. ; Л.",
+    "publisher": "Изд-во АН СССР ; Наука ; Ладомир",
+    "tags": [
+      "санскрит",
+      "Махабхарата",
+      "перевод",
+      "комментарий"
+    ]
+  },
+  {
+    "id": "Vassilkov Neveleva 1987",
+    "author": "Васильков Я. В., Невелева С. Л.",
+    "year": 1987,
+    "title": "Махабхарата. Кн. III, VIII, X–XI, XIV, XV–XVIII / пер. с санскрита, предисл. и коммент. Я. В. Василькова и С. Л. Невелевой (1987–2005)",
+    "kind": "book",
+    "city": "М. ; СПб.",
+    "publisher": "Наука ; Янус-К",
+    "tags": [
+      "санскрит",
+      "Махабхарата",
+      "перевод",
+      "комментарий"
+    ]
+  },
+  {
+    "id": "Syrkin 1992",
+    "author": "Сыркин А. Я.",
+    "year": 1992,
+    "title": "Упанишады. В 3 кн. / пер., предисл., прим. А. Я. Сыркина",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Наука",
+    "tags": [
+      "санскрит",
+      "упанишады",
+      "перевод",
+      "комментарий"
+    ]
+  },
+  {
+    "id": "Kazansky 2025",
+    "author": "Казанский Н. Н.",
+    "year": 2025,
+    "title": "Проблемы комментирования и сопоставления в русско-латинском параллельном корпусе",
+    "kind": "article",
+    "journal": "Индоевропейское языкознание и классическая филология",
+    "volume": "29",
+    "pages": "857–873",
+    "tags": [
+      "комментарий",
+      "параллельный корпус",
+      "классическая филология"
+    ]
+  },
+  {
+    "id": "Lidova 2024",
+    "author": "Лидова Н. Р.",
+    "year": 2024,
+    "title": "Комментарий в Древней Индии",
+    "kind": "chapter",
+    "container": "Комментарий как культурный феномен",
+    "city": "М.",
+    "publisher": "ИМЛИ РАН",
+    "pages": "31–66",
+    "tags": [
+      "санскрит",
+      "комментарий",
+      "Древняя Индия"
+    ]
+  },
+  {
+    "id": "Paribok 2007",
+    "author": "Парибок А. В.",
+    "year": 2007,
+    "title": "О некоторых функциональных особенностях индийского коренного текста",
+    "kind": "chapter",
+    "container": "Философия, религия и культура стран Востока",
+    "city": "СПб.",
+    "publisher": "Изд-во СПбГУ",
+    "pages": "262–267",
+    "tags": [
+      "санскрит",
+      "шастра",
+      "коренной текст"
+    ]
+  },
+  {
+    "id": "Paribok 2011",
+    "author": "Парибок А. В.",
+    "year": 2011,
+    "title": "Уровень смысла в текстах шастр: концепты или понятия?",
+    "kind": "chapter",
+    "container": "Шабдапракаша. Зографский сборник I",
+    "city": "СПб.",
+    "pages": "80–86",
+    "tags": [
+      "санскрит",
+      "шастра",
+      "семантика"
+    ]
+  },
+  {
+    "id": "Malhotra Dasa Misra 2020",
+    "author": "Malhotra R., Dasa Babaji S., Misra N.",
+    "year": 2020,
+    "title": "Sanskrit non-translatables: the importance of Sanskritizing English",
+    "kind": "book",
+    "city": "New Delhi",
+    "publisher": "Amaryllis",
+    "tags": [
+      "санскрит",
+      "перевод",
+      "терминология"
+    ]
+  },
+  {
+    "id": "Goldman 1984",
+    "author": "Goldman R. P. (general editor)",
+    "year": 1984,
+    "title": "The Rāmāyaṇa of Vālmīki: An Epic of Ancient India. 7 vols. (1984–2017)",
+    "kind": "book",
+    "city": "Princeton",
+    "publisher": "Princeton University Press",
+    "tags": [
+      "санскрит",
+      "Рамаяна",
+      "перевод"
+    ]
+  },
+  {
+    "id": "Goldman Sutherland 2006",
+    "author": "Goldman R. P., Sutherland Goldman S.",
+    "year": 2006,
+    "title": "Vālmīki. Rāmāyaṇa Book Five: Sundara",
+    "kind": "book",
+    "city": "New York",
+    "publisher": "NYU Press ; JJC Foundation",
+    "tags": [
+      "санскрит",
+      "Рамаяна",
+      "Сундараканда",
+      "перевод"
+    ]
+  },
+  {
+    "id": "Jhalakikar 1928",
+    "author": "Jhalakikar Bh.",
+    "year": 1928,
+    "title": "Nyāyakośa, or Dictionary of Technical Terms of Indian Philosophy / revised by Vāsudev Shāstri Abhyankar",
+    "kind": "book",
+    "edition": "3rd ed.",
+    "city": "Poona",
+    "publisher": "Bhandarkar Oriental Research Institute",
+    "tags": [
+      "санскрит",
+      "ньяя",
+      "терминология",
+      "словарь"
+    ]
+  },
+  {
+    "id": "CommentaryStrategies 2026",
+    "author": "CommentaryStrategies",
+    "year": 2026,
+    "title": "Репозиторий аналитической разметки русских переводов санскритских текстов",
+    "kind": "web",
+    "url": "https://github.com/gasyoun/CommentaryStrategies",
+    "tags": [
+      "санскрит",
+      "корпус",
+      "разметка"
+    ]
+  },
+  {
+    "id": "Corpus Latino-Rossicum 2026",
+    "author": "Corpus Latino-Rossicum",
+    "year": 2026,
+    "title": "Русско-латинский параллельный корпус, ИЛИ РАН",
+    "kind": "web",
+    "url": "https://clr.iling.spb.ru",
+    "tags": [
+      "параллельный корпус",
+      "латынь"
+    ]
+  },
+  {
+    "id": "samskrtam.ru 2026",
+    "author": "samskrtam.ru",
+    "year": 2026,
+    "title": "Параллельный корпус санскритских текстов с русскими переводами",
+    "kind": "web",
+    "url": "https://samskrtam.ru/parallel-corpus/",
+    "tags": [
+      "санскрит",
+      "корпус",
+      "перевод"
+    ]
+  },
+  {
+    "id": "Apte 1890",
+    "author": "Apte V. S.",
+    "year": 1890,
+    "title": "The Practical Sanskrit-English Dictionary",
+    "kind": "book",
+    "city": "Poona",
+    "publisher": "Shiralkar & Co.",
+    "url": "https://github.com/sanskrit-lexicon/AP90",
+    "tags": [
+      "санскрит",
+      "лексикография",
+      "словарь",
+      "CDSL"
+    ]
+  },
+  {
+    "id": "Boehtlingk 1879",
+    "author": "Böhtlingk O.",
+    "year": 1879,
+    "title": "Sanskrit-Wörterbuch in kürzerer Fassung. Th. 1–7 (1879–1889)",
+    "kind": "book",
+    "city": "St. Petersburg",
+    "publisher": "Kaiserliche Akademie der Wissenschaften",
+    "url": "https://github.com/sanskrit-lexicon/PWK",
+    "tags": [
+      "санскрит",
+      "лексикография",
+      "словарь",
+      "pw",
+      "CDSL"
+    ]
+  },
+  {
+    "id": "Mayrhofer 1986",
+    "author": "Mayrhofer M.",
+    "year": 1986,
+    "title": "Etymologisches Wörterbuch des Altindoarischen. Bd. I–III (1986–2001)",
+    "kind": "book",
+    "city": "Heidelberg",
+    "publisher": "Winter",
+    "tags": [
+      "санскрит",
+      "этимология",
+      "словарь"
+    ]
+  },
+  {
+    "id": "Grassmann 1873",
+    "author": "Grassmann H.",
+    "year": 1873,
+    "title": "Wörterbuch zum Rig-Veda",
+    "kind": "book",
+    "city": "Leipzig",
+    "publisher": "Brockhaus",
+    "url": "https://github.com/sanskrit-lexicon/GRA",
+    "tags": [
+      "веда",
+      "лексикография",
+      "словарь",
+      "CDSL"
+    ]
+  },
+  {
+    "id": "Macdonell 1910",
+    "author": "Macdonell A. A.",
+    "year": 1910,
+    "title": "Vedic Grammar",
+    "kind": "book",
+    "city": "Strassburg",
+    "publisher": "Trübner",
+    "tags": [
+      "веда",
+      "грамматика"
+    ]
+  },
+  {
+    "id": "Bassett 2026",
+    "author": "Bassett M. A., Bradshaw W., Bornsztejn H., Hogg A., Murdoch K., Pearce B., Webber C.",
+    "year": 2026,
+    "title": "Heads we win, tails you lose: AI detectors in education",
+    "kind": "article",
+    "journal": "Journal of Higher Education Policy and Management",
+    "pages": "1–16",
+    "url": "https://doi.org/10.1080/1360080X.2026.2622146",
+    "tags": [
+      "ИИ",
+      "детекторы ИИ",
+      "академическая этика",
+      "генеративный ИИ",
+      "раскрытие"
+    ]
+  },
+  {
+    "id": "Smirnov 2025",
+    "author": "Смирнов Б. Л.",
+    "year": 2025,
+    "title": "Махабхарата. Выпуск I. Две поэмы из III книги: «Сказание о Нале», «Величие супружеской верности» : перевод с санскрита, введение, примечания и толковый словарь",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Издательский Дом «Русская Философия»",
+    "pages": "256",
+    "tags": [
+      "Махабхарата",
+      "эпос",
+      "перевод",
+      "Смирнов"
+    ]
+  },
+  {
+    "id": "Feinstein Cicchetti 1990",
+    "author": "Feinstein A. R., Cicchetti D. V.",
+    "year": 1990,
+    "title": "High agreement but low kappa: I. The problems of two paradoxes",
+    "kind": "article",
+    "journal": "Journal of Clinical Epidemiology",
+    "volume": "43",
+    "number": "6",
+    "pages": "543–549",
+    "url": "https://doi.org/10.1016/0895-4356(90)90158-L",
+    "tags": [
+      "каппа Коэна",
+      "согласие разметчиков",
+      "методология оценки"
+    ]
+  },
+  {
+    "id": "Imbad0202 2026",
+    "author": "Imbad0202",
+    "year": 2026,
+    "title": "Academic Research Skills for Claude Code : v3.13.0",
+    "kind": "web",
+    "url": "https://doi.org/10.5281/zenodo.20696614",
+    "tags": [
+      "ИИ",
+      "рецензирование",
+      "донор методов",
+      "CC BY-NC 4.0"
+    ]
+  },
+  {
+    "id": "GOST R 7.0.100-2018",
+    "author": "Росстандарт",
+    "year": 2018,
+    "title": "ГОСТ Р 7.0.100-2018. Библиографическая запись. Библиографическое описание. Общие требования и правила составления",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Стандартинформ",
+    "tags": [
+      "ГОСТ",
+      "библиография",
+      "оформление"
+    ]
+  },
+  {
+    "id": "CDSL 2026",
+    "author": "Cologne Digital Sanskrit Dictionaries",
+    "year": 2026,
+    "title": "Cologne Digital Sanskrit Dictionaries (CDSL)",
+    "kind": "web",
+    "url": "https://www.sanskrit-lexicon.uni-koeln.de/",
+    "tags": [
+      "санскрит",
+      "лексикография",
+      "словари",
+      "CDSL"
+    ]
+  },
+  {
+    "id": "Zaliznyak 2010",
+    "author": "Зализняк А. А.",
+    "year": 2010,
+    "title": "Грамматический словарь русского языка: словоизменение",
+    "kind": "book",
+    "edition": "6-е изд., стер.",
+    "city": "М.",
+    "publisher": "АСТ-ПРЕСС",
+    "tags": [
+      "лексикография",
+      "морфология",
+      "грамматический словарь"
+    ]
+  },
+  {
+    "id": "Apresjan 1995",
+    "author": "Апресян Ю. Д.",
+    "year": 1995,
+    "title": "Избранные труды. Т. 1: Лексическая семантика: синонимические средства языка",
+    "kind": "book",
+    "edition": "2-е изд., испр. и доп.",
+    "city": "М.",
+    "publisher": "Языки русской культуры",
+    "tags": [
+      "семантика",
+      "лексикография",
+      "толкование",
+      "МСШ"
+    ]
+  },
+  {
+    "id": "Vasmer 1986",
+    "author": "Фасмер М.",
+    "year": 1986,
+    "title": "Этимологический словарь русского языка: в 4 т. / пер. с нем. и доп. О. Н. Трубачева",
+    "kind": "book",
+    "edition": "2-е изд., стер.",
+    "city": "М.",
+    "publisher": "Прогресс",
+    "tags": [
+      "этимология",
+      "лексикография",
+      "словарь"
+    ]
+  },
+  {
+    "id": "Ozhegov 1997",
+    "author": "Ожегов С. И., Шведова Н. Ю.",
+    "year": 1997,
+    "title": "Толковый словарь русского языка",
+    "kind": "book",
+    "edition": "4-е изд., доп.",
+    "city": "М.",
+    "publisher": "Азбуковник",
+    "tags": [
+      "толковый словарь",
+      "лексикография"
+    ]
+  },
+  {
+    "id": "Evgenyeva 1981",
+    "author": "Евгеньева А. П. (ред.)",
+    "year": 1981,
+    "title": "Словарь русского языка: в 4 т. (МАС)",
+    "kind": "book",
+    "edition": "2-е изд., испр. и доп.",
+    "city": "М.",
+    "publisher": "Русский язык",
+    "tags": [
+      "толковый словарь",
+      "лексикография",
+      "МАС"
+    ]
+  },
+  {
+    "id": "Dal 1903",
+    "author": "Даль В. И.",
+    "year": 1903,
+    "title": "Толковый словарь живого великорусского языка: в 4 т. / под ред. И. А. Бодуэна де Куртенэ",
+    "kind": "book",
+    "edition": "3-е изд., испр. и доп.",
+    "city": "СПб.; М.",
+    "publisher": "Т-во М. О. Вольф",
+    "tags": [
+      "толковый словарь",
+      "лексикография"
+    ]
+  },
+  {
+    "id": "Shvedova 1998",
+    "author": "Шведова Н. Ю. (ред.)",
+    "year": 1998,
+    "title": "Русский семантический словарь: толковый словарь, систематизированный по классам слов и значений. Т. 1",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Азбуковник",
+    "tags": [
+      "семантический словарь",
+      "лексикография",
+      "толкование"
+    ]
+  },
+  {
+    "id": "Abramov 1999",
+    "author": "Абрамов Н.",
+    "year": 1999,
+    "title": "Словарь русских синонимов и сходных по смыслу выражений",
+    "kind": "book",
+    "edition": "7-е изд., стер.",
+    "city": "М.",
+    "publisher": "Русские словари",
+    "tags": [
+      "синонимы",
+      "лексикография",
+      "словарь"
+    ]
+  },
+  {
+    "id": "Lotman 1970",
+    "author": "Лотман Ю. М.",
+    "year": 1970,
+    "title": "Структура художественного текста",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Искусство",
+    "tags": [
+      "семиотика",
+      "структурная поэтика",
+      "литературоведение"
+    ]
+  },
+  {
+    "id": "Lotman 1992",
+    "author": "Лотман Ю. М.",
+    "year": 1992,
+    "title": "Культура и взрыв",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Гнозис",
+    "tags": [
+      "семиотика культуры",
+      "культурология",
+      "семиосфера"
+    ]
+  },
+  {
+    "id": "Meletinsky 1976",
+    "author": "Мелетинский Е. М.",
+    "year": 1976,
+    "title": "Поэтика мифа",
+    "kind": "book",
+    "city": "М.",
+    "publisher": "Наука",
+    "tags": [
+      "мифология",
+      "фольклористика",
+      "историческая поэтика"
+    ]
+  },
+  {
+    "id": "Plungian 2024",
+    "author": "V. A. Plungian",
+    "year": 2024,
+    "title": "Корпусная лингвистика на современном этапе",
+    "kind": "article",
+    "journal": "",
+    "volume": "94",
+    "issue": "9",
+    "pages": "787-794",
+    "url": "https://journals.rcsi.science/0869-5873/article/view/268311",
+    "tags": [
+      "rcsi-harvest"
+    ],
+    "doi": "10.31857/S0869587324090018"
+  },
+  {
+    "id": "Moldovan 2024",
+    "author": "A. M. Moldovan",
+    "year": 2024,
+    "title": "Русская академическая лексикография и Национальный словарный фонд",
+    "kind": "article",
+    "journal": "",
+    "volume": "94",
+    "issue": "9",
+    "pages": "824-827",
+    "url": "https://journals.rcsi.science/0869-5873/article/view/268371",
+    "tags": [
+      "rcsi-harvest"
+    ],
+    "doi": "10.31857/S0869587324090054"
+  },
+  {
+    "id": "Kamo 2021",
+    "author": "Kamo P. Chilingaryan",
+    "year": 2021,
+    "title": "Корпусная лингвистика: теория vs методология",
+    "kind": "article",
+    "journal": "",
+    "volume": "12",
+    "issue": "1",
+    "pages": "196-218",
+    "url": "https://journals.rcsi.science/2313-2299/article/view/323403",
+    "tags": [
+      "rcsi-harvest"
+    ],
+    "doi": "10.22363/2313-2299-2021-12-1-196-218"
+  },
+  {
+    "id": "Meishan 2023",
+    "author": "Meishan Piao",
+    "year": 2023,
+    "title": "Состав и развитие русской дискурсивной лингвистики",
+    "kind": "article",
+    "journal": "",
+    "volume": "3",
+    "issue": "12",
+    "pages": "143-148",
+    "url": "https://journals.rcsi.science/2782-5329/article/view/400674",
+    "tags": [
+      "rcsi-harvest"
+    ]
+  },
+  {
+    "id": "Savchuk 2024",
+    "author": "Савчук Светлана Олеговна",
+    "year": 2024,
+    "title": "Национальный корпус русского языка 2.0: новые возможности и перспективы развития",
+    "kind": "article",
+    "journal": "",
+    "volume": "0",
+    "issue": "2",
+    "pages": "7-34",
+    "url": "https://journals.rcsi.science/0373-658X/article/view/261465",
+    "tags": [
+      "rcsi-harvest"
+    ],
+    "doi": "10.31857/0373-658X.2024.2.7-34"
+  },
+  {
+    "id": "Бартольд 1927",
+    "author": "Бартольд В. В.",
+    "year": 1927,
+    "title": "Киргизы : исторический очерк",
+    "kind": "book",
+    "city": "Фрунзе",
+    "publisher": "Киргизское государственное издательство",
+    "tags": [
+      "oriental_studies",
+      "history",
+      "turkology"
+    ]
+  },
+  {
+    "id": "Тураев 1920",
+    "author": "Тураев Б. А.",
+    "year": 1920,
+    "title": "Египетская литература. Т. I: Исторический очерк древне-египетской литературы",
+    "kind": "book",
+    "city": "Москва",
+    "publisher": "М. и С. Сабашниковы",
+    "tags": [
+      "oriental_studies",
+      "history",
+      "egyptology"
+    ]
+  },
+  {
+    "id": "Голенищев 1880",
+    "author": "Голенищев В. С.",
+    "year": 1880,
+    "title": "Об экземпляре «Книги мертвых» Гор-а сына Нес-па-гер-ан-а и Та-гап-ы",
+    "kind": "article",
+    "journal": "Известія Императорскаго Русскаго Археологическаго Общества",
+    "volume": "9",
+    "number": "5",
+    "pages": "527–531",
+    "tags": [
+      "oriental_studies",
+      "egyptology",
+      "Книга мертвыхъ"
+    ]
+  },
+  {
+    "id": "Крачковский 1925",
+    "author": "Крачковский И. Ю.",
+    "year": 1925,
+    "title": "Неизвестное сочинение-автограф сирийского эмира Усамы",
+    "kind": "article",
+    "journal": "Записки Коллегии Востоковедов",
+    "volume": "I",
+    "city": "Петроград",
+    "pages": "1—29",
+    "tags": [
+      "oriental_studies",
+      "arabic_studies",
+      "manuscript_studies"
+    ]
+  }
+]

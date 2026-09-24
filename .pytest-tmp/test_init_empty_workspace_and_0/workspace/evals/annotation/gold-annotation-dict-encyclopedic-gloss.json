@@ -1,0 +1,70 @@
+{
+  "case_id": "dict-encyclopedic-gloss",
+  "provider": "deepseek",
+  "raters": [
+    "A (mechanical scorer, eval-result.json)",
+    "B (Fable 5, claude-fable-5 — вторая ИИ-модель, не совпадающая с оцениваемым провайдером; слепота на уровне листа: вердикты скорера не включались; роль ИИ раскрывается по docs/AI_DISCLOSURE.md)"
+  ],
+  "runs": [
+    {
+      "run": "h1213dict-dict-encyclopedic-gloss-r01",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "encyclopedic_gloss"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 4,
+      "rater_b_notes": "энциклопедизм пойман точно; шум: помета для N. pr., «выжимали» как терминологическая ошибка"
+    },
+    {
+      "run": "h1213dict-dict-encyclopedic-gloss-r02",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "encyclopedic_gloss"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 6,
+      "rater_b_notes": "пойман; FP: «основа не указана» (указана), «этимология обязательна» (факультативна), РВ-кириллизация сигл"
+    },
+    {
+      "run": "h1213dict-dict-encyclopedic-gloss-r03",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "encyclopedic_gloss"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 3,
+      "rater_b_notes": "пойман + публицистика «целая мандала» отмечена; info-«находки» о корректности — шум"
+    },
+    {
+      "run": "h1213dict-dict-encyclopedic-gloss-r04",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "encyclopedic_gloss"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 4,
+      "rater_b_notes": "пойман (+ отсутствие подставимого эквивалента как circular_gloss — смежная переформулировка)"
+    },
+    {
+      "run": "h1213dict-dict-encyclopedic-gloss-r05",
+      "rater_a_detected": true,
+      "rater_a_matched_types": [
+        "encyclopedic_gloss"
+      ],
+      "rater_b_caught": "yes",
+      "rater_b_type_correct": true,
+      "rater_b_false_positives": 5,
+      "rater_b_notes": "пойман; шум: нумерация омонимов, синонимический ряд «обязателен», отклоненные советом находки"
+    }
+  ],
+  "caught": true,
+  "type_correct": true,
+  "false_positives": 22,
+  "agreement": 1.0,
+  "kappa": 1.0
+}

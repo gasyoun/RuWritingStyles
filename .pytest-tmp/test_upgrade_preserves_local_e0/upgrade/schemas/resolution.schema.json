@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/resolution.schema.json",
+  "title": "RuWritingStyles human resolution artifact",
+  "type": "object",
+  "required": [
+    "run_id",
+    "overrides"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "overrides": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "finding_id",
+          "status"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "finding_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "accepted_with_modification",
+              "rejected",
+              "deferred",
+              "informational"
+            ]
+          },
+          "human_comment": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

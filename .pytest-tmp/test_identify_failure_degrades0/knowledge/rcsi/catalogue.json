@@ -1,0 +1,19 @@
+[
+  {
+    "slug": "0320-9601",
+    "journal_name": "Some Journal",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/0320-9601",
+    "scope_text_excerpt": "Studies in linguistics and ancient languages.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "ancient languages"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: HTTP 500"
+    ],
+    "checked_on": "30-08-2026"
+  }
+]

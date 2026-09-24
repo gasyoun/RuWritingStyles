@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/review-output.schema.json",
+  "title": "RuWritingStyles style review provider output",
+  "type": "object",
+  "required": ["style_id", "summary", "findings"],
+  "additionalProperties": false,
+  "properties": {
+    "style_id": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "finding.schema.json"
+      }
+    }
+  }
+}

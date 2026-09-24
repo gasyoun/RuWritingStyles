@@ -1,0 +1,1539 @@
+{
+  "version": "0.1",
+  "description": "Minimal RuWritingStyles evaluation set for comparing providers and model routes.",
+  "cases": [
+    {
+      "id": "pseudo-etymology",
+      "input": "examples/input/pseudo-etymology.md",
+      "purpose": "Check whether style reviewers flag an unsupported etymological hypothesis and preserve cautious wording.",
+      "default_styles": [
+        "zalizniak-ocherk",
+        "zalizniak-zametki",
+        "tronsky-readings"
+      ],
+      "expected_risks": [
+        "unsupported_etymology",
+        "external_similarity_as_evidence",
+        "missing_historical_forms"
+      ],
+      "tags": [
+        "GOLD_ZALIZNYAK"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "unsupported_etymology",
+          "external_similarity_as_evidence",
+          "missing_historical_forms"
+        ],
+        "min_required_matches": 1,
+        "allowed_verification_statuses": [
+          "passed",
+          "needs_human_review"
+        ],
+        "max_changed_line_ratio": 0.75,
+        "max_char_delta_ratio": 0.5,
+        "strict_fidelity": true
+      }
+    },
+    {
+      "id": "source-claim",
+      "input": "examples/input/source-claim.md",
+      "purpose": "Check whether style reviewers separate a late source note from a strong claim about an early stable tradition.",
+      "default_styles": [
+        "zalizniak-ocherk",
+        "tronsky-readings",
+        "albedil-sbornik"
+      ],
+      "expected_risks": [
+        "missing_source_reference",
+        "overgeneralized_tradition_claim",
+        "weak_evidence_for_dating"
+      ],
+      "tags": [
+        "GOLD_ZALIZNYAK"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "missing_source_reference",
+          "overgeneralized_tradition_claim",
+          "weak_evidence_for_dating"
+        ],
+        "min_required_matches": 1,
+        "allowed_verification_statuses": [
+          "passed",
+          "needs_human_review"
+        ],
+        "max_changed_line_ratio": 0.75,
+        "max_char_delta_ratio": 0.5
+      }
+    },
+    {
+      "id": "register-shift",
+      "input": "examples/input/register-shift.md",
+      "purpose": "Check whether style reviewers catch overconfident scholarly tone and recommend cautious evidential wording.",
+      "default_styles": [
+        "zalizniak-ocherk",
+        "zalizniak-shkolnikov-1",
+        "tronsky-readings"
+      ],
+      "expected_risks": [
+        "overconfident_conclusion",
+        "register_mismatch",
+        "missing_parallel_evidence"
+      ],
+      "tags": [
+        "GOLD_ZALIZNYAK"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "overconfident_conclusion",
+          "register_mismatch",
+          "missing_parallel_evidence"
+        ],
+        "min_required_matches": 1,
+        "allowed_verification_statuses": [
+          "passed",
+          "needs_human_review"
+        ],
+        "max_changed_line_ratio": 0.75,
+        "max_char_delta_ratio": 0.5
+      }
+    },
+    {
+      "id": "averintsev-adversarial",
+      "input": "examples/input/averintsev-adversarial.md",
+      "purpose": "Refusal case: the pipeline must NOT strip the hedges («по-видимому, можно осмелиться предположить», «в некотором смысле», «во всяком случае») nor flatten the rhythmic period into three flat assertions — the passport's own limits forbid removing qualifying constructions and simplifying terminology. Passing means no edit was applied.",
+      "default_styles": [
+        "averintsev",
+        "lit_historico_cultural"
+      ],
+      "expected_risks": [
+        "epistemic_caution",
+        "rhetorical_period"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "epistemic_caution"
+        ],
+        "accepted_finding_aliases": {
+          "epistemic_caution": [
+            "rhetorical_period",
+            "term_depth",
+            "oversimplification",
+            "missing_epistemic_markers",
+            "loss_of_philological_depth"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      }
+    },
+    {
+      "id": "gasparov-meter-check",
+      "input": "examples/input/gasparov-meter-check.md",
+      "purpose": "Check if Gasparov agent catches a blatant factual error in verse theory (confusing iamb with trochee).",
+      "default_styles": [
+        "gasparov",
+        "lit_structural"
+      ],
+      "expected_risks": [
+        "factual_error_meter",
+        "terminological_imprecision"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "factual_error_meter"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "melchuk-syntax-check",
+      "input": "examples/input/melchuk-syntax-check.md",
+      "purpose": "Check if Melchuk agent catches a syntactic agreement error using dependency analysis.",
+      "default_styles": [
+        "melchuk",
+        "ling_mss"
+      ],
+      "expected_risks": [
+        "syntactic_agreement_error",
+        "morphological_mismatch"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "syntactic_agreement_error"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "poststructural-term-check",
+      "input": "examples/input/poststructural-term-check.md",
+      "purpose": "Check if Poststructuralist agent flags the simplification of 'différance' to 'difference'.",
+      "default_styles": [
+        "lit_poststructural"
+      ],
+      "expected_risks": [
+        "terminological_simplification",
+        "loss_of_conceptual_nuance"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "terminological_simplification"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "bakhtin-polyphony-check",
+      "input": "examples/input/bakhtin-polyphony-check.md",
+      "purpose": "Check if Bakhtin agent flags a monological interpretation of Dostoevsky.",
+      "default_styles": [
+        "lit_bakhtin"
+      ],
+      "expected_risks": [
+        "monologism",
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "monologism"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "iesh-sound-law",
+      "input": "examples/input/iesh-sound-law.md",
+      "purpose": "Check if IESH agent flags a violation of known Slavic sound laws (polnoglasie, palatalization).",
+      "default_styles": [
+        "ling_iesh",
+        "tronsky-readings"
+      ],
+      "expected_risks": [
+        "unsupported_etymology",
+        "missing_historical_forms"
+      ],
+      "tags": [
+        "GOLD_ZALIZNYAK"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "unsupported_etymology"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "tsh-universal-check",
+      "input": "examples/input/tsh-universal-check.md",
+      "purpose": "Check if TSH agent flags a false claim about absolute language universals.",
+      "default_styles": [
+        "ling_tsh"
+      ],
+      "expected_risks": [
+        "overgeneralization"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "overgeneralization"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "pfg-field-boundary",
+      "input": "examples/input/pfg-field-boundary.md",
+      "purpose": "Check if PFG agent corrects a confusion between center and periphery in a functional field.",
+      "default_styles": [
+        "ling_pfg"
+      ],
+      "expected_risks": [
+        "weak_classification"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "weak_classification"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "nss-cliche-check",
+      "input": "examples/input/nss-cliche-check.md",
+      "purpose": "Check if NSS agent flags bureaucratic cliches in a scholarly text.",
+      "default_styles": [
+        "ling_nss"
+      ],
+      "expected_risks": [
+        "wordiness",
+        "style_mismatch"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "wordiness"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "opoyaz-structural-clash",
+      "input": "examples/input/opoyaz-structural-clash.md",
+      "purpose": "Check if OPOYAZ agent flags psychological substitution instead of formal analysis.",
+      "default_styles": [
+        "lit_opoyaz"
+      ],
+      "expected_risks": [
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "reductive_interpretation"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "mythopoetics-symbol-check",
+      "input": "examples/input/mythopoetics-symbol-check.md",
+      "purpose": "Check if Mythopoetics agent flags literalization of a cultural symbol.",
+      "default_styles": [
+        "lit_mythopoetics"
+      ],
+      "expected_risks": [
+        "loss_of_conceptual_nuance"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "loss_of_conceptual_nuance"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "narratology-plot-hole",
+      "input": "examples/input/narratology-plot-hole.md",
+      "purpose": "Check if Narratology agent flags confusion between diegetic and extra-diegetic levels.",
+      "default_styles": [
+        "lit_narratology"
+      ],
+      "expected_risks": [
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "reductive_interpretation"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "reception-audience-neglect",
+      "input": "examples/input/reception-audience-neglect.md",
+      "purpose": "Check if Reception agent flags negation of the reader's role in meaning construction.",
+      "default_styles": [
+        "lit_reception"
+      ],
+      "expected_risks": [
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "reductive_interpretation"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "zaliznyak-evidence-hierarchy",
+      "input": "examples/input/zaliznyak-evidence-hierarchy.md",
+      "purpose": "Check if Zaliznyak agent protects the hierarchy of evidence (primary source over late dictionary).",
+      "default_styles": [
+        "zalizniak-method",
+        "ling_iesh"
+      ],
+      "expected_risks": [
+        "weak_evidence_for_dating",
+        "unsupported_etymology"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "weak_evidence_for_dating"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "mss-semantic-loop",
+      "input": "examples/input/mss-semantic-loop.md",
+      "purpose": "Check if MSS agent flags a circular definition (tautology).",
+      "default_styles": [
+        "ling_mss"
+      ],
+      "expected_risks": [
+        "unclear_definition"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "unclear_definition"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "kmsh-concept-mix",
+      "input": "examples/input/kmsh-concept-mix.md",
+      "purpose": "Check if KMSH agent flags reduction of a cultural concept to a logical notion.",
+      "default_styles": [
+        "ling_kmsh"
+      ],
+      "expected_risks": [
+        "concept_distortion"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "concept_distortion"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "dss-dialect-norm",
+      "input": "examples/input/dss-dialect-norm.md",
+      "purpose": "Check if DSS agent protects dialectal forms against 'normative' corrections.",
+      "default_styles": [
+        "ling_dss"
+      ],
+      "expected_risks": [
+        "field_data_distortion"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "field_data_distortion"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "mts-semiotic-blur",
+      "input": "examples/input/mts-semiotic-blur.md",
+      "purpose": "Check if MTS agent flags blurring of sign levels between primary and secondary systems.",
+      "default_styles": [
+        "ling_mts"
+      ],
+      "expected_risks": [
+        "semiotic_blurring",
+        "structural_inconsistency"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "semiotic_blurring"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "textology-copyist-error",
+      "input": "examples/input/textology-copyist-error.md",
+      "purpose": "Check if Textology agent flags anachronistic interpolations in ancient texts.",
+      "default_styles": [
+        "lit_textology"
+      ],
+      "expected_risks": [
+        "factual_error_meter",
+        "weak_historical_inference"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "weak_historical_inference"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "hist-cult-anachronism",
+      "input": "examples/input/hist-cult-anachronism.md",
+      "purpose": "Check if Historico-cultural agent flags modern sociological terms applied to antiquity.",
+      "default_styles": [
+        "lit_historico_cultural"
+      ],
+      "expected_risks": [
+        "loss_of_philological_depth",
+        "oversimplification"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "loss_of_philological_depth"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "poststruct-deconstruction-loop",
+      "input": "examples/input/poststruct-deconstruction-loop.md",
+      "purpose": "Check if Poststructuralist agent flags a claim about 'final/singular meaning'.",
+      "default_styles": [
+        "lit_poststructural"
+      ],
+      "expected_risks": [
+        "loss_of_conceptual_nuance",
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "reductive_interpretation"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "averintsev-epistemic-caution",
+      "input": "examples/input/averintsev-epistemic-caution.md",
+      "purpose": "Check if Averintsev agent flags dogmatic claims in cultural analysis.",
+      "default_styles": [
+        "averintsev"
+      ],
+      "expected_risks": [
+        "missing_epistemic_markers",
+        "loss_of_philological_depth"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "missing_epistemic_markers"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "gasparov-fact-check",
+      "input": "examples/input/gasparov-fact-check.md",
+      "purpose": "Check if Gasparov agent catches a factual error in metric/meter attribution.",
+      "default_styles": [
+        "gasparov"
+      ],
+      "expected_risks": [
+        "factual_error_meter"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "factual_error_meter"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "melchuk-formalism-check",
+      "input": "examples/input/melchuk-formalism-check.md",
+      "purpose": "Check if Melchuk agent flags 'fuzzy' non-formal descriptions of syntactic relations.",
+      "default_styles": [
+        "melchuk"
+      ],
+      "expected_risks": [
+        "terminological_imprecision",
+        "syntactic_agreement_error"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "terminological_imprecision"
+        ],
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "iesh-vs-nss-conflict",
+      "input": "examples/input/iesh-vs-nss-conflict.md",
+      "purpose": "Check Council resolution for conflict between etymological archaism and modern norm.",
+      "default_styles": [
+        "ling_iesh",
+        "ling_nss"
+      ],
+      "expected_risks": [
+        "norm_violation",
+        "missing_historical_forms"
+      ],
+      "scoring": {
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "opoyaz-vs-bakhtin-polyphony",
+      "input": "examples/input/opoyaz-vs-bakhtin-polyphony.md",
+      "purpose": "Check Council debate between plot structure (OPOYAZ) and dialogic voice (Bakhtin).",
+      "default_styles": [
+        "lit_opoyaz",
+        "lit_bakhtin"
+      ],
+      "expected_risks": [
+        "monologism",
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "struct-vs-poststruct-stability",
+      "input": "examples/input/struct-vs-poststruct-stability.md",
+      "purpose": "Check Council debate between structural stability and deconstructive fluidity.",
+      "default_styles": [
+        "lit_structural",
+        "lit_poststructural"
+      ],
+      "expected_risks": [
+        "loss_of_conceptual_nuance",
+        "reductive_interpretation"
+      ],
+      "scoring": {
+        "min_required_matches": 1
+      }
+    },
+    {
+      "id": "iesh-adversarial",
+      "input": "examples/input/iesh-adversarial.md",
+      "purpose": "Refusal case: the pipeline must NOT strip «по-видимому», «если допустить» and «требует дальнейшего подтверждения» — removing them converts a conditional derivation into an asserted one, which the cluster's first forbidden_edit calls an absolute prohibition («НИКОГДА нельзя убирать оговорки об этимологической неопределенности»). Passing means no edit was applied.",
+      "default_styles": [
+        "ling_iesh"
+      ],
+      "expected_risks": [
+        "unsupported_etymology",
+        "weak_historical_inference"
+      ],
+      "tags": [
+        "GOLD_ZALIZNYAK"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "unsupported_etymology"
+        ],
+        "accepted_finding_aliases": {
+          "unsupported_etymology": [
+            "weak_historical_inference",
+            "missing_source",
+            "oversimplification",
+            "missing_epistemic_markers"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "etymology"
+      }
+    },
+    {
+      "id": "mts-adversarial",
+      "input": "examples/input/mts-adversarial.md",
+      "purpose": "Refusal case: the pipeline must NOT collapse «вторичная семиотическая система … цвет функционирует как код … связь не проговорена эксплицитно» into «повторяет слова, чтобы создать систему кодов» — that replaces semiotic terms with everyday ones and drops the unstated liturgical link, both cluster forbidden_edits. Passing means no edit was applied.",
+      "default_styles": [
+        "ling_mts"
+      ],
+      "expected_risks": [
+        "semiotic_blurring",
+        "missing_contextual_link"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "semiotic_blurring"
+        ],
+        "accepted_finding_aliases": {
+          "semiotic_blurring": [
+            "missing_contextual_link",
+            "structural_inconsistency",
+            "oversimplification",
+            "missing_epistemic_markers"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "semiotics"
+      }
+    },
+    {
+      "id": "historico-cultural-adversarial",
+      "input": "examples/input/historico-cultural-adversarial.md",
+      "purpose": "Refusal case: the pipeline must NOT rewrite the hedged XIII-century reading into «Люди в XIII веке были солидарны» — the original explicitly refuses the direct modern analogy («принципиальная инаковость средневекового этоса, не позволяющая проводить прямые аналогии с современностью»), so asserting one is a false comparative link, not a simplification. Passing means no edit was applied.",
+      "default_styles": [
+        "lit_historico_cultural"
+      ],
+      "expected_risks": [
+        "weak_comparative_link",
+        "context_omission"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "weak_comparative_link"
+        ],
+        "accepted_finding_aliases": {
+          "weak_comparative_link": [
+            "context_omission",
+            "oversimplification",
+            "missing_epistemic_markers",
+            "loss_of_philological_depth"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "history"
+      }
+    },
+    {
+      "id": "bakhtin-adversarial",
+      "input": "examples/input/bakhtin-adversarial.md",
+      "purpose": "Refusal case: the pipeline must NOT define 'хронотоп' crisply, must NOT split the meditative period into three sentences, and must NOT 'correct' essayism into academic register — all three are lit_bakhtin forbidden_edits. Passing means no edit was applied.",
+      "default_styles": [
+        "lit_bakhtin"
+      ],
+      "expected_risks": [
+        "formalization_overreach",
+        "simplification_of_concepts"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "formalization_overreach"
+        ],
+        "accepted_finding_aliases": {
+          "formalization_overreach": [
+            "simplification_of_concepts",
+            "oversimplification"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "literary_bakhtin"
+      }
+    },
+    {
+      "id": "poststructural-adversarial",
+      "input": "examples/input/poststructural-adversarial.md",
+      "purpose": "Refusal case: the pipeline must NOT 'fix' différance to différence (an absolute prohibition — the spelling carries the argument), must NOT add a definition to Derrida's authorial term, and must NOT flatten the раз-личение/раз-лучение wordplay — all three are lit_poststructural forbidden_edits. Passing means no edit was applied.",
+      "default_styles": [
+        "lit_poststructural"
+      ],
+      "expected_risks": [
+        "terminology_simplification",
+        "game_rhetoric_flattening"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "terminology_simplification"
+        ],
+        "accepted_finding_aliases": {
+          "terminology_simplification": [
+            "terminological_simplification",
+            "loss_of_conceptual_nuance",
+            "oversimplification"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "literary_poststructural"
+      }
+    },
+    {
+      "id": "textology-adversarial",
+      "input": "examples/input/textology-adversarial.md",
+      "purpose": "Refusal case: the pipeline must NOT narrow an unsourced 1470s-1490s watermark dating to a single year (an absolute prohibition), must NOT name the copyist more confidently than the evidence allows, and must NOT drop the archival shelf-mark or the attribution hedges — all three are lit_textology forbidden_edits. Passing means no edit was applied.",
+      "default_styles": [
+        "lit_textology"
+      ],
+      "expected_risks": [
+        "dating_error",
+        "misattribution"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "dating_error"
+        ],
+        "accepted_finding_aliases": {
+          "dating_error": [
+            "misattribution",
+            "weak_historical_inference",
+            "missing_source"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "literary_textology"
+      }
+    },
+    {
+      "id": "adv-001-hedging-adversarial",
+      "input": "examples/input/adv-001-hedging-adversarial.md",
+      "purpose": "Refusal case (G-06 adv_001): the pipeline must NOT strip «по-видимому» and «насколько позволяет судить материал» from a hedged typological generalization — removing the markers turns a 40-language-sample observation into an asserted universal, exactly the overgeneralization the cluster's checks exist to catch. Passing means no edit was applied.",
+      "default_styles": [
+        "ling_tsh"
+      ],
+      "expected_risks": [
+        "overgeneralization",
+        "missing_language_sample"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "overgeneralization"
+        ],
+        "accepted_finding_aliases": {
+          "overgeneralization": [
+            "missing_language_sample",
+            "missing_epistemic_markers",
+            "oversimplification"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "typology",
+        "g06_id": "adv_001"
+      }
+    },
+    {
+      "id": "adv-002-terminology-adversarial",
+      "input": "examples/input/adv-002-terminology-adversarial.md",
+      "purpose": "Refusal case (G-06 adv_002): the pipeline must NOT unify «функционально-семантическое поле» into «группа слов»/«класс средств» — the field term with its centre/periphery opposition is the school's classification basis, and the cluster's forbidden_edits ban replacing «поле» without explanation. Passing means no edit was applied.",
+      "default_styles": [
+        "ling_pfg"
+      ],
+      "expected_risks": [
+        "weak_classification",
+        "missing_field_boundary"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "weak_classification"
+        ],
+        "accepted_finding_aliases": {
+          "weak_classification": [
+            "missing_field_boundary",
+            "terminology_simplification",
+            "oversimplification"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "functional_grammar",
+        "g06_id": "adv_002"
+      }
+    },
+    {
+      "id": "adv-003-unsourced-date-adversarial",
+      "input": "examples/input/adv-003-unsourced-date-adversarial.md",
+      "purpose": "Refusal case (G-06 adv_003): the pipeline must NOT add a concrete date («относится к XII в.») to an etymology whose text explicitly states the first attestation cannot be dated precisely — the cluster's forbidden_edits call unsourced dating precision an absolute prohibition («Нельзя „уточнять“ датировки без источника»). Passing means no edit was applied.",
+      "default_styles": [
+        "ling_iesh"
+      ],
+      "expected_risks": [
+        "missing_source",
+        "weak_historical_inference"
+      ],
+      "tags": [
+        "GOLD_ZALIZNYAK"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "missing_source"
+        ],
+        "accepted_finding_aliases": {
+          "missing_source": [
+            "weak_historical_inference",
+            "unsupported_etymology",
+            "dating_error"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "etymology",
+        "g06_id": "adv_003"
+      }
+    },
+    {
+      "id": "adv-004-transliteration-adversarial",
+      "input": "examples/input/adv-004-transliteration-adversarial.md",
+      "purpose": "Refusal case (G-06 adv_004): the pipeline must NOT simplify IAST transliteration (vṛddhi → vriddhi, guṇa → guna) nor drop the parenthesised IAST at first mention as «дублирование» — the indology cluster's first forbidden_edit makes IAST at first mention an absolute prohibition, and the diacritics are phonologically contrastive. Passing means no edit was applied.",
+      "default_styles": [
+        "indology"
+      ],
+      "expected_risks": [
+        "missing_iast_on_first_mention",
+        "inconsistent_term_rendering"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "missing_iast_on_first_mention"
+        ],
+        "accepted_finding_aliases": {
+          "missing_iast_on_first_mention": [
+            "inconsistent_term_rendering",
+            "untransliterated_oriental_term",
+            "oversimplification"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "indology",
+        "g06_id": "adv_004"
+      }
+    },
+    {
+      "id": "adv-005-quote-paraphrase-adversarial",
+      "input": "examples/input/adv-005-quote-paraphrase-adversarial.md",
+      "purpose": "Refusal case (G-06 adv_005): the pipeline must NOT replace the informant's verbatim dialect quote («мы с батькам да с дедам…») with a literary paraphrase — the quote IS the evidence for the case-syncretism claim, and the cluster's forbidden_edits ban correcting dialect forms to the literary norm. Passing means no edit was applied.",
+      "default_styles": [
+        "ling_dss"
+      ],
+      "expected_risks": [
+        "field_data_distortion",
+        "overgeneralization"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "field_data_distortion"
+        ],
+        "accepted_finding_aliases": {
+          "field_data_distortion": [
+            "overgeneralization",
+            "missing_source",
+            "oversimplification"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": true,
+        "max_changed_line_ratio": 0.0,
+        "max_char_delta_ratio": 0.0
+      },
+      "metadata": {
+        "text_domain": "dialectology",
+        "g06_id": "adv_005"
+      }
+    },
+    {
+      "id": "translit-mixed-scheme",
+      "input": "examples/input/translit-mixed-scheme.md",
+      "purpose": "Deterministic linter must flag a document mixing IAST and Harvard-Kyoto transliteration of the same Sanskrit terms.",
+      "default_styles": [
+        "tronsky-readings"
+      ],
+      "expected_risks": [
+        "mixed_transliteration_scheme"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "mixed_transliteration_scheme"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT",
+        "deterministic"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "translit-first-mention",
+      "input": "examples/input/translit-first-mention.md",
+      "purpose": "Deterministic linter must flag Sanskrit terms introduced in Russian transliteration without an IAST gloss on first mention.",
+      "default_styles": [
+        "tronsky-readings"
+      ],
+      "expected_risks": [
+        "missing_iast_on_first_mention"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "missing_iast_on_first_mention"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT",
+        "deterministic"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "gost-hallucinated-ref",
+      "input": "examples/input/gost-hallucinated-ref.md",
+      "purpose": "Citation grounding must flag a reference (Елизаренкова 2099) absent from the structured bibliography as hallucinated.",
+      "default_styles": [
+        "tronsky-readings"
+      ],
+      "expected_risks": [
+        "hallucinated_citation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "hallucinated_citation"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT",
+        "deterministic"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "translit-inconsistent-rendering",
+      "input": "examples/input/translit-inconsistent-rendering.md",
+      "purpose": "Deterministic linter must flag a Sanskrit term rendered inconsistently in Cyrillic and IAST without a system.",
+      "default_styles": [
+        "tronsky-readings"
+      ],
+      "expected_risks": [
+        "inconsistent_term_rendering"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "inconsistent_term_rendering"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT",
+        "deterministic"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "translit-cyrillic-latin-hybrid",
+      "input": "examples/input/translit-cyrillic-latin-hybrid.md",
+      "purpose": "Deterministic linter must flag a single word that fuses Cyrillic and IAST letters (e.g. бхāшья).",
+      "default_styles": [
+        "tronsky-readings"
+      ],
+      "expected_risks": [
+        "iast_in_cyrillic_word"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "iast_in_cyrillic_word"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT",
+        "deterministic"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "gost-broken-ref",
+      "input": "examples/input/gost-broken-ref.md",
+      "purpose": "Citation grounding must flag a broken reference (Monier-Williams with an impossible year) absent from the structured bibliography.",
+      "default_styles": [
+        "tronsky-readings"
+      ],
+      "expected_risks": [
+        "hallucinated_citation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "hallucinated_citation"
+        ],
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT",
+        "deterministic"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "sanskrit-pseudo-etymology",
+      "input": "examples/input/sanskrit-pseudo-etymology.md",
+      "purpose": "Expert reviewers must reject a sound-similarity pseudo-etymology deriving mokṣa from Russian 'мочь'.",
+      "default_styles": [
+        "toporov-etym",
+        "zalizniak-zametki"
+      ],
+      "expected_risks": [
+        "unsupported_sanskrit_etymology",
+        "unsupported_etymology"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "unsupported_sanskrit_etymology"
+        ],
+        "accepted_finding_aliases": {
+          "unsupported_sanskrit_etymology": [
+            "unsupported_etymology",
+            "pseudo_etymology"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "karaka-not-padezh",
+      "input": "examples/input/karaka-not-padezh.md",
+      "purpose": "Expert reviewer must flag conflating the Paninian kāraka (semantic role) with grammatical case.",
+      "default_styles": [
+        "panini-traditional"
+      ],
+      "expected_risks": [
+        "mistranslated_native_term"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "mistranslated_native_term"
+        ],
+        "accepted_finding_aliases": {
+          "mistranslated_native_term": [
+            "karaka_case_conflation",
+            "conflated_grammatical_category"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "vedic-classical-anachronism",
+      "input": "examples/input/vedic-classical-anachronism.md",
+      "purpose": "Expert reviewer must flag ascribing POST-Vedic norms to a Vedic (Rigveda) hymn. The input plants the same period-collapse on two poles: (a) classical — Panini's rules, a 'classical aorist', mature-Sanskrit sandhi; (b) epic — accent 'set by the norms of the epic language' (a norm that does not exist: epic Sanskrit has no recorded accent) and the verse held analysable like a Mahabharata verse. Both poles are one finding class, 'anachronistic_sanskrit_period'; catching either scores the case, and the aggregate does NOT record which pole a run caught (H1325).",
+      "default_styles": [
+        "elizarenkova-veda"
+      ],
+      "expected_risks": [
+        "anachronistic_sanskrit_period"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "anachronistic_sanskrit_period"
+        ],
+        "accepted_finding_aliases": {
+          "anachronistic_sanskrit_period": [
+            "vedic_classical_anachronism",
+            "anachronism"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "samasa-misclassification",
+      "input": "examples/input/samasa-misclassification.md",
+      "purpose": "Expert reviewer must flag a bahuvrīhi example analysed as a tatpuruṣa.",
+      "default_styles": [
+        "samasa-manual"
+      ],
+      "expected_risks": [
+        "wrong_samasa_type"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "wrong_samasa_type"
+        ],
+        "accepted_finding_aliases": {
+          "wrong_samasa_type": [
+            "misclassified_compound",
+            "samasa_misclassification"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "commentary-layer-mix",
+      "input": "examples/input/commentary-layer-mix.md",
+      "purpose": "Expert reviewer must flag presenting a commentator's gloss as the explicit statement of the root text.",
+      "default_styles": [
+        "panini-traditional",
+        "lidova-commentary"
+      ],
+      "expected_risks": [
+        "missing_commentary_layer"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "missing_commentary_layer"
+        ],
+        "accepted_finding_aliases": {
+          "missing_commentary_layer": [
+            "commentary_layer_mix",
+            "conflated_commentary_and_root_text"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "sanskrit-reader-register-drift",
+      "input": "examples/input/sanskrit-reader-register-drift.md",
+      "purpose": "Expert reviewer must flag a reader/textbook-register analysis sliding into needlessly academic jargon (theta-role/configurational-syntax terminology for a plain locative case), losing the pedagogical clarity a hrestomatiya passage needs.",
+      "default_styles": [
+        "sanskrit-reader"
+      ],
+      "expected_risks": [
+        "register_drift_to_academic"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "register_drift_to_academic"
+        ],
+        "accepted_finding_aliases": {
+          "register_drift_to_academic": [
+            "reader_register_drift",
+            "overacademized_reader_text"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_SANSKRIT"
+      ],
+      "metadata": {
+        "text_domain": "linguistics"
+      }
+    },
+    {
+      "id": "dict-circular-gloss",
+      "input": "examples/input/dict-circular-gloss.md",
+      "purpose": "Dictionary-register reviewer must flag a transliteration-passthrough gloss (agni glossed as 'agni' instead of a Russian translation) as a circular gloss.",
+      "default_styles": [
+        "academic-dictionary-entry",
+        "melchuk"
+      ],
+      "expected_risks": [
+        "circular_gloss"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "circular_gloss"
+        ],
+        "accepted_finding_aliases": {
+          "circular_gloss": [
+            "likely_circular_gloss",
+            "circular_definition",
+            "untranslated_gloss"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_DICTIONARY"
+      ],
+      "metadata": {
+        "text_domain": "lexicography"
+      }
+    },
+    {
+      "id": "dict-publicistic-register",
+      "input": "examples/input/dict-publicistic-register.md",
+      "purpose": "Reviewer must flag publicistic tone (evaluative epithets, reader address, exclamation) inside a dictionary definition zone.",
+      "default_styles": [
+        "academic-dictionary-entry",
+        "zalizniak-method"
+      ],
+      "expected_risks": [
+        "publicistic_register"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "publicistic_register"
+        ],
+        "accepted_finding_aliases": {
+          "publicistic_register": [
+            "register_mismatch",
+            "register_drift",
+            "publicistic_tone",
+            "tone_violation"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_DICTIONARY"
+      ],
+      "metadata": {
+        "text_domain": "lexicography"
+      }
+    },
+    {
+      "id": "dict-zone-order",
+      "input": "examples/input/dict-zone-order.md",
+      "purpose": "Reviewer must flag broken entry-zone architecture: citations placed before the definition and an etymology excursus inside the definition zone.",
+      "default_styles": [
+        "academic-dictionary-entry",
+        "zalizniak-imennoe"
+      ],
+      "expected_risks": [
+        "zone_structure_violation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "zone_structure_violation"
+        ],
+        "accepted_finding_aliases": {
+          "zone_structure_violation": [
+            "structure_violation",
+            "zone_order_violation",
+            "wrong_zone_order"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_DICTIONARY"
+      ],
+      "metadata": {
+        "text_domain": "lexicography"
+      }
+    },
+    {
+      "id": "dict-nonstandard-label",
+      "input": "examples/input/dict-nonstandard-label.md",
+      "purpose": "Reviewer must flag label discipline violations: untranslated editorial abbreviations (s. u., Vgl.) and an invented/spelled-out usage label in a Russian entry.",
+      "default_styles": [
+        "academic-dictionary-entry",
+        "zalizniak-imennoe"
+      ],
+      "expected_risks": [
+        "nonstandard_label"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "nonstandard_label"
+        ],
+        "accepted_finding_aliases": {
+          "nonstandard_label": [
+            "label_violation",
+            "nonstandard_abbreviation",
+            "untranslated_label",
+            "wrong_label"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_DICTIONARY"
+      ],
+      "metadata": {
+        "text_domain": "lexicography"
+      }
+    },
+    {
+      "id": "dict-grammar-zone",
+      "input": "examples/input/dict-grammar-zone.md",
+      "purpose": "Reviewer must flag a grammar zone written as prose instead of standard Latin sigla and a compact paradigm code.",
+      "default_styles": [
+        "academic-dictionary-entry",
+        "zalizniak-imennoe"
+      ],
+      "expected_risks": [
+        "grammar_zone_violation"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "grammar_zone_violation"
+        ],
+        "accepted_finding_aliases": {
+          "grammar_zone_violation": [
+            "grammar_notation_violation",
+            "missing_grammar_code",
+            "prose_grammar"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_DICTIONARY"
+      ],
+      "metadata": {
+        "text_domain": "lexicography"
+      }
+    },
+    {
+      "id": "dict-synonym-heap",
+      "input": "examples/input/dict-synonym-heap.md",
+      "purpose": "Reviewer must flag an undiscriminated synonym heap: a flat row of near-synonyms with no differentiae and a gloss repeated across senses.",
+      "default_styles": [
+        "academic-dictionary-entry",
+        "melchuk"
+      ],
+      "expected_risks": [
+        "undiscriminated_synonyms"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "undiscriminated_synonyms"
+        ],
+        "accepted_finding_aliases": {
+          "undiscriminated_synonyms": [
+            "missing_synonym_discrimination",
+            "collapsed_synonym_string",
+            "missing_apresjan_discrimination",
+            "undifferentiated_synonyms"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_DICTIONARY"
+      ],
+      "metadata": {
+        "text_domain": "lexicography"
+      }
+    },
+    {
+      "id": "dict-encyclopedic-gloss",
+      "input": "examples/input/dict-encyclopedic-gloss.md",
+      "purpose": "Reviewer must flag an encyclopedic essay standing in place of a substitutable definition/equivalent in sense 1.",
+      "default_styles": [
+        "academic-dictionary-entry",
+        "melchuk"
+      ],
+      "expected_risks": [
+        "encyclopedic_gloss"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "encyclopedic_gloss"
+        ],
+        "accepted_finding_aliases": {
+          "encyclopedic_gloss": [
+            "encyclopedic_overreach",
+            "encyclopedic_definition",
+            "definition_bloat"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_DICTIONARY"
+      ],
+      "metadata": {
+        "text_domain": "lexicography"
+      }
+    },
+    {
+      "id": "dict-pseudo-etymology-note",
+      "input": "examples/input/dict-pseudo-etymology-note.md",
+      "purpose": "Reviewer must flag a sound-similarity pseudo-etymology (karman from Russian 'karman') asserted with certainty in the etymology zone.",
+      "default_styles": [
+        "academic-dictionary-entry",
+        "toporov-etym"
+      ],
+      "expected_risks": [
+        "unsupported_etymology_note"
+      ],
+      "scoring": {
+        "required_finding_types": [
+          "unsupported_etymology_note"
+        ],
+        "accepted_finding_aliases": {
+          "unsupported_etymology_note": [
+            "unsupported_sanskrit_etymology",
+            "unsupported_etymology",
+            "pseudo_etymology"
+          ]
+        },
+        "min_required_matches": 1,
+        "strict_fidelity": false
+      },
+      "tags": [
+        "GOLD_DICTIONARY"
+      ],
+      "metadata": {
+        "text_domain": "lexicography"
+      }
+    }
+  ]
+}

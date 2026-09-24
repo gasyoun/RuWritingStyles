@@ -1,0 +1,1 @@
+{"started": "2026-09-20T15:19:22", "journals": [{"slug": "j-one", "status": "ok", "written": 2, "already_pass": 1, "quarantined": 1, "selection_skipped": {"uncertain": 7}, "source_split": {"html": 1, "pdf": 1}, "elapsed_seconds": 12.5}, {"slug": "j-bad", "status": "failed", "error": "GET failed after retries: x"}]}

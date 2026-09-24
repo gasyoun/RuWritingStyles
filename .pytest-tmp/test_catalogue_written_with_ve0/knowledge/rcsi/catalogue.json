@@ -1,0 +1,34 @@
+[
+  {
+    "slug": "0002-1881",
+    "journal_name": "Agricultural Chemistry",
+    "repository_name": "Agricultural Chemistry",
+    "url": "https://journals.rcsi.science/0002-1881",
+    "scope_text_excerpt": "Research in physics, chemistry and soil science of agricultural systems.",
+    "verdict": "exclude",
+    "matched_terms": [],
+    "negative_terms": [
+      "physics",
+      "chemistry",
+      "soil science"
+    ],
+    "evidence_other": [],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2306-5737",
+    "journal_name": "Acta Linguistica Petropolitana",
+    "repository_name": "Acta Linguistica Petropolitana",
+    "url": "https://journals.rcsi.science/2306-5737",
+    "scope_text_excerpt": "The journal publishes works in linguistics, language typology and philology.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "language typology",
+      "philology"
+    ],
+    "negative_terms": [],
+    "evidence_other": [],
+    "checked_on": "30-08-2026"
+  }
+]

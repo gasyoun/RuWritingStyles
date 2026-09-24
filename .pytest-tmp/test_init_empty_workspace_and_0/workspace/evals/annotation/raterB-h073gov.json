@@ -1,0 +1,36 @@
+{
+  "rater_b": "B (Claude Fable 5, claude-fable-5, blind re-annotation 11-07-2026 per GOLD_PROTOCOL; scorer verdicts withheld during judgment)",
+  "provider": "deepseek (deepseek-v4-flash), runs 20260703-h073gov",
+  "rubric": {
+    "caught": "does any finding substantively identify the planted error from the case purpose (yes/partial/no)",
+    "type_correct": "is a finding bearing the canonical required type (or a listed alias) aimed at the planted error",
+    "false_positives": "count of substantively spurious findings (misread the input); extra legitimate style-driven remarks are NOT counted"
+  },
+  "runs": [
+    {"run": "20260703-h073gov-sanskrit-pseudo-etymology-r01", "caught": "yes", "type_correct": true, "false_positives": 1, "notes": "canonical type present, on-target; FP: missing_iast_on_first_mention — the input gives IAST (*mokṣa*) at first mention, the finding contradicts itself"},
+    {"run": "20260703-h073gov-sanskrit-pseudo-etymology-r02", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "canonical type present; all findings on-target facets of the pseudo-etymology"},
+    {"run": "20260703-h073gov-sanskrit-pseudo-etymology-r03", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "canonical type present (plus a typo variant unsupported_sansrit_etymology, itself substantively correct)"},
+    {"run": "20260703-h073gov-sanskrit-pseudo-etymology-r04", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "canonical type present; accidental_similarity rejected by council but substantively valid"},
+    {"run": "20260703-h073gov-sanskrit-pseudo-etymology-r05", "caught": "yes", "type_correct": true, "false_positives": 1, "notes": "canonical type present; FP: missing_iast_on_first_mention — IAST is present in the input at first mention"},
+    {"run": "20260703-h073gov-karaka-not-padezh-r01", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "mistranslated_native_term twice, both squarely on the karaka=case conflation"},
+    {"run": "20260703-h073gov-karaka-not-padezh-r02", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "canonical type present; secondary sutra-reference/attribution findings are legitimate passport checks"},
+    {"run": "20260703-h073gov-karaka-not-padezh-r03", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "canonical type present, on-target"},
+    {"run": "20260703-h073gov-karaka-not-padezh-r04", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "canonical type present twice; notes the six-karaka list is the Western case list, correct"},
+    {"run": "20260703-h073gov-karaka-not-padezh-r05", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "canonical type present, on-target"},
+    {"run": "20260703-h073gov-samasa-misclassification-r01", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "wrong_samasa_type twice, on-target; missing_vigraha legitimate"},
+    {"run": "20260703-h073gov-samasa-misclassification-r02", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "canonical type present twice with correct possessive-reading argument"},
+    {"run": "20260703-h073gov-samasa-misclassification-r03", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "canonical type present; iast finding about Russian rendering is defensible under the passport"},
+    {"run": "20260703-h073gov-samasa-misclassification-r04", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "canonical type present, on-target"},
+    {"run": "20260703-h073gov-samasa-misclassification-r05", "caught": "yes", "type_correct": true, "false_positives": 1, "notes": "canonical type present twice; FP: missing_iast claims *bahu*/*vrīhi* lack IAST — the input provides both in IAST"},
+    {"run": "20260703-h073gov-vedic-classical-anachronism-r01", "caught": "yes", "type_correct": true, "false_positives": 1, "notes": "canonical type twice; FP: missing_source demanding IAST for 'аорист'/'сандхи' — international grammatical terms, not Sanskrit lexemes"},
+    {"run": "20260703-h073gov-vedic-classical-anachronism-r02", "caught": "yes", "type_correct": false, "false_positives": 0, "notes": "the anachronism IS substantively identified in both findings, but typed missing_source and unsupported_semantization — neither the canonical type nor a listed alias; a labeling miss, not a detection miss"},
+    {"run": "20260703-h073gov-vedic-classical-anachronism-r03", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "canonical type twice, on-target"},
+    {"run": "20260703-h073gov-vedic-classical-anachronism-r04", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "canonical type twice, on-target"},
+    {"run": "20260703-h073gov-vedic-classical-anachronism-r05", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "canonical type twice, on-target"},
+    {"run": "20260703-h073gov-commentary-layer-mix-r01", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "canonical missing_commentary_layer on-target; unattributed_commentary finding states the planted error most precisely"},
+    {"run": "20260703-h073gov-commentary-layer-mix-r02", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "canonical type present, squarely on the gloss-as-root-text error"},
+    {"run": "20260703-h073gov-commentary-layer-mix-r03", "caught": "yes", "type_correct": true, "false_positives": 1, "notes": "canonical type present; FP: missing_iast_on_first_mention claims adhyāyana lacks IAST — it is printed in IAST in the input"},
+    {"run": "20260703-h073gov-commentary-layer-mix-r04", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "canonical type present (minor) plus unattributed_commentary naming the commentator-gloss conflation"},
+    {"run": "20260703-h073gov-commentary-layer-mix-r05", "caught": "yes", "type_correct": true, "false_positives": 0, "notes": "canonical type present twice, on-target"}
+  ]
+}

@@ -1,0 +1,34 @@
+id: cluster:lit_textology
+name: "Историко-биографическая и текстологическая школа"
+level: cluster
+extends: cluster:ling_iesh
+source_prompt: ClaudeStyles/lit-textology-cluster-base.md
+role: source_critical_reviewer
+language: ru
+best_for:
+  - датировка рукописей
+  - атрибуция
+  - архивные данные
+checks:
+  - misattribution
+  - dating_error
+  - citation_distortion
+markers:
+  lexical:
+    - "автограф"
+    - "беловая рукопись"
+    - "архивный шифр"
+forbidden_edits:
+  - "НИКОГДА нельзя менять датировки без источника"
+  - "Нельзя переформулировать архивные шифры"
+  - "Нельзя убирать оговорки при атрибуции"
+review_mode:
+  rewrite_allowed: false
+  requires_span_ids: true
+  output_format: findings_json
+council:
+  can_reply_to:
+    - attribution
+    - evidence
+conflict_priority:
+  default: high

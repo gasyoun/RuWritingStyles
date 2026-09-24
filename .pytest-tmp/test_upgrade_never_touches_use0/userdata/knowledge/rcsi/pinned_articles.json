@@ -1,0 +1,37 @@
+[
+  {
+    "url": "https://journals.rcsi.science/0869-5873/article/view/268311",
+    "slug": "0869-5873",
+    "article_id": "268311",
+    "expected_stem": "2024_Plungian_Korpusnaya-lingvistika-na-sovremennom-etape",
+    "reason": "Плунгян, «Корпусная лингвистика на современном этапе» (Вестник РАН) — the article named first in the original request"
+  },
+  {
+    "url": "https://journals.rcsi.science/0869-5873/article/view/268371",
+    "slug": "0869-5873",
+    "article_id": "268371",
+    "expected_stem": "2024_Moldovan_Russkaya-akademicheskaya-leksikografiya-i-natsionalnyi-slovarnyi-fond",
+    "reason": "Вестник РАН second pinned article (PLAN §five-pinned #2)"
+  },
+  {
+    "url": "https://journals.rcsi.science/2313-2299/article/view/323403",
+    "slug": "2313-2299",
+    "article_id": "323403",
+    "expected_stem": "2021_Kamo_Korpusnaya-lingvistika-teoriya-vs-metodologiya",
+    "reason": "RUDN Journal of Language Studies, Semiotics and Semantics pinned article (PLAN #3)"
+  },
+  {
+    "url": "https://journals.rcsi.science/2782-5329/article/view/400674",
+    "slug": "2782-5329",
+    "article_id": "400674",
+    "expected_stem": "2023_Meishan_Sostav-i-razvitie-russkoi-diskursivnoi-lingvistiki",
+    "reason": "Philological Sciences Bulletin pinned article (PLAN #4); its page carries an abstract-only body, so this entry exercises the PDF fallback"
+  },
+  {
+    "url": "https://journals.rcsi.science/0373-658X/article/view/261465",
+    "slug": "0373-658X",
+    "article_id": "261465",
+    "expected_stem": "2024_Savchuk_Natsionalnyi-korpus-russkogo-yazyka-2-0-novye-vozmozhnosti-i-perspektivy-razviti",
+    "reason": "Вопросы языкознания pinned article (PLAN #5)"
+  }
+]

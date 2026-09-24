@@ -1,0 +1,354 @@
+{
+ "responses": [
+  {
+   "task": "task-001",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "[2],[4] flag commentator gloss presented as sutra statement (canonical type, on-target); [1] IAST remark accurate (input has no IAST for Dhanurveda) - not spurious; [3],[5]-[8] legitimate style facets"
+  },
+  {
+   "task": "task-002",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "[1],[4] canonical type on the kāraka=pad conflation; [2] missing sutra ref legitimate; [3],[5] legitimate style facets"
+  },
+  {
+   "task": "task-003",
+   "caught": "yes",
+   "type_correct": false,
+   "false_positives": 0,
+   "notes": "detection substance present ([1] Vedic!=Paninian pole, [2] Mahabharata pole) but NO finding bears canonical type or alias - labeling-not-detection miss"
+  },
+  {
+   "task": "task-004",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "[1],[2] canonical wrong_samasa_type on-target with possessive translation fix"
+  },
+  {
+   "task": "task-005",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "[4],[1] canonical type on-target; [2],[3] legitimate style facets grounded in input"
+  },
+  {
+   "task": "task-006",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "both findings canonical wrong_samasa_type on-target with possessive translation fix"
+  },
+  {
+   "task": "task-007",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 1,
+   "notes": "canonical [9] + alias [4] on-target; FP: [6] missing_iast_on_first_mention - input gives (*moksha*) IAST at first mention, finding contradicts itself"
+  },
+  {
+   "task": "task-008",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [1] + alias [4] on-target; [2],[3],[5] legitimate facets (sound similarity, semantization, historical inference)"
+  },
+  {
+   "task": "task-009",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [3],[6] on-target with vigraha; [4] IAST remark accurate (Cyrillic-only in input); [1],[2],[5] legitimate"
+  },
+  {
+   "task": "task-010",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical type twice, both poles (Panini/aorist/sandhi/accent + Mahabharata analysis) covered"
+  },
+  {
+   "task": "task-011",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical type twice, both poles covered"
+  },
+  {
+   "task": "task-012",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical type twice, both poles covered"
+  },
+  {
+   "task": "task-013",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical type twice, both poles covered"
+  },
+  {
+   "task": "task-014",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [1] + alias [3] on-target; [2],[4],[5] legitimate facets"
+  },
+  {
+   "task": "task-015",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [8] present; [5] carries typo type unsupported_sansrit_etymology while substantively on-target (does not count for typing, not an FP); rest legitimate"
+  },
+  {
+   "task": "task-016",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [3] with full substantive unpacking; internal slip (kaarakas 'eight' vs traditional six) is not an input misread - not an FP; [1],[2] legitimate"
+  },
+  {
+   "task": "task-017",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [5] on the sutra/commentator layer conflation; [4] unattributed_commentary carries same substance; [1]-[3] legitimate facets"
+  },
+  {
+   "task": "task-018",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [1] on-target; shaShThI-sheSho reference in [1] is a defensible traditional point, not spurious; [2]-[4] legitimate"
+  },
+  {
+   "task": "task-019",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 1,
+   "notes": "canonical [4],[10] + alias [3] on-target; FP: [6] missing_iast_on_first_mention - input gives (*mokSha*) at first mention"
+  },
+  {
+   "task": "task-020",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [1],[5] on-target; [5] correctly distinguishes kaaraka (semantic role) from vibhakti; [2]-[4] legitimate"
+  },
+  {
+   "task": "task-021",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [5] present; weak_classification [3] substantively on-target; [2] IAST/RU-transmission remark grounded in input; [1],[4] legitimate"
+  },
+  {
+   "task": "task-022",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [5],[7] on the sutra/commentator layer conflation; [8] IAST remark on Dhanurveda accurate (no IAST in input); [1]-[4],[6] legitimate facets"
+  },
+  {
+   "task": "task-023",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [5] + alias [2] on-target; [1],[3],[4] legitimate facets"
+  },
+  {
+   "task": "task-024",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [5] + alias [3] on-target; [1],[2],[4] legitimate facets"
+  },
+  {
+   "task": "task-025",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [1],[4] on-target with correct bahuvrihi vigraha; [3] IAST remark targets tatpurusha (genuinely without IAST in input) - not spurious; [2],[5],[6] legitimate"
+  },
+  {
+   "task": "task-026",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [2] on-target; [1] unattributed_commentary carries same substance; [3]-[6] legitimate facets"
+  },
+  {
+   "task": "task-027",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 1,
+   "notes": "canonical [1],[5] on-target; FP: [3] missing_iast claims *bahu*/*vrihi* lack IAST - input gives both parenthetically"
+  },
+  {
+   "task": "task-028",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [2],[5] squarely on the kaaraka=padezh conflation; [1],[3],[4] legitimate"
+  },
+  {
+   "task": "task-029",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [2] with vigraha-based argument; [1] IAST remark accurate (tatpurusha Cyrillic-only in input)"
+  },
+  {
+   "task": "task-030",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [8] present (minor severity but substantive) and [6] unattributed_commentary carries same substance; [1]-[5],[7] legitimate style facets"
+  },
+  {
+   "task": "task-031",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [1],[4] on-target; [2],[3] legitimate"
+  },
+  {
+   "task": "task-032",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [5] on-target; [6] unattributed_commentary carries same substance; [1]-[4] legitimate"
+  },
+  {
+   "task": "task-033",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 1,
+   "notes": "canonical [1],[3] both poles flagged; FP: [2] missing_source claims IAST missing for 'aorist'/'sandhi' - these are Russian terms, requirement inapplicable"
+  },
+  {
+   "task": "task-034",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 1,
+   "notes": "canonical [1],[7] + alias [8] on-target; FP: [5] claims moksha lacks IAST at first mention - input gives (*mokSha*)"
+  },
+  {
+   "task": "task-035",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 1,
+   "notes": "canonical [1],[5] on-target; FP: [3] claims *bahu*/*vrihi* lack IAST - input gives both parenthetically"
+  },
+  {
+   "task": "task-036",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical type twice, both poles covered"
+  },
+  {
+   "task": "task-037",
+   "caught": "yes",
+   "type_correct": false,
+   "false_positives": 0,
+   "notes": "detection substance present ([2] Vedic!=Paninian pole, [1] Mahabharata pole) but NO finding bears canonical type or alias - labeling-not-detection miss"
+  },
+  {
+   "task": "task-038",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [1] with vigraha; weak_classification [3] substantively on-target; [4] IAST remark targets tatpurusha (real absence) - not spurious; [2],[5] legitimate"
+  },
+  {
+   "task": "task-039",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [1] present; [4] carries typo type unsupported_sansrit_etymology while substantively on-target (not an FP); rest legitimate"
+  },
+  {
+   "task": "task-040",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [1] present (minor severity but substantive) and [3] unattributed_commentary carries same substance; rest legitimate facets"
+  },
+  {
+   "task": "task-041",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 1,
+   "notes": "canonical [1],[3] both poles flagged; FP: [2] missing_source claims IAST missing for 'aorist'/'sandhi' - Russian terms, requirement inapplicable"
+  },
+  {
+   "task": "task-042",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 1,
+   "notes": "canonical [2] on-target; FP: [4] says 'adhyayana introduced in Latin without IAST' - self-contradictory, IAST IS present in input; charitable reading (Cyrillic transmission missing) would be legit but the stated violation misreads the input"
+  },
+  {
+   "task": "task-043",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [1] with full substantive unpacking; internal slip (kaarakas 'eight' vs traditional six) is not an input misread - not an FP; [2],[3] legitimate"
+  },
+  {
+   "task": "task-044",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [1] with vigraha-based argument; [2] IAST remark accurate (tatpurusha Cyrillic-only in input)"
+  },
+  {
+   "task": "task-045",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 1,
+   "notes": "canonical [7] on-target; FP: [5] says 'adhyayana introduced in Latin without IAST' - self-contradictory, IAST present in input"
+  },
+  {
+   "task": "task-046",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [1] on the sutra/commentator layer conflation; [2] unattributed_commentary carries same substance; [3]-[5] legitimate"
+  },
+  {
+   "task": "task-047",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [1],[5] on-target; [5] correctly distinguishes kaaraka from vibhakti; [2]-[4] legitimate"
+  },
+  {
+   "task": "task-048",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical type twice, both poles covered"
+  },
+  {
+   "task": "task-049",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 1,
+   "notes": "canonical [1] + alias [6] on-target; FP: [4] missing_iast_on_first_mention - input gives IAST (*mokSha*) at first mention, finding contradicts itself"
+  },
+  {
+   "task": "task-050",
+   "caught": "yes",
+   "type_correct": true,
+   "false_positives": 0,
+   "notes": "canonical [4] on-target; shashThI-shesha reference defensible traditional point, not spurious; [1]-[3] legitimate"
+  }
+ ]
+}

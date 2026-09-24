@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/deliberation-output.schema.json",
+  "title": "RuWritingStyles style deliberation output",
+  "type": "object",
+  "required": ["style_id", "replies"],
+  "additionalProperties": false,
+  "properties": {
+    "style_id": { "type": "string" },
+    "replies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["reply_to", "style_id", "position", "comment"],
+        "properties": {
+          "reply_to": { "type": "string" },
+          "style_id": { "type": "string" },
+          "position": { 
+            "type": "string",
+            "enum": ["agree", "agree_with_modification", "disagree", "needs_human_decision", "out_of_scope"]
+          },
+          "comment": { "type": "string" },
+          "proposed_adjustment": { "type": "string" }
+        }
+      }
+    }
+  }
+}

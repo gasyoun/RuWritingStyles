@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/impact-output.schema.json",
+  "title": "RuWritingStyles impact assessment output",
+  "type": "object",
+  "required": ["run_id", "status", "assessments"],
+  "additionalProperties": false,
+  "properties": {
+    "run_id": { "type": "string" },
+    "status": { "type": "string", "enum": ["completed", "failed"] },
+    "assessments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["span_id", "tag", "impact", "passed", "comment"],
+        "properties": {
+          "span_id": { "type": "string" },
+          "tag": { "type": "string" },
+          "impact": { "type": "string", "enum": ["none", "positive", "negative", "neutral"] },
+          "passed": { "type": "boolean" },
+          "comment": { "type": "string" }
+        }
+      }
+    }
+  }
+}

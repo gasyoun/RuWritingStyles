@@ -1,0 +1,286 @@
+{
+  "provider": "deepseek",
+  "rater_b": "B (Fable 5, claude-fable-5 — вторая ИИ-модель, не совпадающая с оцениваемым провайдером; слепота на уровне листа: вердикты скорера не включались; роль ИИ раскрывается по docs/AI_DISCLOSURE.md)",
+  "runs": [
+    {
+      "run": "h1213dict-dict-circular-gloss-r01",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 5,
+      "notes": "circular_gloss точно на p003; шум: zone на h001 (артефакт заголовка), пометы/лексические функции не по делу"
+    },
+    {
+      "run": "h1213dict-dict-circular-gloss-r02",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 7,
+      "notes": "канонический тип пойман; много мелкой педантики (окситон, класс., синонимы для имени собственного)"
+    },
+    {
+      "run": "h1213dict-dict-circular-gloss-r03",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 4,
+      "notes": "пойман + мельчуковская расшифровка circulus vitiosus; шум по правилам словообразования"
+    },
+    {
+      "run": "h1213dict-dict-circular-gloss-r04",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 5,
+      "notes": "пойман; ложный circular_reference на стандартные отсылки см.; выдуманное отсутствие указания основы"
+    },
+    {
+      "run": "h1213dict-dict-circular-gloss-r05",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 3,
+      "notes": "пойман; ложная циркулярность «бог огня» (определять Агни через огонь — корректно)"
+    },
+    {
+      "run": "h1213dict-dict-publicistic-register-r01",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 6,
+      "notes": "оба публицистических пятна пойманы; FP: восклицание внутри цитируемой глоссы «горе!», нерасшифрованные сигла"
+    },
+    {
+      "run": "h1213dict-dict-publicistic-register-r02",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 0,
+      "notes": "чисто: публицистика + реструктуризация, без шума"
+    },
+    {
+      "run": "h1213dict-dict-publicistic-register-r03",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 5,
+      "notes": "пойман; серия missing_source на стандартные словарные сигла (Chr., KĀD., MBH.) — не по делу"
+    },
+    {
+      "run": "h1213dict-dict-publicistic-register-r04",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 3,
+      "notes": "пойман; FP: «горе!» из глоссы; выдуманное отсутствие основного значения"
+    },
+    {
+      "run": "h1213dict-dict-publicistic-register-r05",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 4,
+      "notes": "пойман (в т.ч. дубль-переформулировки); FP: спутанная жалоба на пунктуацию, требование множества примеров"
+    },
+    {
+      "run": "h1213dict-dict-zone-order-r01",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 4,
+      "notes": "порядок зон пойман (цитаты до толкования); шум: HEM. как «нестандартная помета», педантика по nom. act."
+    },
+    {
+      "run": "h1213dict-dict-zone-order-r02",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 2,
+      "notes": "пойман; FP: мед. якобы вне списка (есть в списке), грамматика в строке вокабулы"
+    },
+    {
+      "run": "h1213dict-dict-zone-order-r03",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 5,
+      "notes": "пойман; FP: нумерация омонимов «2.» как нарушение, HEM., требования парадигмы"
+    },
+    {
+      "run": "h1213dict-dict-zone-order-r04",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 4,
+      "notes": "пойман (обе стороны: цитаты до толкования + этимология не на месте)"
+    },
+    {
+      "run": "h1213dict-dict-zone-order-r05",
+      "caught": "partial",
+      "type_correct": false,
+      "false_positives": 3,
+      "notes": "порядок зон как таковой не назван: mixed_levels/grammar_zone задели смещение этимологии и грамматики, но ядро (цитаты до толкования) не поймано; тип не совпал"
+    },
+    {
+      "run": "h1213dict-dict-nonstandard-label-r01",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 6,
+      "notes": "все три пятна помет пойманы (оч. редк./устаревшее, s. u., Vgl.); FP: «m. русифицирована» (ложь), SĀY. как помета"
+    },
+    {
+      "run": "h1213dict-dict-nonstandard-label-r02",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 7,
+      "notes": "пойманы все пятна; много педантики: кириллизация SĀY., точка в «1. dā», зализняковские требования парадигмы"
+    },
+    {
+      "run": "h1213dict-dict-nonstandard-label-r03",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 4,
+      "notes": "пойманы; шум: расшифровка SĀY., классификация парадигмы"
+    },
+    {
+      "run": "h1213dict-dict-nonstandard-label-r04",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 5,
+      "notes": "пойманы; FP: «dat. de» якобы русификация (de — санскритская форма)"
+    },
+    {
+      "run": "h1213dict-dict-nonstandard-label-r05",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 5,
+      "notes": "пойманы; шум: зализняковская педантика уровней"
+    },
+    {
+      "run": "h1213dict-dict-grammar-zone-r01",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 1,
+      "notes": "проза вместо кода поймана точно; почти без шума"
+    },
+    {
+      "run": "h1213dict-dict-grammar-zone-r02",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 6,
+      "notes": "пойман; FP: жалоба на заголовок листа рецензии, genus+differentiae для переводного эквивалента"
+    },
+    {
+      "run": "h1213dict-dict-grammar-zone-r03",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 3,
+      "notes": "пойман; FP: «nī не относится к русскому словоизменению» — мимо предмета"
+    },
+    {
+      "run": "h1213dict-dict-grammar-zone-r04",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 5,
+      "notes": "пойман; шум: нерасшифрованные P./VOP., жалоба на заголовок"
+    },
+    {
+      "run": "h1213dict-dict-grammar-zone-r05",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 4,
+      "notes": "пойман (совет все отклонил, но находки корректные); шум как в r03"
+    },
+    {
+      "run": "h1213dict-dict-synonym-heap-r01",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 6,
+      "notes": "куча без различителей поймана; серия missing_source на стандартные сигла — не по делу"
+    },
+    {
+      "run": "h1213dict-dict-synonym-heap-r02",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 7,
+      "notes": "пойман + повтор глоссы «доверенный» замечен; много мелкого шума по зонам и нотации"
+    },
+    {
+      "run": "h1213dict-dict-synonym-heap-r03",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 5,
+      "notes": "пойман; FP: смешение зон в одном абзаце (нормальный словарный формат), пунктуация ряда"
+    },
+    {
+      "run": "h1213dict-dict-synonym-heap-r04",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 5,
+      "notes": "пойман (+ дубль m.-строки замечен); FP: «также» как нарушение грамм. зоны; часть находок по-английски"
+    },
+    {
+      "run": "h1213dict-dict-synonym-heap-r05",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 5,
+      "notes": "пойман; FP: требование этимологии у «Ср. āpta», валентности"
+    },
+    {
+      "run": "h1213dict-dict-encyclopedic-gloss-r01",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 4,
+      "notes": "энциклопедизм пойман точно; шум: помета для N. pr., «выжимали» как терминологическая ошибка"
+    },
+    {
+      "run": "h1213dict-dict-encyclopedic-gloss-r02",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 6,
+      "notes": "пойман; FP: «основа не указана» (указана), «этимология обязательна» (факультативна), РВ-кириллизация сигл"
+    },
+    {
+      "run": "h1213dict-dict-encyclopedic-gloss-r03",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 3,
+      "notes": "пойман + публицистика «целая мандала» отмечена; info-«находки» о корректности — шум"
+    },
+    {
+      "run": "h1213dict-dict-encyclopedic-gloss-r04",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 4,
+      "notes": "пойман (+ отсутствие подставимого эквивалента как circular_gloss — смежная переформулировка)"
+    },
+    {
+      "run": "h1213dict-dict-encyclopedic-gloss-r05",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 5,
+      "notes": "пойман; шум: нумерация омонимов, синонимический ряд «обязателен», отклоненные советом находки"
+    },
+    {
+      "run": "h1213dict-dict-pseudo-etymology-note-r01",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 1,
+      "notes": "псевдоэтимология поймана (канонический тип + toporov accidental_similarity); почти чисто"
+    },
+    {
+      "run": "h1213dict-dict-pseudo-etymology-note-r02",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 6,
+      "notes": "поймана (critical у toporov); FP: «этимология не в конце» (она в конце), курсив, пунктуация сигл"
+    },
+    {
+      "run": "h1213dict-dict-pseudo-etymology-note-r03",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 0,
+      "notes": "образцовый прогон: три находки, все по делу"
+    },
+    {
+      "run": "h1213dict-dict-pseudo-etymology-note-r04",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 1,
+      "notes": "поймана всесторонне (сходство, семантизация); FP: IAST при первом упоминании (дан в вокабуле)"
+    },
+    {
+      "run": "h1213dict-dict-pseudo-etymology-note-r05",
+      "caught": "yes",
+      "type_correct": true,
+      "false_positives": 1,
+      "notes": "поймана; шум: «формально соответствует зонной структуре» как находка"
+    }
+  ]
+}

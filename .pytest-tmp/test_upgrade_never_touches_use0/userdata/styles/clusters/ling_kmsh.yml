@@ -1,0 +1,31 @@
+id: cluster:ling_kmsh
+name: "Когнитивно-Метафорическая Школа (КМШ)"
+level: cluster
+source_prompt: ClaudeStyles/ling_kmsh-style.md
+role: cultural_context_reviewer
+language: ru
+best_for:
+  - когнитивная лингвистика
+  - концептуальная метафора
+  - дискурс-анализ
+checks:
+  - concept_distortion
+  - literal_bias
+markers:
+  lexical:
+    - "концепт"
+    - "метафорическая проекция"
+    - "область-источник / область-цель"
+forbidden_edits:
+  - "Нельзя заменять «концепт» на «понятие»"
+  - "Нельзя убирать кавычки у анализируемых единиц"
+review_mode:
+  rewrite_allowed: false
+  requires_span_ids: true
+  output_format: findings_json
+council:
+  can_reply_to:
+    - cultural_context
+    - semantic_interpretation
+conflict_priority:
+  default: medium

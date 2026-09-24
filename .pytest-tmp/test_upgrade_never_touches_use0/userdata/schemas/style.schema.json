@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/style.schema.json",
+  "title": "RuWritingStyles style passport",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "source_prompt",
+    "role",
+    "language",
+    "best_for",
+    "checks",
+    "review_mode",
+    "council"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_:-]*$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_prompt": {
+      "type": "string",
+      "pattern": "^ClaudeStyles/.+\\.md$"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "systematic_grammar_reviewer",
+        "polemical_linguistic_reviewer",
+        "source_critical_reviewer",
+        "clarity_reviewer",
+        "commentary_reviewer",
+        "cultural_context_reviewer"
+      ]
+    },
+    "language": {
+      "type": "string",
+      "enum": ["ru", "en", "be", "uk"]
+    },
+    "supported_languages": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["ru", "en", "be", "uk"]
+      }
+    },
+    "best_for": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9_]+$"
+      }
+    },
+    "limits": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "level": {
+      "type": "string",
+      "enum": ["core", "cluster", "private"]
+    },
+    "cluster": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_:-]*$"
+    },
+    "extends": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_:-]*$"
+    },
+    "domains": {
+      "type": ["array", "string"],
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9_]+$"
+      }
+    },
+    "markers": {
+      "type": "object",
+      "properties": {
+        "lexical": { "type": "array", "items": { "type": "string" } },
+        "syntactic": { "type": "array", "items": { "type": "string" } },
+        "epistemic": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "forbidden_edits": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "anchors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "signal", "expected"],
+        "properties": {
+          "id": { "type": "string" },
+          "description": { "type": "string" },
+          "signal": { "type": "string" },
+          "expected": { "type": "string" },
+          "cluster_override": { "type": "string" }
+        }
+      }
+    },
+    "conflict_priority": {
+      "type": "object",
+      "properties": {
+        "default": { "type": "string", "enum": ["low", "medium", "high", "extreme"] },
+        "when_domain": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "review_mode": {
+      "type": "object",
+      "required": ["rewrite_allowed", "requires_span_ids", "output_format"],
+      "additionalProperties": false,
+      "properties": {
+        "rewrite_allowed": { "type": "boolean" },
+        "requires_span_ids": { "type": "boolean" },
+        "output_format": {
+          "type": "string",
+          "enum": ["findings_json"]
+        }
+      }
+    },
+    "council": {
+      "type": "object",
+      "required": ["can_reply_to"],
+      "additionalProperties": false,
+      "properties": {
+        "can_reply_to": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          }
+        },
+        "should_defer": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          }
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "derived_by": { "type": "string" },
+        "derivation_date": { "type": "string" },
+        "validated_by": { "type": "string" },
+        "last_validated": { "type": "string" }
+      }
+    }
+  }
+}

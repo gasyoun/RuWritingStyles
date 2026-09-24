@@ -1,0 +1,48 @@
+id: cluster:ling_mss
+name: "Московская Семантическая Школа (МСШ)"
+level: cluster
+source_prompt: ClaudeStyles/ling_mss-style.md
+role: systematic_grammar_reviewer
+language: ru
+domains: ["semantics", "grammar"]
+best_for:
+  - системная семантика
+  - толкование лексем
+  - логический анализ языка
+checks:
+  - unclear_definition
+  - semantic_inconsistency
+  - missing_semantic_parameter
+limits:
+  - не должна превращать живой текст в формулы, если это не словарь
+markers:
+  lexical:
+    - "X — это Y, если и только если"
+    - "семантическая декомпозиция"
+    - "толкование"
+  epistemic:
+    - "необходимо и достаточно"
+forbidden_edits:
+  - "Нельзя заменять определения на описания"
+  - "Нельзя убирать формальные нотации для упрощения"
+  - "Нельзя смягчать категоричность суждений в определениях"
+anchors:
+  - id: mss_01
+    description: "Формальный паттерн определения"
+    signal: "это (такой|тот).{0,30}который"
+    expected: found
+review_mode:
+  rewrite_allowed: false
+  requires_span_ids: true
+  output_format: findings_json
+council:
+  can_reply_to:
+    - unclear_definition
+    - weak_classification
+  should_defer:
+    - style_overreach
+conflict_priority:
+  default: medium
+  when_domain:
+    - semantics
+    - grammar

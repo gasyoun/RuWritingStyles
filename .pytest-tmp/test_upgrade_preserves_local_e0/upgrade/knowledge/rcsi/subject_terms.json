@@ -1,0 +1,20 @@
+{
+  "groups": {
+    "linguistics": {
+      "ru": ["лингвистика", "языкознание", "язык", "грамматика", "морфология", "синтаксис", "семантика", "фонетика", "фонология", "лексика", "лексикография", "корпусная лингвистика", "прагматика", "дискурс", "этимология", "типология языков", "социолингвистика", "психолингвистика"],
+      "en": ["linguistics", "language science", "grammar", "morphology", "syntax", "semantics", "phonetics", "phonology", "lexicon", "lexicography", "corpus linguistics", "pragmatics", "discourse", "etymology", "language typology", "sociolinguistics", "psycholinguistics"]
+    },
+    "philology": {
+      "ru": ["филология", "литературоведение", "русская литература", "зарубежная литература", "поэтика", "текстология", "фольклор", "древние языки", "перевод", "литературный памятник", "рукопис"],
+      "en": ["philology", "literary studies", "literary criticism", "poetics", "textology", "folklore", "ancient languages", "translation studies", "classical philology"]
+    },
+    "oriental": {
+      "ru": ["востоковедение", "ориенталистика", "санскрит", "санскритология", "арабский язык", "персидский язык", "китайский язык", "японский язык", "тюркские языки", "индология", "иранристика", "шумерский", "аккадский", "египетский язык", "буддийск", "ведийск"],
+      "en": ["oriental studies", "orientology", "sanskrit", "indology", "iranian studies", "arabic language", "persian language", "chinese language", "japanese language", "turkic languages", "sumerian", "akkadian", "egyptian language", "buddhist studies", "vedic"]
+    },
+    "negative": {
+      "ru": ["физика", "химия", "биолог", "медицин", "геолог", "астроном", "кардиолог", "онколог", "вирусолог", "генетик", "эколог", "почвовед", "математическ", "статистическ модел", "нейронн сет", "клиническ"],
+      "en": ["physics", "chemistry", "biolog", "medicine", "medical", "geolog", "astronom", "cardiolog", "oncolog", "virolog", "genetic", "ecolog", "soil science", "mathematical model", "clinical trial", "neural network"]
+    }
+  }
+}

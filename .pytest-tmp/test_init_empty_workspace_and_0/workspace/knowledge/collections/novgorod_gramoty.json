@@ -1,0 +1,26 @@
+[
+  {
+    "id": "Gramota 1",
+    "location": "Novgorod",
+    "date": "11th century",
+    "text_original": "ωтъ гостѧтѣ къ василеви ...",
+    "text_normalized": "От Гостяты к Василию. Что мне дал отец и родичи впридачу, то за ним. А теперь он водит новую жену, а мне не дает ничего...",
+    "features": ["clitics", "dialectal morphology", "domestic context"]
+  },
+  {
+    "id": "Gramota 109",
+    "location": "Novgorod",
+    "date": "11th century",
+    "text_original": "грамота ωтъ жырошька къ стоѧнови ...",
+    "text_normalized": "Грамота от Жирошка к Стояну. Ты взял у меня в долг...",
+    "features": ["legal terminology", "social relations"]
+  },
+  {
+    "id": "Gramota 247",
+    "location": "Novgorod",
+    "date": "11th century",
+    "text_original": "ωтъ грѣгориѧ къ оулѧнѣ ...",
+    "text_normalized": "От Григория к Ульяне. Приходи в город...",
+    "features": ["personal correspondence"]
+  }
+]

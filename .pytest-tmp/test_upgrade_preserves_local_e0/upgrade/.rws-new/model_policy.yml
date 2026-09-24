@@ -1,0 +1,241 @@
+version: "0.1"
+schema: "schemas/model-policy.schema.json"
+description: "Default model routing policy for RuWritingStyles agentic review workflows."
+
+default_provider: openai
+default_development_mode:
+  model: gpt-5.5
+  reasoning: xhigh
+  speed: standard
+  use_for:
+    - architecture
+    - protocols
+    - schemas
+    - first implementation PRs
+
+budget_modes:
+  smoke:
+    description: "Use fast/free models across all tasks for infrastructure testing."
+    providers:
+      - mock
+      - ollama
+      - local
+    max_outbound_attempts: 32
+    max_tokens: 250000
+    max_wall_seconds: 900
+  standard:
+    description: "Use default task-specific routes."
+    providers:
+      - mock
+      - openai
+      - google
+      - anthropic
+      - openrouter
+      - deepseek
+      - ollama
+      - local
+    max_outbound_attempts: 64
+    max_tokens: 750000
+    max_wall_seconds: 3600
+  expensive:
+    description: "Upgrade all tasks to flagship models with maximum reasoning."
+    providers:
+      - mock
+      - openai
+      - google
+      - anthropic
+      - openrouter
+      - deepseek
+      - ollama
+      - local
+    max_outbound_attempts: 256
+    max_tokens: 3000000
+    max_wall_seconds: 10800
+    explicit_selection_required: true
+
+providers:
+  openai:
+    docs:
+      - https://developers.openai.com/api/docs/models
+      - https://developers.openai.com/api/docs/guides/latest-model
+      - https://developers.openai.com/api/docs/guides/agents
+    models:
+      flagship:
+        id: gpt-5.5
+        status: current
+        context_window: 1M
+        max_output: 128K
+      efficient:
+        id: gpt-5.4-mini
+        status: current
+        context_window: 400K
+        max_output: 128K
+    task_routes:
+      architecture:
+        model: gpt-5.5
+        reasoning: xhigh
+      implementation:
+        model: gpt-5.5
+        reasoning: high
+      style_review:
+        model: gpt-5.5
+        reasoning: medium
+      council:
+        model: gpt-5.5
+        reasoning: high
+      synthesis:
+        model: gpt-5.5
+        reasoning: high
+      verification:
+        model: gpt-5.5
+        reasoning: xhigh
+      routing:
+        model: gpt-5.4-mini
+        reasoning: low
+      smoke_tests:
+        model: gpt-5.4-mini
+        reasoning: low
+
+  google:
+    docs:
+      - https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview
+      - https://deepmind.google/models/model-cards/gemini-3-1-pro/
+    models:
+      flagship:
+        id: gemini-3.1-pro-preview
+        status: preview
+        context_window: 1048576
+        max_output: 65536
+      custom_tools:
+        id: gemini-3.1-pro-preview-customtools
+        status: preview
+        note: "Use for agentic workflows with bash and custom tools when provider evals justify it."
+    task_routes:
+      architecture:
+        model: gemini-3.1-pro-preview
+        thinking: high
+      implementation:
+        model: gemini-3.1-pro-preview-customtools
+        thinking: high
+      style_review:
+        model: gemini-3.1-pro-preview
+        thinking: medium
+      council:
+        model: gemini-3.1-pro-preview
+        thinking: high
+      synthesis:
+        model: gemini-3.1-pro-preview
+        thinking: high
+      verification:
+        model: gemini-3.1-pro-preview
+        thinking: high
+
+  openrouter:
+    docs:
+      - https://openrouter.ai/docs/quickstart
+      - https://openrouter.ai/docs/features/structured-outputs
+    models:
+      balanced:
+        id: google/gemini-2.0-flash-exp:free
+        status: preview
+        note: "OpenAI-compatible route for free or low-cost smoke runs through OpenRouter/Nous Portal."
+    task_routes:
+      architecture:
+        model: google/gemini-2.0-flash-exp:free
+        reasoning: medium
+      implementation:
+        model: google/gemini-2.0-flash-exp:free
+        reasoning: medium
+      style_review:
+        model: google/gemini-2.0-flash-exp:free
+        reasoning: medium
+      council:
+        model: google/gemini-2.0-flash-exp:free
+        reasoning: medium
+      synthesis:
+        model: google/gemini-2.0-flash-exp:free
+        reasoning: medium
+      verification:
+        model: google/gemini-2.0-flash-exp:free
+        reasoning: medium
+
+  deepseek:
+    docs:
+      - https://api-docs.deepseek.com/
+    models:
+      balanced:
+        id: deepseek-chat
+        status: stable
+        note: "OpenAI-compatible JSON mode. Fast/cheap default. As of 2026-07-03 the /models endpoint resolves deepseek-chat to deepseek-v4-flash."
+      reasoner:
+        id: deepseek-reasoner
+        status: deprecated_alias
+        note: "As of 2026-07-03 deepseek-reasoner ALSO resolves to deepseek-v4-flash (no longer a distinct reasoning model) — verified live via /v1/chat/completions returning model=deepseek-v4-flash. For a genuinely heavier judgement route use deepseek-v4-pro below. See docs/benchmark.md."
+      heavy:
+        id: deepseek-v4-pro
+        status: stable
+        note: "The genuinely heavier DeepSeek model exposed by /models (2026-07-03). Used on council/verification as the heavier judgement route (replaces the now-aliased deepseek-reasoner)."
+    eval_context:
+      note: "For reproducible eval runs set RWS_DEEPSEEK_TEMPERATURE=0 (the DeepSeek chat endpoint accepts it). See the temperature=0 probe in docs/benchmark.md; the N=5 benchmark itself runs at the default temperature to measure real non-determinism."
+    task_routes:
+      architecture:
+        model: deepseek-chat
+        reasoning: medium
+      implementation:
+        model: deepseek-chat
+        reasoning: medium
+      style_review:
+        model: deepseek-chat
+        reasoning: medium
+      council:
+        model: deepseek-v4-pro
+        reasoning: high
+      synthesis:
+        model: deepseek-chat
+        reasoning: medium
+      verification:
+        model: deepseek-v4-pro
+        reasoning: high
+
+  anthropic:
+    docs:
+      - https://platform.claude.com/docs/en/about-claude/models/overview
+      - https://www.anthropic.com/claude/sonnet
+    models:
+      balanced:
+        id: claude-sonnet-4-6
+        status: current
+        context_window: 1M
+        max_output: 64K
+        thinking:
+          extended: true
+          adaptive: true
+      high_end_reference:
+        id: claude-opus-4-7
+        status: current
+        note: "Use as an optional comparison baseline for the hardest tasks; Sonnet 4.6 remains the requested roadmap target."
+    task_routes:
+      architecture:
+        model: claude-sonnet-4-6
+        thinking: adaptive
+      implementation:
+        model: claude-sonnet-4-6
+        thinking: extended
+      style_review:
+        model: claude-sonnet-4-6
+        thinking: adaptive
+      council:
+        model: claude-sonnet-4-6
+        thinking: extended
+      synthesis:
+        model: claude-sonnet-4-6
+        thinking: extended
+      verification:
+        model: claude-sonnet-4-6
+        thinking: extended
+
+policy_notes:
+  - "Start the MVP with one strong default model to avoid confusing model variance with architecture bugs."
+  - "Keep provider adapters interchangeable; do not bake one vendor's parameter names into the style protocol."
+  - "Use deterministic code for validation, grouping, and deduplication whenever possible."
+  - "Re-check provider documentation before production deployment because preview model IDs can change."

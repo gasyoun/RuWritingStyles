@@ -1,0 +1,973 @@
+[
+  {
+    "slug": "vramn",
+    "journal_name": "Annals of the Russian Academy of Medical Sciences",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/vramn",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "uncertain",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [
+      "medical"
+    ],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "0002-1881",
+    "journal_name": "Agricultural Chemistry",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/0002-1881",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "uncertain",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [
+      "chemistry"
+    ],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "0004-6299",
+    "journal_name": "Astronomy Reports",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/0004-6299",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "uncertain",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [
+      "astronom"
+    ],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "0005-2310",
+    "journal_name": "Automation and Telemechanics",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/0005-2310",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "0042-1324",
+    "journal_name": "Advances in Current Biology",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/0042-1324",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "uncertain",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [
+      "biolog"
+    ],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "0235-2990",
+    "journal_name": "Antibiotics and chemoterapy",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/0235-2990",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "0320-0108",
+    "journal_name": "Astronomy Letters",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/0320-0108",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "uncertain",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [
+      "astronom"
+    ],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "0320-7102",
+    "journal_name": "AVTOMETRIYA",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/0320-7102",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "0320-7919",
+    "journal_name": "Acoustical Physics",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/0320-7919",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "uncertain",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [
+      "physics"
+    ],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "0320-9601",
+    "journal_name": "Antenny",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/0320-9601",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "0321-5075",
+    "journal_name": "Asia and Africa Today",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/0321-5075",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "0555-1099",
+    "journal_name": "Applied Biochemistry and Microbiology",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/0555-1099",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "uncertain",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [
+      "chemistry",
+      "biolog"
+    ],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "1607-419X",
+    "journal_name": "Arterial hypertension",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/1607-419X",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "1727-8058",
+    "journal_name": "Audit journal",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/1727-8058",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "1994-1617",
+    "journal_name": "Autism and developmental disorders",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/1994-1617",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2071-8594",
+    "journal_name": "ARTIFICIAL INTELLIGENCE AND DECISION MAKING",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2071-8594",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2072-0505",
+    "journal_name": "Almanac of Clinical Medicine",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2072-0505",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "uncertain",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [
+      "medicine"
+    ],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2072-8336",
+    "journal_name": "Applied legal psychology",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2072-8336",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2073-3364",
+    "journal_name": "Baltic Economic Journal",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2073-3364",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2074-2932",
+    "journal_name": "Akademicheskij vestnik URALNIIproekt RAASN",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2074-2932",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2075-5473",
+    "journal_name": "Annals of Clinical and Experimental Neurology",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2075-5473",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2075-8251",
+    "journal_name": "Acta Naturae",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2075-8251",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2218-1067",
+    "journal_name": "BULLETIN OF PERM UNIVERSITY. POLITICAL SCIENCE",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2218-1067",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2221-2698",
+    "journal_name": "Arctic and North",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2221-2698",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2306-5737",
+    "journal_name": "Acta Linguistica Petropolitana. Transactions of the Institute for Linguistic Studies",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2306-5737",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2313-2086",
+    "journal_name": "Applied economic research",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2313-2086",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2313-8068",
+    "journal_name": "Almanac of modern metrology",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2313-8068",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2313-8432",
+    "journal_name": "Agrarian Scientific Journal",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2313-8432",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2410-3764",
+    "journal_name": "Aspirantskiy Vestnik Povolzhiya",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2410-3764",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2453-8809",
+    "journal_name": "Agriculture",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2453-8809",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2453-8922",
+    "journal_name": "Arctic and Antarctica",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2453-8922",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2454-0595",
+    "journal_name": "Administrative and municipal law",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2454-0595",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2541-7835",
+    "journal_name": "Agro-Industrial Technologies of Central Russia",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2541-7835",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2542-0283",
+    "journal_name": "Actual issues in agricultural biology",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2542-0283",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "uncertain",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [
+      "biolog"
+    ],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2585-7789",
+    "journal_name": "Architecture and design",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2585-7789",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2587-7534",
+    "journal_name": "Abyss (Studies in Philosophy, Political science and Social anthropology)",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2587-7534",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2618-9712",
+    "journal_name": "Arctic and Subarctic Natural Resources",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2618-9712",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2658-3135",
+    "journal_name": "Animal Husbandry and Fodder Production",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2658-3135",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2658-3488",
+    "journal_name": "Automation and Modelling in Design and Management",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2658-3488",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2658-4727",
+    "journal_name": "Avtomatizaciâ i izmereniâ v mašino-priborostroenii",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2658-4727",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2687-0312",
+    "journal_name": "Actual Problems of Oil and Gas",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2687-0312",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2713-170X",
+    "journal_name": "Analiz i prognoz. Žurnal IMÈMO RAN",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2713-170X",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2782-232X",
+    "journal_name": "Architecture, Construction, Transport",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2782-232X",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2782-540X",
+    "journal_name": "ASIA, AMERICA AND AFRICA: HISTORY AND MODERNITY",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2782-540X",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2782-6058",
+    "journal_name": "Almanac of the Perm Military Institute of the National Guard Troops",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2782-6058",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2782-6430",
+    "journal_name": "A.I. Burnasyan Federal Medical Biophysical Center clinical bulletin",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2782-6430",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "uncertain",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [
+      "medical"
+    ],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2949-0812",
+    "journal_name": "BRIСS Transport",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2949-0812",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2949-401X",
+    "journal_name": "Aerospace engineering and technology",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2949-401X",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "2949-4796",
+    "journal_name": "Agrarian Bulletin of the North Caucasus",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/2949-4796",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  },
+  {
+    "slug": "3034-6665",
+    "journal_name": "Academic Research Journal",
+    "repository_name": "",
+    "url": "https://journals.rcsi.science/3034-6665",
+    "scope_text_excerpt": "The key topics addressed include theoretical linguistics, comparative, areal linguistics and linguistic typology, the Russian language and other languages of the Russian Federation, as well as language acquisition, history of linguistics, sociolinguistics, corpus linguistics, linguistic pragmatics. The journal is aimed at specialists in the field of linguistics: researchers, postgraduate students, and students.",
+    "verdict": "include",
+    "matched_terms": [
+      "linguistics",
+      "corpus linguistics",
+      "pragmatics",
+      "sociolinguistics"
+    ],
+    "negative_terms": [],
+    "evidence_other": [
+      "identify failed: offline fixture run: Identify not served"
+    ],
+    "checked_on": "30-08-2026"
+  }
+]

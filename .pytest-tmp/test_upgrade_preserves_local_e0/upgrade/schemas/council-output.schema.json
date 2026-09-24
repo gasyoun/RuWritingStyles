@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/gasyoun/RuWritingStyles/schemas/council-output.schema.json",
+  "title": "RuWritingStyles council provider output",
+  "type": "object",
+  "required": ["run_id", "status", "replies", "decisions"],
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["completed"]
+    },
+    "replies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "reply_to",
+          "style_id",
+          "position",
+          "comment"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "reply_to": {
+            "type": "string",
+            "minLength": 1
+          },
+          "style_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "position": {
+            "type": "string",
+            "enum": [
+              "agree",
+              "agree_with_modification",
+              "disagree",
+              "needs_human_decision",
+              "out_of_scope"
+            ]
+          },
+          "comment": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bloom_level": {
+            "type": "string",
+            "enum": ["Remember", "Understand", "Apply", "Analyze", "Evaluate", "Create"]
+          },
+          "proposed_adjustment": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "finding_id",
+          "status",
+          "reason"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "finding_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "accepted_with_modification",
+              "rejected",
+              "deferred",
+              "informational"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bloom_level": {
+            "type": "string",
+            "enum": ["Remember", "Understand", "Apply", "Analyze", "Evaluate", "Create"]
+          },
+          "primary_school": {
+            "type": "string"
+          },
+          "influence": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "stylistic_commitments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["term", "decision", "rationale"],
+        "properties": {
+          "term": { "type": "string" },
+          "decision": { "type": "string" },
+          "rationale": { "type": "string" },
+          "translations": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}
