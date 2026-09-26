@@ -1,0 +1,26 @@
+# H5376 verification evidence — captured 2026-09-24T22:18:22Z by OxAlpha worker (full shell access)
+
+## 1. RuWritingStyles main tip
+4f9633e docs(H5376): verdict pass on docs/roadmap-2026-q4.md — REFRESH, 0 engineering gaps, 5 author-gated items (#244)
+257076b docs(H5375): roadmap-2026-q3.md verdict pass — REFRESH, kept per 31-08 no-archive ruling (#242)
+
+## 2. PR 244 state
+{"mergedAt":"2026-09-24T22:14:58Z","oid":"4f9633eb11e2d9ffdea070121733a2ae6f547257","state":"MERGED"}
+
+## 3. ROADMAP_INDEX.md row (Uprava origin/main, local working tree line)
+439:| [ROADMAP — RuWritingStyles 2026-Q4 (waves H1 · C1 · E1 · P1)](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-2026-q4.md) — truth-pass 24-09-2026 (H5376): REFRESH, 5 author-gated rows left | RuWritingStyles | 24-09-2026 |
+
+## 4. GTD gate rows
+10:- [ ] **@WAITING H5376-shileiko** (external — V. B. Emelyanov, due —) — Shileiko passport gated on his texts; other 4 orientalists shipped. Checkbox: [roadmap "What is left"](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-2026-q4.md). Next: texts arrive → re-run H3369 intake, mint build. (24-09-2026, OxAlpha)
+11:- [ ] **@DECIDE H5376-h1213** (MG, due —) — Adjudicate `h1213dict-dict-zone-order-r05`, the last unresolved H1213 dictionary-benchmark decision; prepared evidence sits in `evals/annotation/sheet-h1213dict.json` (RuWritingStyles). Checkbox: [roadmap "What is left"](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-2026-q4.md). Next: MG rules on the annotation sheet; ruling then closes the last open H1213 residual in `.ai_state.md`. If not done: the dict-zone-order rubric stays under an open question mark. (24-09-2026, OxAlpha (opencode/z-ai/glm-5.3-flash))
+12:- [ ] **@DO H5376-A29** (MG, due —) — Finalize and submit the A29 methodology paper to «Вестник СПбГУ. Востоковедение и африканистика» — venue/language already decided (RU + EN abstract); submission itself is author-only. Checkbox: [roadmap "What is left"](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-2026-q4.md). Next: MG submits via the journal's portal per `docs/paper-pack/venue-checklist.md`. Не сделать: A29 stays unpublished indefinitely. (24-09-2026, OxAlpha (opencode/z-ai/glm-5.3-flash))
+13:- [ ] **@DO H5376-obsidian** (MG, due —) — Submit `gasyoun/ruwritingstyles-obsidian` (tag `0.1.0`, live) to the `obsidianmd/obsidian-releases` community-plugin PR + list it on BRAT — the repo's own `.ai_state.md` classifies this as an author-only publication action. Checkbox: [roadmap "What is left"](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-2026-q4.md). Next: MG opens the obsidianmd PR from the account holder's fork. Не сделать: the plugin stays undiscoverable outside a direct GitHub link. (24-09-2026, OxAlpha (opencode/z-ai/glm-5.3-flash))
+14:- [ ] **@DO H5376-gc** (MG, due —) — File a GitHub Support ticket to GC dangling corpus objects left in repo history, and archive a local backup mirror of the purged blobs first — account-admin action. Checkbox: [roadmap "What is left"](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/roadmap-2026-q4.md). Next: MG opens the support ticket after confirming the local mirror exists. Не сделать: dangling corpus objects keep bloating repo history/clone size. (24-09-2026, OxAlpha (opencode/z-ai/glm-5.3-flash))
+
+## 5. roadmap_index_check.py FAIL list AFTER merge (q4 absent = green)
+FAIL: BookIndex/docs/DH_ROADMAP_2026.md: Updated says '—', computed '24-09-2026'
+FAIL: BookIndex/docs/CLEANUP_AND_UI_ROADMAP.md: Updated says '—', computed '05-09-2026'
+FAIL: IndologyScholars/ROADMAP.md: Updated says '29-07-2026', computed '24-09-2026'
+FAIL: Uprava/CONSOLIDATION_SPIKE_REPOLESS_DICTIONARIES_THIN_VIEW_REPOS_2026Q3.md: Updated says '27-07-2026', computed '24-09-2026'
+FAIL: Uprava/REUSE_INDEX.md: Updated says '15-09-2026', computed '23-09-2026'
+ROADMAP_INDEX CHECK FAILED — run --emit
