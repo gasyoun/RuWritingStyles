@@ -352,13 +352,20 @@ class CliPipelineTests(unittest.TestCase):
         self.assertFalse(self.openai_missing_dir.exists())
 
     def test_full_mock_executed_run_updates_artifacts(self) -> None:
+        # Uses the small examples/input/pseudo-etymology.md fixture rather than
+        # README.md: the review-stage prompt embeds the whole document per style,
+        # and README.md's ongoing growth eventually pushes that prompt past the
+        # hooks._PROMPT_MAX_CHARS safety limit (it did, at 93KB — CI "Required
+        # gate" failure on main, 16-09-2026). The fixture still opens with a
+        # heading followed by one paragraph, so first_paragraph_span_id resolves
+        # to "p002" exactly like README.md's structure did.
         if self.executed_run_dir.exists():
             shutil.rmtree(self.executed_run_dir)
 
         exit_code = main(
             [
                 "run",
-                "README.md",
+                "examples/input/pseudo-etymology.md",
                 "--run-id",
                 "unittest-readme-executed",
                 "--execute",

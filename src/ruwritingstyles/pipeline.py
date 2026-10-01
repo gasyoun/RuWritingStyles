@@ -12,6 +12,7 @@ The CLI flow is the superset; the API flow is the
 execute=True / single-iteration / no-optional-stages / +callbacks case.
 """
 
+import concurrent.futures
 import json
 import queue
 from dataclasses import asdict, dataclass
@@ -183,6 +184,7 @@ def core_pipeline(
     emit: Optional[Callable[[str], None]] = None,
     post_run: Optional[Callable[[], None]] = None,
     options: PipelineOptions | None = None,
+    workers: int = 1,
 ) -> None:
     """Run the full review pipeline over a prepared run directory.
 
@@ -304,10 +306,31 @@ def core_pipeline(
                 on_update(event)
             raise
 
+    fanout_workers = max(1, min(workers, len(style_ids) or 1))
+
+    def _run_fanout(fn: Callable[[str], None]) -> None:
+        """Run fn(style_id) for every style, in parallel when workers > 1.
+
+        Bundle creation + provider calls are per-style-id artifacts (own
+        review.json/prompt.md file), and the shared Database/budget/provider
+        log writes are each independently safe under concurrent callers
+        (fresh sqlite3 connection per write with a 30s busy timeout;
+        provider.log.jsonl appends are single small writes), so no extra
+        locking is needed here.
+        """
+        if fanout_workers <= 1:
+            for style_id in style_ids:
+                fn(style_id)
+            return
+        with concurrent.futures.ThreadPoolExecutor(max_workers=fanout_workers) as executor:
+            futures = {executor.submit(fn, style_id): style_id for style_id in style_ids}
+            for future in concurrent.futures.as_completed(futures):
+                future.result()
+
     try:
         # 1. Review
         def do_review():
-            for style_id in style_ids:
+            def _review_one(style_id: str) -> None:
                 bundle = create_review_bundle(
                     repo_root=repo_root, run_dir=run_dir, style_id=style_id,
                     manifest=manifest, profile=profile,
@@ -319,6 +342,7 @@ def core_pipeline(
                         provider=provider, model=resolve("style_review"),
                     )
                     emit(f"completed {rel(bundle.review_json)}")
+            _run_fanout(_review_one)
             return run_dir / "reviews"
         step("review", do_review, (run_dir / "reviews",))
 
@@ -326,7 +350,7 @@ def core_pipeline(
         if deliberate:
             def do_deliberation():
                 emit("\n--- Cross-Style Deliberation (Debate) ---")
-                for style_id in style_ids:
+                def _deliberate_one(style_id: str) -> None:
                     bundle = create_deliberation_bundle(
                         repo_root=repo_root, run_dir=run_dir, style_id=style_id,
                         manifest=manifest, profile=profile,
@@ -338,6 +362,7 @@ def core_pipeline(
                             provider=provider, model=resolve("style_review"),
                         )
                         emit(f"completed {rel(bundle.deliberation_json)}")
+                _run_fanout(_deliberate_one)
                 return run_dir / "deliberations"
             step("deliberation", do_deliberation, (run_dir / "deliberations",))
 

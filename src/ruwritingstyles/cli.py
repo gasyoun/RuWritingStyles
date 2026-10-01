@@ -188,6 +188,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Enable deep linguistic scrutiny (expert philological audit).",
     )
     run.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="Fan out the per-style review and deliberation loops across N threads "
+             "(default 1 = sequential). Each style writes its own review/deliberation "
+             "artifact file, so concurrent workers do not race on output.",
+    )
+    run.add_argument(
         "--project-dir",
         type=Path,
         help="Optional project directory to store shared stylistic context.",
@@ -673,7 +681,7 @@ def build_parser() -> argparse.ArgumentParser:
     eval_compare.add_argument(
         "--strict",
         action="store_true",
-        help="Exit with status 1 when the candidate suite regresses against the baseline.",
+        help="Exit with status 1 when the candidate suite regresses against the baseline, or when execution conditions differ or are unknown (H5097).",
     )
     eval_compare.set_defaults(func=cmd_eval_compare)
 
@@ -784,6 +792,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Perform deep philological scrutiny (etymology/anachronism check).",
     )
     scrutiny.add_argument("run_dir", type=Path, help="Prepared run directory, for example runs/<run-id>.")
+    scrutiny.add_argument(
+        "--nkrya",
+        choices=["offline", "live"],
+        help="Add NKRYa corpus evidence (advisory) for archaism candidates: 'offline' reads metadata/nkrya_cache only; "
+        "'live' fetches misses via the ruscorpora.ru API (token in keychain `ruscorpora-api`, ~6 requests/min).",
+    )
     _add_execute_args(scrutiny)
     scrutiny.set_defaults(func=cmd_scrutiny)
 
@@ -851,6 +865,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Resume a failed or interrupted run from the last completed step.",
     )
     resume.add_argument("run_dir", type=Path, help="Run directory to resume.")
+    resume.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help="Fan out the per-style review and deliberation loops across N threads "
+             "(default 1 = sequential).",
+    )
     _add_execute_args(resume)
     resume.set_defaults(func=cmd_resume)
 
@@ -1368,6 +1389,7 @@ def _execute_run_pipeline(repo_root: Path, run_dir: Path, args: argparse.Namespa
         emit=print,
         post_run=post_run,
         options=options,
+        workers=max(1, getattr(args, "workers", 1) or 1),
     )
     return 0
 
@@ -2280,6 +2302,21 @@ def cmd_eval_compare(args: argparse.Namespace) -> int:
         print(f"wrote {json_output}")
     if args.strict and _eval_comparison_has_regression(comparison.data):
         return 1
+    # H5097: under --strict, a comparison whose execution conditions differ or
+    # are unknown is refused outright — the pass-rate delta of incompatible or
+    # unverifiable runs must never gate a decision.
+    if (
+        args.strict
+        and comparison.data.get("conditions_comparable") is not True
+    ):
+        comparable = comparison.data.get("conditions_comparable")
+        reasons = "; ".join(str(r) for r in comparison.data.get("condition_mismatches") or [])
+        print(
+            "error: refusing strict comparison — execution conditions are "
+            f"{'unknown (suite data predates execution_conditions)' if comparable is None else 'not comparable'}"
+            + (f": {reasons}" if reasons else ""),
+        )
+        return 1
     return 0
 
 
@@ -2456,7 +2493,12 @@ def cmd_scrutiny(args: argparse.Namespace) -> int:
     run_dir = args.run_dir if args.run_dir.is_absolute() else (Path.cwd() / args.run_dir)
     if args.execute and args.require_provider_ready:
         _require_provider_ready(args.provider)
-    bundle = create_scrutiny_bundle(repo_root=repo_root, run_dir=run_dir)
+    nkrya = None
+    if getattr(args, "nkrya", None):
+        from .nkrya_evidence import DEFAULT_CACHE_REL, NkryaEvidence
+
+        nkrya = NkryaEvidence(repo_root / DEFAULT_CACHE_REL, offline=args.nkrya == "offline", repo_root=repo_root)
+    bundle = create_scrutiny_bundle(repo_root=repo_root, run_dir=run_dir, nkrya=nkrya)
     print(f"created {bundle.scrutiny_json.relative_to(repo_root)}")
     if args.execute:
         execute_scrutiny_artifact(

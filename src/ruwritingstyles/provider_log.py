@@ -27,6 +27,7 @@ def append_provider_log(
     cost_estimate: float = 0.0,
     schema_repair: bool = False,
     budget: dict[str, Any] | None = None,
+    provenance: dict[str, Any] | None = None,
 ) -> Path:
     """Append one JSONL entry to provider.log.jsonl."""
 
@@ -52,6 +53,10 @@ def append_provider_log(
         entry["error"] = error
     if budget is not None:
         entry["budget"] = budget
+    # H5071: actual-vs-requested execution identity; empty provenance (older
+    # providers that never record it) is omitted to keep legacy entries valid.
+    if provenance and provenance.get("requested_provider"):
+        entry["provenance"] = provenance
     with log_path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(entry, ensure_ascii=False) + "\n")
     return log_path
