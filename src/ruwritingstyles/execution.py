@@ -219,6 +219,12 @@ def execute_scrutiny_artifact(*, repo_root: Path, scrutiny_path: Path, provider:
     )
     scrutiny["status"] = "completed"
     scrutiny["findings"] = output.get("findings", [])
+    if scrutiny.get("nkrya"):
+        from .nkrya_evidence import NkryaEvidence, attach_nkrya_evidence
+
+        evidence = NkryaEvidence(repo_root / scrutiny["nkrya"]["cache_dir"],
+                                 offline=bool(scrutiny["nkrya"].get("offline", True)), repo_root=repo_root)
+        scrutiny["findings"] = attach_nkrya_evidence(scrutiny["findings"], evidence)
     _write_json(scrutiny_path, scrutiny)
 
 
@@ -342,6 +348,7 @@ def _generate_with_log(
             retry_statuses=_strings(telemetry.get("retry_statuses")),
             error=str(exc),
             budget=budget.snapshot() if budget is not None else None,
+            provenance=provider.last_call_provenance(),
         )
         raise
 
@@ -364,6 +371,7 @@ def _generate_with_log(
         cost_estimate=_float(usage.get("cost_estimate")),
         schema_repair=telemetry.get("schema_repair", False),
         budget=budget.snapshot() if budget is not None else None,
+        provenance=provider.last_call_provenance(),
     )
     return output
 

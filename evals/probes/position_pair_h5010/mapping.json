@@ -1,0 +1,1032 @@
+{
+ "seed": 5010,
+ "protocol": "evals/probes/POSITION_PAIR_PROTOCOL_h5010_2026-09-17.md",
+ "call_order_presentations": [
+  "P50",
+  "P17",
+  "P23",
+  "P33",
+  "P12",
+  "P34",
+  "P02",
+  "P07",
+  "P32",
+  "P25",
+  "P28",
+  "P30",
+  "P27",
+  "P03",
+  "P06",
+  "P16",
+  "P41",
+  "P19",
+  "P10",
+  "P13",
+  "P36",
+  "P49",
+  "P08",
+  "P04",
+  "P31",
+  "P44",
+  "P39",
+  "P18",
+  "P38",
+  "P47",
+  "P11",
+  "P43",
+  "P21",
+  "P09",
+  "P40",
+  "P26",
+  "P24",
+  "P35",
+  "P05",
+  "P48",
+  "P22",
+  "P46",
+  "P15",
+  "P37",
+  "P45",
+  "P42",
+  "P14",
+  "P29",
+  "P01",
+  "P20"
+ ],
+ "by_pres": {
+  "P01": {
+   "run": "20260703-h073gov-commentary-layer-mix-r05",
+   "arm": "REV",
+   "n_findings": 8,
+   "target_pos": 4,
+   "finding_order_keys": [
+    "bd3c2eeadac4c3dd",
+    "2d719c50959c65dd",
+    "4a72da754ea2b615",
+    "7b84d813c1cab647",
+    "d5936376758ba13a",
+    "da497a37f1d7ba89",
+    "64f25c7f0d1daee4",
+    "7562ea79fb7c8d0e"
+   ]
+  },
+  "P02": {
+   "run": "20260703-h073gov-karaka-not-padezh-r04",
+   "arm": "ORIG",
+   "n_findings": 5,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "00384bae8aceefb2",
+    "702234a2e4cbacea",
+    "6b901f4dbaf43b40",
+    "6aca180f9470c2d5",
+    "cd3fe4cb2900d6ab"
+   ]
+  },
+  "P03": {
+   "run": "20260703-h073gov-vedic-classical-anachronism-r02",
+   "arm": "ORIG",
+   "n_findings": 2,
+   "target_pos": 0,
+   "finding_order_keys": [
+    "1c6a85c00485ff25",
+    "600fe7cd14ab69cb"
+   ]
+  },
+  "P04": {
+   "run": "20260703-h073gov-samasa-misclassification-r02",
+   "arm": "ORIG",
+   "n_findings": 2,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "6f587a39ac51b6e8",
+    "45feaf4456ebde51"
+   ]
+  },
+  "P05": {
+   "run": "20260703-h073gov-karaka-not-padezh-r01",
+   "arm": "REV",
+   "n_findings": 4,
+   "target_pos": 4,
+   "finding_order_keys": [
+    "0f1c4e5660a2510e",
+    "d0d5f6330baa175d",
+    "e93603c151403478",
+    "8dc26b9fb5716e37"
+   ]
+  },
+  "P06": {
+   "run": "20260703-h073gov-samasa-misclassification-r02",
+   "arm": "REV",
+   "n_findings": 2,
+   "target_pos": 2,
+   "finding_order_keys": [
+    "45feaf4456ebde51",
+    "6f587a39ac51b6e8"
+   ]
+  },
+  "P07": {
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r01",
+   "arm": "REV",
+   "n_findings": 9,
+   "target_pos": 9,
+   "finding_order_keys": [
+    "59f6fc248521bcfe",
+    "6856a73714124e5e",
+    "866a11e941ea8cd2",
+    "9571e8aebc47d061",
+    "455f2a2ead021f87",
+    "aac8a519f32c25c9",
+    "b78901d13b23d6f2",
+    "edef441a79874648",
+    "c42cd5c403018ff2"
+   ]
+  },
+  "P08": {
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r04",
+   "arm": "ORIG",
+   "n_findings": 5,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "dc5aefdacb988378",
+    "30a98532a7c7d051",
+    "40e3e41e9a3452a8",
+    "5322b660b8d12d6b",
+    "8d155d8f49143ea3"
+   ]
+  },
+  "P09": {
+   "run": "20260703-h073gov-samasa-misclassification-r01",
+   "arm": "REV",
+   "n_findings": 6,
+   "target_pos": 6,
+   "finding_order_keys": [
+    "285336a0bf52b5b5",
+    "32cc1c332020bac5",
+    "dc99721754946a4d",
+    "787ad75114bc31eb",
+    "53d56359aa8e66fc",
+    "fb656e9cf33dbe0a"
+   ]
+  },
+  "P10": {
+   "run": "20260703-h073gov-vedic-classical-anachronism-r03",
+   "arm": "ORIG",
+   "n_findings": 2,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "e56c53099b37aa2c",
+    "b35ad32e507a887e"
+   ]
+  },
+  "P11": {
+   "run": "20260703-h073gov-vedic-classical-anachronism-r04",
+   "arm": "REV",
+   "n_findings": 2,
+   "target_pos": 2,
+   "finding_order_keys": [
+    "7e8e941dff575d56",
+    "e1f9ec3a7688eda9"
+   ]
+  },
+  "P12": {
+   "run": "20260703-h073gov-vedic-classical-anachronism-r05",
+   "arm": "REV",
+   "n_findings": 2,
+   "target_pos": 2,
+   "finding_order_keys": [
+    "14da806ee02854c3",
+    "da719d5d09935335"
+   ]
+  },
+  "P13": {
+   "run": "20260703-h073gov-vedic-classical-anachronism-r04",
+   "arm": "ORIG",
+   "n_findings": 2,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "e1f9ec3a7688eda9",
+    "7e8e941dff575d56"
+   ]
+  },
+  "P14": {
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r02",
+   "arm": "ORIG",
+   "n_findings": 5,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "0a6ef1ff46c683d0",
+    "2efba79365c43a4d",
+    "adec472597e70953",
+    "2dc04d57e7fdd1b2",
+    "991e0b22924d3b1d"
+   ]
+  },
+  "P15": {
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r03",
+   "arm": "REV",
+   "n_findings": 8,
+   "target_pos": 8,
+   "finding_order_keys": [
+    "f5e872ff87422395",
+    "fb639fbeb99e4a40",
+    "40de67be73849e74",
+    "c8faad4f686dc842",
+    "5cd9dc1aa06d254d",
+    "69f651ea1b006af7",
+    "cfd92e24f6de2781",
+    "91b883c05e3c4ad4"
+   ]
+  },
+  "P16": {
+   "run": "20260703-h073gov-karaka-not-padezh-r03",
+   "arm": "REV",
+   "n_findings": 3,
+   "target_pos": 3,
+   "finding_order_keys": [
+    "3d31de401f2b59af",
+    "b211b909274f604b",
+    "0715ead7585a3559"
+   ]
+  },
+  "P17": {
+   "run": "20260703-h073gov-commentary-layer-mix-r01",
+   "arm": "ORIG",
+   "n_findings": 5,
+   "target_pos": 5,
+   "finding_order_keys": [
+    "cd004c32220d4388",
+    "f4d50ec37df5531a",
+    "8753c1189b7dcd65",
+    "0b00f89c70f004df",
+    "db928d9a4db8407d"
+   ]
+  },
+  "P18": {
+   "run": "20260703-h073gov-karaka-not-padezh-r05",
+   "arm": "ORIG",
+   "n_findings": 4,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "d64f9d9410e4fe32",
+    "ae4159358cd0e60e",
+    "2a821b682645a132",
+    "9cba319b1fa76021"
+   ]
+  },
+  "P19": {
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r05",
+   "arm": "REV",
+   "n_findings": 10,
+   "target_pos": 10,
+   "finding_order_keys": [
+    "5ea7c64c04c4d650",
+    "48e47a88a1de2236",
+    "0ab6e5a6d6dfa9e5",
+    "a7f7d20722d0b4a2",
+    "a4402ea1b74826bf",
+    "27c8f9de2a84e165",
+    "b62639380efb9824",
+    "b252dc9dc12b7157",
+    "a1a918544e7a4b0a",
+    "31054e86aa2f144b"
+   ]
+  },
+  "P20": {
+   "run": "20260703-h073gov-karaka-not-padezh-r02",
+   "arm": "ORIG",
+   "n_findings": 5,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "b0cdb9b35c25cbea",
+    "dd8b648db20af184",
+    "4754c538a27138a6",
+    "9f5481dc30aa50df",
+    "1d08383a176add95"
+   ]
+  },
+  "P21": {
+   "run": "20260703-h073gov-samasa-misclassification-r03",
+   "arm": "REV",
+   "n_findings": 5,
+   "target_pos": 5,
+   "finding_order_keys": [
+    "d73453103842d692",
+    "fd77fd7666c7acd6",
+    "92b9cbab157d65a8",
+    "3ebc3db50b0722bd",
+    "1937827638e2de7c"
+   ]
+  },
+  "P22": {
+   "run": "20260703-h073gov-commentary-layer-mix-r05",
+   "arm": "ORIG",
+   "n_findings": 8,
+   "target_pos": 5,
+   "finding_order_keys": [
+    "7562ea79fb7c8d0e",
+    "64f25c7f0d1daee4",
+    "da497a37f1d7ba89",
+    "d5936376758ba13a",
+    "7b84d813c1cab647",
+    "4a72da754ea2b615",
+    "2d719c50959c65dd",
+    "bd3c2eeadac4c3dd"
+   ]
+  },
+  "P23": {
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r04",
+   "arm": "REV",
+   "n_findings": 5,
+   "target_pos": 5,
+   "finding_order_keys": [
+    "8d155d8f49143ea3",
+    "5322b660b8d12d6b",
+    "40e3e41e9a3452a8",
+    "30a98532a7c7d051",
+    "dc5aefdacb988378"
+   ]
+  },
+  "P24": {
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r02",
+   "arm": "REV",
+   "n_findings": 5,
+   "target_pos": 5,
+   "finding_order_keys": [
+    "991e0b22924d3b1d",
+    "2dc04d57e7fdd1b2",
+    "adec472597e70953",
+    "2efba79365c43a4d",
+    "0a6ef1ff46c683d0"
+   ]
+  },
+  "P25": {
+   "run": "20260703-h073gov-samasa-misclassification-r01",
+   "arm": "ORIG",
+   "n_findings": 6,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "fb656e9cf33dbe0a",
+    "53d56359aa8e66fc",
+    "787ad75114bc31eb",
+    "dc99721754946a4d",
+    "32cc1c332020bac5",
+    "285336a0bf52b5b5"
+   ]
+  },
+  "P26": {
+   "run": "20260703-h073gov-commentary-layer-mix-r02",
+   "arm": "REV",
+   "n_findings": 6,
+   "target_pos": 2,
+   "finding_order_keys": [
+    "872dc2c670014b8b",
+    "a2214dbb0bcbb304",
+    "2cf077698a6c112e",
+    "ceb46b06292facf6",
+    "da898b6c0d04990b",
+    "fd83e30b2e18e0ae"
+   ]
+  },
+  "P27": {
+   "run": "20260703-h073gov-samasa-misclassification-r05",
+   "arm": "ORIG",
+   "n_findings": 5,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "82827169c106844a",
+    "deea6e57f51b58c5",
+    "840943309f1d3c48",
+    "c68206ed88e28f86",
+    "b2d3e7ce8e02d794"
+   ]
+  },
+  "P28": {
+   "run": "20260703-h073gov-karaka-not-padezh-r04",
+   "arm": "REV",
+   "n_findings": 5,
+   "target_pos": 5,
+   "finding_order_keys": [
+    "cd3fe4cb2900d6ab",
+    "6aca180f9470c2d5",
+    "6b901f4dbaf43b40",
+    "702234a2e4cbacea",
+    "00384bae8aceefb2"
+   ]
+  },
+  "P29": {
+   "run": "20260703-h073gov-samasa-misclassification-r04",
+   "arm": "REV",
+   "n_findings": 2,
+   "target_pos": 2,
+   "finding_order_keys": [
+    "58dcb3b583458e21",
+    "cafd13085e3da5e6"
+   ]
+  },
+  "P30": {
+   "run": "20260703-h073gov-commentary-layer-mix-r04",
+   "arm": "ORIG",
+   "n_findings": 8,
+   "target_pos": 8,
+   "finding_order_keys": [
+    "84ba7522f6d77776",
+    "b50f6def46f2bc45",
+    "54b35eaea3ac0016",
+    "b22ab49448f21397",
+    "93af9e70d33be771",
+    "c043785ef635d07f",
+    "d185a2b352815eba",
+    "ac14af4a57a62aab"
+   ]
+  },
+  "P31": {
+   "run": "20260703-h073gov-karaka-not-padezh-r01",
+   "arm": "ORIG",
+   "n_findings": 4,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "8dc26b9fb5716e37",
+    "e93603c151403478",
+    "d0d5f6330baa175d",
+    "0f1c4e5660a2510e"
+   ]
+  },
+  "P32": {
+   "run": "20260703-h073gov-commentary-layer-mix-r02",
+   "arm": "ORIG",
+   "n_findings": 6,
+   "target_pos": 5,
+   "finding_order_keys": [
+    "fd83e30b2e18e0ae",
+    "da898b6c0d04990b",
+    "ceb46b06292facf6",
+    "2cf077698a6c112e",
+    "a2214dbb0bcbb304",
+    "872dc2c670014b8b"
+   ]
+  },
+  "P33": {
+   "run": "20260703-h073gov-vedic-classical-anachronism-r01",
+   "arm": "ORIG",
+   "n_findings": 3,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "37d2b997b09b4f79",
+    "cf71f9b527ac4ddd",
+    "0f828b35e4de1a63"
+   ]
+  },
+  "P34": {
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r05",
+   "arm": "ORIG",
+   "n_findings": 10,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "31054e86aa2f144b",
+    "a1a918544e7a4b0a",
+    "b252dc9dc12b7157",
+    "b62639380efb9824",
+    "27c8f9de2a84e165",
+    "a4402ea1b74826bf",
+    "a7f7d20722d0b4a2",
+    "0ab6e5a6d6dfa9e5",
+    "48e47a88a1de2236",
+    "5ea7c64c04c4d650"
+   ]
+  },
+  "P35": {
+   "run": "20260703-h073gov-samasa-misclassification-r05",
+   "arm": "REV",
+   "n_findings": 5,
+   "target_pos": 5,
+   "finding_order_keys": [
+    "b2d3e7ce8e02d794",
+    "c68206ed88e28f86",
+    "840943309f1d3c48",
+    "deea6e57f51b58c5",
+    "82827169c106844a"
+   ]
+  },
+  "P36": {
+   "run": "20260703-h073gov-vedic-classical-anachronism-r03",
+   "arm": "REV",
+   "n_findings": 2,
+   "target_pos": 2,
+   "finding_order_keys": [
+    "b35ad32e507a887e",
+    "e56c53099b37aa2c"
+   ]
+  },
+  "P37": {
+   "run": "20260703-h073gov-vedic-classical-anachronism-r02",
+   "arm": "REV",
+   "n_findings": 2,
+   "target_pos": 0,
+   "finding_order_keys": [
+    "600fe7cd14ab69cb",
+    "1c6a85c00485ff25"
+   ]
+  },
+  "P38": {
+   "run": "20260703-h073gov-samasa-misclassification-r03",
+   "arm": "ORIG",
+   "n_findings": 5,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "1937827638e2de7c",
+    "3ebc3db50b0722bd",
+    "92b9cbab157d65a8",
+    "fd77fd7666c7acd6",
+    "d73453103842d692"
+   ]
+  },
+  "P39": {
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r03",
+   "arm": "ORIG",
+   "n_findings": 8,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "91b883c05e3c4ad4",
+    "cfd92e24f6de2781",
+    "69f651ea1b006af7",
+    "5cd9dc1aa06d254d",
+    "c8faad4f686dc842",
+    "40de67be73849e74",
+    "fb639fbeb99e4a40",
+    "f5e872ff87422395"
+   ]
+  },
+  "P40": {
+   "run": "20260703-h073gov-commentary-layer-mix-r04",
+   "arm": "REV",
+   "n_findings": 8,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "ac14af4a57a62aab",
+    "d185a2b352815eba",
+    "c043785ef635d07f",
+    "93af9e70d33be771",
+    "b22ab49448f21397",
+    "54b35eaea3ac0016",
+    "b50f6def46f2bc45",
+    "84ba7522f6d77776"
+   ]
+  },
+  "P41": {
+   "run": "20260703-h073gov-vedic-classical-anachronism-r01",
+   "arm": "REV",
+   "n_findings": 3,
+   "target_pos": 3,
+   "finding_order_keys": [
+    "0f828b35e4de1a63",
+    "cf71f9b527ac4ddd",
+    "37d2b997b09b4f79"
+   ]
+  },
+  "P42": {
+   "run": "20260703-h073gov-commentary-layer-mix-r03",
+   "arm": "REV",
+   "n_findings": 8,
+   "target_pos": 2,
+   "finding_order_keys": [
+    "e0d4fa897b1573d0",
+    "dd9742231eead607",
+    "a5a9183dfc846209",
+    "5f485bb3496173f7",
+    "84d753b8a7301e03",
+    "95e61630d1a3593b",
+    "db9ab255f486e58f",
+    "35cb47befc5ee663"
+   ]
+  },
+  "P43": {
+   "run": "20260703-h073gov-karaka-not-padezh-r03",
+   "arm": "ORIG",
+   "n_findings": 3,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "0715ead7585a3559",
+    "b211b909274f604b",
+    "3d31de401f2b59af"
+   ]
+  },
+  "P44": {
+   "run": "20260703-h073gov-samasa-misclassification-r04",
+   "arm": "ORIG",
+   "n_findings": 2,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "cafd13085e3da5e6",
+    "58dcb3b583458e21"
+   ]
+  },
+  "P45": {
+   "run": "20260703-h073gov-commentary-layer-mix-r03",
+   "arm": "ORIG",
+   "n_findings": 8,
+   "target_pos": 7,
+   "finding_order_keys": [
+    "35cb47befc5ee663",
+    "db9ab255f486e58f",
+    "95e61630d1a3593b",
+    "84d753b8a7301e03",
+    "5f485bb3496173f7",
+    "a5a9183dfc846209",
+    "dd9742231eead607",
+    "e0d4fa897b1573d0"
+   ]
+  },
+  "P46": {
+   "run": "20260703-h073gov-commentary-layer-mix-r01",
+   "arm": "REV",
+   "n_findings": 5,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "db928d9a4db8407d",
+    "0b00f89c70f004df",
+    "8753c1189b7dcd65",
+    "f4d50ec37df5531a",
+    "cd004c32220d4388"
+   ]
+  },
+  "P47": {
+   "run": "20260703-h073gov-karaka-not-padezh-r02",
+   "arm": "REV",
+   "n_findings": 5,
+   "target_pos": 5,
+   "finding_order_keys": [
+    "1d08383a176add95",
+    "9f5481dc30aa50df",
+    "4754c538a27138a6",
+    "dd8b648db20af184",
+    "b0cdb9b35c25cbea"
+   ]
+  },
+  "P48": {
+   "run": "20260703-h073gov-vedic-classical-anachronism-r05",
+   "arm": "ORIG",
+   "n_findings": 2,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "da719d5d09935335",
+    "14da806ee02854c3"
+   ]
+  },
+  "P49": {
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r01",
+   "arm": "ORIG",
+   "n_findings": 9,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "c42cd5c403018ff2",
+    "edef441a79874648",
+    "b78901d13b23d6f2",
+    "aac8a519f32c25c9",
+    "455f2a2ead021f87",
+    "9571e8aebc47d061",
+    "866a11e941ea8cd2",
+    "6856a73714124e5e",
+    "59f6fc248521bcfe"
+   ]
+  },
+  "P50": {
+   "run": "20260703-h073gov-karaka-not-padezh-r05",
+   "arm": "REV",
+   "n_findings": 4,
+   "target_pos": 4,
+   "finding_order_keys": [
+    "9cba319b1fa76021",
+    "2a821b682645a132",
+    "ae4159358cd0e60e",
+    "d64f9d9410e4fe32"
+   ]
+  }
+ },
+ "_by_run_hidden": {
+  "20260703-h073gov-sanskrit-pseudo-etymology-r01": {
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r01",
+   "arm": "REV",
+   "n_findings": 9,
+   "target_pos": 9,
+   "finding_order_keys": [
+    "59f6fc248521bcfe",
+    "6856a73714124e5e",
+    "866a11e941ea8cd2",
+    "9571e8aebc47d061",
+    "455f2a2ead021f87",
+    "aac8a519f32c25c9",
+    "b78901d13b23d6f2",
+    "edef441a79874648",
+    "c42cd5c403018ff2"
+   ]
+  },
+  "20260703-h073gov-sanskrit-pseudo-etymology-r02": {
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r02",
+   "arm": "REV",
+   "n_findings": 5,
+   "target_pos": 5,
+   "finding_order_keys": [
+    "991e0b22924d3b1d",
+    "2dc04d57e7fdd1b2",
+    "adec472597e70953",
+    "2efba79365c43a4d",
+    "0a6ef1ff46c683d0"
+   ]
+  },
+  "20260703-h073gov-sanskrit-pseudo-etymology-r03": {
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r03",
+   "arm": "REV",
+   "n_findings": 8,
+   "target_pos": 8,
+   "finding_order_keys": [
+    "f5e872ff87422395",
+    "fb639fbeb99e4a40",
+    "40de67be73849e74",
+    "c8faad4f686dc842",
+    "5cd9dc1aa06d254d",
+    "69f651ea1b006af7",
+    "cfd92e24f6de2781",
+    "91b883c05e3c4ad4"
+   ]
+  },
+  "20260703-h073gov-sanskrit-pseudo-etymology-r04": {
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r04",
+   "arm": "REV",
+   "n_findings": 5,
+   "target_pos": 5,
+   "finding_order_keys": [
+    "8d155d8f49143ea3",
+    "5322b660b8d12d6b",
+    "40e3e41e9a3452a8",
+    "30a98532a7c7d051",
+    "dc5aefdacb988378"
+   ]
+  },
+  "20260703-h073gov-sanskrit-pseudo-etymology-r05": {
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r05",
+   "arm": "REV",
+   "n_findings": 10,
+   "target_pos": 10,
+   "finding_order_keys": [
+    "5ea7c64c04c4d650",
+    "48e47a88a1de2236",
+    "0ab6e5a6d6dfa9e5",
+    "a7f7d20722d0b4a2",
+    "a4402ea1b74826bf",
+    "27c8f9de2a84e165",
+    "b62639380efb9824",
+    "b252dc9dc12b7157",
+    "a1a918544e7a4b0a",
+    "31054e86aa2f144b"
+   ]
+  },
+  "20260703-h073gov-karaka-not-padezh-r01": {
+   "run": "20260703-h073gov-karaka-not-padezh-r01",
+   "arm": "REV",
+   "n_findings": 4,
+   "target_pos": 4,
+   "finding_order_keys": [
+    "0f1c4e5660a2510e",
+    "d0d5f6330baa175d",
+    "e93603c151403478",
+    "8dc26b9fb5716e37"
+   ]
+  },
+  "20260703-h073gov-karaka-not-padezh-r02": {
+   "run": "20260703-h073gov-karaka-not-padezh-r02",
+   "arm": "REV",
+   "n_findings": 5,
+   "target_pos": 5,
+   "finding_order_keys": [
+    "1d08383a176add95",
+    "9f5481dc30aa50df",
+    "4754c538a27138a6",
+    "dd8b648db20af184",
+    "b0cdb9b35c25cbea"
+   ]
+  },
+  "20260703-h073gov-karaka-not-padezh-r03": {
+   "run": "20260703-h073gov-karaka-not-padezh-r03",
+   "arm": "REV",
+   "n_findings": 3,
+   "target_pos": 3,
+   "finding_order_keys": [
+    "3d31de401f2b59af",
+    "b211b909274f604b",
+    "0715ead7585a3559"
+   ]
+  },
+  "20260703-h073gov-karaka-not-padezh-r04": {
+   "run": "20260703-h073gov-karaka-not-padezh-r04",
+   "arm": "REV",
+   "n_findings": 5,
+   "target_pos": 5,
+   "finding_order_keys": [
+    "cd3fe4cb2900d6ab",
+    "6aca180f9470c2d5",
+    "6b901f4dbaf43b40",
+    "702234a2e4cbacea",
+    "00384bae8aceefb2"
+   ]
+  },
+  "20260703-h073gov-karaka-not-padezh-r05": {
+   "run": "20260703-h073gov-karaka-not-padezh-r05",
+   "arm": "REV",
+   "n_findings": 4,
+   "target_pos": 4,
+   "finding_order_keys": [
+    "9cba319b1fa76021",
+    "2a821b682645a132",
+    "ae4159358cd0e60e",
+    "d64f9d9410e4fe32"
+   ]
+  },
+  "20260703-h073gov-vedic-classical-anachronism-r01": {
+   "run": "20260703-h073gov-vedic-classical-anachronism-r01",
+   "arm": "REV",
+   "n_findings": 3,
+   "target_pos": 3,
+   "finding_order_keys": [
+    "0f828b35e4de1a63",
+    "cf71f9b527ac4ddd",
+    "37d2b997b09b4f79"
+   ]
+  },
+  "20260703-h073gov-vedic-classical-anachronism-r02": {
+   "run": "20260703-h073gov-vedic-classical-anachronism-r02",
+   "arm": "REV",
+   "n_findings": 2,
+   "target_pos": 0,
+   "finding_order_keys": [
+    "600fe7cd14ab69cb",
+    "1c6a85c00485ff25"
+   ]
+  },
+  "20260703-h073gov-vedic-classical-anachronism-r03": {
+   "run": "20260703-h073gov-vedic-classical-anachronism-r03",
+   "arm": "REV",
+   "n_findings": 2,
+   "target_pos": 2,
+   "finding_order_keys": [
+    "b35ad32e507a887e",
+    "e56c53099b37aa2c"
+   ]
+  },
+  "20260703-h073gov-vedic-classical-anachronism-r04": {
+   "run": "20260703-h073gov-vedic-classical-anachronism-r04",
+   "arm": "REV",
+   "n_findings": 2,
+   "target_pos": 2,
+   "finding_order_keys": [
+    "7e8e941dff575d56",
+    "e1f9ec3a7688eda9"
+   ]
+  },
+  "20260703-h073gov-vedic-classical-anachronism-r05": {
+   "run": "20260703-h073gov-vedic-classical-anachronism-r05",
+   "arm": "REV",
+   "n_findings": 2,
+   "target_pos": 2,
+   "finding_order_keys": [
+    "14da806ee02854c3",
+    "da719d5d09935335"
+   ]
+  },
+  "20260703-h073gov-samasa-misclassification-r01": {
+   "run": "20260703-h073gov-samasa-misclassification-r01",
+   "arm": "REV",
+   "n_findings": 6,
+   "target_pos": 6,
+   "finding_order_keys": [
+    "285336a0bf52b5b5",
+    "32cc1c332020bac5",
+    "dc99721754946a4d",
+    "787ad75114bc31eb",
+    "53d56359aa8e66fc",
+    "fb656e9cf33dbe0a"
+   ]
+  },
+  "20260703-h073gov-samasa-misclassification-r02": {
+   "run": "20260703-h073gov-samasa-misclassification-r02",
+   "arm": "REV",
+   "n_findings": 2,
+   "target_pos": 2,
+   "finding_order_keys": [
+    "45feaf4456ebde51",
+    "6f587a39ac51b6e8"
+   ]
+  },
+  "20260703-h073gov-samasa-misclassification-r03": {
+   "run": "20260703-h073gov-samasa-misclassification-r03",
+   "arm": "REV",
+   "n_findings": 5,
+   "target_pos": 5,
+   "finding_order_keys": [
+    "d73453103842d692",
+    "fd77fd7666c7acd6",
+    "92b9cbab157d65a8",
+    "3ebc3db50b0722bd",
+    "1937827638e2de7c"
+   ]
+  },
+  "20260703-h073gov-samasa-misclassification-r04": {
+   "run": "20260703-h073gov-samasa-misclassification-r04",
+   "arm": "REV",
+   "n_findings": 2,
+   "target_pos": 2,
+   "finding_order_keys": [
+    "58dcb3b583458e21",
+    "cafd13085e3da5e6"
+   ]
+  },
+  "20260703-h073gov-samasa-misclassification-r05": {
+   "run": "20260703-h073gov-samasa-misclassification-r05",
+   "arm": "REV",
+   "n_findings": 5,
+   "target_pos": 5,
+   "finding_order_keys": [
+    "b2d3e7ce8e02d794",
+    "c68206ed88e28f86",
+    "840943309f1d3c48",
+    "deea6e57f51b58c5",
+    "82827169c106844a"
+   ]
+  },
+  "20260703-h073gov-commentary-layer-mix-r01": {
+   "run": "20260703-h073gov-commentary-layer-mix-r01",
+   "arm": "REV",
+   "n_findings": 5,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "db928d9a4db8407d",
+    "0b00f89c70f004df",
+    "8753c1189b7dcd65",
+    "f4d50ec37df5531a",
+    "cd004c32220d4388"
+   ]
+  },
+  "20260703-h073gov-commentary-layer-mix-r02": {
+   "run": "20260703-h073gov-commentary-layer-mix-r02",
+   "arm": "REV",
+   "n_findings": 6,
+   "target_pos": 2,
+   "finding_order_keys": [
+    "872dc2c670014b8b",
+    "a2214dbb0bcbb304",
+    "2cf077698a6c112e",
+    "ceb46b06292facf6",
+    "da898b6c0d04990b",
+    "fd83e30b2e18e0ae"
+   ]
+  },
+  "20260703-h073gov-commentary-layer-mix-r03": {
+   "run": "20260703-h073gov-commentary-layer-mix-r03",
+   "arm": "REV",
+   "n_findings": 8,
+   "target_pos": 2,
+   "finding_order_keys": [
+    "e0d4fa897b1573d0",
+    "dd9742231eead607",
+    "a5a9183dfc846209",
+    "5f485bb3496173f7",
+    "84d753b8a7301e03",
+    "95e61630d1a3593b",
+    "db9ab255f486e58f",
+    "35cb47befc5ee663"
+   ]
+  },
+  "20260703-h073gov-commentary-layer-mix-r04": {
+   "run": "20260703-h073gov-commentary-layer-mix-r04",
+   "arm": "REV",
+   "n_findings": 8,
+   "target_pos": 1,
+   "finding_order_keys": [
+    "ac14af4a57a62aab",
+    "d185a2b352815eba",
+    "c043785ef635d07f",
+    "93af9e70d33be771",
+    "b22ab49448f21397",
+    "54b35eaea3ac0016",
+    "b50f6def46f2bc45",
+    "84ba7522f6d77776"
+   ]
+  },
+  "20260703-h073gov-commentary-layer-mix-r05": {
+   "run": "20260703-h073gov-commentary-layer-mix-r05",
+   "arm": "REV",
+   "n_findings": 8,
+   "target_pos": 4,
+   "finding_order_keys": [
+    "bd3c2eeadac4c3dd",
+    "2d719c50959c65dd",
+    "4a72da754ea2b615",
+    "7b84d813c1cab647",
+    "d5936376758ba13a",
+    "da497a37f1d7ba89",
+    "64f25c7f0d1daee4",
+    "7562ea79fb7c8d0e"
+   ]
+  }
+ }
+}

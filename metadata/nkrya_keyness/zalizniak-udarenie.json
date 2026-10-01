@@ -1,0 +1,319 @@
+{
+ "passport": "zalizniak-udarenie",
+ "handoff": "H5283",
+ "measured": "23-09-2026",
+ "source_file": "RuWritingStyles-corpus/PDFtoTXT/zaliznyak_drevnerusskoe_udarenie_2019__izd.txt",
+ "source_label": "А. А. Зализняк, «Древнерусское ударение» (2019)",
+ "source_sha256": "233a48d0f055dfcb8c717426fdf919290914814c8db6e4f8bb873f8491fe02a7",
+ "lemmatizer": "pymorphy3",
+ "tokens": 300573,
+ "top_n": 30,
+ "keyness": "log2(text ipm / NKRYa ipm); NKRYa ipm floor 0.01 when no portrait",
+ "reference": "NKRYa word portrait PORTRAIT_FREQUENCY, main corpus",
+ "cache_keys": [
+  "02f9df915fb21010c2fb4f64",
+  "0cf2b80eeebaeb044b11beb5",
+  "0edae6e1a71cc3a834218846",
+  "10f1303dcccec5ecd550a4cc",
+  "11813a2bac46f07e4db32a32",
+  "17baed0ed29955d529376d5f",
+  "1e6ec388e55fd27392612993",
+  "2d98ea732f2791a9e93f94ab",
+  "35b555290960186a2c935735",
+  "3f81d8c76f1fbe0fdcd6fea0",
+  "430006b7571d595c665077c2",
+  "470b2ae3c307f4cf37f050ed",
+  "639afd2787e5d04174e058cc",
+  "7cedda84792ddac2740d0197",
+  "8626f9fef8fd02c0e3b707b3",
+  "87e5106c757daf29c3849035",
+  "8f1975cb161002ad0e8daa09",
+  "8f69ce5ee9fc21421a4bca3e",
+  "93e9f7b21f8fe4230ea6faea",
+  "a4cfa4204788332a14168144",
+  "a5e0b4b82e8b6052a879a9fe",
+  "bead0da3b94c0cfb521b4b30",
+  "bee836e9252396588887fcd0",
+  "c4a46cc09785ebc629152562",
+  "d8353ba4891eb790f29f8131",
+  "d87f41cf673709769f0e1d5d",
+  "efa905f9ae8ca1bbff05aba2",
+  "f0d9094dea9a3aa2c3a0ea34",
+  "f8710c1e9f6b202e13e6515b",
+  "ff3db94e442a8113a9328a43"
+ ],
+ "rows": [
+  {
+   "lemma": "акцентный",
+   "pos": "A",
+   "count": 373,
+   "text_ipm": 1241.0,
+   "nkrya_ipm": 0.175979,
+   "band": 1,
+   "log_ratio": 12.78
+  },
+  {
+   "lemma": "акцентуация",
+   "pos": "S",
+   "count": 104,
+   "text_ipm": 346.0,
+   "nkrya_ipm": 0.173633,
+   "band": 1,
+   "log_ratio": 10.96
+  },
+  {
+   "lemma": "ударение",
+   "pos": "S",
+   "count": 453,
+   "text_ipm": 1507.1,
+   "nkrya_ipm": 9.07349,
+   "band": 2,
+   "log_ratio": 7.38
+  },
+  {
+   "lemma": "говор",
+   "pos": "S",
+   "count": 370,
+   "text_ipm": 1231.0,
+   "nkrya_ipm": 15.5613,
+   "band": 3,
+   "log_ratio": 6.31
+  },
+  {
+   "lemma": "древнерусский",
+   "pos": "A",
+   "count": 123,
+   "text_ipm": 409.2,
+   "nkrya_ipm": 6.32118,
+   "band": 2,
+   "log_ratio": 6.02
+  },
+  {
+   "lemma": "словарь",
+   "pos": "S",
+   "count": 192,
+   "text_ipm": 638.8,
+   "nkrya_ipm": 23.6727,
+   "band": 3,
+   "log_ratio": 4.75
+  },
+  {
+   "lemma": "град",
+   "pos": "S",
+   "count": 185,
+   "text_ipm": 615.5,
+   "nkrya_ipm": 23.7079,
+   "band": 3,
+   "log_ratio": 4.7
+  },
+  {
+   "lemma": "почерк",
+   "pos": "S",
+   "count": 102,
+   "text_ipm": 339.4,
+   "nkrya_ipm": 17.2554,
+   "band": 3,
+   "log_ratio": 4.3
+  },
+  {
+   "lemma": "глагол",
+   "pos": "S",
+   "count": 101,
+   "text_ipm": 336.0,
+   "nkrya_ipm": 18.8016,
+   "band": 3,
+   "log_ratio": 4.16
+  },
+  {
+   "lemma": "памятник",
+   "pos": "S",
+   "count": 350,
+   "text_ipm": 1164.4,
+   "nkrya_ipm": 71.823,
+   "band": 3,
+   "log_ratio": 4.02
+  },
+  {
+   "lemma": "рукопись",
+   "pos": "S",
+   "count": 189,
+   "text_ipm": 628.8,
+   "nkrya_ipm": 47.0874,
+   "band": 3,
+   "log_ratio": 3.74
+  },
+  {
+   "lemma": "знак",
+   "pos": "S",
+   "count": 174,
+   "text_ipm": 578.9,
+   "nkrya_ipm": 105.027,
+   "band": 4,
+   "log_ratio": 2.46
+  },
+  {
+   "lemma": "карта",
+   "pos": "S",
+   "count": 160,
+   "text_ipm": 532.3,
+   "nkrya_ipm": 103.757,
+   "band": 4,
+   "log_ratio": 2.36
+  },
+  {
+   "lemma": "пример",
+   "pos": "S",
+   "count": 207,
+   "text_ipm": 688.7,
+   "nkrya_ipm": 173.152,
+   "band": 4,
+   "log_ratio": 1.99
+  },
+  {
+   "lemma": "река",
+   "pos": "S",
+   "count": 281,
+   "text_ipm": 934.9,
+   "nkrya_ipm": 262.948,
+   "band": 4,
+   "log_ratio": 1.83
+  },
+  {
+   "lemma": "след",
+   "pos": "S",
+   "count": 107,
+   "text_ipm": 356.0,
+   "nkrya_ipm": 106.085,
+   "band": 4,
+   "log_ratio": 1.75
+  },
+  {
+   "lemma": "тип",
+   "pos": "S",
+   "count": 115,
+   "text_ipm": 382.6,
+   "nkrya_ipm": 128.005,
+   "band": 4,
+   "log_ratio": 1.58
+  },
+  {
+   "lemma": "система",
+   "pos": "S",
+   "count": 246,
+   "text_ipm": 818.4,
+   "nkrya_ipm": 312.537,
+   "band": 4,
+   "log_ratio": 1.39
+  },
+  {
+   "lemma": "форма",
+   "pos": "S",
+   "count": 193,
+   "text_ipm": 642.1,
+   "nkrya_ipm": 307.114,
+   "band": 4,
+   "log_ratio": 1.06
+  },
+  {
+   "lemma": "гора",
+   "pos": "S",
+   "count": 144,
+   "text_ipm": 479.1,
+   "nkrya_ipm": 237.356,
+   "band": 4,
+   "log_ratio": 1.01
+  },
+  {
+   "lemma": "море",
+   "pos": "S",
+   "count": 117,
+   "text_ipm": 389.3,
+   "nkrya_ipm": 250.67,
+   "band": 4,
+   "log_ratio": 0.63
+  },
+  {
+   "lemma": "статья",
+   "pos": "S",
+   "count": 112,
+   "text_ipm": 372.6,
+   "nkrya_ipm": 285.192,
+   "band": 4,
+   "log_ratio": 0.39
+  },
+  {
+   "lemma": "имя",
+   "pos": "S",
+   "count": 160,
+   "text_ipm": 532.3,
+   "nkrya_ipm": 417.425,
+   "band": 4,
+   "log_ratio": 0.35
+  },
+  {
+   "lemma": "случай",
+   "pos": "S",
+   "count": 232,
+   "text_ipm": 771.9,
+   "nkrya_ipm": 652.613,
+   "band": 4,
+   "log_ratio": 0.24
+  },
+  {
+   "lemma": "слово",
+   "pos": "S",
+   "count": 361,
+   "text_ipm": 1201.0,
+   "nkrya_ipm": 1151.61,
+   "band": 5,
+   "log_ratio": 0.06
+  },
+  {
+   "lemma": "часть",
+   "pos": "S",
+   "count": 185,
+   "text_ipm": 615.5,
+   "nkrya_ipm": 605.674,
+   "band": 4,
+   "log_ratio": 0.02
+  },
+  {
+   "lemma": "язык",
+   "pos": "S",
+   "count": 103,
+   "text_ipm": 342.7,
+   "nkrya_ipm": 375.875,
+   "band": 4,
+   "log_ratio": -0.13
+  },
+  {
+   "lemma": "город",
+   "pos": "S",
+   "count": 178,
+   "text_ipm": 592.2,
+   "nkrya_ipm": 716.564,
+   "band": 4,
+   "log_ratio": -0.28
+  },
+  {
+   "lemma": "земля",
+   "pos": "S",
+   "count": 151,
+   "text_ipm": 502.4,
+   "nkrya_ipm": 650.734,
+   "band": 4,
+   "log_ratio": -0.37
+  },
+  {
+   "lemma": "новый",
+   "pos": "A",
+   "count": 184,
+   "text_ipm": 612.2,
+   "nkrya_ipm": 1137.6,
+   "band": 5,
+   "log_ratio": -0.89
+  }
+ ],
+ "report_rel": "metadata/nkrya_keyness/zalizniak-udarenie.json",
+ "report_url": "https://github.com/gasyoun/RuWritingStyles/blob/main/metadata/nkrya_keyness/zalizniak-udarenie.json"
+}
