@@ -1,0 +1,319 @@
+{
+ "passport": "zalizniak-imennoe",
+ "handoff": "H5283",
+ "measured": "23-09-2026",
+ "source_file": "RuWritingStyles-corpus/PDFtoTXT/zalizniak_russkoe_imennoe_slovoizmenenie_2002_text.txt",
+ "source_label": "А. А. Зализняк, «Русское именное словоизменение» (2002)",
+ "source_sha256": "daab8d1d740792ecaaacf9c882b49d2fcdccb457a3114d8b97252a8ed06f3f69",
+ "lemmatizer": "pymorphy3",
+ "tokens": 316446,
+ "top_n": 30,
+ "keyness": "log2(text ipm / NKRYa ipm); NKRYa ipm floor 0.01 when no portrait",
+ "reference": "NKRYa word portrait PORTRAIT_FREQUENCY, main corpus",
+ "cache_keys": [
+  "028613a1c02e1f4f964ce51d",
+  "02f9df915fb21010c2fb4f64",
+  "053404776f2b9912a54929c3",
+  "0cf2b80eeebaeb044b11beb5",
+  "10f1303dcccec5ecd550a4cc",
+  "11813a2bac46f07e4db32a32",
+  "17baed0ed29955d529376d5f",
+  "2be0fc28a5360c4ebabe31a0",
+  "2c54d7e894a5832611592683",
+  "35b555290960186a2c935735",
+  "3ae0c6bc08c11e28ba032dba",
+  "3c6d76da2b07668d110eda03",
+  "3f296c6c435ef665ece077b6",
+  "44b521075883d10c023c89fb",
+  "5273495dcbf045551c00775c",
+  "63eea20bcddd618e48cf4f64",
+  "65ac335b48c076269575071d",
+  "7dae48b33edac90e2956b320",
+  "803db73a83fce1ae9a553ef4",
+  "82d4d23f89de5aadefec5f90",
+  "864054854fb77bef4d679f27",
+  "87e5106c757daf29c3849035",
+  "8e31530bcd837b5b90b68bab",
+  "a88adb027a56fcdc3a413fab",
+  "ae1827a8f559add92a7ecd96",
+  "b1c8082aec0d6f7b3ad901d8",
+  "b66a7d1208b5ccbc679ec9b9",
+  "bee836e9252396588887fcd0",
+  "cfe30992841e919b9d301d51",
+  "d33bcc8d97dd27cdcdeec0bf"
+ ],
+ "rows": [
+  {
+   "lemma": "словоформа",
+   "pos": "S",
+   "count": 1818,
+   "text_ipm": 5745.1,
+   "nkrya_ipm": 0.964367,
+   "band": 1,
+   "log_ratio": 12.54
+  },
+  {
+   "lemma": "парадигма",
+   "pos": "S",
+   "count": 956,
+   "text_ipm": 3021.1,
+   "nkrya_ipm": 4.28686,
+   "band": 2,
+   "log_ratio": 9.46
+  },
+  {
+   "lemma": "ударение",
+   "pos": "S",
+   "count": 1402,
+   "text_ipm": 4430.5,
+   "nkrya_ipm": 9.07349,
+   "band": 2,
+   "log_ratio": 8.93
+  },
+  {
+   "lemma": "склонение",
+   "pos": "S",
+   "count": 444,
+   "text_ipm": 1403.1,
+   "nkrya_ipm": 2.90249,
+   "band": 2,
+   "log_ratio": 8.92
+  },
+  {
+   "lemma": "падеж",
+   "pos": "S",
+   "count": 808,
+   "text_ipm": 2553.4,
+   "nkrya_ipm": 5.89413,
+   "band": 2,
+   "log_ratio": 8.76
+  },
+  {
+   "lemma": "существительное",
+   "pos": "S",
+   "count": 521,
+   "text_ipm": 1646.4,
+   "nkrya_ipm": 5.09167,
+   "band": 2,
+   "log_ratio": 8.34
+  },
+  {
+   "lemma": "прилагательное",
+   "pos": "S",
+   "count": 405,
+   "text_ipm": 1279.8,
+   "nkrya_ipm": 4.21881,
+   "band": 2,
+   "log_ratio": 8.24
+  },
+  {
+   "lemma": "именной",
+   "pos": "A",
+   "count": 397,
+   "text_ipm": 1254.6,
+   "nkrya_ipm": 4.35255,
+   "band": 2,
+   "log_ratio": 8.17
+  },
+  {
+   "lemma": "грамматический",
+   "pos": "A",
+   "count": 496,
+   "text_ipm": 1567.4,
+   "nkrya_ipm": 7.13068,
+   "band": 2,
+   "log_ratio": 7.78
+  },
+  {
+   "lemma": "условный",
+   "pos": "A",
+   "count": 613,
+   "text_ipm": 1937.1,
+   "nkrya_ipm": 22.0303,
+   "band": 3,
+   "log_ratio": 6.46
+  },
+  {
+   "lemma": "схема",
+   "pos": "S",
+   "count": 838,
+   "text_ipm": 2648.2,
+   "nkrya_ipm": 53.8286,
+   "band": 3,
+   "log_ratio": 5.62
+  },
+  {
+   "lemma": "окончание",
+   "pos": "S",
+   "count": 496,
+   "text_ipm": 1567.4,
+   "nkrya_ipm": 61.093,
+   "band": 3,
+   "log_ratio": 4.68
+  },
+  {
+   "lemma": "тип",
+   "pos": "S",
+   "count": 950,
+   "text_ipm": 3002.1,
+   "nkrya_ipm": 128.005,
+   "band": 4,
+   "log_ratio": 4.55
+  },
+  {
+   "lemma": "основа",
+   "pos": "S",
+   "count": 875,
+   "text_ipm": 2765.1,
+   "nkrya_ipm": 135.978,
+   "band": 4,
+   "log_ratio": 4.35
+  },
+  {
+   "lemma": "признак",
+   "pos": "S",
+   "count": 420,
+   "text_ipm": 1327.2,
+   "nkrya_ipm": 78.0386,
+   "band": 3,
+   "log_ratio": 4.09
+  },
+  {
+   "lemma": "значение",
+   "pos": "S",
+   "count": 962,
+   "text_ipm": 3040.0,
+   "nkrya_ipm": 201.548,
+   "band": 4,
+   "log_ratio": 3.91
+  },
+  {
+   "lemma": "правило",
+   "pos": "S",
+   "count": 764,
+   "text_ipm": 2414.3,
+   "nkrya_ipm": 163.949,
+   "band": 4,
+   "log_ratio": 3.88
+  },
+  {
+   "lemma": "класс",
+   "pos": "S",
+   "count": 683,
+   "text_ipm": 2158.3,
+   "nkrya_ipm": 189.823,
+   "band": 4,
+   "log_ratio": 3.51
+  },
+  {
+   "lemma": "слово",
+   "pos": "S",
+   "count": 3309,
+   "text_ipm": 10456.8,
+   "nkrya_ipm": 1151.61,
+   "band": 5,
+   "log_ratio": 3.18
+  },
+  {
+   "lemma": "число",
+   "pos": "S",
+   "count": 968,
+   "text_ipm": 3059.0,
+   "nkrya_ipm": 351.482,
+   "band": 4,
+   "log_ratio": 3.12
+  },
+  {
+   "lemma": "пример",
+   "pos": "S",
+   "count": 438,
+   "text_ipm": 1384.1,
+   "nkrya_ipm": 173.152,
+   "band": 4,
+   "log_ratio": 3.0
+  },
+  {
+   "lemma": "род",
+   "pos": "S",
+   "count": 496,
+   "text_ipm": 1567.4,
+   "nkrya_ipm": 226.514,
+   "band": 4,
+   "log_ratio": 2.79
+  },
+  {
+   "lemma": "язык",
+   "pos": "S",
+   "count": 712,
+   "text_ipm": 2250.0,
+   "nkrya_ipm": 375.875,
+   "band": 4,
+   "log_ratio": 2.58
+  },
+  {
+   "lemma": "форма",
+   "pos": "S",
+   "count": 517,
+   "text_ipm": 1633.8,
+   "nkrya_ipm": 307.114,
+   "band": 4,
+   "log_ratio": 2.41
+  },
+  {
+   "lemma": "группа",
+   "pos": "S",
+   "count": 403,
+   "text_ipm": 1273.5,
+   "nkrya_ipm": 246.852,
+   "band": 4,
+   "log_ratio": 2.37
+  },
+  {
+   "lemma": "следующий",
+   "pos": "A",
+   "count": 409,
+   "text_ipm": 1292.5,
+   "nkrya_ipm": 272.181,
+   "band": 4,
+   "log_ratio": 2.25
+  },
+  {
+   "lemma": "случай",
+   "pos": "S",
+   "count": 832,
+   "text_ipm": 2629.2,
+   "nkrya_ipm": 652.613,
+   "band": 4,
+   "log_ratio": 2.01
+  },
+  {
+   "lemma": "русский",
+   "pos": "A",
+   "count": 844,
+   "text_ipm": 2667.1,
+   "nkrya_ipm": 730.671,
+   "band": 4,
+   "log_ratio": 1.87
+  },
+  {
+   "lemma": "образ",
+   "pos": "S",
+   "count": 430,
+   "text_ipm": 1358.8,
+   "nkrya_ipm": 513.963,
+   "band": 4,
+   "log_ratio": 1.4
+  },
+  {
+   "lemma": "часть",
+   "pos": "S",
+   "count": 427,
+   "text_ipm": 1349.4,
+   "nkrya_ipm": 605.674,
+   "band": 4,
+   "log_ratio": 1.16
+  }
+ ],
+ "report_rel": "metadata/nkrya_keyness/zalizniak-imennoe.json",
+ "report_url": "https://github.com/gasyoun/RuWritingStyles/blob/main/metadata/nkrya_keyness/zalizniak-imennoe.json"
+}

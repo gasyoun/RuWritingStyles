@@ -1,0 +1,319 @@
+{
+ "passport": "turaev",
+ "handoff": "H5283",
+ "measured": "23-09-2026",
+ "source_file": "RuWritingStyles-corpus/PDFtoTXT/1920_Turaev_Egipetskaya-literatura.txt",
+ "source_label": "Б. А. Тураев, «Египетская литература» (1920)",
+ "source_sha256": "38f04c7fadd9518bbc331be4e6e379e4ccc2910723b3aeb463cf053933064e95",
+ "lemmatizer": "pymorphy3",
+ "tokens": 85703,
+ "top_n": 30,
+ "keyness": "log2(text ipm / NKRYa ipm); NKRYa ipm floor 0.01 when no portrait",
+ "reference": "NKRYa word portrait PORTRAIT_FREQUENCY, main corpus",
+ "cache_keys": [
+  "02aa8e4adee5fd499bd2d9c9",
+  "02f9df915fb21010c2fb4f64",
+  "05cbce0aff4c4dc588858498",
+  "10f1303dcccec5ecd550a4cc",
+  "13eada36e5f35fca22aa2408",
+  "17baed0ed29955d529376d5f",
+  "2298e9fbbdecda0222e314d4",
+  "3069780689d6697b803fb4d8",
+  "38b2718fe3225e98e1345db4",
+  "3a6daf74b0e479d85fef037b",
+  "43af1c51999f55d115928936",
+  "4ddda47f92333743d41442ce",
+  "54f2146298275f4b7e86d791",
+  "673154f6eaf7e3b8cb3054c8",
+  "70287b81245111208cd26479",
+  "705e514a8038ad42977f74d2",
+  "7cedda84792ddac2740d0197",
+  "83200238a187f24a1025ab0c",
+  "8f69ce5ee9fc21421a4bca3e",
+  "9cd14b8cf41e8224beb1aa3f",
+  "a5258c5f8754419151c157ec",
+  "b1c8082aec0d6f7b3ad901d8",
+  "b585be5bb10dbadaba6d2b98",
+  "bb108e43bc8ccdc14c3b9681",
+  "be4aff16fa6a20ec245b0b41",
+  "c484b4c45902a57d8cf6e246",
+  "c97f9a5f71930494dfd05a51",
+  "dcd9ac3c1240b71619299d29",
+  "e098af5bf87abff281e9e871",
+  "ff3db94e442a8113a9328a43"
+ ],
+ "rows": [
+  {
+   "lemma": "папирус",
+   "pos": "S",
+   "count": 152,
+   "text_ipm": 1773.6,
+   "nkrya_ipm": 1.30459,
+   "band": 2,
+   "log_ratio": 10.41
+  },
+  {
+   "lemma": "египетский",
+   "pos": "A",
+   "count": 184,
+   "text_ipm": 2146.9,
+   "nkrya_ipm": 13.9399,
+   "band": 3,
+   "log_ratio": 7.27
+  },
+  {
+   "lemma": "гробница",
+   "pos": "S",
+   "count": 108,
+   "text_ipm": 1260.2,
+   "nkrya_ipm": 8.21471,
+   "band": 2,
+   "log_ratio": 7.26
+  },
+  {
+   "lemma": "жрец",
+   "pos": "S",
+   "count": 100,
+   "text_ipm": 1166.8,
+   "nkrya_ipm": 10.8919,
+   "band": 3,
+   "log_ratio": 6.74
+  },
+  {
+   "lemma": "надпись",
+   "pos": "S",
+   "count": 335,
+   "text_ipm": 3908.8,
+   "nkrya_ipm": 54.3706,
+   "band": 3,
+   "log_ratio": 6.17
+  },
+  {
+   "lemma": "гимн",
+   "pos": "S",
+   "count": 90,
+   "text_ipm": 1050.1,
+   "nkrya_ipm": 14.5711,
+   "band": 3,
+   "log_ratio": 6.17
+  },
+  {
+   "lemma": "египет",
+   "pos": "S",
+   "count": 106,
+   "text_ipm": 1236.8,
+   "nkrya_ipm": 20.0194,
+   "band": 3,
+   "log_ratio": 5.95
+  },
+  {
+   "lemma": "текст",
+   "pos": "S",
+   "count": 552,
+   "text_ipm": 6440.8,
+   "nkrya_ipm": 123.322,
+   "band": 4,
+   "log_ratio": 5.71
+  },
+  {
+   "lemma": "эпоха",
+   "pos": "S",
+   "count": 223,
+   "text_ipm": 2602.0,
+   "nkrya_ipm": 102.432,
+   "band": 4,
+   "log_ratio": 4.67
+  },
+  {
+   "lemma": "памятник",
+   "pos": "S",
+   "count": 139,
+   "text_ipm": 1621.9,
+   "nkrya_ipm": 71.823,
+   "band": 3,
+   "log_ratio": 4.5
+  },
+  {
+   "lemma": "царь",
+   "pos": "S",
+   "count": 342,
+   "text_ipm": 3990.5,
+   "nkrya_ipm": 196.754,
+   "band": 4,
+   "log_ratio": 4.34
+  },
+  {
+   "lemma": "храм",
+   "pos": "S",
+   "count": 150,
+   "text_ipm": 1750.2,
+   "nkrya_ipm": 106.151,
+   "band": 4,
+   "log_ratio": 4.04
+  },
+  {
+   "lemma": "перевод",
+   "pos": "S",
+   "count": 120,
+   "text_ipm": 1400.2,
+   "nkrya_ipm": 88.7687,
+   "band": 3,
+   "log_ratio": 3.98
+  },
+  {
+   "lemma": "литературный",
+   "pos": "A",
+   "count": 97,
+   "text_ipm": 1131.8,
+   "nkrya_ipm": 112.674,
+   "band": 4,
+   "log_ratio": 3.33
+  },
+  {
+   "lemma": "литература",
+   "pos": "S",
+   "count": 123,
+   "text_ipm": 1435.2,
+   "nkrya_ipm": 179.572,
+   "band": 4,
+   "log_ratio": 3.0
+  },
+  {
+   "lemma": "бог",
+   "pos": "S",
+   "count": 338,
+   "text_ipm": 3943.9,
+   "nkrya_ipm": 587.008,
+   "band": 4,
+   "log_ratio": 2.75
+  },
+  {
+   "lemma": "книга",
+   "pos": "S",
+   "count": 240,
+   "text_ipm": 2800.4,
+   "nkrya_ipm": 494.516,
+   "band": 4,
+   "log_ratio": 2.5
+  },
+  {
+   "lemma": "глава",
+   "pos": "S",
+   "count": 93,
+   "text_ipm": 1085.1,
+   "nkrya_ipm": 197.791,
+   "band": 4,
+   "log_ratio": 2.46
+  },
+  {
+   "lemma": "характер",
+   "pos": "S",
+   "count": 91,
+   "text_ipm": 1061.8,
+   "nkrya_ipm": 200.243,
+   "band": 4,
+   "log_ratio": 2.41
+  },
+  {
+   "lemma": "имя",
+   "pos": "S",
+   "count": 172,
+   "text_ipm": 2006.9,
+   "nkrya_ipm": 417.425,
+   "band": 4,
+   "log_ratio": 2.27
+  },
+  {
+   "lemma": "часть",
+   "pos": "S",
+   "count": 194,
+   "text_ipm": 2263.6,
+   "nkrya_ipm": 605.674,
+   "band": 4,
+   "log_ratio": 1.9
+  },
+  {
+   "lemma": "язык",
+   "pos": "S",
+   "count": 118,
+   "text_ipm": 1376.8,
+   "nkrya_ipm": 375.875,
+   "band": 4,
+   "log_ratio": 1.87
+  },
+  {
+   "lemma": "особенно",
+   "pos": "ADV",
+   "count": 92,
+   "text_ipm": 1073.5,
+   "nkrya_ipm": 335.445,
+   "band": 4,
+   "log_ratio": 1.68
+  },
+  {
+   "lemma": "письмо",
+   "pos": "S",
+   "count": 99,
+   "text_ipm": 1155.2,
+   "nkrya_ipm": 467.213,
+   "band": 4,
+   "log_ratio": 1.31
+  },
+  {
+   "lemma": "образ",
+   "pos": "S",
+   "count": 87,
+   "text_ipm": 1015.1,
+   "nkrya_ipm": 513.963,
+   "band": 4,
+   "log_ratio": 0.98
+  },
+  {
+   "lemma": "время",
+   "pos": "S",
+   "count": 313,
+   "text_ipm": 3652.1,
+   "nkrya_ipm": 2030.75,
+   "band": 5,
+   "log_ratio": 0.85
+  },
+  {
+   "lemma": "новый",
+   "pos": "A",
+   "count": 118,
+   "text_ipm": 1376.8,
+   "nkrya_ipm": 1137.6,
+   "band": 5,
+   "log_ratio": 0.28
+  },
+  {
+   "lemma": "большой",
+   "pos": "A",
+   "count": 101,
+   "text_ipm": 1178.5,
+   "nkrya_ipm": 989.081,
+   "band": 4,
+   "log_ratio": 0.25
+  },
+  {
+   "lemma": "слово",
+   "pos": "S",
+   "count": 110,
+   "text_ipm": 1283.5,
+   "nkrya_ipm": 1151.61,
+   "band": 5,
+   "log_ratio": 0.16
+  },
+  {
+   "lemma": "жизнь",
+   "pos": "S",
+   "count": 107,
+   "text_ipm": 1248.5,
+   "nkrya_ipm": 1439.43,
+   "band": 5,
+   "log_ratio": -0.21
+  }
+ ],
+ "report_rel": "metadata/nkrya_keyness/turaev.json",
+ "report_url": "https://github.com/gasyoun/RuWritingStyles/blob/main/metadata/nkrya_keyness/turaev.json"
+}

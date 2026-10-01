@@ -38,6 +38,11 @@ harvest = [
   "pdfminer.six>=20231228",
   "pypdf>=4",
 ]
+# NKRYa keyness + scrutiny archaism candidates (H5283): lemmatizer only; the review
+# pipeline stays dependency-free, and without it the NKRYa prompt section is empty.
+nkrya = [
+  "pymorphy3>=2",
+]
 
 [project.scripts]
 rws = "ruwritingstyles.cli:main"

@@ -1,12 +1,22 @@
 # Дорожная карта Q3 2026 — «Доверенный бенчмарк» (канонический план)
 
-_Created: 03-07-2026 · Last updated: 02-09-2026_
+_Created: 03-07-2026 · Last updated: 24-09-2026_
 
 > **Truth-pass 02-09-2026** (H3775) — `roadmap_handoff_truth.py --check` flagged this
 > page drained but still living: **9 of 9 referenced handoffs have shipped, zero remain OPEN**.
 > Kept at this path per MG ruling 31-08-2026 (do not archive) — the strategy/plan
 > layer still holds even though its backlog has fully closed. A future session
 > reopening work here should mint a fresh H### rather than un-close these.
+>
+> **Verdict pass 24-09-2026** (H5375, E015 close-out wave 1) — re-confirms the 31-08
+> keep ruling: still 0 open checkboxes / 35 done, and this file is the explicit
+> supersession target named by three sibling generations already archived
+> ([`GEMINI_ROADMAP.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/archive/GEMINI_ROADMAP.md),
+> [`docs/provider-roadmaps.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/archive/provider-roadmaps.md),
+> [`docs/roadmap_literary_clusters.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/archive/roadmap_literary_clusters.md)),
+> so archiving it would orphan those tombstones. **Not archived.** The only remaining
+> open items are the three human-only "author buttons" in Фаза O below — each now
+> points at a dated GTD row (see Фаза O footer) instead of living as un-tracked prose.
 
 **Статус: принята.** Четыре решения зафиксированы автором 03-07-2026 (сессия Fable 5,
 `claude-fable-5`):

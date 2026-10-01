@@ -1,0 +1,319 @@
+{
+ "passport": "bartold",
+ "handoff": "H5283",
+ "measured": "23-09-2026",
+ "source_file": "RuWritingStyles-corpus/PDFtoTXT/1927_Bartold_Kirgizy-istoricheskij-ocherk.txt",
+ "source_label": "В. В. Бартольд, «Киргизы. Исторический очерк» (1927)",
+ "source_sha256": "be7cd9a688fa8819486c3f8340786d2af557bb29b577e84b62b17c2afa990df3",
+ "lemmatizer": "pymorphy3",
+ "tokens": 23649,
+ "top_n": 30,
+ "keyness": "log2(text ipm / NKRYa ipm); NKRYa ipm floor 0.01 when no portrait",
+ "reference": "NKRYa word portrait PORTRAIT_FREQUENCY, main corpus",
+ "cache_keys": [
+  "02f9df915fb21010c2fb4f64",
+  "097e70fc51b3946c1fb5e237",
+  "0d4ab415bf358a0ea3d1f76f",
+  "10f1303dcccec5ecd550a4cc",
+  "18905eee3cc06a5772f3bc4a",
+  "21c5c1597624527b60f34a53",
+  "2298e9fbbdecda0222e314d4",
+  "39f3a1b5c75180c82b5cb0a3",
+  "3f81d8c76f1fbe0fdcd6fea0",
+  "4bf6619c8fa2889dadec975c",
+  "55619e95e1e495bdba444392",
+  "62568a1bfcf95f0fbba3a830",
+  "62ec4c8ece74a9bab69b2d82",
+  "67f7a5d1d1f32a9d34178bc6",
+  "71b22a486761e93fe8e87a1f",
+  "7daab8b36bba14cd2a1f9120",
+  "7ec542808579a73570bc27c5",
+  "97a92c71cf1f1260dc05cc3f",
+  "a3eec1d24f1aacab03fc9838",
+  "ad9af5f877457b13114b0464",
+  "ae1827a8f559add92a7ecd96",
+  "b43719ec720e524061cc3886",
+  "bb108e43bc8ccdc14c3b9681",
+  "bc0dc1f87e64365e214f4245",
+  "c316e8b0ab077feae93acf52",
+  "c9f76ffbb753e583c07fd496",
+  "cdda0b463d69c98b8132505f",
+  "dd7fed313196f4cd24f332e1",
+  "df854893d3a8bbbf014fc198",
+  "e3c466f598b0092c9321f700"
+ ],
+ "rows": [
+  {
+   "lemma": "уйгур",
+   "pos": "S",
+   "count": 51,
+   "text_ipm": 2156.5,
+   "nkrya_ipm": 0.293299,
+   "band": 1,
+   "log_ratio": 12.84
+  },
+  {
+   "lemma": "киргиз",
+   "pos": "S",
+   "count": 437,
+   "text_ipm": 18478.6,
+   "nkrya_ipm": 7.50845,
+   "band": 2,
+   "log_ratio": 11.27
+  },
+  {
+   "lemma": "упоминаться",
+   "pos": "V",
+   "count": 36,
+   "text_ipm": 1522.3,
+   "nkrya_ipm": 1.56739,
+   "band": 2,
+   "log_ratio": 9.92
+  },
+  {
+   "lemma": "киргизский",
+   "pos": "A",
+   "count": 68,
+   "text_ipm": 2875.4,
+   "nkrya_ipm": 4.09211,
+   "band": 2,
+   "log_ratio": 9.46
+  },
+  {
+   "lemma": "каган",
+   "pos": "S",
+   "count": 43,
+   "text_ipm": 1818.3,
+   "nkrya_ipm": 2.59511,
+   "band": 2,
+   "log_ratio": 9.45
+  },
+  {
+   "lemma": "енисей",
+   "pos": "S",
+   "count": 36,
+   "text_ipm": 1522.3,
+   "nkrya_ipm": 5.99972,
+   "band": 2,
+   "log_ratio": 7.99
+  },
+  {
+   "lemma": "хан",
+   "pos": "S",
+   "count": 69,
+   "text_ipm": 2917.7,
+   "nkrya_ipm": 29.8742,
+   "band": 3,
+   "log_ratio": 6.61
+  },
+  {
+   "lemma": "китаец",
+   "pos": "S",
+   "count": 51,
+   "text_ipm": 2156.5,
+   "nkrya_ipm": 33.8702,
+   "band": 3,
+   "log_ratio": 5.99
+  },
+  {
+   "lemma": "китайский",
+   "pos": "A",
+   "count": 61,
+   "text_ipm": 2579.4,
+   "nkrya_ipm": 61.154,
+   "band": 3,
+   "log_ratio": 5.4
+  },
+  {
+   "lemma": "говориться",
+   "pos": "V",
+   "count": 42,
+   "text_ipm": 1776.0,
+   "nkrya_ipm": 43.3519,
+   "band": 3,
+   "log_ratio": 5.36
+  },
+  {
+   "lemma": "надпись",
+   "pos": "S",
+   "count": 42,
+   "text_ipm": 1776.0,
+   "nkrya_ipm": 54.3706,
+   "band": 3,
+   "log_ratio": 5.03
+  },
+  {
+   "lemma": "поход",
+   "pos": "S",
+   "count": 38,
+   "text_ipm": 1606.8,
+   "nkrya_ipm": 56.06,
+   "band": 3,
+   "log_ratio": 4.84
+  },
+  {
+   "lemma": "известие",
+   "pos": "S",
+   "count": 45,
+   "text_ipm": 1902.8,
+   "nkrya_ipm": 71.7597,
+   "band": 3,
+   "log_ratio": 4.73
+  },
+  {
+   "lemma": "восточный",
+   "pos": "A",
+   "count": 36,
+   "text_ipm": 1522.3,
+   "nkrya_ipm": 74.0192,
+   "band": 3,
+   "log_ratio": 4.36
+  },
+  {
+   "lemma": "запад",
+   "pos": "S",
+   "count": 40,
+   "text_ipm": 1691.4,
+   "nkrya_ipm": 86.2205,
+   "band": 3,
+   "log_ratio": 4.29
+  },
+  {
+   "lemma": "казак",
+   "pos": "S",
+   "count": 38,
+   "text_ipm": 1606.8,
+   "nkrya_ipm": 91.3544,
+   "band": 3,
+   "log_ratio": 4.14
+  },
+  {
+   "lemma": "сведение",
+   "pos": "S",
+   "count": 38,
+   "text_ipm": 1606.8,
+   "nkrya_ipm": 97.218,
+   "band": 3,
+   "log_ratio": 4.05
+  },
+  {
+   "lemma": "название",
+   "pos": "S",
+   "count": 46,
+   "text_ipm": 1945.1,
+   "nkrya_ipm": 137.196,
+   "band": 4,
+   "log_ratio": 3.83
+  },
+  {
+   "lemma": "область",
+   "pos": "S",
+   "count": 61,
+   "text_ipm": 2579.4,
+   "nkrya_ipm": 223.857,
+   "band": 4,
+   "log_ratio": 3.53
+  },
+  {
+   "lemma": "народ",
+   "pos": "S",
+   "count": 130,
+   "text_ipm": 5497.1,
+   "nkrya_ipm": 526.715,
+   "band": 4,
+   "log_ratio": 3.38
+  },
+  {
+   "lemma": "рассказ",
+   "pos": "S",
+   "count": 43,
+   "text_ipm": 1818.3,
+   "nkrya_ipm": 175.083,
+   "band": 4,
+   "log_ratio": 3.38
+  },
+  {
+   "lemma": "страна",
+   "pos": "S",
+   "count": 84,
+   "text_ipm": 3551.9,
+   "nkrya_ipm": 460.397,
+   "band": 4,
+   "log_ratio": 2.95
+  },
+  {
+   "lemma": "река",
+   "pos": "S",
+   "count": 46,
+   "text_ipm": 1945.1,
+   "nkrya_ipm": 262.948,
+   "band": 4,
+   "log_ratio": 2.89
+  },
+  {
+   "lemma": "русский",
+   "pos": "A",
+   "count": 91,
+   "text_ipm": 3847.9,
+   "nkrya_ipm": 730.671,
+   "band": 4,
+   "log_ratio": 2.4
+  },
+  {
+   "lemma": "часть",
+   "pos": "S",
+   "count": 60,
+   "text_ipm": 2537.1,
+   "nkrya_ipm": 605.674,
+   "band": 4,
+   "log_ratio": 2.07
+  },
+  {
+   "lemma": "жить",
+   "pos": "V",
+   "count": 50,
+   "text_ipm": 2114.3,
+   "nkrya_ipm": 804.882,
+   "band": 4,
+   "log_ratio": 1.39
+  },
+  {
+   "lemma": "время",
+   "pos": "S",
+   "count": 121,
+   "text_ipm": 5116.5,
+   "nkrya_ipm": 2030.75,
+   "band": 5,
+   "log_ratio": 1.33
+  },
+  {
+   "lemma": "слово",
+   "pos": "S",
+   "count": 62,
+   "text_ipm": 2621.7,
+   "nkrya_ipm": 1151.61,
+   "band": 5,
+   "log_ratio": 1.19
+  },
+  {
+   "lemma": "год",
+   "pos": "S",
+   "count": 83,
+   "text_ipm": 3509.7,
+   "nkrya_ipm": 2876.91,
+   "band": 5,
+   "log_ratio": 0.29
+  },
+  {
+   "lemma": "говорить",
+   "pos": "V",
+   "count": 37,
+   "text_ipm": 1564.5,
+   "nkrya_ipm": 2148.62,
+   "band": 5,
+   "log_ratio": -0.46
+  }
+ ],
+ "report_rel": "metadata/nkrya_keyness/bartold.json",
+ "report_url": "https://github.com/gasyoun/RuWritingStyles/blob/main/metadata/nkrya_keyness/bartold.json"
+}

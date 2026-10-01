@@ -6,6 +6,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 from .io_utils import atomic_write_json, atomic_write_text
+from .nkrya_evidence import NkryaEvidence, anachronism_candidates, lemma_evidence, render_evidence_table
 
 
 @dataclass(frozen=True)
@@ -16,7 +17,9 @@ class ScrutinyBundle:
     prompt_md: Path
 
 
-def create_scrutiny_bundle(*, repo_root: Path, run_dir: Path) -> ScrutinyBundle:
+def create_scrutiny_bundle(*, repo_root: Path, run_dir: Path, nkrya: NkryaEvidence | None = None) -> ScrutinyBundle:
+    """Write the scrutiny prompt + JSON shell. With `nkrya`, archaism candidates in the
+    document get NKRYa corpus evidence in the prompt (advisory, H5283)."""
     run_dir = run_dir.resolve()
     segments_path = run_dir / "segments.json"
     normalized_path = run_dir / "normalized.md"
@@ -35,12 +38,18 @@ def create_scrutiny_bundle(*, repo_root: Path, run_dir: Path) -> ScrutinyBundle:
     prompt_path = scrutiny_dir / "scrutiny.prompt.md"
     scrutiny_path = scrutiny_dir / "scrutiny.json"
 
+    normalized_text = normalized_path.read_text(encoding="utf-8")
+    evidence_rows: list[dict] = []
+    if nkrya is not None:
+        evidence_rows = [lemma_evidence(nkrya, lemma, pos) for lemma, pos in anachronism_candidates(normalized_text)]
+
     atomic_write_text(
         prompt_path,
         _render_prompt(
             run_id=run_id,
             segments_json=segments_path.read_text(encoding="utf-8"),
-            normalized_text=normalized_path.read_text(encoding="utf-8"),
+            normalized_text=normalized_text,
+            nkrya_rows=evidence_rows if nkrya is not None else None,
         ),
     )
 
@@ -51,13 +60,33 @@ def create_scrutiny_bundle(*, repo_root: Path, run_dir: Path) -> ScrutinyBundle:
                 "status": "prompt_ready",
                 "prompt_path": _repo_relative(repo_root, prompt_path),
                 "findings": [],
+                **({"nkrya": {"cache_dir": _repo_relative(repo_root, nkrya.cache_dir),
+                              "offline": nkrya.offline, "evidence": evidence_rows}} if nkrya is not None else {}),
         },
     )
 
     return ScrutinyBundle(scrutiny_json=scrutiny_path, prompt_md=prompt_path)
 
 
-def _render_prompt(run_id: str, segments_json: str, normalized_text: str) -> str:
+def _render_nkrya_section(rows: list[dict] | None) -> str:
+    if rows is None:
+        return ""
+    body = render_evidence_table(rows) if rows else "_No archaism candidates found in this document._"
+    return f"""
+## NKRYa Corpus Evidence (advisory)
+
+Measured in the Russian National Corpus (ruscorpora.ru, main corpus) for words in this document that look archaic
+(pre-reform spelling, Church-Slavonic function words, out-of-dictionary forms). **ipm, all periods** is the rate
+across the whole main corpus (band 1 = under 1 ipm … 6 = over 10 000 ipm); **ipm 1800–1899** is the rate in its
+19th-century slice, and the hint compares the two (a word used several times more often in 1800–1899 is period-marked).
+The numbers are evidence, not a verdict: weigh them, cite them in a finding when they matter, and never reject a word
+on them alone.
+
+{body}
+"""
+
+
+def _render_prompt(run_id: str, segments_json: str, normalized_text: str, nkrya_rows: list[dict] | None = None) -> str:
     return f"""# Linguistic Scrutiny Request
 
 You are a RuWritingStyles `linguistic_scrutinizer` (Senior Philologist).
@@ -73,6 +102,9 @@ Perform a deep philological audit of the document. Identify etymological errors,
 3. **Syntactic Fidelity**: Is the sentence structure consistent with the intended historical or academic register?
 4. **Morphological Accuracy**: Check for incorrect historical endings or declensions.
 
+For every `anachronism` finding, put the single word at issue in `term` (as written in the text) so corpus
+evidence can be attached to it.
+{_render_nkrya_section(nkrya_rows)}
 ## Required Output
 
 Return a JSON object matching `schemas/scrutiny-output.schema.json`:
@@ -88,7 +120,8 @@ Return a JSON object matching `schemas/scrutiny-output.schema.json`:
       "severity": "critical",
       "finding": "The use of 'X' as a root for 'Y' is a folk etymology; historical linguistics shows 'Z' is the actual root.",
       "suggestion": "Correct the explanation to reference 'Z'.",
-      "confidence": 0.95
+      "confidence": 0.95,
+      "term": "X"
     }}
   ]
 }}

@@ -1,0 +1,319 @@
+{
+ "passport": "golenishchev",
+ "handoff": "H5283",
+ "measured": "23-09-2026",
+ "source_file": "RuWritingStyles-corpus/PDFtoTXT/1880_Golenishchev_Ob-ekzemplyare-Knigi-mertvyh.txt",
+ "source_label": "В. С. Голенищев, «Об экземпляре Книги мёртвых» (1880; дореформенная орфография приведена к современной)",
+ "source_sha256": "de805e1a6a5b8604e84a2c6f8049c73ee4c2d5a5cef2aca87f2bf3289a03313a",
+ "lemmatizer": "pymorphy3",
+ "tokens": 1555,
+ "top_n": 30,
+ "keyness": "log2(text ipm / NKRYa ipm); NKRYa ipm floor 0.01 when no portrait",
+ "reference": "NKRYa word portrait PORTRAIT_FREQUENCY, main corpus",
+ "cache_keys": [
+  "02f9df915fb21010c2fb4f64",
+  "0b636986aaa257e3691236d8",
+  "1f28231802135cca4462e57f",
+  "3960fe6c6afbbaada7672569",
+  "43af1c51999f55d115928936",
+  "4671c05dad165542c6e0f012",
+  "49e230c6393fdaca415899ee",
+  "4ddda47f92333743d41442ce",
+  "522ce331dac3307c1855114a",
+  "54f2146298275f4b7e86d791",
+  "5d4d3c51c3621b7afb83b381",
+  "5e10cd543a80af74fa447b35",
+  "5e269eff1f1a2188cd0a69b1",
+  "6dc5995ff7ddec113a82d4c9",
+  "75992787a047e5a727d7898a",
+  "7980d8bbbb944335ccc096a8",
+  "7a70fb181c1f4c031f774c44",
+  "8bb27cbd3738b9e90f58c7d5",
+  "8e85c210be0977526cdf5b58",
+  "aa6fc8bd3c5d6e0a9685094d",
+  "ab9e1c6846529f7cbb5458fb",
+  "c4b1ac9ae0fd20d3b85c4ff2",
+  "c97f9a5f71930494dfd05a51",
+  "d0c634fb42c7a7228f3f962d",
+  "d7de64a1eafb87a5ee3446ab",
+  "dbf70f2ac35bf09ee0b7bc93",
+  "dc2f61406f9eb0c98368e9b1",
+  "de02482755da50c56f2055ec",
+  "e098af5bf87abff281e9e871",
+  "fe080ee8a0304dfe89008fb6"
+ ],
+ "rows": [
+  {
+   "lemma": "папирус",
+   "pos": "S",
+   "count": 5,
+   "text_ipm": 3215.4,
+   "nkrya_ipm": 1.30459,
+   "band": 2,
+   "log_ratio": 11.27
+  },
+  {
+   "lemma": "шрифт",
+   "pos": "S",
+   "count": 7,
+   "text_ipm": 4501.6,
+   "nkrya_ipm": 6.72006,
+   "band": 2,
+   "log_ratio": 9.39
+  },
+  {
+   "lemma": "археологический",
+   "pos": "A",
+   "count": 3,
+   "text_ipm": 1929.3,
+   "nkrya_ipm": 7.92845,
+   "band": 2,
+   "log_ratio": 7.93
+  },
+  {
+   "lemma": "покойный",
+   "pos": "A",
+   "count": 15,
+   "text_ipm": 9646.3,
+   "nkrya_ipm": 52.8266,
+   "band": 3,
+   "log_ratio": 7.51
+  },
+  {
+   "lemma": "рай",
+   "pos": "S",
+   "count": 5,
+   "text_ipm": 3215.4,
+   "nkrya_ipm": 28.7855,
+   "band": 3,
+   "log_ratio": 6.8
+  },
+  {
+   "lemma": "экземпляр",
+   "pos": "S",
+   "count": 4,
+   "text_ipm": 2572.3,
+   "nkrya_ipm": 31.0076,
+   "band": 3,
+   "log_ratio": 6.37
+  },
+  {
+   "lemma": "мёртвый",
+   "pos": "S",
+   "count": 10,
+   "text_ipm": 6430.9,
+   "nkrya_ipm": 102.786,
+   "band": 4,
+   "log_ratio": 5.97
+  },
+  {
+   "lemma": "сборник",
+   "pos": "S",
+   "count": 3,
+   "text_ipm": 1929.3,
+   "nkrya_ipm": 36.6178,
+   "band": 3,
+   "log_ratio": 5.72
+  },
+  {
+   "lemma": "лист",
+   "pos": "S",
+   "count": 9,
+   "text_ipm": 5787.8,
+   "nkrya_ipm": 138.069,
+   "band": 4,
+   "log_ratio": 5.39
+  },
+  {
+   "lemma": "список",
+   "pos": "S",
+   "count": 4,
+   "text_ipm": 2572.3,
+   "nkrya_ipm": 71.1848,
+   "band": 3,
+   "log_ratio": 5.18
+  },
+  {
+   "lemma": "солнце",
+   "pos": "S",
+   "count": 13,
+   "text_ipm": 8360.1,
+   "nkrya_ipm": 242.934,
+   "band": 4,
+   "log_ratio": 5.1
+  },
+  {
+   "lemma": "молитва",
+   "pos": "S",
+   "count": 4,
+   "text_ipm": 2572.3,
+   "nkrya_ipm": 75.9926,
+   "band": 3,
+   "log_ratio": 5.08
+  },
+  {
+   "lemma": "судья",
+   "pos": "S",
+   "count": 3,
+   "text_ipm": 1929.3,
+   "nkrya_ipm": 64.1621,
+   "band": 3,
+   "log_ratio": 4.91
+  },
+  {
+   "lemma": "земной",
+   "pos": "A",
+   "count": 3,
+   "text_ipm": 1929.3,
+   "nkrya_ipm": 83.555,
+   "band": 3,
+   "log_ratio": 4.53
+  },
+  {
+   "lemma": "глава",
+   "pos": "S",
+   "count": 7,
+   "text_ipm": 4501.6,
+   "nkrya_ipm": 197.791,
+   "band": 4,
+   "log_ratio": 4.51
+  },
+  {
+   "lemma": "книга",
+   "pos": "S",
+   "count": 17,
+   "text_ipm": 10932.5,
+   "nkrya_ipm": 494.516,
+   "band": 4,
+   "log_ratio": 4.47
+  },
+  {
+   "lemma": "древний",
+   "pos": "A",
+   "count": 4,
+   "text_ipm": 2572.3,
+   "nkrya_ipm": 124.18,
+   "band": 4,
+   "log_ratio": 4.37
+  },
+  {
+   "lemma": "картина",
+   "pos": "S",
+   "count": 6,
+   "text_ipm": 3858.5,
+   "nkrya_ipm": 213.583,
+   "band": 4,
+   "log_ratio": 4.18
+  },
+  {
+   "lemma": "представлять",
+   "pos": "V",
+   "count": 6,
+   "text_ipm": 3858.5,
+   "nkrya_ipm": 218.477,
+   "band": 4,
+   "log_ratio": 4.14
+  },
+  {
+   "lemma": "бог",
+   "pos": "S",
+   "count": 15,
+   "text_ipm": 9646.3,
+   "nkrya_ipm": 587.008,
+   "band": 4,
+   "log_ratio": 4.04
+  },
+  {
+   "lemma": "приходиться",
+   "pos": "V",
+   "count": 4,
+   "text_ipm": 2572.3,
+   "nkrya_ipm": 177.042,
+   "band": 4,
+   "log_ratio": 3.86
+  },
+  {
+   "lemma": "состав",
+   "pos": "S",
+   "count": 3,
+   "text_ipm": 1929.3,
+   "nkrya_ipm": 143.038,
+   "band": 4,
+   "log_ratio": 3.75
+  },
+  {
+   "lemma": "суд",
+   "pos": "S",
+   "count": 4,
+   "text_ipm": 2572.3,
+   "nkrya_ipm": 212.358,
+   "band": 4,
+   "log_ratio": 3.6
+  },
+  {
+   "lemma": "количество",
+   "pos": "S",
+   "count": 3,
+   "text_ipm": 1929.3,
+   "nkrya_ipm": 164.238,
+   "band": 4,
+   "log_ratio": 3.55
+  },
+  {
+   "lemma": "наконец",
+   "pos": "ADV",
+   "count": 3,
+   "text_ipm": 1929.3,
+   "nkrya_ipm": 200.957,
+   "band": 4,
+   "log_ratio": 3.26
+  },
+  {
+   "lemma": "общий",
+   "pos": "A",
+   "count": 5,
+   "text_ipm": 3215.4,
+   "nkrya_ipm": 461.418,
+   "band": 4,
+   "log_ratio": 2.8
+  },
+  {
+   "lemma": "общество",
+   "pos": "S",
+   "count": 3,
+   "text_ipm": 1929.3,
+   "nkrya_ipm": 332.775,
+   "band": 4,
+   "log_ratio": 2.54
+  },
+  {
+   "lemma": "вместе",
+   "pos": "ADV",
+   "count": 3,
+   "text_ipm": 1929.3,
+   "nkrya_ipm": 435.72,
+   "band": 4,
+   "log_ratio": 2.15
+  },
+  {
+   "lemma": "часть",
+   "pos": "S",
+   "count": 4,
+   "text_ipm": 2572.3,
+   "nkrya_ipm": 605.674,
+   "band": 4,
+   "log_ratio": 2.09
+  },
+  {
+   "lemma": "жизнь",
+   "pos": "S",
+   "count": 7,
+   "text_ipm": 4501.6,
+   "nkrya_ipm": 1439.43,
+   "band": 5,
+   "log_ratio": 1.64
+  }
+ ],
+ "report_rel": "metadata/nkrya_keyness/golenishchev.json",
+ "report_url": "https://github.com/gasyoun/RuWritingStyles/blob/main/metadata/nkrya_keyness/golenishchev.json"
+}

@@ -15,7 +15,7 @@ _Created: 03-05-2026 · Last updated: 05-09-2026_
 Скачайте wheel из [GitHub Releases](https://github.com/gasyoun/RuWritingStyles/releases), затем создайте рабочее пространство вне каталога Python:
 
 ```bash
-python -m pip install ruwritingstyles-2.23.0-py3-none-any.whl
+python -m pip install ruwritingstyles   # from PyPI (2.25.3+, 19-09-2026)
 mkdir rws-workspace && cd rws-workspace
 rws init .
 rws show-config

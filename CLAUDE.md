@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-_Created: 08-05-2026 · Last updated: 02-09-2026_
+_Created: 08-05-2026 · Last updated: 16-09-2026_
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -68,7 +68,7 @@ Every segment in `segments.json` has a stable `span_id` (`p002`, `h004`, `c003` 
 
 ## Provider adapters
 
-Real providers plus `mock` (`PROVIDER_CHOICES` in `cli.py`): `openai`, `google`, `anthropic`, `openrouter`, `deepseek` (+ `local`/`ollama` for OpenAI-compatible self-hosting). `deepseek` is the project's primary real provider (OpenAI-compatible JSON mode; `DEEPSEEK_API_KEY`; default `deepseek-chat`, `deepseek-reasoner` routed to council/verify in `model_policy.yml`; `RWS_DEEPSEEK_URL` overrides the base for an OpenRouter/proxy route). The `mock` provider is deterministic and is what tests use; never assume a real key is available.
+Real providers plus `mock` (`PROVIDER_CHOICES` in `cli.py`): `openai`, `google`, `anthropic`, `openrouter`, `deepseek` (+ `local`/`ollama` for OpenAI-compatible self-hosting). `deepseek` is the project's primary real provider (OpenAI-compatible JSON mode; `DEEPSEEK_API_KEY`; default `deepseek-chat`, `deepseek-reasoner` routed to council/verify in `model_policy.yml`; `RWS_DEEPSEEK_URL` overrides the base for an OpenRouter/proxy route). On a DeepSeek HTTP 402 ("Insufficient Balance" — the account ran out of funds) `DeepSeekProvider` retries the same judge prompt once through `OpenRouterProvider` (`deepseek/deepseek-chat` or `deepseek/deepseek-r1` slug; needs `OPENROUTER_API_KEY`/`NOUS_PORTAL_API_KEY`); `RWS_DEEPSEEK_OPENROUTER_FALLBACK=0` disables it. The `mock` provider is deterministic and is what tests use; never assume a real key is available.
 
 Env vars are loaded from `.env` via `python-dotenv` at CLI import time. The `provider_status` module reports readiness without exposing keys; use `rws provider-status --provider <p> --strict` in scripts. Retry/backoff is centralized — `RWS_PROVIDER_MAX_ATTEMPTS`, `RWS_PROVIDER_RETRY_SECONDS`, and rate-limit headers (`Retry-After`, OpenAI `x-ratelimit-reset-*`, Anthropic `anthropic-ratelimit-*-reset`) feed the same retry layer; provider log entries record `retry_count`, `retry_delay_seconds`, `retry_statuses`.
 
@@ -129,5 +129,9 @@ Sync rule: extraction order lives in `PDF_EXTRACTOR_CHAIN` and the accept/reject
 
 `sanity()` defaults to expecting Cyrillic. Sources known to be in another language must pass `expect_cyrillic=False`, or a cleanly extracted English article scores `cyrillic_ratio` 0.06 and is discarded as garbled.
 - The `mvp_style_ids` list in `styles/manifest.yml` — `rws list-styles --mvp` and the default council set depend on it. The `councils:` block beside it defines named panels (`general` = `mvp_style_ids`, `sanskrit`, `indology`, `lexicography`) selectable via `rws run --council <name>` / `rws councils`; `validate_project` fails if a council names a non-existent passport, so edit ids carefully.
+
+## Memory store
+
+This repo keeps a committed memory store at [`.claude/projects/RuWritingStyles/memory/`](https://github.com/gasyoun/RuWritingStyles/tree/main/.claude/projects/RuWritingStyles/memory) per the org Memory-routing rule ([`/danger-memory`](https://github.com/gasyoun/claude-config/blob/main/commands/danger-memory.md)) — write dangerous/durable facts there and index each in its `MEMORY.md` (H4547).
 
 _Dr. Mārcis Gasūns_
