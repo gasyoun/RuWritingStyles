@@ -1,0 +1,352 @@
+{
+ "protocol": "evals/probes/POSITION_PAIR_PROTOCOL_h5010_2026-09-17.md",
+ "judge": "glm-5.3-flash (z-ai, opencode/zai-coding-plan/glm-5.3-flash)",
+ "seed": 5010,
+ "denominator": 25,
+ "invalid": [],
+ "primary": {
+  "caught_any": {
+   "flips": 0,
+   "n": 25,
+   "rate": 0.0,
+   "wilson95": [
+    0.0,
+    0.1332
+   ]
+  },
+  "caught_adjacent": {
+   "flips": 0,
+   "n": 25,
+   "rate": 0.0,
+   "wilson95": [
+    0.0,
+    0.1332
+   ]
+  },
+  "type_correct": {
+   "flips": 0,
+   "n": 25,
+   "rate": 0.0,
+   "wilson95": [
+    0.0,
+    0.1332
+   ]
+  },
+  "fp": {
+   "flips": 0,
+   "n": 25,
+   "rate": 0.0,
+   "wilson95": [
+    0.0,
+    0.1332
+   ]
+  }
+ },
+ "directional_first_position": {
+  "discordant_type_correct_pairs": 0,
+  "favours_earlier_target_position": 0
+ },
+ "per_run": {
+  "20260703-h073gov-commentary-layer-mix-r01": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-commentary-layer-mix-r01",
+   "target_pos_orig": 5,
+   "target_pos_rev": 1,
+   "pres_orig": "P17",
+   "pres_rev": "P46"
+  },
+  "20260703-h073gov-commentary-layer-mix-r02": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-commentary-layer-mix-r02",
+   "target_pos_orig": 5,
+   "target_pos_rev": 2,
+   "pres_orig": "P32",
+   "pres_rev": "P26"
+  },
+  "20260703-h073gov-commentary-layer-mix-r03": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-commentary-layer-mix-r03",
+   "target_pos_orig": 7,
+   "target_pos_rev": 2,
+   "pres_orig": "P45",
+   "pres_rev": "P42"
+  },
+  "20260703-h073gov-commentary-layer-mix-r04": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-commentary-layer-mix-r04",
+   "target_pos_orig": 8,
+   "target_pos_rev": 1,
+   "pres_orig": "P30",
+   "pres_rev": "P40"
+  },
+  "20260703-h073gov-commentary-layer-mix-r05": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-commentary-layer-mix-r05",
+   "target_pos_orig": 5,
+   "target_pos_rev": 4,
+   "pres_orig": "P22",
+   "pres_rev": "P01"
+  },
+  "20260703-h073gov-karaka-not-padezh-r01": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-karaka-not-padezh-r01",
+   "target_pos_orig": 1,
+   "target_pos_rev": 4,
+   "pres_orig": "P31",
+   "pres_rev": "P05"
+  },
+  "20260703-h073gov-karaka-not-padezh-r02": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-karaka-not-padezh-r02",
+   "target_pos_orig": 1,
+   "target_pos_rev": 5,
+   "pres_orig": "P20",
+   "pres_rev": "P47"
+  },
+  "20260703-h073gov-karaka-not-padezh-r03": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-karaka-not-padezh-r03",
+   "target_pos_orig": 1,
+   "target_pos_rev": 3,
+   "pres_orig": "P43",
+   "pres_rev": "P16"
+  },
+  "20260703-h073gov-karaka-not-padezh-r04": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-karaka-not-padezh-r04",
+   "target_pos_orig": 1,
+   "target_pos_rev": 5,
+   "pres_orig": "P02",
+   "pres_rev": "P28"
+  },
+  "20260703-h073gov-karaka-not-padezh-r05": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-karaka-not-padezh-r05",
+   "target_pos_orig": 1,
+   "target_pos_rev": 4,
+   "pres_orig": "P18",
+   "pres_rev": "P50"
+  },
+  "20260703-h073gov-samasa-misclassification-r01": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-samasa-misclassification-r01",
+   "target_pos_orig": 1,
+   "target_pos_rev": 6,
+   "pres_orig": "P25",
+   "pres_rev": "P09"
+  },
+  "20260703-h073gov-samasa-misclassification-r02": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-samasa-misclassification-r02",
+   "target_pos_orig": 1,
+   "target_pos_rev": 2,
+   "pres_orig": "P04",
+   "pres_rev": "P06"
+  },
+  "20260703-h073gov-samasa-misclassification-r03": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-samasa-misclassification-r03",
+   "target_pos_orig": 1,
+   "target_pos_rev": 5,
+   "pres_orig": "P38",
+   "pres_rev": "P21"
+  },
+  "20260703-h073gov-samasa-misclassification-r04": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-samasa-misclassification-r04",
+   "target_pos_orig": 1,
+   "target_pos_rev": 2,
+   "pres_orig": "P44",
+   "pres_rev": "P29"
+  },
+  "20260703-h073gov-samasa-misclassification-r05": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-samasa-misclassification-r05",
+   "target_pos_orig": 1,
+   "target_pos_rev": 5,
+   "pres_orig": "P27",
+   "pres_rev": "P35"
+  },
+  "20260703-h073gov-sanskrit-pseudo-etymology-r01": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r01",
+   "target_pos_orig": 1,
+   "target_pos_rev": 9,
+   "pres_orig": "P49",
+   "pres_rev": "P07"
+  },
+  "20260703-h073gov-sanskrit-pseudo-etymology-r02": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r02",
+   "target_pos_orig": 1,
+   "target_pos_rev": 5,
+   "pres_orig": "P14",
+   "pres_rev": "P24"
+  },
+  "20260703-h073gov-sanskrit-pseudo-etymology-r03": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r03",
+   "target_pos_orig": 1,
+   "target_pos_rev": 8,
+   "pres_orig": "P39",
+   "pres_rev": "P15"
+  },
+  "20260703-h073gov-sanskrit-pseudo-etymology-r04": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r04",
+   "target_pos_orig": 1,
+   "target_pos_rev": 5,
+   "pres_orig": "P08",
+   "pres_rev": "P23"
+  },
+  "20260703-h073gov-sanskrit-pseudo-etymology-r05": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-sanskrit-pseudo-etymology-r05",
+   "target_pos_orig": 1,
+   "target_pos_rev": 10,
+   "pres_orig": "P34",
+   "pres_rev": "P19"
+  },
+  "20260703-h073gov-vedic-classical-anachronism-r01": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-vedic-classical-anachronism-r01",
+   "target_pos_orig": 1,
+   "target_pos_rev": 3,
+   "pres_orig": "P33",
+   "pres_rev": "P41"
+  },
+  "20260703-h073gov-vedic-classical-anachronism-r02": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-vedic-classical-anachronism-r02",
+   "target_pos_orig": 0,
+   "target_pos_rev": 0,
+   "pres_orig": "P03",
+   "pres_rev": "P37"
+  },
+  "20260703-h073gov-vedic-classical-anachronism-r03": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-vedic-classical-anachronism-r03",
+   "target_pos_orig": 1,
+   "target_pos_rev": 2,
+   "pres_orig": "P10",
+   "pres_rev": "P36"
+  },
+  "20260703-h073gov-vedic-classical-anachronism-r04": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-vedic-classical-anachronism-r04",
+   "target_pos_orig": 1,
+   "target_pos_rev": 2,
+   "pres_orig": "P13",
+   "pres_rev": "P11"
+  },
+  "20260703-h073gov-vedic-classical-anachronism-r05": {
+   "caught_any_flip": false,
+   "caught_adjacent_flip": false,
+   "type_correct_flip": false,
+   "fp_delta": 0,
+   "fp_flip": false,
+   "run": "20260703-h073gov-vedic-classical-anachronism-r05",
+   "target_pos_orig": 1,
+   "target_pos_rev": 2,
+   "pres_orig": "P48",
+   "pres_rev": "P12"
+  }
+ },
+ "threshold": "concern if rate >= 0.20 or wilson95 lower > 0.10 on caught_any/type_correct"
+}

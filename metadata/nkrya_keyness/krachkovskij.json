@@ -1,0 +1,319 @@
+{
+ "passport": "krachkovskij",
+ "handoff": "H5283",
+ "measured": "23-09-2026",
+ "source_file": "RuWritingStyles-corpus/PDFtoTXT/1925_Krachkovskij_Neizvestnoe-sochinenie-avtograf-sirijskogo-emira-Usamy.txt",
+ "source_label": "И. Ю. Крачковский, «Неизвестное сочинение-автограф сирийского эмира Усамы» (1925)",
+ "source_sha256": "01abbfb1b0e57aaac24b34e1eef24a67f718f9a03f73dca4ad84712a20b3ef43",
+ "lemmatizer": "pymorphy3",
+ "tokens": 5409,
+ "top_n": 30,
+ "keyness": "log2(text ipm / NKRYa ipm); NKRYa ipm floor 0.01 when no portrait",
+ "reference": "NKRYa word portrait PORTRAIT_FREQUENCY, main corpus",
+ "cache_keys": [
+  "05cbce0aff4c4dc588858498",
+  "08222a7a95ff80aa0b63065c",
+  "097e70fc51b3946c1fb5e237",
+  "09ffd11dc73085666ed6de68",
+  "0edae6e1a71cc3a834218846",
+  "10f1303dcccec5ecd550a4cc",
+  "1714239dc1b592d541e01b56",
+  "1b5c4263e27e02f1f79ea1e4",
+  "1eaa731c4e16db410e249b27",
+  "2298e9fbbdecda0222e314d4",
+  "285d7db17acc3c555e39e0d4",
+  "2a0db935b48b8da5d3505474",
+  "3d934612552856c0a8c02a7a",
+  "3e464507b5af72e1519f6b98",
+  "43af1c51999f55d115928936",
+  "4690e93780ca1900d51cab3c",
+  "4ddda47f92333743d41442ce",
+  "58d9ef0273c769c9320978d6",
+  "6e8100d0a6c788e6ea1c42ab",
+  "8f69ce5ee9fc21421a4bca3e",
+  "90d01d70fbd56f13cf8b6b0f",
+  "a1a4a09cba64145a933c013e",
+  "ad9af5f877457b13114b0464",
+  "b74b4b2a1218e181fbf8491e",
+  "be51fd1d8bda139d2cb4e364",
+  "c4a65b835d509a6d85af9a30",
+  "cdda0b463d69c98b8132505f",
+  "cf60856116ea7acfe4cc6b28",
+  "de732684d21fce2a0a1cbaf4",
+  "f2bf870e06ba5cacf41a14c0"
+ ],
+ "rows": [
+  {
+   "lemma": "автобиография",
+   "pos": "S",
+   "count": 9,
+   "text_ipm": 1663.9,
+   "nkrya_ipm": 4.4558,
+   "band": 2,
+   "log_ratio": 8.54
+  },
+  {
+   "lemma": "эмир",
+   "pos": "S",
+   "count": 10,
+   "text_ipm": 1848.8,
+   "nkrya_ipm": 5.31692,
+   "band": 2,
+   "log_ratio": 8.44
+  },
+  {
+   "lemma": "арабский",
+   "pos": "A",
+   "count": 17,
+   "text_ipm": 3142.9,
+   "nkrya_ipm": 16.2511,
+   "band": 3,
+   "log_ratio": 7.6
+  },
+  {
+   "lemma": "аллах",
+   "pos": "S",
+   "count": 9,
+   "text_ipm": 1663.9,
+   "nkrya_ipm": 9.21897,
+   "band": 2,
+   "log_ratio": 7.5
+  },
+  {
+   "lemma": "стоянка",
+   "pos": "S",
+   "count": 13,
+   "text_ipm": 2403.4,
+   "nkrya_ipm": 15.1436,
+   "band": 3,
+   "log_ratio": 7.31
+  },
+  {
+   "lemma": "азиатский",
+   "pos": "A",
+   "count": 9,
+   "text_ipm": 1663.9,
+   "nkrya_ipm": 12.5767,
+   "band": 3,
+   "log_ratio": 7.05
+  },
+  {
+   "lemma": "рукопись",
+   "pos": "S",
+   "count": 27,
+   "text_ipm": 4991.7,
+   "nkrya_ipm": 47.0874,
+   "band": 3,
+   "log_ratio": 6.73
+  },
+  {
+   "lemma": "цитата",
+   "pos": "S",
+   "count": 10,
+   "text_ipm": 1848.8,
+   "nkrya_ipm": 18.6749,
+   "band": 3,
+   "log_ratio": 6.63
+  },
+  {
+   "lemma": "стих",
+   "pos": "S",
+   "count": 20,
+   "text_ipm": 3697.5,
+   "nkrya_ipm": 77.9072,
+   "band": 3,
+   "log_ratio": 5.57
+  },
+  {
+   "lemma": "сочинение",
+   "pos": "S",
+   "count": 18,
+   "text_ipm": 3327.8,
+   "nkrya_ipm": 75.0892,
+   "band": 3,
+   "log_ratio": 5.47
+  },
+  {
+   "lemma": "указание",
+   "pos": "S",
+   "count": 10,
+   "text_ipm": 1848.8,
+   "nkrya_ipm": 54.1383,
+   "band": 3,
+   "log_ratio": 5.09
+  },
+  {
+   "lemma": "произведение",
+   "pos": "S",
+   "count": 13,
+   "text_ipm": 2403.4,
+   "nkrya_ipm": 125.452,
+   "band": 4,
+   "log_ratio": 4.26
+  },
+  {
+   "lemma": "отдел",
+   "pos": "S",
+   "count": 9,
+   "text_ipm": 1663.9,
+   "nkrya_ipm": 87.8043,
+   "band": 3,
+   "log_ratio": 4.24
+  },
+  {
+   "lemma": "книга",
+   "pos": "S",
+   "count": 36,
+   "text_ipm": 6655.6,
+   "nkrya_ipm": 494.516,
+   "band": 4,
+   "log_ratio": 3.75
+  },
+  {
+   "lemma": "материал",
+   "pos": "S",
+   "count": 12,
+   "text_ipm": 2218.5,
+   "nkrya_ipm": 171.662,
+   "band": 4,
+   "log_ratio": 3.69
+  },
+  {
+   "lemma": "поэт",
+   "pos": "S",
+   "count": 12,
+   "text_ipm": 2218.5,
+   "nkrya_ipm": 179.342,
+   "band": 4,
+   "log_ratio": 3.63
+  },
+  {
+   "lemma": "рассказ",
+   "pos": "S",
+   "count": 10,
+   "text_ipm": 1848.8,
+   "nkrya_ipm": 175.083,
+   "band": 4,
+   "log_ratio": 3.4
+  },
+  {
+   "lemma": "литература",
+   "pos": "S",
+   "count": 10,
+   "text_ipm": 1848.8,
+   "nkrya_ipm": 179.572,
+   "band": 4,
+   "log_ratio": 3.36
+  },
+  {
+   "lemma": "известный",
+   "pos": "A",
+   "count": 15,
+   "text_ipm": 2773.2,
+   "nkrya_ipm": 315.587,
+   "band": 4,
+   "log_ratio": 3.14
+  },
+  {
+   "lemma": "век",
+   "pos": "S",
+   "count": 15,
+   "text_ipm": 2773.2,
+   "nkrya_ipm": 343.845,
+   "band": 4,
+   "log_ratio": 3.01
+  },
+  {
+   "lemma": "начало",
+   "pos": "S",
+   "count": 11,
+   "text_ipm": 2033.6,
+   "nkrya_ipm": 337.582,
+   "band": 4,
+   "log_ratio": 2.59
+  },
+  {
+   "lemma": "давать",
+   "pos": "V",
+   "count": 10,
+   "text_ipm": 1848.8,
+   "nkrya_ipm": 520.695,
+   "band": 4,
+   "log_ratio": 1.83
+  },
+  {
+   "lemma": "дом",
+   "pos": "S",
+   "count": 10,
+   "text_ipm": 1848.8,
+   "nkrya_ipm": 876.82,
+   "band": 4,
+   "log_ratio": 1.08
+  },
+  {
+   "lemma": "время",
+   "pos": "S",
+   "count": 23,
+   "text_ipm": 4252.2,
+   "nkrya_ipm": 2030.75,
+   "band": 5,
+   "log_ratio": 1.07
+  },
+  {
+   "lemma": "работа",
+   "pos": "S",
+   "count": 9,
+   "text_ipm": 1663.9,
+   "nkrya_ipm": 830.493,
+   "band": 4,
+   "log_ratio": 1.0
+  },
+  {
+   "lemma": "новый",
+   "pos": "A",
+   "count": 11,
+   "text_ipm": 2033.6,
+   "nkrya_ipm": 1137.6,
+   "band": 5,
+   "log_ratio": 0.84
+  },
+  {
+   "lemma": "слово",
+   "pos": "S",
+   "count": 10,
+   "text_ipm": 1848.8,
+   "nkrya_ipm": 1151.61,
+   "band": 5,
+   "log_ratio": 0.68
+  },
+  {
+   "lemma": "жизнь",
+   "pos": "S",
+   "count": 12,
+   "text_ipm": 2218.5,
+   "nkrya_ipm": 1439.43,
+   "band": 5,
+   "log_ratio": 0.62
+  },
+  {
+   "lemma": "говорить",
+   "pos": "V",
+   "count": 17,
+   "text_ipm": 3142.9,
+   "nkrya_ipm": 2148.62,
+   "band": 5,
+   "log_ratio": 0.55
+  },
+  {
+   "lemma": "год",
+   "pos": "S",
+   "count": 21,
+   "text_ipm": 3882.4,
+   "nkrya_ipm": 2876.91,
+   "band": 5,
+   "log_ratio": 0.43
+  }
+ ],
+ "report_rel": "metadata/nkrya_keyness/krachkovskij.json",
+ "report_url": "https://github.com/gasyoun/RuWritingStyles/blob/main/metadata/nkrya_keyness/krachkovskij.json"
+}

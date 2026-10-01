@@ -1,0 +1,418 @@
+{
+ "probe": "H4658 LLM-judge bias probes (length + position-swap) on 20260703-h073gov",
+ "sheet": "evals/annotation/sheet-h073gov.json",
+ "rater_original_order": "raterB-h073gov.json",
+ "rater_swapped_order": "raterC-h073gov-swap-2026-09-14.json",
+ "design_disclosure": "swap comparison is cross-judge (C glm-5.3-flash swapped vs B claude-fable-5 original); zero flips = no position-bias evidence robust across judge change, not a pure-position estimate",
+ "mechanical_layer": {
+  "n_runs": 25,
+  "rater_a_detected": 24,
+  "verification_status_distribution": {
+   "failed": 1,
+   "needs_human_review": 9,
+   "passed": 15
+  }
+ },
+ "length_bias": {
+  "axes": {
+   "rater_a_detected~chars": {
+    "spearman_rho": 0.3114,
+    "undefined_reason": null
+   },
+   "rater_a_detected~words": {
+    "spearman_rho": 0.2831,
+    "undefined_reason": null
+   },
+   "rater_a_detected~n_findings": {
+    "spearman_rho": 0.2745,
+    "undefined_reason": null
+   },
+   "rater_a_detected~group_means": {
+    "positive_mean_chars": 1642.4,
+    "nonpositive_mean_chars": 590.0,
+    "n_positive": 24
+   },
+   "scorer_passed~chars": {
+    "spearman_rho": 0.2265,
+    "undefined_reason": null
+   },
+   "scorer_passed~words": {
+    "spearman_rho": 0.2435,
+    "undefined_reason": null
+   },
+   "scorer_passed~n_findings": {
+    "spearman_rho": 0.2889,
+    "undefined_reason": null
+   },
+   "scorer_passed~group_means": {
+    "positive_mean_chars": 1803.0,
+    "nonpositive_mean_chars": 1296.2,
+    "n_positive": 15
+   },
+   "raterB-h073gov.json_caught~chars": {
+    "spearman_rho": null,
+    "undefined_reason": "zero variance in score axis (degenerate: constant verdicts)"
+   },
+   "raterB-h073gov.json_caught~words": {
+    "spearman_rho": null,
+    "undefined_reason": "zero variance in score axis (degenerate: constant verdicts)"
+   },
+   "raterB-h073gov.json_caught~n_findings": {
+    "spearman_rho": null,
+    "undefined_reason": "zero variance in score axis (degenerate: constant verdicts)"
+   },
+   "raterB-h073gov.json_caught~group_means": {
+    "positive_mean_chars": 1600.3,
+    "nonpositive_mean_chars": null,
+    "n_positive": 25
+   },
+   "raterB-h073gov.json_type_correct~chars": {
+    "spearman_rho": 0.3114,
+    "undefined_reason": null
+   },
+   "raterB-h073gov.json_type_correct~words": {
+    "spearman_rho": 0.2831,
+    "undefined_reason": null
+   },
+   "raterB-h073gov.json_type_correct~n_findings": {
+    "spearman_rho": 0.2745,
+    "undefined_reason": null
+   },
+   "raterB-h073gov.json_type_correct~group_means": {
+    "positive_mean_chars": 1642.4,
+    "nonpositive_mean_chars": 590.0,
+    "n_positive": 24
+   },
+   "raterB-h073gov.json_false_positives~chars": {
+    "spearman_rho": 0.319,
+    "undefined_reason": null
+   },
+   "raterB-h073gov.json_false_positives~words": {
+    "spearman_rho": 0.3468,
+    "undefined_reason": null
+   },
+   "raterB-h073gov.json_false_positives~n_findings": {
+    "spearman_rho": 0.3821,
+    "undefined_reason": null
+   },
+   "raterB-h073gov.json_false_positives~group_means": {
+    "positive_mean_chars": 2348.8,
+    "nonpositive_mean_chars": 1413.2,
+    "n_positive": 5
+   },
+   "raterC-h073gov-swap-2026-09-14.json_caught~chars": {
+    "spearman_rho": null,
+    "undefined_reason": "zero variance in score axis (degenerate: constant verdicts)"
+   },
+   "raterC-h073gov-swap-2026-09-14.json_caught~words": {
+    "spearman_rho": null,
+    "undefined_reason": "zero variance in score axis (degenerate: constant verdicts)"
+   },
+   "raterC-h073gov-swap-2026-09-14.json_caught~n_findings": {
+    "spearman_rho": null,
+    "undefined_reason": "zero variance in score axis (degenerate: constant verdicts)"
+   },
+   "raterC-h073gov-swap-2026-09-14.json_caught~group_means": {
+    "positive_mean_chars": 1600.3,
+    "nonpositive_mean_chars": null,
+    "n_positive": 25
+   },
+   "raterC-h073gov-swap-2026-09-14.json_type_correct~chars": {
+    "spearman_rho": 0.3114,
+    "undefined_reason": null
+   },
+   "raterC-h073gov-swap-2026-09-14.json_type_correct~words": {
+    "spearman_rho": 0.2831,
+    "undefined_reason": null
+   },
+   "raterC-h073gov-swap-2026-09-14.json_type_correct~n_findings": {
+    "spearman_rho": 0.2745,
+    "undefined_reason": null
+   },
+   "raterC-h073gov-swap-2026-09-14.json_type_correct~group_means": {
+    "positive_mean_chars": 1642.4,
+    "nonpositive_mean_chars": 590.0,
+    "n_positive": 24
+   },
+   "raterC-h073gov-swap-2026-09-14.json_false_positives~chars": {
+    "spearman_rho": 0.319,
+    "undefined_reason": null
+   },
+   "raterC-h073gov-swap-2026-09-14.json_false_positives~words": {
+    "spearman_rho": 0.3468,
+    "undefined_reason": null
+   },
+   "raterC-h073gov-swap-2026-09-14.json_false_positives~n_findings": {
+    "spearman_rho": 0.3821,
+    "undefined_reason": null
+   },
+   "raterC-h073gov-swap-2026-09-14.json_false_positives~group_means": {
+    "positive_mean_chars": 2348.8,
+    "nonpositive_mean_chars": 1413.2,
+    "n_positive": 5
+   }
+  },
+  "rubric_revision_flagged": [],
+  "flag_rule": "|spearman_rho| >= 0.5 between answer length and a score axis (FP axes excluded)"
+ },
+ "position_swap": {
+  "n_runs": 25,
+  "caught_flips": 0,
+  "type_correct_flips": 0,
+  "fp_localization_flips": 0,
+  "any_flip_rate": 0.0,
+  "flips": [],
+  "rows": [
+   {
+    "run": "20260703-h073gov-sanskrit-pseudo-etymology-r01",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 1,
+    "c_fp": 1,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-sanskrit-pseudo-etymology-r02",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-sanskrit-pseudo-etymology-r03",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-sanskrit-pseudo-etymology-r04",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-sanskrit-pseudo-etymology-r05",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 1,
+    "c_fp": 1,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-karaka-not-padezh-r01",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-karaka-not-padezh-r02",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-karaka-not-padezh-r03",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-karaka-not-padezh-r04",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-karaka-not-padezh-r05",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-vedic-classical-anachronism-r01",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 1,
+    "c_fp": 1,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-vedic-classical-anachronism-r02",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": false,
+    "c_type_correct": false,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-vedic-classical-anachronism-r03",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-vedic-classical-anachronism-r04",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-vedic-classical-anachronism-r05",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-samasa-misclassification-r01",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-samasa-misclassification-r02",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-samasa-misclassification-r03",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-samasa-misclassification-r04",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-samasa-misclassification-r05",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 1,
+    "c_fp": 1,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-commentary-layer-mix-r01",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-commentary-layer-mix-r02",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-commentary-layer-mix-r03",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 1,
+    "c_fp": 1,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-commentary-layer-mix-r04",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   },
+   {
+    "run": "20260703-h073gov-commentary-layer-mix-r05",
+    "b_caught": "yes",
+    "c_caught": "yes",
+    "b_type_correct": true,
+    "c_type_correct": true,
+    "b_fp": 0,
+    "c_fp": 0,
+    "flip": false
+   }
+  ]
+ }
+}

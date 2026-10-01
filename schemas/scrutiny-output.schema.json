@@ -22,7 +22,9 @@
           "severity": { "type": "string", "enum": ["note", "warning", "critical"] },
           "finding": { "type": "string" },
           "suggestion": { "type": "string" },
-          "confidence": { "type": "number" }
+          "confidence": { "type": "number" },
+          "term": { "type": "string" },
+          "nkrya_evidence": { "type": "object" }
         }
       }
     }
