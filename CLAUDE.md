@@ -1,6 +1,15 @@
 # CLAUDE.md
 
-_Created: 08-05-2026 · Last updated: 16-09-2026_
+_Created: 08-05-2026 · Last updated: 09-10-2026 (H5885 truth refresh: verdict-pass wave, NKRYa keyness, v2.29.10)_
+
+Recent state (09-10-2026): the E015 verdict-pass wave closed the roadmaps —
+`docs/roadmap-2026-q4.md` REFRESH (0 engineering gaps, 5 author-gated items,
+H5376), q3 kept per the 31-08 no-archive ruling (H5375), and four roadmaps
+archived with tombstones (GEMINI_ROADMAP, provider-roadmaps,
+roadmap_literary_clusters, refactoring-roadmap — zero unminted prose work);
+NKRYa keyness evidence landed in 8 style passports with the advisory
+scrutiny guard (H5283, #235); `v2.29.10` released (#236, on PyPI as
+`ruwritingstyles`).
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
