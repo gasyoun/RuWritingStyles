@@ -24,9 +24,9 @@ own articles». Домашняя работа: README v2.23+ (каталог ~44
 - Совет: новый именованный **`vy`** (`rws councils`), состав: vy-house-style + школьные карты по мере появления.
 - Порядок: **минт сейчас**, исполнение после закрытия H6454 (только он локализует PDF-ран; зависимость прописана в миссии).
 
-## Что минтится (та же пасса)
+## Что заминчено (та же пасса)
 
-Один queued-хэндофф в этот репо: vja-archive-harvest → vja.py (rcsi-паттерн) → приватный корпус →
+[**H6480**](https://github.com/gasyoun/Uprava/blob/main/handoffs/H6480-Opus_RuWritingStyles_vja-archive-harvest-style-cards_11.10.26.md) (Opus 5.5 (`claude-opus-5-5`), hard, class data, 🟡 queued, зависимость от H6454 в миссии): vja-archive-harvest → vja.py (rcsi-паттерн) → приватный корпус →
 vy-house-style карта + совет «vy» → пер-школьная волна карт. Consumers: санскритизм-статья через
 `vy`-Совет перед подачей; A41 — метод-чеклист (оговорка рулинга 4).
 
