@@ -174,7 +174,7 @@ Two related traps:
 1. **pymorphy3 never sets the `Arch` grammeme**, so "archaic word" cannot be read off its tags. The scrutiny candidates use a seed list of Church-Slavonic function words, out-of-dictionary forms and pre-reform spellings instead, and a seed word is matched on its lemma too (`оным` → `оный`).
 2. **A raw 1800–1899 hit count is not comparable to an all-periods ipm.** Divide the hits by the slice size (`subcorpStats.wordUsageCount`, 82 049 244 words) before comparing the two.
 
-The NKRYa API rate limit (HTTP 429 after about 10 requests a minute) is an infra fact. It belongs to the shared client ([H5282](https://github.com/gasyoun/Uprava/blob/main/handoffs/H5282-Opus_csl-pyutil_nkrya-client-shared-module_23.09.26.md)), not to this registry.
+The NKRYa API rate limit (HTTP 429 after about 10 requests a minute) is an infra fact. It belongs to the shared client ([H5282](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H5282-Opus_csl-pyutil_nkrya-client-shared-module_23.09.26.md)), not to this registry.
 
 Code: [`src/ruwritingstyles/nkrya_evidence.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/nkrya_evidence.py) (`STRESS_MARKS`, `ABBREV_TAIL`, `ARCHAIC_SEED`). Method note: [docs/NKRYA_KEYNESS_STYLE_PASSPORTS_H5283_23-09-2026.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/NKRYA_KEYNESS_STYLE_PASSPORTS_H5283_23-09-2026.md).
 

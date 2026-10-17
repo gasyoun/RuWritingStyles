@@ -2,7 +2,7 @@ _Created: 23-09-2026 · Last updated: 23-09-2026_
 
 # NKRYa keyness for the corpus-grounded style passports (H5283)
 
-Executed by Claude Code, Opus 5.5 (`claude-opus-5-5`), 23-09-2026. The handoff is [H5283](https://github.com/gasyoun/Uprava/blob/main/handoffs/H5283-Opus_RuWritingStyles_nkrya-keyness-zaliznyak-first_23.09.26.md), and MG's rulings are in [GRILL_NKRYA_USES_ROUND2_DECISIONS_23-09-2026.md](https://github.com/gasyoun/SanskritLexicography/blob/master/RussianTranslation/docs/GRILL_NKRYA_USES_ROUND2_DECISIONS_23-09-2026.md). U7 ruled Zaliznyak first, then the four scholars. U6 made anachronism evidence advisory, and U9 keeps CI offline.
+Executed by Claude Code, Opus 5.5 (`claude-opus-5-5`), 23-09-2026. The handoff is [H5283](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H5283-Opus_RuWritingStyles_nkrya-keyness-zaliznyak-first_23.09.26.md), and MG's rulings are in [GRILL_NKRYA_USES_ROUND2_DECISIONS_23-09-2026.md](https://github.com/gasyoun/SanskritLexicography/blob/master/RussianTranslation/docs/GRILL_NKRYA_USES_ROUND2_DECISIONS_23-09-2026.md). U7 ruled Zaliznyak first, then the four scholars. U6 made anachronism evidence advisory, and U9 keeps CI offline.
 
 ## What was measured
 

@@ -46,7 +46,7 @@ surface.
 
 ## Wave H1 — RCSI harvest wave 1 (the pinned five-article guarantee)
 
-Executor: [H3154 (Opus 5) — RCSI wave 1: journal profile derivation, article harvester, pinned-article guarantee](https://github.com/gasyoun/Uprava/blob/main/handoffs/H3154-Opus_RuWritingStyles_rcsi-journal-harvester-wave1_19.08.26.md)
+Executor: [H3154 (Opus 5) — RCSI wave 1: journal profile derivation, article harvester, pinned-article guarantee](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H3154-Opus_RuWritingStyles_rcsi-journal-harvester-wave1_19.08.26.md)
 — QUEUED since 19-08-2026; its only dependency (H3153, the extractor bake-off) closed in
 v2.26.0, so it is launchable now. Deliverables: `rws journal-add` / `journal-harvest` /
 `corpus-verify`, the extended journal-profile schema, the five pinned articles harvested with
@@ -63,7 +63,7 @@ that gate, not before.
 Ruling 2 turned three passive corpus-gated rows into an active programme; ruling 6 fixed the
 order.
 
-- **C1.1 — Orientalist intake sprint** → [H3369 (Sonnet 5) — Orientalist scholar text intake sprint into private corpus](https://github.com/gasyoun/Uprava/blob/main/handoffs/H3369-Sonnet_RuWritingStyles_orientalist-corpus-intake_23.08.26.md):
+- **C1.1 — Orientalist intake sprint** → [H3369 (Sonnet 5) — Orientalist scholar text intake sprint into private corpus](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H3369-Sonnet_RuWritingStyles_orientalist-corpus-intake_23.08.26.md):
   attributable texts of Kratchkovsky, Bartold, Turaev, Golenishchev and Shileiko hunted,
   license-recorded, extracted through the pinned `PDF_EXTRACTOR_CHAIN`, and committed to the
   private [RuWritingStyles-corpus](https://github.com/gasyoun/RuWritingStyles-corpus) with
@@ -73,7 +73,7 @@ order.
   become buildable (the H944 gate lifts). Each passport is a separate judgment-tier handoff
   in the H1861 mold (Lotman/Meletinsky precedent) — mint per-scholar when the intake lands;
   do not author passports inside the sprint.
-  **Progress 23-08-2026: Bartold ([H3381](https://github.com/gasyoun/Uprava/blob/main/handoffs/README.md)), Turaev ([H3382](https://github.com/gasyoun/Uprava/blob/main/handoffs/H3382-OxAlpha_RuWritingStyles_turaev-passport-build_23.08.26.md)), Krachkovskij ([H3383](https://github.com/gasyoun/Uprava/blob/main/handoffs/H3383-OxAlpha_RuWritingStyles_krachkovskij-passport-build_23.08.26.md)) and Golenishchev ([H3384](https://github.com/gasyoun/Uprava/blob/main/handoffs/H3384-OxAlpha_RuWritingStyles_golenishchev-passport-build_23.08.26.md)) built and corpus-grounded — 4 of 5; only Shileiko stays gated (texts via V. B. Emelyanov).**
+  **Progress 23-08-2026: Bartold ([H3381](https://github.com/gasyoun/Uprava/blob/main/handoffs/README.md)), Turaev ([H3382](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H3382-OxAlpha_RuWritingStyles_turaev-passport-build_23.08.26.md)), Krachkovskij ([H3383](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H3383-OxAlpha_RuWritingStyles_krachkovskij-passport-build_23.08.26.md)) and Golenishchev ([H3384](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H3384-OxAlpha_RuWritingStyles_golenishchev-passport-build_23.08.26.md)) built and corpus-grounded — 4 of 5; only Shileiko stays gated (texts via V. B. Emelyanov).**
 - **C1.3 — Lotman/Meletinsky verification (second in line).** «Структура художественного текста»
   / «Культура и взрыв» / «Поэтика мифа» extractions land via the same intake discipline, then
   the existing [H1861](https://github.com/gasyoun/Uprava/blob/main/handoffs/README.md) passports get corpus-grounded anchors.
@@ -102,7 +102,7 @@ created public behind a publish-safety GO, bare tag `0.1.0` released with artifa
 payload. Remaining author buttons: obsidianmd PR, BRAT listing, Zenodo link+deposit,
 A29 submission — all in GTD.
 
-Executor for the agent-doable half: [H3370 (Sonnet 5) — Q4 polish sweep](https://github.com/gasyoun/Uprava/blob/main/handoffs/H3370-Sonnet_RuWritingStyles_q4-polish-sweep_23.08.26.md):
+Executor for the agent-doable half: [H3370 (Sonnet 5) — Q4 polish sweep](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H3370-Sonnet_RuWritingStyles_q4-polish-sweep_23.08.26.md):
 six open dependabot PRs triaged (#163–#166 web npm; #120 checkout 5→7; #118 setup-python 6→7),
 `gasyoun/ruwritingstyles-obsidian` created from the release-repo scaffold at tag
 `obsidian-v0.1.0` behind a publish-safety GO, and CITATION.cff / .zenodo.json verified against

@@ -9,7 +9,7 @@ Programme roadmap: [ROADMAP_SPINE_INTERCONNECTION_2026H2.md](https://github.com/
 
 ## Wave 1 — RuWritingStyles's wiring change
 
-- [ ] [H3569 (Opus 5)](https://github.com/gasyoun/Uprava/blob/main/handoffs/H3569-Opus_RuWritingStyles_interconnect-ruwriting-sovet-pipeline-family_26.08.26.md) · medium
+- [ ] [H3569 (Opus 5)](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H3569-Opus_RuWritingStyles_interconnect-ruwriting-sovet-pipeline-family_26.08.26.md) · medium
 
 ## Order and prerequisites
 

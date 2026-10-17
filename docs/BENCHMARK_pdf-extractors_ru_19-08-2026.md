@@ -5,7 +5,7 @@ _Created: 19-08-2026 · Last updated: 19-08-2026_
 Scored bake-off settling **D08** (extractor choice) and **D09** (candidate list) of
 [PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/PLAN_RuWritingStyles_rcsi-journal-harvest_2026-Q3.md).
 Run by **Opus 5** (`claude-opus-5`) under
-[H3153](https://github.com/gasyoun/Uprava/blob/main/handoffs/H3153-Opus_RuWritingStyles_rcsi-pdf-extractor-bakeoff_19.08.26.md).
+[H3153](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H3153-Opus_RuWritingStyles_rcsi-pdf-extractor-bakeoff_19.08.26.md).
 
 ## Verdict
 
@@ -206,7 +206,7 @@ scholar's voice, so there is still no single-author passport to build from them.
 ## Findings that bind wave 1
 
 Three measurements from this pass constrain
-[H3154](https://github.com/gasyoun/Uprava/blob/main/handoffs/H3154-Opus_RuWritingStyles_rcsi-journal-harvester-wave1_19.08.26.md);
+[H3154](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H3154-Opus_RuWritingStyles_rcsi-journal-harvester-wave1_19.08.26.md);
 each is also a row in
 [docs/rcsi-harvest-decisions.log.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/rcsi-harvest-decisions.log.md).
 

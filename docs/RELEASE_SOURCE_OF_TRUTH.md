@@ -6,7 +6,7 @@ Merged commits on the default branch, and the real `vX.Y.Z` git tags, are the
 release sequence. Changelog headings are a report of that sequence, not a
 source that can outvote it.
 
-This is the operator check for [H2580 (Grok 4.6) — RuWritingStyles release source of truth](https://github.com/gasyoun/Uprava/blob/main/handoffs/H2580-Grok_RuWritingStyles_release-source-truth_11.08.26.md).
+This is the operator check for [H2580 (Grok 4.6) — RuWritingStyles release source of truth](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H2580-Grok_RuWritingStyles_release-source-truth_11.08.26.md).
 It exists because two release cuts already had to work around the opposite
 assumption:
 

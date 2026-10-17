@@ -159,7 +159,7 @@ checking.
 **Still open, and not a blocker.** The clause rests on Oberlies' account of *why* epic Sanskrit
 deviates, not yet on a corpus of named commentator verdicts. H1324 (Opus 4.8) — MBh/Rāmāyaṇa
 commentary parsing feasibility,
-[handoffs/H1324](https://github.com/gasyoun/Uprava/blob/main/handoffs/H1324-Opus_CommentaryStrategies_mbh-ramayana-commentary-parsing-feasibility_19.07.26.md)
+[handoffs/H1324](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H1324-Opus_CommentaryStrategies_mbh-ramayana-commentary-parsing-feasibility_19.07.26.md)
 — is the instrument that would ground it in specific verses where a commentator writes *ārṣa*.
 Until then the clause is a correct guard with a thin evidence base, which is a weaker claim than
 §2's and is marked as such here.
