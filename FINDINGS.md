@@ -1,6 +1,6 @@
 # FINDINGS — RuWritingStyles prose-tooling and style-eval registry
 
-_Created: 27-08-2026 · Last updated: 23-09-2026_
+_Created: 27-08-2026 · Last updated: 17-10-2026_
 
 Non-obvious, **evidence-backed** facts about *this* repo's subject matter: multi-style LLM
 prose review, the scored eval harness, and the gold-standard annotation protocol. Every entry
@@ -177,5 +177,18 @@ Two related traps:
 The NKRYa API rate limit (HTTP 429 after about 10 requests a minute) is an infra fact. It belongs to the shared client ([H5282](https://github.com/gasyoun/Uprava/blob/main/handoffs/archive/H5282-Opus_csl-pyutil_nkrya-client-shared-module_23.09.26.md)), not to this registry.
 
 Code: [`src/ruwritingstyles/nkrya_evidence.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/src/ruwritingstyles/nkrya_evidence.py) (`STRESS_MARKS`, `ABBREV_TAIL`, `ARCHAIC_SEED`). Method note: [docs/NKRYA_KEYNESS_STYLE_PASSPORTS_H5283_23-09-2026.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/NKRYA_KEYNESS_STYLE_PASSPORTS_H5283_23-09-2026.md).
+
+## §7 — A Drive catalogue is not a corpus: rclone hides a size, two folders can share a name, and the translator's name is rarely in the filename
+
+Measured on the full inventory of 17-10-2026 ([H6927](https://github.com/gasyoun/Uprava/blob/main/handoffs/H6927-DeepSeek_RuWritingStyles_gdrive-corpus-inventory_17.10.26.md)): 497 429 files, 740.25 GB over 174 top-level folders, taken with [`tools/disk_inventory.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/tools/disk_inventory.py) and classified by [`tools/classify_corpus_inventory.py`](https://github.com/gasyoun/RuWritingStyles/blob/main/tools/classify_corpus_inventory.py) — no file downloaded. Four traps, each cost a wrong number before it was caught:
+
+1. **`size_bytes = -1` is a real value.** rclone reports -1 for native Google Docs/Sheets (no byte size). A naive `int(size)` sum subtracts them; the first total was short by however many such files a folder held. Clamp at zero and say so in the output, as `gb()` now does.
+2. **Two Drive folders may share a name, and rclone cannot address the second.** The listing showed `Colab Notebooks` twice; `rclone lsf gdrive:Colab\ Notebooks` resolves by path, so one folder is unreachable. The per-folder checkpoint key is `sha1(source/folder)`, so both collapse into one cache file and the second is skipped **silently** — that is the whole reason the crawl reported 147 of 148 shared roots and 24 of 26 My-Drive roots. A checkpointed crawler must key on something unique per folder (Drive file id), not on the display path.
+3. **`--drive-shared-with-me` must ride on every listing, not only the top-level one.** `top_dirs()` and `list_files()` each add it; a per-folder `lsf` without it answers from My Drive and returns nothing for a shared root.
+4. **"Failed to save config" is noise, not a failure.** Under a sandbox that cannot write `~/.config/rclone/rclone.conf`, rclone retries the token save ten times and prints `operation not permitted`; listings still succeed. Do not treat that line as the crawl dying.
+
+And the classification trap, which is the expensive one for this repo: **a translator's name is usually not in the filename.** Surname matching found 11 files for Elizarenkova while her books sit under `Ригведа` / `Атхарваведа` (197 and 182 path hits) — a name-based table undercounts the very voice that matters and must be read as *"no file is named for him"*, never as *"Drive holds none of him"*. The same matching produces false positives in the other direction: My Drive is 96 % laptop backups (`backup-2026-*`, `Backups/` — 466 676 files, 382 GB), where every repo copy carries the surnames of the handoffs it archived. Classify with an explicit `--exclude`, and report the excluded mass.
+
+Method note: [docs/CORPUS_GDRIVE_INVENTORY_2026-10-17.md](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/CORPUS_GDRIVE_INVENTORY_2026-10-17.md). Verdict it produced: no ПСС Топорова on Drive, Lidova and Paribok absent, the articles leg stays with the RCSI harvest.
 
 _Dr. Mārcis Gasūns_
