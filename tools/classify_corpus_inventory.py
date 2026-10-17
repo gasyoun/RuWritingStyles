@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import gzip
 import json
 import re
 import sys
@@ -92,7 +93,11 @@ PSS_PATTERN = re.compile(
 def load_rows(paths: list[Path]) -> list[dict[str, str]]:
     rows: list[dict[str, str]] = []
     for path in paths:
-        with path.open(encoding="utf-8", newline="") as handle:
+        # The committed artefacts are .tsv.gz (the My-Drive TSV alone is 96 MB);
+        # read both shapes so nobody has to gunzip first and lose the header
+        # handling below. Text mode keeps csv.DictReader's newline contract.
+        opener = gzip.open if path.suffix == ".gz" else path.open
+        with opener(path, "rt", encoding="utf-8", newline="") as handle:
             reader = csv.DictReader(handle, delimiter="\t")
             for row in reader:
                 if not row.get("path"):
@@ -153,6 +158,10 @@ def build_report(rows: list[dict[str, str]], exclude: list[re.Pattern] | None = 
     pss: list[dict[str, str]] = []
     excluded_files = 0
     excluded_bytes = 0
+    # rclone can return the same (source, path) twice in one crawl — a re-listed
+    # folder, or a Google Drive path reachable through two parents. "Файлов"
+    # below are therefore ROWS; this set is the honest file count.
+    seen_pairs: set[tuple[str, str]] = set()
 
     for row in rows:
         src = row.get("source", "")
@@ -166,6 +175,7 @@ def build_report(rows: list[dict[str, str]], exclude: list[re.Pattern] | None = 
 
         per_source[src] += 1
         bytes_per_source[src] += size
+        seen_pairs.add((src, path))
         ext_counts[ext] += 1
         root = path.split("/", 1)[0]
         roots[root][0] += 1
@@ -232,6 +242,8 @@ def build_report(rows: list[dict[str, str]], exclude: list[re.Pattern] | None = 
             f"{h['source']}:{h['path']}" for h in textlayer_pending[:40]
         ],
         "pss_candidates": [f"{h['source']}:{h['path']}" for h in pss[:40]],
+        "distinct_pairs": len(seen_pairs),
+        "duplicate_rows": len(rows) - len(seen_pairs),
     }
 
 
@@ -239,7 +251,18 @@ def render_markdown(report: dict) -> str:
     out: list[str] = []
     total_files = report["rows"]
     total_gb = round(sum(s["gb"] for s in report["sources"].values()), 3)
-    out.append(f"Всего: **{total_files:,} файлов**, **{total_gb} ГБ**.".replace(",", " "))
+    out.append(f"Всего: **{total_files:,} строк**, **{total_gb} ГБ**.".replace(",", " "))
+    dups = report.get("duplicate_rows", 0)
+    if dups:
+        distinct = f"{report['distinct_pairs']:,}".replace(",", " ")
+        rows_fmt = f"{dups:,}".replace(",", " ")
+        out.append("")
+        out.append(
+            f"Различных пар (источник, путь) — **{distinct}**; {rows_fmt} строк повторяют "
+            f"уже встреченный путь ({dups / total_files * 100:.0f} %), почти все — в бэкапах: "
+            "rclone может вернуть одну папку дважды (перечисление по родителям). "
+            "«Файлов» в таблицах ниже — строки."
+        )
     out.append("")
     out.append("| Источник | Файлов | ГБ |")
     out.append("|---|---|---|")
