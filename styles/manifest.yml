@@ -88,6 +88,10 @@ clusters:
     path: styles/clusters/indology.yml
     name: "Индология (санскритология)"
     location: "Moscow-Petersburg"
+  - id: iscls
+    path: styles/clusters/iscls.yml
+    name: "ISCLS (Sanskrit computational linguistics)"
+    location: "Hyderabad"
   - id: orient_leningrad
     path: styles/clusters/orient_leningrad.yml
     name: "Ленинградская востоковедная школа"
@@ -266,6 +270,10 @@ passports:
     path: styles/clusters/indology.yml
     level: cluster
     source_prompt: ClaudeStyles/indology-style.md
+  - id: iscls
+    path: styles/clusters/iscls.yml
+    level: cluster
+    source_prompt: ClaudeStyles/iscls-school-style.md
   - id: ling_iesh
     path: styles/clusters/ling_iesh.yml
     level: cluster

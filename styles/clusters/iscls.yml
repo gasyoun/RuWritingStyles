@@ -4,7 +4,6 @@ level: cluster
 source_prompt: ClaudeStyles/iscls-school-style.md
 role: systematic_grammar_reviewer
 language: en
-domains: ["sanskrit", "computational_linguistics", "lexicography"]
 best_for:
   - paper destined for ISCLS or the Hyderabad computational-Sanskrit school
   - corpus and resource papers with measured coverage claims
