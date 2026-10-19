@@ -1114,5 +1114,58 @@
       "arabic_studies",
       "manuscript_studies"
     ]
+  },
+  {
+    "id": "Kulkarni, Satuluri & Krishnan 2026 (2026.iscls-1.8)",
+    "author": "Kulkarni, Amba; Satuluri, Pavankumar; Krishnan, Sriram",
+    "year": 2026,
+    "title": "Dependency analysis of Sanskrit compounds",
+    "kind": "chapter",
+    "city": "Roorkee",
+    "publisher": "Association for Computational Linguistics",
+    "pages": "(2026.iscls-1.8)",
+    "url": "https://aclanthology.org/2026.iscls-1.8/",
+    "tags": [
+      "sanskrit",
+      "computational linguistics",
+      "compounds",
+      "dependency"
+    ],
+    "container": "Proceedings of the 8th International Sanskrit Computational Linguistics Symposium (ISCLS 2026)"
+  },
+  {
+    "id": "Barbadikar & Kulkarni 2026 (2026.iscls-1.17)",
+    "author": "Barbadikar, Amruta; Kulkarni, Amba",
+    "year": 2026,
+    "title": "Sentential parsing of Upamā",
+    "kind": "chapter",
+    "city": "Roorkee",
+    "publisher": "Association for Computational Linguistics",
+    "pages": "(2026.iscls-1.17)",
+    "url": "https://aclanthology.org/2026.iscls-1.17/",
+    "tags": [
+      "sanskrit",
+      "computational linguistics",
+      "alaṅkāra",
+      "parsing"
+    ],
+    "container": "Proceedings of the 8th International Sanskrit Computational Linguistics Symposium (ISCLS 2026)"
+  },
+  {
+    "id": "ISCLS 2026 proceedings, six papers measured 18-10-2026",
+    "author": "Association for Computational Linguistics",
+    "year": 2026,
+    "title": "Proceedings of the 8th International Sanskrit Computational Linguistics Symposium: register sample of six papers",
+    "kind": "chapter",
+    "city": "Roorkee",
+    "publisher": "Association for Computational Linguistics",
+    "url": "https://aclanthology.org/volumes/2026.iscls-1/",
+    "tags": [
+      "sanskrit",
+      "computational linguistics",
+      "register",
+      "corpus"
+    ],
+    "container": "Proceedings of the 8th International Sanskrit Computational Linguistics Symposium (ISCLS 2026)"
   }
 ]

@@ -38,6 +38,10 @@ councils:
     - samasa-manual
     - lidova-commentary
     - smirnov-mahabharata
+  iscls:
+    - iscls-amba
+    - iscls-satuluri
+    - iscls-hellwig
   # H1213: регистр-слой для pwg_ru-карточек (словарная дефиниция, не исследовательская проза).
   # Иерархия эталонов — ruling MG 18-07-2026: Зализняк > Апресян/Мельчук; Кочергина — только сверка эквивалентов.
   lexicography:
@@ -84,6 +88,10 @@ clusters:
     path: styles/clusters/indology.yml
     name: "Индология (санскритология)"
     location: "Moscow-Petersburg"
+  - id: iscls
+    path: styles/clusters/iscls.yml
+    name: "ISCLS (Sanskrit computational linguistics)"
+    location: "Hyderabad"
   - id: orient_leningrad
     path: styles/clusters/orient_leningrad.yml
     name: "Ленинградская востоковедная школа"
@@ -117,6 +125,24 @@ clusters:
     name: "Постструктурализм"
 
 passports:
+  - id: iscls-amba
+    path: styles/passports/iscls-amba.yml
+    level: private
+    cluster: iscls
+    source_prompt: ClaudeStyles/iscls-amba-style.md
+    weight: 1.2
+  - id: iscls-satuluri
+    path: styles/passports/iscls-satuluri.yml
+    level: private
+    cluster: iscls
+    source_prompt: ClaudeStyles/iscls-satuluri-style.md
+    weight: 1.2
+  - id: iscls-hellwig
+    path: styles/passports/iscls-hellwig.yml
+    level: private
+    cluster: iscls
+    source_prompt: ClaudeStyles/iscls-hellwig-style.md
+    weight: 1.2
   - id: zalizniak-ocherk
     path: styles/passports/zalizniak-ocherk.yml
     level: private
@@ -244,6 +270,10 @@ passports:
     path: styles/clusters/indology.yml
     level: cluster
     source_prompt: ClaudeStyles/indology-style.md
+  - id: iscls
+    path: styles/clusters/iscls.yml
+    level: cluster
+    source_prompt: ClaudeStyles/iscls-school-style.md
   - id: ling_iesh
     path: styles/clusters/ling_iesh.yml
     level: cluster
