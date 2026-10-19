@@ -1,0 +1,64 @@
+id: cluster:iscls
+name: "ISCLS (Sanskrit computational linguistics)"
+level: cluster
+source_prompt: ClaudeStyles/iscls-school-style.md
+role: systematic_grammar_reviewer
+language: en
+domains: ["sanskrit", "computational_linguistics", "lexicography"]
+best_for:
+  - paper destined for ISCLS or the Hyderabad computational-Sanskrit school
+  - corpus and resource papers with measured coverage claims
+  - English academic prose by a single author
+  - claims about what a corpus represents
+checks:
+  - unearned_novelty_claim
+  - claim_beyond_evidence
+  - taxonomy_instead_of_argument
+  - objection_raised_not_answered
+  - missing_example_for_claim
+limits:
+  - does not judge Sanskrit grammar or philology as such
+  - does not rewrite the paper; findings only
+  - does not import Russian academic register onto English prose
+markers:
+  lexical:
+    - "to our knowledge"
+    - "for the first time"
+    - "it is important to note"
+  epistemic:
+    - "we propose"
+    - "remains unexplored"
+    - "the data supports"
+forbidden_edits:
+  - "Never manufacture a typo or a logical slip to imitate a human author"
+  - "Never delete a measured number to satisfy a register target"
+  - "Never replace a stated uncertainty with a confident claim"
+anchors:
+  - id: iscls_01
+    description: "objection movement: one may argue ... however"
+    signal: "One may (argue|object)"
+    expected: found
+  - id: iscls_02
+    description: "novelty claim repeated"
+    signal: "to (our|my) knowledge"
+    expected: rare
+review_mode:
+  rewrite_allowed: false
+  requires_span_ids: true
+  output_format: findings_json
+council:
+  can_reply_to:
+    - claim
+    - evidence
+    - register
+    - citation
+  should_defer:
+    - unavailable_primary_source
+    - domain_claim_outside_sanskrit_computational_linguistics
+provenance:
+  sources:
+    - "ISCLS 2026 proceedings, six papers measured 18-10-2026"
+    - "Kulkarni, Satuluri & Krishnan 2026 (2026.iscls-1.8)"
+    - "Barbadikar & Kulkarni 2026 (2026.iscls-1.17)"
+  derived_by: "Uprava A68 rhetoric pass — measured register model, not a paraphrase"
+  derivation_date: "2026-10"
