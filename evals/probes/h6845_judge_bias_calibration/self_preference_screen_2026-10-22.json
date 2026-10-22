@@ -1,0 +1,12 @@
+{
+ "status": "UNMEASURED",
+ "reason": "graded artifacts carry no (judged_by, produced_by, score) provenance fields; measuring the screen on real data needs new judged calls — outside this handoff's $0.00 spend cap",
+ "missing_fields": [
+  "judged_by",
+  "produced_by",
+  "score"
+ ],
+ "n_records": 25,
+ "date": "2026-10-22",
+ "records_source": "evals/annotation/raterB-h073gov.json"
+}

@@ -1,0 +1,220 @@
+{
+ "probe": "H6845 judge-score vs answer-length re-derivation (zero calls)",
+ "n_runs": 25,
+ "rater_files": [
+  "raterB-h073gov.json",
+  "raterC-h073gov-swap-2026-09-14.json"
+ ],
+ "axes": {
+  "raterB-h073gov.json_caught~chars": {
+   "spearman_rho": null,
+   "undefined_reason": "zero variance in score axis (degenerate: constant verdicts)",
+   "n": 25,
+   "group_means": {
+    "positive_mean_chars": 1600.3,
+    "nonpositive_mean_chars": null,
+    "n_positive": 25
+   }
+  },
+  "raterB-h073gov.json_caught~words": {
+   "spearman_rho": null,
+   "undefined_reason": "zero variance in score axis (degenerate: constant verdicts)",
+   "n": 25,
+   "group_means": {
+    "positive_mean_words": 209.2,
+    "nonpositive_mean_words": null,
+    "n_positive": 25
+   }
+  },
+  "raterB-h073gov.json_caught~n_findings": {
+   "spearman_rho": null,
+   "undefined_reason": "zero variance in score axis (degenerate: constant verdicts)",
+   "n": 25,
+   "group_means": {
+    "positive_mean_n_findings": 5.0,
+    "nonpositive_mean_n_findings": null,
+    "n_positive": 25
+   }
+  },
+  "raterB-h073gov.json_type_correct~chars": {
+   "spearman_rho": 0.3114,
+   "undefined_reason": null,
+   "n": 25,
+   "group_means": {
+    "positive_mean_chars": 1642.4,
+    "nonpositive_mean_chars": 590.0,
+    "n_positive": 24
+   }
+  },
+  "raterB-h073gov.json_type_correct~words": {
+   "spearman_rho": 0.2831,
+   "undefined_reason": null,
+   "n": 25,
+   "group_means": {
+    "positive_mean_words": 214.6,
+    "nonpositive_mean_words": 78.0,
+    "n_positive": 24
+   }
+  },
+  "raterB-h073gov.json_type_correct~n_findings": {
+   "spearman_rho": 0.2745,
+   "undefined_reason": null,
+   "n": 25,
+   "group_means": {
+    "positive_mean_n_findings": 5.1,
+    "nonpositive_mean_n_findings": 2.0,
+    "n_positive": 24
+   }
+  },
+  "raterB-h073gov.json_false_positives~chars": {
+   "spearman_rho": 0.319,
+   "undefined_reason": null,
+   "n": 25,
+   "group_means": {
+    "positive_mean_chars": 2348.8,
+    "nonpositive_mean_chars": 1413.2,
+    "n_positive": 5
+   }
+  },
+  "raterB-h073gov.json_false_positives~words": {
+   "spearman_rho": 0.3468,
+   "undefined_reason": null,
+   "n": 25,
+   "group_means": {
+    "positive_mean_words": 308.0,
+    "nonpositive_mean_words": 184.4,
+    "n_positive": 5
+   }
+  },
+  "raterB-h073gov.json_false_positives~n_findings": {
+   "spearman_rho": 0.3821,
+   "undefined_reason": null,
+   "n": 25,
+   "group_means": {
+    "positive_mean_n_findings": 7.0,
+    "nonpositive_mean_n_findings": 4.5,
+    "n_positive": 5
+   }
+  },
+  "raterC-h073gov-swap-2026-09-14.json_caught~chars": {
+   "spearman_rho": null,
+   "undefined_reason": "zero variance in score axis (degenerate: constant verdicts)",
+   "n": 25,
+   "group_means": {
+    "positive_mean_chars": 1600.3,
+    "nonpositive_mean_chars": null,
+    "n_positive": 25
+   }
+  },
+  "raterC-h073gov-swap-2026-09-14.json_caught~words": {
+   "spearman_rho": null,
+   "undefined_reason": "zero variance in score axis (degenerate: constant verdicts)",
+   "n": 25,
+   "group_means": {
+    "positive_mean_words": 209.2,
+    "nonpositive_mean_words": null,
+    "n_positive": 25
+   }
+  },
+  "raterC-h073gov-swap-2026-09-14.json_caught~n_findings": {
+   "spearman_rho": null,
+   "undefined_reason": "zero variance in score axis (degenerate: constant verdicts)",
+   "n": 25,
+   "group_means": {
+    "positive_mean_n_findings": 5.0,
+    "nonpositive_mean_n_findings": null,
+    "n_positive": 25
+   }
+  },
+  "raterC-h073gov-swap-2026-09-14.json_type_correct~chars": {
+   "spearman_rho": 0.3114,
+   "undefined_reason": null,
+   "n": 25,
+   "group_means": {
+    "positive_mean_chars": 1642.4,
+    "nonpositive_mean_chars": 590.0,
+    "n_positive": 24
+   }
+  },
+  "raterC-h073gov-swap-2026-09-14.json_type_correct~words": {
+   "spearman_rho": 0.2831,
+   "undefined_reason": null,
+   "n": 25,
+   "group_means": {
+    "positive_mean_words": 214.6,
+    "nonpositive_mean_words": 78.0,
+    "n_positive": 24
+   }
+  },
+  "raterC-h073gov-swap-2026-09-14.json_type_correct~n_findings": {
+   "spearman_rho": 0.2745,
+   "undefined_reason": null,
+   "n": 25,
+   "group_means": {
+    "positive_mean_n_findings": 5.1,
+    "nonpositive_mean_n_findings": 2.0,
+    "n_positive": 24
+   }
+  },
+  "raterC-h073gov-swap-2026-09-14.json_false_positives~chars": {
+   "spearman_rho": 0.319,
+   "undefined_reason": null,
+   "n": 25,
+   "group_means": {
+    "positive_mean_chars": 2348.8,
+    "nonpositive_mean_chars": 1413.2,
+    "n_positive": 5
+   }
+  },
+  "raterC-h073gov-swap-2026-09-14.json_false_positives~words": {
+   "spearman_rho": 0.3468,
+   "undefined_reason": null,
+   "n": 25,
+   "group_means": {
+    "positive_mean_words": 308.0,
+    "nonpositive_mean_words": 184.4,
+    "n_positive": 5
+   }
+  },
+  "raterC-h073gov-swap-2026-09-14.json_false_positives~n_findings": {
+   "spearman_rho": 0.3821,
+   "undefined_reason": null,
+   "n": 25,
+   "group_means": {
+    "positive_mean_n_findings": 7.0,
+    "nonpositive_mean_n_findings": 4.5,
+    "n_positive": 5
+   }
+  }
+ },
+ "max_abs_rho": {
+  "axis": "raterB-h073gov.json_false_positives~n_findings",
+  "rho": 0.3821
+ },
+ "parity_vs_h4658": {
+  "parity": true,
+  "checks": {
+   "raterB-h073gov.json_caught~chars": true,
+   "raterB-h073gov.json_caught~words": true,
+   "raterB-h073gov.json_caught~n_findings": true,
+   "raterB-h073gov.json_type_correct~chars": true,
+   "raterB-h073gov.json_type_correct~words": true,
+   "raterB-h073gov.json_type_correct~n_findings": true,
+   "raterB-h073gov.json_false_positives~chars": true,
+   "raterB-h073gov.json_false_positives~words": true,
+   "raterB-h073gov.json_false_positives~n_findings": true,
+   "raterC-h073gov-swap-2026-09-14.json_caught~chars": true,
+   "raterC-h073gov-swap-2026-09-14.json_caught~words": true,
+   "raterC-h073gov-swap-2026-09-14.json_caught~n_findings": true,
+   "raterC-h073gov-swap-2026-09-14.json_type_correct~chars": true,
+   "raterC-h073gov-swap-2026-09-14.json_type_correct~words": true,
+   "raterC-h073gov-swap-2026-09-14.json_type_correct~n_findings": true,
+   "raterC-h073gov-swap-2026-09-14.json_false_positives~chars": true,
+   "raterC-h073gov-swap-2026-09-14.json_false_positives~words": true,
+   "raterC-h073gov-swap-2026-09-14.json_false_positives~n_findings": true
+  },
+  "diffs": {},
+  "n_compared": 18
+ },
+ "date": "2026-10-22"
+}
