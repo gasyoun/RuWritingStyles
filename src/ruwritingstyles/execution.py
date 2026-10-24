@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from time import perf_counter
-from typing import Any
+from typing import Any, Optional
 from .io_utils import atomic_write_json, atomic_write_text
 from .budget import generate_with_budget
 

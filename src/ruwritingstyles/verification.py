@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 from pathlib import Path
+from typing import Any
 from .io_utils import atomic_write_json, atomic_write_text
 
 
