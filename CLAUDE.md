@@ -1,15 +1,17 @@
 # CLAUDE.md
 
-_Created: 08-05-2026 · Last updated: 09-10-2026 (H5885 truth refresh: verdict-pass wave, NKRYa keyness, v2.29.10)_
+_Created: 08-05-2026 · Last updated: 30-10-2026 (H7474 truth refresh: release state to v2.29.11, subcommand count 64, SANITY_THRESHOLDS home corrected, PyPI tag drift flagged)_
 
-Recent state (09-10-2026): the E015 verdict-pass wave closed the roadmaps —
+Recent state (30-10-2026, H7474 refresh): the E015 verdict-pass wave closed the roadmaps —
 `docs/roadmap-2026-q4.md` REFRESH (0 engineering gaps, 5 author-gated items,
 H5376), q3 kept per the 31-08 no-archive ruling (H5375), and four roadmaps
 archived with tombstones (GEMINI_ROADMAP, provider-roadmaps,
 roadmap_literary_clusters, refactoring-roadmap — zero unminted prose work);
 NKRYa keyness evidence landed in 8 style passports with the advisory
-scrutiny guard (H5283, #235); `v2.29.10` released (#236, on PyPI as
-`ruwritingstyles`).
+scrutiny guard (H5283, #235); `v2.29.11` released (2026-10-11, on PyPI as
+`ruwritingstyles`) — note `pyproject.toml` still reads `2.25.3` as of
+30-10-2026 (release-tag drift, flagged by H7474, not fixed in a docs-only
+change).
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -93,7 +95,7 @@ Every JSON artifact has a schema in `schemas/`: `segments.schema.json`, `review.
 
 ## Code organization in `src/ruwritingstyles/`
 
-Roughly one module per pipeline stage: `segment`, `review`, `council`, `revision`, `verification`, plus orchestration (`pipeline`, `runs`, `execution`), reporting (`report`, `html_summary`, `findings`, `council_summary`, `provider_log`), eval (`evals`, `assess`, `scrutiny`, `peer_review`), tooling (`migration`, `dashboard`, `generation`, `styleguide`, `repl`), provider plumbing (`providers`, `provider_status`, `provider_log`, `config`), and a FastAPI surface (`api`) that the React frontend in `web/` consumes. The CLI `cli.py` is a thin argparse layer wiring those modules together (60 subcommands).
+Roughly one module per pipeline stage: `segment`, `review`, `council`, `revision`, `verification`, plus orchestration (`pipeline`, `runs`, `execution`), reporting (`report`, `html_summary`, `findings`, `council_summary`, `provider_log`), eval (`evals`, `assess`, `scrutiny`, `peer_review`), tooling (`migration`, `dashboard`, `generation`, `styleguide`, `repl`), provider plumbing (`providers`, `provider_status`, `provider_log`, `config`), and a FastAPI surface (`api`) that the React frontend in `web/` consumes. The CLI `cli.py` is a thin argparse layer wiring those modules together (64 subcommands).
 
 ## Windows / encoding notes
 
@@ -134,7 +136,7 @@ On this material poppler returns **zero Cyrillic**: the output has the right sha
 
 The trap has a second face: `pdftotext` is also the obvious way to read *someone else's* OCR output back (e.g. the text layer `ocrmypdf` writes). Doing that re-measures the poppler bug rather than the OCR engine and made OCR look useless at 1/8 when it was really 8/8. **Poppler must not appear anywhere in a pipeline over this corpus — not as the extractor, not as the reader at the end of another extractor.**
 
-Sync rule: extraction order lives in `PDF_EXTRACTOR_CHAIN` and the accept/reject thresholds in `SANITY_THRESHOLDS`, both in `config.py`; the gate itself is `sanity()` in `extract.py`, shared by production and the bake-off harness so the two cannot drift. **Change a threshold or the chain ⇒ re-run `python tools/benchmark_extractors.py --report` and update [`docs/BENCHMARK_pdf-extractors_ru_19-08-2026.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/BENCHMARK_pdf-extractors_ru_19-08-2026.md) in the same PR** — a pinned verdict with no matching matrix is a claim without evidence.
+Sync rule: extraction order lives in `PDF_EXTRACTOR_CHAIN` (in `config.py`) and the accept/reject thresholds in `SANITY_THRESHOLDS` (defined in `extract.py`, re-exported by `config.py`); the gate itself is `sanity()` in `extract.py`, shared by production and the bake-off harness so the two cannot drift. **Change a threshold or the chain ⇒ re-run `python tools/benchmark_extractors.py --report` and update [`docs/BENCHMARK_pdf-extractors_ru_19-08-2026.md`](https://github.com/gasyoun/RuWritingStyles/blob/main/docs/BENCHMARK_pdf-extractors_ru_19-08-2026.md) in the same PR** — a pinned verdict with no matching matrix is a claim without evidence.
 
 `sanity()` defaults to expecting Cyrillic. Sources known to be in another language must pass `expect_cyrillic=False`, or a cleanly extracted English article scores `cyrillic_ratio` 0.06 and is discarded as garbled.
 - The `mvp_style_ids` list in `styles/manifest.yml` — `rws list-styles --mvp` and the default council set depend on it. The `councils:` block beside it defines named panels (`general` = `mvp_style_ids`, `sanskrit`, `indology`, `lexicography`) selectable via `rws run --council <name>` / `rws councils`; `validate_project` fails if a council names a non-existent passport, so edit ids carefully.
