@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-_Created: 08-05-2026 · Last updated: 30-10-2026 (H7474 truth refresh: release state to v2.29.11, subcommand count 64, SANITY_THRESHOLDS home corrected, PyPI tag drift flagged)_
+_Created: 08-05-2026 · Last updated: 01-11-2026 — H7274 claims pass: 5/5 paths OK; tools/validate_project.py ran live -> SUCCESS)_
 
 Recent state (30-10-2026, H7474 refresh): the E015 verdict-pass wave closed the roadmaps —
 `docs/roadmap-2026-q4.md` REFRESH (0 engineering gaps, 5 author-gated items,
