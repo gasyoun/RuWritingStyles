@@ -1,4 +1,4 @@
-_Created: 24-08-2026 · Last updated: 16-11-2026_
+_Created: 24-08-2026 · Last updated: 17-11-2026_
 
 # Changelog
 
@@ -7,6 +7,61 @@ All notable changes to RuWritingStyles are documented here.
 ## [Unreleased]
 <!-- entries land in changelog_queue/ -- appended via tools/changelog_queue_consume.py, consumed by cut_release.py at release-cut (H3355); direct bullets here are hook-blocked -->
 
+## [2.29.13] - 2026-11-17
+
+- **2026-09-17 — H5010: same-judge order-paired position-bias probe on h073gov**
+  Preregistered paired control correcting the H4658 cross-judge swap inference:
+  same judge (glm-5.3-flash), both candidate orders, blinded + randomized call
+  order — 0/25 discordant (Wilson-95 [0.000, 0.133]); 50/50 judgement budget,
+  $0.00 metered spend; offline positive/negative controls in
+  `tools/position_order_paired.py selftest` (PASS). Artifacts:
+  `evals/probes/PROTOCOL_ORDER_PAIRED_h5010_2026-09-17.md`,
+  `evals/probes/ORDER_PAIRED_h5010_2026-09-17.md`,
+  `evals/probes/order-paired-h5010-2026-09-17.json`,
+  `evals/probes/h5010_order_paired/`, benchmark.md section.
+- **2026-09-24 — H5373: docs/provider-roadmaps.md archived (roadmap verdict pass, E015 wave 1)**
+  Verdict pass over the historical provider-roadmaps generation (GPT-5.5 /
+  Gemini 3.1 Pro / Claude Sonnet 4.6; banner-archived R2 since 2026-07-03):
+  file moved verbatim to `archive/provider-roadmaps.md`, old path carries a
+  one-line tombstone. Unminted-prose table = zero rows: the `google` and
+  `anthropic` adapters and CLI wiring are shipped (`src/ruwritingstyles/providers.py`,
+  H5097 PR #228, H5071 PR #227), and the cross-provider eval agenda (Gemini/
+  Claude rollout steps 2–5, 52-case eval set) is owned by the live
+  `docs/roadmap-2026-q3.md`, which already declares this file historical.
+  Uprava ROADMAP_INDEX.md row struck with the dated verdict (separate commit).
+- **2026-09-24 — H5380: GEMINI_ROADMAP.md archived (roadmap verdict pass, E015 wave 1)**
+  Verdict pass over the Gemini-generation roadmap (personalized from
+  agent-roadmap-2026; banner-marked historical R2 since 2026-07-03): file moved
+  verbatim to `archive/GEMINI_ROADMAP.md`, old path carries a one-line tombstone.
+  Unminted-prose table = zero rows: 0 open / 82 done checkboxes — phases A–I and
+  priorities 0–5 shipped (CI Golden Gate on `evals/baselines/gold.json`,
+  `resolution.py` service layer + `rws apply-resolution`/`finalize`, SQLite
+  `run_steps` resume, provider trace/budget modes, hook-points and sandbox
+  boundaries, scholarly apparatus + citation verifier, Zotero MCP / OpenAlex
+  Web Researcher agentic loop in v2.4.0 — CHANGELOG 2.3.5/2.4.0). The surviving
+  editor-integration agenda (Obsidian release repo, author buttons) is owned by
+  the live `docs/roadmap-2026-q3.md` (Phase R1, H074, H3370), which already
+  declares this file superseded. Uprava ROADMAP_INDEX.md row struck with the
+  dated verdict (separate commit).
+- **2026-09-25 — H5378: docs/roadmap_critique.md archived (roadmap verdict pass, E015 wave 1)**
+  Verdict pass over the early «Gemini-Ready» critique/plan (2026-05-08;
+  banner-marked historical since 29-07-2026, H1879): file moved verbatim to
+  `archive/roadmap_critique.md`, old path carries a one-line tombstone. Zero
+  checkboxes; G-01–G-07 and Part VII passports shipped under other names —
+  34 `ling_*`/`lit_*` cluster entries in `styles/manifest.yml` + 12 cluster
+  files incl. `ling_mts.yml`; domain-authority weights `DOMAIN_CLUSTER_WEIGHTS`
+  + `get_cluster_weights` in `council.py` (H1479, supersedes the 7.7 conflict
+  matrix); `rws generate-passport` CLI (G-03); 61 eval cases incl.
+  `adv-001…005` (H1833; G-05/G-06); `text_domain` a REQUIRED field of
+  `schemas/run.schema.json` (G-07); 49 passports in the manifest incl.
+  `melchuk.yml`, `toporov-etym.yml`, ten `zalizniak-*` (Part VII). The only
+  unminted sketches are dead prose, not live work: G-08's target
+  `docs/style_guide_for_contributors.md` was ruled «no longer exists in the
+  current architecture» by the H5379 verdict on the same target, and G-09's
+  provider-matrix sketch names stale 2025-era models with the cross-provider
+  agenda owned by the live `docs/roadmap-2026-q3.md` (H5373 precedent) —
+  nothing to mint, no human gates, no dated future trigger. Uprava
+  ROADMAP_INDEX.md row struck with the dated verdict (separate commit).
 ## [2.29.12] - 2026-11-16
 
 - **Инвентарь Google Drive под корпус санскритологии (H6927, 17-10-2026).** Снят каталог обоих источников `tools/disk_inventory.py` (обход по верхним папкам с чекпойнтом): **497 429 файлов, 740.25 ГБ** — общие папки 25 961 / 357.70 ГБ (147 из 148 корней), My Drive 471 468 / 382.56 ГБ (24 из 26; 366 ГБ из них — резервные копии ноутбуков). Каталог живёт в приватном `RuWritingStyles-corpus/inventory/` (PR #11: `gdrive_shared.tsv.gz`, `gdrive_my.tsv.gz`, `classify_report.md`/`.json`, README); в публичный репозиторий каталог не попадает.
