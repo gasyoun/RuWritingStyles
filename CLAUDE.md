@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-_Created: 08-05-2026 · Last updated: 01-11-2026 — H7274 claims pass: 5/5 paths OK; tools/validate_project.py ran live -> SUCCESS)_
+_Created: 08-05-2026 · Last updated: 18-11-2026 — H8418 verified-no-change: 16 paths incl validate_project.py + schema/eval surface re-checked against origin/main 18-11-2026; no drift)
 
 Recent state (30-10-2026, H7474 refresh): the E015 verdict-pass wave closed the roadmaps —
 `docs/roadmap-2026-q4.md` REFRESH (0 engineering gaps, 5 author-gated items,
